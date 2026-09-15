@@ -1,0 +1,64 @@
+{
+  "_comment": "Zones: areas that do something to whoever is in them, anchored to the ground rather than to a unit. Payloads use the SAME vocabulary as auras — see resources/data/auras.json and AuraSystem — because a zone is an aura with a place instead of a body, and one payload list with two anchors beats two lists that drift apart.",
+
+  "_comment_triggers": "`while_inside` fires each round on everyone standing in it. `on_enter` fires once on a unit that steps in. `on_death_inside` fires when a unit dies on its ground. A payload's own `affects` overrides the zone's, because a zone often wants both at once.",
+
+  "_comment_footprint": "The tiles come from the casting spell's `aoe` block, so every shape AoEResolver knows — circle, arc, cone, line, cross, band — is available to a zone without naming any of them here.",
+
+  "zones": {
+    "grave_soil": {
+      "name": "Grave Soil",
+      "affects": "all",
+      "on_death_inside": [
+        { "kind": "raise", "summon": "Zombie", "for": "caster", "affects": "enemies" }
+      ],
+      "_comment": "Cursed ground: an enemy that dies on it gets up again on your side. Nothing happens while you merely stand here, which is what makes it a trap rather than a hazard — its whole value is deciding where the fighting goes."
+    },
+
+    "shroud_of_darkness": {
+      "name": "Shroud of Darkness",
+      "affects": "all",
+      "while_inside": [
+        { "kind": "grant_status", "status": "Shadow_Cloaked", "duration": 1, "affects": "allies" },
+        { "kind": "grant_status", "status": "Ranged_Attack_Debuff_50", "duration": 1, "affects": "enemies" }
+      ],
+      "_comment": "Obscures sight both ways. Your people are hard to see; theirs cannot shoot what they cannot see. The duration is 1 because it is refreshed every round the unit stays in, and so lapses a round after they leave."
+    },
+
+    "vajra_mandala": {
+      "name": "Vajra Mandala",
+      "affects": "all",
+      "while_inside": [
+        { "kind": "damage_taken_pct", "amount": -30, "only": "magic", "affects": "allies" },
+        { "kind": "stat", "stat": "spellpower", "amount": 3, "affects": "allies" }
+      ],
+      "on_enter": [
+        { "kind": "damage", "amount": 25, "element": "water", "affects": "enemies" },
+        { "kind": "grant_status", "status": "Frozen", "duration": 1, "chance": 0.35, "affects": "enemies" }
+      ],
+      "_comment": "A circle of orbiting vajras. Allies inside are sheltered from magic and cast from a consecrated circle — a mandala is what Ritual is for — while enemies pay to cross the line, once, each time they cross it. The shelter and the spellpower are the two payload kinds that are READ where they apply rather than pushed on a tick; see CombatManager._zone_damage_taken_multiplier."
+    },
+
+    "mud": {
+      "name": "Mud",
+      "affects": "all",
+      "while_inside": [
+        { "kind": "grant_status", "status": "Slowed", "duration": 1 }
+      ],
+      "_comment": "What Rain of Mud leaves behind. Affects everyone — mud does not care whose side you are on, and that is the interesting half of casting it."
+    },
+
+    "tornado": {
+      "name": "Tornado",
+      "affects": "all",
+      "drift": "random",
+      "while_inside": [
+        { "kind": "damage", "amount": 20, "element": "air" }
+      ],
+      "on_enter": [
+        { "kind": "damage", "amount": 10, "element": "air" }
+      ],
+      "_comment": "A zone that will not stay where you put it. Hits everyone, including the caster's own people, and wanders a tile a round — which is the whole character of the spell and the reason its `special` keys sat unread for months."
+    }
+  }
+}

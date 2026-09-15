@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 51
+const EXPECTED_CHECKS: int = 64
 
 
 func _ready() -> void:
@@ -87,6 +87,20 @@ func _ready() -> void:
 	_check_battlefield_targeting_resolves()
 	_check_a_spell_can_treat_the_two_sides_differently()
 	_check_a_status_can_hatch_a_creature_on_expiry()
+
+	_check_an_area_spell_falls_on_the_side_it_names()
+	_check_casting_a_zone_spell_puts_it_on_the_ground()
+	_check_a_zone_spell_still_resolves_its_own_effects()
+	_check_a_zone_covers_the_ground_its_shape_names()
+	_check_while_inside_fires_each_round()
+	_check_on_enter_fires_once_per_crossing()
+	_check_a_zone_spares_whoever_it_lands_on()
+	_check_a_payload_can_pick_its_own_side()
+	_check_a_zone_can_shift_a_stat()
+	_check_grave_soil_raises_what_dies_on_it()
+	_check_a_tornado_will_not_stay_put()
+	_check_a_zone_expires()
+	_check_zones_reuse_the_aura_payloads()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1246,4 +1260,414 @@ func _check_a_status_can_hatch_a_creature_on_expiry() -> void:
 			if unit != victim and is_instance_valid(unit):
 				_cleanup([unit])
 	_cleanup([victim])
+	_done()
+
+
+# ── Zones ────────────────────────────────────────────────────────────────────
+
+func _clear_zones() -> void:
+	CombatManager.active_zones.clear()
+
+
+## Who an area spell catches is the spell's own `target.eligible`. This came
+## from _spell_is_offensive() instead, which looked for a `spell.effects`
+## array — a key no spell in the database has — so it said "not offensive" for
+## all 57 area spells and every one of them selected the caster's own team.
+## Meteor Shower fell on your party and left the enemy in it untouched.
+func _check_an_area_spell_falls_on_the_side_it_names() -> void:
+	var caster := _make_unit(Vector2i(4, 4), 0, 12)
+	var ally := _make_unit(Vector2i(20, 15), 0)
+	var foe := _make_unit(Vector2i(21, 15), 1)
+
+	var hostile: Dictionary = CombatManager.get_spell("meteor_shower")
+	var caught: Array = CombatManager._get_spell_targets(caster, hostile, Vector2i(21, 15))
+	if not foe in caught:
+		_fail("meteor_shower fell on the enemy's tile and did not catch the enemy")
+	if ally in caught:
+		_fail("meteor_shower caught the caster's own ally — an `eligible: enemy` "
+			+ "area spell is selecting the caster's team")
+
+	# And the other way, so the fix is not "everything hits enemies now".
+	var kindly: Dictionary = CombatManager.get_spell("blessed_waters")
+	var blessed: Array = CombatManager._get_spell_targets(caster, kindly, Vector2i(20, 15))
+	if not ally in blessed:
+		_fail("blessed_waters did not reach the ally it was centred on")
+	if foe in blessed:
+		_fail("blessed_waters blessed an enemy — `eligible: ally` is not filtering")
+
+	# `eligible: all` means everyone standing in it, both sides.
+	var even: Dictionary = CombatManager.get_spell("rain")
+	var wet: Array = CombatManager._get_spell_targets(caster, even, Vector2i(20, 15))
+	if not (ally in wet and foe in wet):
+		_fail("rain fell on %d of the two units standing in it — `eligible: all` "
+			% int((1 if ally in wet else 0) + (1 if foe in wet else 0))
+			+ "is being read as one side")
+	_cleanup([caster, ally, foe])
+	_done()
+
+
+## The wiring nothing else asks about: every zone check below drives
+## `place_zone` directly, so the path from a spell's `zone` key to the ground
+## could have been cut entirely and every one of them would still pass. This is
+## the check that casts one.
+func _check_casting_a_zone_spell_puts_it_on_the_ground() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(19, 15), 0, 12)
+	caster.current_mana = 500
+	caster.actions_remaining = 2
+	caster.character_data["skills"] = {"earth_magic": 9, "black_magic": 9}
+	CombatManager.turn_order = [caster]
+	CombatManager.current_unit_index = 0
+
+	var at := Vector2i(20, 15)
+	var result: Dictionary = CombatManager.cast_spell(caster, "grave_soil", at)
+	if not result.get("success", false):
+		_fail("grave_soil failed to cast: %s" % str(result.get("reason", "?")))
+	elif CombatManager.zones_at(at).is_empty():
+		_fail("grave_soil reported success but left no zone on the ground it "
+			+ "was cast at")
+	elif str(CombatManager.zones_at(at)[0].id) != "grave_soil":
+		_fail("grave_soil left a '%s' on the ground"
+			% str(CombatManager.zones_at(at)[0].id))
+
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_clear_zones()
+	_cleanup([caster])
+	_done()
+
+
+## A spell may both hit and leave something behind. Rain of Mud's torrent
+## blinds or slows whoever fails a Finesse save and THEN the ground stays mud,
+## so placing the zone must not end the cast — it did, and the save gate of
+## every such spell was dead.
+func _check_a_zone_spell_still_resolves_its_own_effects() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(18, 15), 0, 12)
+	caster.current_mana = 900
+	caster.character_data["skills"] = {"earth_magic": 9, "water_magic": 9, "sorcery": 9}
+	var at := Vector2i(20, 15)
+	var foe := _make_unit(at, 1)
+	# A save the probe cannot make, so the gate's outcome is not a coin flip.
+	foe.character_data["attributes"]["finesse"] = 1
+	CharacterSystem.update_derived_stats(foe.character_data)
+
+	var debuffed := false
+	for _attempt in 8:
+		foe.status_effects.clear()
+		caster.actions_remaining = 2
+		caster.current_mana = 900
+		CombatManager.turn_order = [caster]
+		CombatManager.current_unit_index = 0
+		_clear_zones()
+		var result: Dictionary = CombatManager.cast_spell(caster, "rain_of_mud", at)
+		if not result.get("success", false):
+			_fail("rain_of_mud failed to cast: %s" % str(result.get("reason", "?")))
+			break
+		if CombatManager.zones_at(at).is_empty():
+			_fail("rain_of_mud left no mud on the ground")
+			break
+		if not foe.status_effects.is_empty():
+			debuffed = true
+			break
+	if not debuffed:
+		_fail("rain_of_mud left mud but never landed its save gate on an enemy "
+			+ "standing in the torrent — placing the zone ended the cast")
+
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_clear_zones()
+	_cleanup([caster, foe])
+	_done()
+
+
+## The footprint comes from the casting spell's own `aoe` block, so a zone
+## inherits every shape AoEResolver knows without naming any of them.
+func _check_a_zone_covers_the_ground_its_shape_names() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(5, 5), 0, 20)
+	var centre := Vector2i(12, 8)
+	var tiles: Array = AoEResolver.get_tiles(
+		{"type": "circle", "size": 2, "origin": "target"},
+		caster.grid_position, centre, grid.grid_size)
+
+	if not CombatManager.place_zone("mud", tiles, caster, 5):
+		_fail("place_zone refused a valid footprint")
+	elif CombatManager.zones_at(centre).is_empty():
+		_fail("no zone covers the tile it was centred on")
+	elif not CombatManager.zones_at(Vector2i(40, 25)).is_empty():
+		_fail("the zone covers ground far outside its shape")
+	_clear_zones()
+	_cleanup([caster])
+	_done()
+
+
+## `while_inside` is the aura case: it fires every round on whoever is standing
+## there, and stops when they leave.
+func _check_while_inside_fires_each_round() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	var victim := _make_unit(Vector2i(12, 8), 1)
+	CombatManager.place_zone("mud", [Vector2i(12, 8)], caster, 9)
+
+	CombatManager._tick_zones()
+	if not victim.has_status("Slowed"):
+		_fail("a round in the mud did not slow the unit standing in it")
+
+	# Step out, let the status run down, and it must not come back.
+	victim.status_effects.clear()
+	victim.grid_position = Vector2i(30, 20)
+	CombatManager._tick_zones()
+	if victim.has_status("Slowed"):
+		_fail("the mud reached a unit standing 20 tiles away from it")
+	_clear_zones()
+	_cleanup([caster, victim])
+	_done()
+
+
+## `on_enter` is what an aura cannot do: fire on the step in, once, and again
+## only if the unit leaves and comes back.
+func _check_on_enter_fires_once_per_crossing() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	var foe := _make_unit(Vector2i(30, 20), 1)
+	var ring: Array = [Vector2i(12, 8), Vector2i(13, 8)]
+	CombatManager.place_zone("vajra_mandala", ring, caster, 9)
+
+	# Walk in.
+	var before: int = foe.current_hp
+	foe.grid_position = Vector2i(12, 8)
+	CombatManager._zones_check_entry(foe)
+	var first: int = before - foe.current_hp
+	if first <= 0:
+		_fail("crossing into the mandala cost nothing")
+
+	# Move WITHIN the zone: no second charge for a line already crossed.
+	var mid: int = foe.current_hp
+	foe.grid_position = Vector2i(13, 8)
+	CombatManager._zones_check_entry(foe)
+	if foe.current_hp < mid:
+		_fail("moving inside the mandala charged again for a line already crossed")
+
+	# Out and back in: charged again.
+	foe.grid_position = Vector2i(30, 20)
+	CombatManager._zones_check_entry(foe)
+	var out: int = foe.current_hp
+	foe.grid_position = Vector2i(12, 8)
+	CombatManager._zones_check_entry(foe)
+	if foe.current_hp >= out:
+		_fail("leaving and re-entering the mandala cost nothing the second time")
+	_clear_zones()
+	_cleanup([caster, foe])
+	_done()
+
+
+## A zone cast ON somebody must not charge them for entering it. They crossed
+## no line — the ground moved, they did not. `place_zone` marks everyone
+## already inside as having entered, and this is the only thing that reads it.
+func _check_a_zone_spares_whoever_it_lands_on() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	var foe := _make_unit(Vector2i(12, 8), 1)
+	var ring: Array = [Vector2i(12, 8), Vector2i(13, 8)]
+	CombatManager.place_zone("vajra_mandala", ring, caster, 9)
+
+	var before: int = foe.current_hp
+	CombatManager._zones_check_entry(foe)
+	if foe.current_hp < before:
+		_fail("the mandala charged a unit it was cast on top of for entering")
+
+	# Stepping within it is still not a crossing.
+	foe.grid_position = Vector2i(13, 8)
+	CombatManager._zones_check_entry(foe)
+	if foe.current_hp < before:
+		_fail("a unit the mandala landed on was charged for its first step inside")
+
+	# But walking out and back in is.
+	foe.grid_position = Vector2i(30, 20)
+	CombatManager._zones_check_entry(foe)
+	foe.grid_position = Vector2i(12, 8)
+	CombatManager._zones_check_entry(foe)
+	if foe.current_hp >= before:
+		_fail("a unit the mandala landed on was never charged, even after "
+			+ "leaving and walking back in")
+	_clear_zones()
+	_cleanup([caster, foe])
+	_done()
+
+
+## One zone, two audiences. The mandala shelters allies standing in it and
+## hurts enemies that step in — which is why a payload's own `affects` has to
+## override the zone's.
+func _check_a_payload_can_pick_its_own_side() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	var ally := _make_unit(Vector2i(12, 8), 0)
+	var foe := _make_unit(Vector2i(13, 8), 1)
+	CombatManager.place_zone("vajra_mandala",
+		[Vector2i(12, 8), Vector2i(13, 8)], caster, 9)
+
+	# Both are already standing inside, so on_enter has been waived for both.
+	var ally_before: int = ally.current_hp
+	CombatManager._tick_zones()
+	if ally.current_hp < ally_before:
+		_fail("the mandala hurt an ally standing in it")
+
+	# The shelter is a damage multiplier, so it has to show up in real damage.
+	var bare := _make_unit(Vector2i(40, 20), 0)
+	ally.current_hp = 200
+	bare.current_hp = 200
+	CombatManager.apply_damage(ally, 100, "fire")
+	CombatManager.apply_damage(bare, 100, "fire")
+	if (200 - ally.current_hp) >= (200 - bare.current_hp):
+		_fail("an ally inside the mandala took %d and one outside took %d — the "
+			% [200 - ally.current_hp, 200 - bare.current_hp]
+			+ "shelter is not reaching apply_damage")
+
+	# And the enemy standing on the same ground is not sheltered, which is the
+	# half a zone-wide `affects` would get wrong.
+	foe.current_hp = 200
+	bare.current_hp = 200
+	CombatManager.apply_damage(foe, 100, "fire")
+	CombatManager.apply_damage(bare, 100, "fire")
+	if (200 - foe.current_hp) < (200 - bare.current_hp):
+		_fail("an enemy inside the mandala took %d where one outside took %d — "
+			% [200 - foe.current_hp, 200 - bare.current_hp]
+			+ "the payload's `affects: allies` is being ignored and the zone's "
+			+ "own `all` used instead")
+
+	# The shelter names magic. A spear is not turned by a circle of vajras.
+	ally.current_hp = 200
+	bare.current_hp = 200
+	CombatManager.apply_damage(ally, 100, "physical")
+	CombatManager.apply_damage(bare, 100, "physical")
+	if (200 - ally.current_hp) != (200 - bare.current_hp):
+		_fail("an ally inside the mandala took %d physical damage where one "
+			% (200 - ally.current_hp)
+			+ "outside took %d — the shelter's `only: magic` is not filtering"
+			% (200 - bare.current_hp))
+	_clear_zones()
+	_cleanup([caster, ally, foe, bare])
+	_done()
+
+
+## `stat` is the other continuous payload, and the same trap: it is READ by the
+## stat getters rather than pushed on a tick, so a zone can declare one and
+## nothing will notice. The mandala's consecrated circle is one.
+func _check_a_zone_can_shift_a_stat() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	var ally := _make_unit(Vector2i(12, 8), 0, 10)
+	var foe := _make_unit(Vector2i(13, 8), 1, 10)
+	var outside := _make_unit(Vector2i(40, 20), 0, 10)
+	var ally_bare: int = ally.get_spellpower()
+	CombatManager.place_zone("vajra_mandala",
+		[Vector2i(12, 8), Vector2i(13, 8)], caster, 9)
+
+	if ally.get_spellpower() <= ally_bare:
+		_fail("standing in the mandala did not raise spellpower (%d before, %d "
+			% [ally_bare, ally.get_spellpower()]
+			+ "inside) — the stat payload is not being read")
+	if foe.get_spellpower() != outside.get_spellpower():
+		_fail("the mandala raised an enemy's spellpower too (%d inside, %d "
+			% [foe.get_spellpower(), outside.get_spellpower()]
+			+ "outside) — the payload's `affects: allies` is not being honoured")
+
+	# And it goes away by itself when the ground does, with nothing to reset.
+	_clear_zones()
+	if ally.get_spellpower() != ally_bare:
+		_fail("spellpower stayed at %d after the mandala dispersed, from %d "
+			% [ally.get_spellpower(), ally_bare] + "before it was placed")
+	_cleanup([caster, ally, foe, outside])
+	_done()
+
+
+## Grave Soil does nothing while you stand on it. That is the point: it is a
+## trap, and its value is deciding where the fighting goes.
+func _check_grave_soil_raises_what_dies_on_it() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	var foe := _make_unit(Vector2i(12, 8), 1)
+	CombatManager.place_zone("grave_soil", [Vector2i(12, 8)], caster, 9)
+
+	var before_units: int = CombatManager.all_units.size()
+	var hp_before: int = foe.current_hp
+	CombatManager._tick_zones()
+	if foe.current_hp < hp_before:
+		_fail("grave soil hurt someone merely standing on it")
+
+	CombatManager._zones_on_death(foe)
+	if CombatManager.all_units.size() <= before_units:
+		_fail("an enemy died on grave soil and nothing rose")
+	else:
+		var risen: Node = CombatManager.all_units[CombatManager.all_units.size() - 1]
+		if risen.team != caster.team:
+			_fail("what rose from the grave soil fights for the wrong side")
+		_cleanup([risen])
+	_clear_zones()
+	_cleanup([caster, foe])
+	_done()
+
+
+## A tornado is a zone that will not stay where you put it — which is the whole
+## character of the spell and the reason its `special` keys sat unread.
+func _check_a_tornado_will_not_stay_put() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	var start: Array = [Vector2i(20, 15), Vector2i(21, 15)]
+	CombatManager.place_zone("tornado", start, caster, 9)
+
+	var moved := false
+	for _i in 4:
+		CombatManager._tick_zones()
+		if CombatManager.zones_at(Vector2i(20, 15)).is_empty():
+			moved = true
+			break
+	if not moved:
+		_fail("the tornado sat on the same ground for four rounds")
+
+	# And the mud must NOT wander, or drift is being applied to everything.
+	_clear_zones()
+	CombatManager.place_zone("mud", [Vector2i(20, 15)], caster, 9)
+	for _i in 4:
+		CombatManager._tick_zones()
+	if CombatManager.zones_at(Vector2i(20, 15)).is_empty():
+		_fail("the mud wandered off; only a tornado drifts")
+	_clear_zones()
+	_cleanup([caster])
+	_done()
+
+
+## A zone has a duration of its own, ticking whether or not anyone is in it.
+func _check_a_zone_expires() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(2, 2), 0, 20)
+	CombatManager.place_zone("mud", [Vector2i(12, 8)], caster, 3)
+	for _i in 3:
+		CombatManager._tick_zones()
+	if not CombatManager.active_zones.is_empty():
+		_fail("a 3-round zone was still standing after 3 rounds")
+	_clear_zones()
+	_cleanup([caster])
+	_done()
+
+
+## The claim the design rests on: zones and auras share one payload
+## vocabulary. If a kind works in an aura it must work in a zone, because it is
+## the same function applying it.
+func _check_zones_reuse_the_aura_payloads() -> void:
+	for zone_id in Zone.definitions():
+		var def: Dictionary = Zone.get_definition(zone_id)
+		for trigger in Zone.TRIGGERS:
+			for payload in def.get(trigger, []):
+				var kind: String = str(payload.get("kind", ""))
+				# `raise` is the one zone-only kind: it summons rather than
+				# modifying whoever is standing there.
+				if kind == "raise":
+					continue
+				if not AuraSystem.is_payload_kind(kind):
+					_fail("zone '%s' %s uses payload kind '%s', which is not in "
+						% [zone_id, trigger, kind]
+						+ "AuraSystem.PAYLOAD_KINDS — the two vocabularies have "
+						+ "drifted apart")
 	_done()

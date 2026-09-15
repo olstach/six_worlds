@@ -1469,15 +1469,11 @@
       },
       "aoe": {
         "type": "circle",
-        "base_size": 3,
-        "upgradeable": true,
-        "upgrade_scaling": "+1_radius_per_tier"
+        "size": 2,
+        "origin": "target"
       },
-      "special": {
-        "enemies_dying_on_terrain": true,
-        "rise_as_zombie": true
-      },
-      "description": "Cursed terrain - enemies dying on it rise as allied zombies"
+      "description": "Curse the ground. Nothing happens while you stand here — but an enemy that falls on it gets up again on your side. A trap rather than a hazard: its value is deciding where the fighting goes.",
+      "zone": "grave_soil"
     },
     "venus_flytrap": {
       "name": "Venus Flytrap",
@@ -3072,25 +3068,17 @@
       "duration": "spellpower",
       "damage": 35,
       "damage_type": "water",
-      "statuses_caused": [
-        "Frozen"
-      ],
+      "statuses_caused": [],
       "target": {
         "type": "ground"
       },
       "aoe": {
         "type": "circle",
-        "base_size": 2,
-        "upgradeable": true,
-        "upgrade_scaling": "+1_radius_per_tier"
+        "size": 2,
+        "origin": "target"
       },
-      "special": {
-        "allies_inside_protected": true,
-        "enemies_entering_damaged": true,
-        "freeze_chance": true,
-        "visual": "orbiting_vajras"
-      },
-      "description": "Protective circle of orbiting vajras, allies protected, enemies entering take water damage + freeze chance"
+      "description": "A circle of orbiting vajras. Allies inside take a third less magic damage and cast with +3 spellpower from the consecrated circle; enemies pay water damage and a chance of freezing every time they cross the line.",
+      "zone": "vajra_mandala"
     },
     "vajra_gate": {
       "name": "Vajra Gate",
@@ -5365,18 +5353,14 @@
       },
       "aoe": {
         "type": "circle",
-        "base_size": 2,
-        "upgradeable": true,
-        "upgrade_scaling": "+1_radius_per_tier"
+        "size": 2,
+        "origin": "target"
       },
-      "special": {
-        "persistent_effect": true,
-        "moves_randomly": true
-      },
-      "description": "Persistent tornado that moves randomly, launching and scattering enemies",
+      "description": "A tornado that will not stay where you put it. It wanders a tile a round, hurts everyone it touches — your people included — and throws whoever it catches.",
       "scatter": {
         "range": 2
-      }
+      },
+      "zone": "tornado"
     },
     "lightning_form": {
       "name": "Lightning Form",
@@ -9078,16 +9062,11 @@
       },
       "aoe": {
         "type": "circle",
-        "base_size": 4,
-        "upgradeable": true,
-        "upgrade_scaling": "+1_radius_per_tier"
+        "size": 3,
+        "origin": "target"
       },
-      "special": {
-        "obscures_vision": true,
-        "stealth_bonus_inside": true,
-        "ranged_range_reduced_50_percent": true
-      },
-      "description": "Obscure vision in area, easier stealth, ranged attack range cut 50%"
+      "description": "Darkness that obscures both ways. Your people inside are cloaked in shadow; theirs cannot shoot what they cannot see.",
+      "zone": "shroud_of_darkness"
     },
     "exploit_weakness": {
       "name": "Exploit Weakness",
@@ -9289,14 +9268,16 @@
         "upgradeable": true,
         "upgrade_scaling": "+1_radius_per_tier"
       },
-      "description": "A torrent of mud crashes down. Each enemy that fails a Finesse save is afflicted by one of: Blinded, Slowed, or Disarmed (random).",
+      "description": "A torrent of mud. Each enemy failing a Finesse save is blinded or slowed, and the ground stays mud afterwards — for everyone, which is the interesting half of casting it.",
       "on_failed_save": {
         "random_one_of": [
           "Blinded",
           "Slowed",
           "Disarmed"
         ]
-      }
+      },
+      "zone": "mud",
+      "duration": "spellpower"
     },
     "mindmuck": {
       "name": "Mindmuck",
