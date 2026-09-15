@@ -12,7 +12,8 @@
         "tile": "floor",
         "obstacles": {
           "rock": 0.5
-        }
+        },
+        "relief": 1
       }
     },
     "road": {
@@ -22,7 +23,8 @@
       "description": "Paved path. Double movement speed.",
       "battle": {
         "tile": "floor",
-        "obstacles": {}
+        "obstacles": {},
+        "relief": 0
       }
     },
     "forest": {
@@ -35,7 +37,8 @@
         "obstacles": {
           "tree": 4,
           "fallen_tree": 1
-        }
+        },
+        "relief": 1
       },
       "summon_affinity": {
         "school": "earth",
@@ -49,10 +52,10 @@
       "description": "Steep terrain. Half movement speed.",
       "battle": {
         "tile": "floor",
-        "height": 1,
         "obstacles": {
           "rock": 2
-        }
+        },
+        "relief": 2
       },
       "summon_affinity": {
         "school": "earth",
@@ -67,10 +70,10 @@
       "description": "Impassable mountain peaks.",
       "battle": {
         "tile": "wall",
-        "height": 2,
         "obstacles": {
           "rock": 2
-        }
+        },
+        "relief": 3
       },
       "summon_affinity": {
         "school": "earth",
@@ -90,7 +93,8 @@
           "chance": 0.25,
           "value": 0
         },
-        "obstacles": {}
+        "obstacles": {},
+        "relief": 0
       },
       "summon_affinity": {
         "school": "water",
@@ -112,7 +116,8 @@
         "obstacles": {
           "fallen_tree": 1,
           "tree": 1
-        }
+        },
+        "relief": 0
       },
       "summon_affinity": {
         "school": "water",
@@ -128,7 +133,8 @@
         "tile": "difficult",
         "obstacles": {
           "rock": 1
-        }
+        },
+        "relief": 1
       },
       "summon_affinity": {
         "school": "fire",
@@ -149,7 +155,8 @@
         },
         "obstacles": {
           "rock": 0.5
-        }
+        },
+        "relief": 1
       },
       "summon_affinity": {
         "school": "water",
@@ -171,7 +178,8 @@
         },
         "obstacles": {
           "rock": 1
-        }
+        },
+        "relief": 0
       },
       "summon_affinity": {
         "school": "fire",
@@ -187,7 +195,8 @@
         "tile": "floor",
         "obstacles": {
           "barricade": 1
-        }
+        },
+        "relief": 0
       }
     },
     "ice": {
@@ -202,7 +211,8 @@
           "chance": 0.45,
           "value": 0
         },
-        "obstacles": {}
+        "obstacles": {},
+        "relief": 0
       },
       "summon_affinity": {
         "school": "water",
@@ -218,7 +228,8 @@
         "tile": "difficult",
         "obstacles": {
           "rock": 0.5
-        }
+        },
+        "relief": 1
       },
       "summon_affinity": {
         "school": "earth",
@@ -236,7 +247,8 @@
           "pillar": 2,
           "barricade": 1,
           "rock": 1
-        }
+        },
+        "relief": 1
       },
       "summon_affinity": {
         "school": "black",
@@ -244,5 +256,6 @@
       }
     }
   },
-  "_comment_affinity": "`summon_affinity` is what a Summoning spell draws on when the battle is fought on this ground. It was a second table keyed on bare terrain integers in combat_manager.gd, which is how snow, desert and sand came to have none while ice did."
+  "_comment_affinity": "`summon_affinity` is what a Summoning spell draws on when the battle is fought on this ground. It was a second table keyed on bare terrain integers in combat_manager.gd, which is how snow, desert and sand came to have none while ice did.",
+  "_comment_relief": "`relief` is how high this ground may rise, in height levels. It is a CEILING rather than a fixed value: the generator raises mounds across the field and each tile takes the lower of the mound and its own ground's relief, so a hill can spill onto the grass beside it and stops dead at the water's edge. Height pays 5 accuracy and 2 melee damage a level, so three is already a commanding position."
 }

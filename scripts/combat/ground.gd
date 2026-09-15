@@ -89,6 +89,12 @@ static func battle_of(id: int) -> Dictionary:
 	return by_id(id).get("battle", {})
 
 
+## How high this ground may rise, in height levels. A ceiling, not a value —
+## see `_comment_relief` in terrain.json.
+static func relief_of(id: int) -> int:
+	return int(battle_of(id).get("relief", 0))
+
+
 ## What a Summoning spell draws on when the fight is on this ground:
 ## {school, label}, or {} where the ground has no spirits of its own.
 static func summon_affinity_of(id: int) -> Dictionary:

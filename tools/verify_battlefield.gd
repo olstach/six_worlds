@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 14
+const EXPECTED_CHECKS: int = 18
 
 const SIZE := Vector2i(48, 30)
 
@@ -37,6 +37,11 @@ func _ready() -> void:
 	_check_obstacles_come_from_the_ground_under_them()
 	_check_deployment_columns_stay_usable()
 	_check_the_grid_accepts_what_the_generator_builds()
+
+	_check_mountains_rise_higher_than_hills()
+	_check_even_grassland_is_not_perfectly_flat()
+	_check_low_ground_stays_low()
+	_check_slopes_are_walkable_and_worth_holding()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -383,4 +388,117 @@ func _check_blocks_stretch_to_any_grid_size() -> void:
 		if int(grounds["%d,%d" % [size.x - 1, size.y - 1]]) != F:
 			_fail("the bottom-right of a %s grid is not the forest the sample "
 				% str(size) + "has there")
+	_done()
+
+
+# ── Relief ───────────────────────────────────────────────────────────────────
+
+## Tallest height anywhere on a field of one ground, averaged over seeds so a
+## single quiet field cannot carry the result.
+func _peak_of(ground: int, seeds: Array) -> float:
+	var total := 0
+	for s in seeds:
+		var built: Dictionary = BattlefieldGenerator.generate(_uniform(ground), SIZE, s)
+		var highest := 0
+		for h in built.get("heights", []):
+			highest = maxi(highest, int(h["height"]))
+		total += highest
+	return float(total) / float(seeds.size())
+
+
+## Hills should have height differences; mountains more so. That was the ask,
+## and before this both produced rocks and walls and no elevation at all.
+func _check_mountains_rise_higher_than_hills() -> void:
+	var seeds := [1, 2, 3, 4, 5, 6]
+	var hills: float = _peak_of(int(MapManager.Terrain.HILLS), seeds)
+	var mountains: float = _peak_of(int(MapManager.Terrain.MOUNTAINS), seeds)
+	var plains: float = _peak_of(int(MapManager.Terrain.PLAINS), seeds)
+
+	if hills <= plains:
+		_fail("hills peak at %.1f and plains at %.1f — hills are not hilly"
+			% [hills, plains])
+	if mountains <= hills:
+		_fail("mountains peak at %.1f and hills at %.1f — mountains should "
+			% [mountains, hills] + "rise higher")
+	_done()
+
+
+## "Not much land is completely flat, and it adds to the variety."
+func _check_even_grassland_is_not_perfectly_flat() -> void:
+	var raised := 0
+	for s in [7, 8, 9, 10, 11, 12]:
+		var built: Dictionary = BattlefieldGenerator.generate(
+			_uniform(int(MapManager.Terrain.PLAINS)), SIZE, s)
+		raised += built.get("heights", []).size()
+	if raised == 0:
+		_fail("six fields of grassland were perfectly flat across all of them")
+
+	# But gently: a road is graded, and should stay level.
+	var road_raised := 0
+	for s in [7, 8, 9, 10, 11, 12]:
+		road_raised += BattlefieldGenerator.generate(
+			_uniform(int(MapManager.Terrain.ROAD)), SIZE, s).get("heights", []).size()
+	if road_raised > 0:
+		_fail("a paved road rose %d tiles; it is graded and should be level"
+			% road_raised)
+	_done()
+
+
+## A slope runs down into a lake and stops there. Water, swamp and lava sit in
+## the low ground whatever is raised beside them.
+func _check_low_ground_stays_low() -> void:
+	# A field that is half hills and half water: mounds seeded in the hills
+	# must not climb out onto the lake.
+	var H := int(MapManager.Terrain.HILLS)
+	var W := int(MapManager.Terrain.WATER)
+	var sample: Array = []
+	for _y in 5:
+		sample.append([H, H, H, W, W])
+
+	for s in [21, 22, 23, 24]:
+		var built: Dictionary = BattlefieldGenerator.generate(sample, SIZE, s)
+		var grounds: Dictionary = built["grounds"]
+		for h in built.get("heights", []):
+			var at: Vector2i = h["pos"]
+			var g: int = int(grounds["%d,%d" % [at.x, at.y]])
+			if Ground.relief_of(g) < int(h["height"]):
+				_fail("tile %s is ground %s (relief %d) and stands at height %d"
+					% [str(at), Ground.name_of(g), Ground.relief_of(g), int(h["height"])])
+				_done()
+				return
+	_done()
+
+
+## Relief must be a slope rather than a pillar: climbable, and worth climbing.
+## Height costs one extra movement a level and pays 5 accuracy and 2 melee
+## damage, so a cliff nobody can reach is a dead mechanic.
+func _check_slopes_are_walkable_and_worth_holding() -> void:
+	var built: Dictionary = BattlefieldGenerator.generate(
+		_uniform(int(MapManager.Terrain.MOUNTAINS)), SIZE, 31)
+	var height_at: Dictionary = {}
+	for h in built.get("heights", []):
+		height_at[h["pos"]] = int(h["height"])
+	if height_at.is_empty():
+		_fail("a mountain field produced no height at all")
+		_done()
+		return
+
+	# No INTERIOR tile may sit more than one level above its gentlest
+	# neighbour, or the ground is a set of towers rather than hills. The border
+	# is excluded on purpose: a mound cut off by the edge of the map is a cliff
+	# at the edge of the world, and nobody can walk off it anyway.
+	for at in height_at:
+		var mine: int = int(height_at[at])
+		if mine <= 1:
+			continue
+		if at.x <= 0 or at.y <= 0 or at.x >= SIZE.x - 1 or at.y >= SIZE.y - 1:
+			continue
+		var lowest := 99
+		for step in [Vector2i(1,0), Vector2i(-1,0), Vector2i(0,1), Vector2i(0,-1)]:
+			lowest = mini(lowest, int(height_at.get(at + step, 0)))
+		if mine - lowest > 1:
+			_fail("tile %s stands %d above its lowest neighbour — that is a "
+				% [str(at), mine - lowest] + "pillar, not a slope")
+			_done()
+			return
 	_done()
