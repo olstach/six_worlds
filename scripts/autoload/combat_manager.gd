@@ -195,6 +195,12 @@ var _summon_templates: Dictionary = {}
 # Set by combat_arena at combat start; drives the Summoning terrain bonus below.
 var battlefield_overworld_terrain: int = -1
 
+## Zones standing on the battlefield. Each is
+## {id, def, tiles: Array[Vector2i], source, turns_left, entered: Dictionary}.
+## `entered` remembers who is currently standing inside, so `on_enter` fires on
+## the step in and not on every round they stay.
+var active_zones: Array[Dictionary] = []
+
 ## Overworld terrain → the summoning school it favours, by tradition:
 ## nagas in water, earth spirits in mountains, nature spirits in forest,
 ## hungry ghosts in ruins and charnel grounds.
@@ -215,6 +221,7 @@ func _ready() -> void:
 	# max_hp auras are the one payload that has to be stored, so they need a
 	# refresh whenever the distance between units changes.
 	unit_moved.connect(_on_unit_moved_refresh_auras)
+	unit_moved.connect(_on_unit_moved_check_zones)
 	print("CombatManager initialized with ", _spell_database.size(), " spells, ",
 		_status_effects.size(), " status effects, ",
 		_summon_templates.size(), " summon templates")
@@ -420,6 +427,7 @@ func end_combat(victory: bool) -> void:
 	turn_order.clear()
 	combat_grid = null
 	battlefield_overworld_terrain = -1
+	active_zones.clear()
 
 
 ## Apply emotional pressure to party based on combat outcome.
@@ -1289,6 +1297,9 @@ func _start_new_round() -> void:
 	# Tick terrain effect durations
 	if combat_grid:
 		combat_grid.tick_terrain_effects()
+
+	# And the zones standing on it
+	_tick_zones()
 
 	# Check win/lose conditions
 	var result = _check_combat_end()
@@ -2367,6 +2378,9 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 		var kind: String = "magic" if damage_type in MAGIC_DAMAGE_TYPES else "physical"
 		var aura_mult: float = AuraSystem.damage_taken_multiplier(
 			unit, kind, all_units, _aura_distance)
+		# And the ground they are standing on, which asks the same question of
+		# the same payload kind.
+		aura_mult *= _zone_damage_taken_multiplier(unit, kind)
 		if not is_equal_approx(aura_mult, 1.0):
 			damage = maxi(1, int(damage * aura_mult))
 
@@ -2557,6 +2571,9 @@ func _kill_unit(unit: Node) -> void:
 	unit.is_bleeding_out = false
 	AudioManager.play("debuff_apply")
 
+	# Grave soil and its relatives care where you fell.
+	_zones_on_death(unit)
+
 	# Witnessing a party member die affects all other player units emotionally
 	if unit.team == Team.PLAYER:
 		for other_unit in all_units:
@@ -2708,6 +2725,187 @@ func _kill_unit(unit: Node) -> void:
 
 	# Check if combat should end immediately
 	_check_immediate_combat_end()
+
+
+# ============================================
+# ZONES
+# ============================================
+
+## Put a zone on the ground.
+##
+## The footprint comes from the casting spell's own `aoe` block, so every shape
+## AoEResolver knows is available without zones naming any of them.
+func place_zone(zone_id: String, tiles: Array, source: Node, turns: int) -> bool:
+	var def: Dictionary = Zone.get_definition(zone_id)
+	if def.is_empty():
+		push_warning("CombatManager: no zone '%s'" % zone_id)
+		return false
+	if tiles.is_empty():
+		return false
+
+	var footprint: Dictionary = {}
+	for tile in tiles:
+		footprint[tile] = true
+
+	var zone: Dictionary = {
+		"id": zone_id,
+		"name": def.get("name", zone_id),
+		"def": def,
+		"tiles": footprint,
+		"source": source,
+		"turns_left": turns,
+		"entered": {},
+	}
+	active_zones.append(zone)
+	combat_log.emit("%s settles over the ground." % zone.name)
+
+	# Anyone already standing in it counts as having entered, so the circle
+	# does not charge them for a line they never crossed.
+	for unit in all_units:
+		if is_instance_valid(unit) and "grid_position" in unit \
+				and footprint.has(unit.grid_position):
+			zone.entered[unit.get_instance_id()] = true
+	return true
+
+
+## Continuous zone payloads — the ones that are READ where they apply rather
+## than applied on a tick.
+##
+## Sharing the aura payload vocabulary means sharing both halves of it. A
+## `grant_status` or a `heal` is pushed onto a unit once a round; a
+## `damage_taken_pct` or a `stat` has to be asked for at the moment it matters,
+## or it silently does nothing — which is exactly what the mandala's shelter
+## did until a test asked whether an ally inside actually took less.
+func _zone_damage_taken_multiplier(unit: Node, damage_kind: String) -> float:
+	var mult := 1.0
+	if not "grid_position" in unit:
+		return mult
+	for zone in zones_at(unit.grid_position):
+		for payload in zone.def.get("while_inside", []):
+			if payload.get("kind", "") != "damage_taken_pct":
+				continue
+			if not Zone.reaches(payload, zone.def, zone.source, unit):
+				continue
+			var only: String = str(payload.get("only", ""))
+			if only != "" and only != damage_kind:
+				continue
+			mult *= 1.0 + float(payload.get("amount", 0)) / 100.0
+	return maxf(0.0, mult)
+
+
+## Flat stat bonuses from the ground a unit is standing on.
+func _zone_stat_bonus(unit: Node, stat: String) -> float:
+	var total := 0.0
+	if not "grid_position" in unit:
+		return total
+	for zone in zones_at(unit.grid_position):
+		for payload in zone.def.get("while_inside", []):
+			if payload.get("kind", "") != "stat" or payload.get("stat", "") != stat:
+				continue
+			if Zone.reaches(payload, zone.def, zone.source, unit):
+				total += float(payload.get("amount", 0))
+	return total
+
+
+## Every zone covering this tile.
+func zones_at(tile: Vector2i) -> Array[Dictionary]:
+	var found: Array[Dictionary] = []
+	for zone in active_zones:
+		if (zone.tiles as Dictionary).has(tile):
+			found.append(zone)
+	return found
+
+
+## Advance every zone one round: fire `while_inside`, drift, expire.
+##
+## Called once per round rather than once per unit's turn, because a zone
+## belongs to the ground and not to anybody's initiative.
+func _tick_zones() -> void:
+	for i in range(active_zones.size() - 1, -1, -1):
+		var zone: Dictionary = active_zones[i]
+
+		for unit in all_units:
+			if not is_instance_valid(unit) or unit.is_dead or not "grid_position" in unit:
+				continue
+			if not (zone.tiles as Dictionary).has(unit.grid_position):
+				continue
+			for payload in zone.def.get("while_inside", []):
+				if Zone.reaches(payload, zone.def, zone.source, unit):
+					_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
+
+		if str(zone.def.get("drift", "")) == "random":
+			_drift_zone(zone)
+
+		zone.turns_left = int(zone.turns_left) - 1
+		if zone.turns_left <= 0:
+			combat_log.emit("%s disperses." % zone.name)
+			active_zones.remove_at(i)
+
+
+## Move a whole zone one tile in a random direction, keeping its shape.
+func _drift_zone(zone: Dictionary) -> void:
+	var dirs: Array[Vector2i] = [
+		Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var step: Vector2i = dirs[randi() % dirs.size()]
+	var moved: Dictionary = {}
+	for tile in (zone.tiles as Dictionary):
+		var to: Vector2i = tile + step
+		if combat_grid == null or combat_grid.is_valid_position(to):
+			moved[to] = true
+	if moved.is_empty():
+		return   # drifted off the field entirely; stay put rather than vanish
+	zone.tiles = moved
+	# Anyone the zone has moved off no longer counts as inside, so it may
+	# charge them again if it wanders back over them.
+	var still_in: Dictionary = {}
+	for unit in all_units:
+		if is_instance_valid(unit) and "grid_position" in unit \
+				and moved.has(unit.grid_position):
+			still_in[unit.get_instance_id()] = true
+	zone.entered = still_in
+
+
+## Fire `on_enter` for any zone this unit has just stepped into, and forget the
+## ones it has left.
+func _zones_check_entry(unit: Node) -> void:
+	if not is_instance_valid(unit) or not "grid_position" in unit:
+		return
+	for zone in active_zones:
+		var inside: bool = (zone.tiles as Dictionary).has(unit.grid_position)
+		var was_inside: bool = (zone.entered as Dictionary).has(unit.get_instance_id())
+		if inside and not was_inside:
+			zone.entered[unit.get_instance_id()] = true
+			for payload in zone.def.get("on_enter", []):
+				if Zone.reaches(payload, zone.def, zone.source, unit):
+					_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
+		elif was_inside and not inside:
+			zone.entered.erase(unit.get_instance_id())
+
+
+## Fire `on_death_inside` for whichever zone the unit died on.
+##
+## This is what Grave Soil is: nothing happens while you stand on it, and an
+## enemy that falls there gets up again on your side. A trap rather than a
+## hazard — its value is deciding where the fighting happens.
+func _zones_on_death(unit: Node) -> void:
+	if not is_instance_valid(unit) or not "grid_position" in unit:
+		return
+	for zone in active_zones:
+		if not (zone.tiles as Dictionary).has(unit.grid_position):
+			continue
+		for payload in zone.def.get("on_death_inside", []):
+			if not Zone.reaches(payload, zone.def, zone.source, unit):
+				continue
+			if payload.get("kind", "") != "raise":
+				_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
+				continue
+			var owner: Node = zone.source if payload.get("for", "caster") == "caster" else unit
+			if owner == null or not is_instance_valid(owner):
+				continue
+			var risen: Dictionary = _spawn_summoned_unit(
+				owner, str(payload.get("summon", "Zombie")), unit.grid_position, 0)
+			if risen.get("success", false):
+				combat_log.emit("%s rises from the grave soil." % unit.unit_name)
 
 
 ## Raise the dead, at whatever tier the spell asked for.
@@ -3207,6 +3405,41 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		spell_cast.emit(caster, spell, [], [summon_result])
 		return {"success": true, "spell": spell, "targets": [], "results": [summon_result], "mana_cost": mana_cost}
 
+	# --- Zones: an area left standing on the ground ---
+	#
+	# The footprint is the spell's own `aoe` block, so a zone inherits every
+	# shape AoEResolver knows without zones having to name any of them.
+	#
+	# A spell may both hit and leave something behind: Rain of Mud's torrent
+	# blinds or slows whoever fails a Finesse save, and THEN the ground stays
+	# mud. So the zone is laid down here but the cast only returns from here
+	# when there is nobody to resolve it against — returning unconditionally
+	# dropped the save gate of every spell that does both, which is the same
+	# shape as any other effect declared in data and read by nothing.
+	var zone_left: Dictionary = {}
+	if spell.has("zone"):
+		var zone_id: String = str(spell["zone"])
+		var grid_sz := Vector2i(16, 10)
+		if combat_grid:
+			grid_sz = combat_grid.grid_size
+		var footprint: Dictionary = spell.get("aoe",
+			{"type": "circle", "size": 2, "origin": "target"})
+		var tiles: Array = AoEResolver.get_tiles(
+			footprint, caster.grid_position, target_pos, grid_sz)
+		var turns: int = spellpower_bonus if spell.get("duration", 0) == "spellpower" \
+			else int(spell.get("duration", 3))
+		turns = clampi(turns, 2, 12)
+		if not place_zone(zone_id, tiles, caster, turns):
+			return {"success": false, "reason": "The ground will not hold it"}
+		zone_left = {"type": "zone", "zone": zone_id, "tiles": tiles.size()}
+		if targets.is_empty():
+			use_action(1)
+			var zone_results: Array = [{"target": caster, "effects_applied": [zone_left]}]
+			spell_cast.emit(caster, spell, [], zone_results)
+			_process_spell_cast_perks(caster, null, spell, zone_results[0])
+			return {"success": true, "spell": spell, "targets": [],
+				"results": zone_results, "mana_cost": mana_cost}
+
 	# --- Repositioning the caster: Blink, Jump, Get Out, Teleport ---
 	#
 	# These aim at a tile rather than a unit, so they never reach the per-target
@@ -3333,6 +3566,10 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 			var aoe_radius = spell.get("aoe_radius", 1)
 			_create_ground_effects_from_damage(target_pos, aoe_radius, spell_damage_type, 2)
 
+	# The ground the spell left behind, reported next to what it did to people.
+	if not zone_left.is_empty():
+		results.append({"target": caster, "effects_applied": [zone_left]})
+
 	# Use action
 	use_action(1)
 
@@ -3411,15 +3648,21 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 			if aoe_def.get("type", "") == "cone_forward" and "facing" in caster:
 				effective_target = caster.grid_position + caster.facing
 			var aoe_tiles = AoEResolver.get_tiles(aoe_def, caster.grid_position, effective_target, grid_sz)
-			var is_offensive = _spell_is_offensive(spell)
+			# WHO an area spell catches comes from the spell's own
+			# `target.eligible`, the same word the single-target branch reads.
+			# It used to come from _spell_is_offensive(), which looked for a
+			# `spell.effects` array — a key no spell in the database has. So it
+			# answered false for all 57 area spells, and every one of them
+			# selected the CASTER'S OWN TEAM: Meteor Shower fell on your party
+			# and spared the enemy standing in it.
+			var eligible: String = str(spell.get("target", {}).get("eligible", "enemy"))
 			for unit in all_units:
 				if not unit.is_alive() and not unit.is_bleeding_out:
 					continue
-				if unit.grid_position in aoe_tiles:
-					if is_offensive and unit.team != caster.team:
-						targets.append(unit)
-					elif not is_offensive and unit.team == caster.team:
-						targets.append(unit)
+				if not unit.grid_position in aoe_tiles:
+					continue
+				if _eligible_reaches(eligible, caster, unit):
+					targets.append(unit)
 
 		"all_enemies":
 			for unit in all_units:
@@ -3468,11 +3711,53 @@ func _get_spell_targets(caster: Node, spell: Dictionary, target_pos: Vector2i) -
 
 ## Check if spell is offensive (deals damage)
 func _spell_is_offensive(spell: Dictionary) -> bool:
-	var effects = spell.get("effects", [])
-	for effect in effects:
-		if effect.get("type") == "damage":
+	# What the spell says about who it is for, first. `eligible` is a closed
+	# word list the database already uses everywhere and the targeting
+	# normaliser already reads.
+	var eligible: String = str(spell.get("target", {}).get("eligible", ""))
+	if eligible != "":
+		if "enemy" in eligible:
+			return true
+		if eligible in ["ally", "ally_or_self", "self", "corpse", "dead_ally",
+				"others", "party"]:
+			return false
+
+	# Otherwise from what it does. This function read `spell.effects` for
+	# months — an array no spell in the database carries — so it returned false
+	# for every spell ever cast, including Fireball.
+	var dmg = spell.get("damage", null)
+	if (dmg is int or dmg is float) and float(dmg) > 0.0:
+		return true
+	if dmg is Dictionary or dmg is String:
+		return true
+	if spell.has("on_failed_save") or spell.has("statuses_caused_on_failed_save"):
+		return true
+	for tag in spell.get("tags", []):
+		if str(tag) in ["damage", "debuff", "cc"]:
 			return true
 	return false
+
+
+## Does a spell whose targets are `eligible` reach `unit`, cast by `caster`?
+##
+## One reading of the word for every targeting branch that needs it, rather
+## than a team comparison written out at each site.
+func _eligible_reaches(eligible: String, caster: Node, unit: Node) -> bool:
+	var same_team: bool = "team" in unit and "team" in caster and unit.team == caster.team
+	match eligible:
+		"ally", "ally_or_self", "party", "dead_ally":
+			return same_team
+		"self":
+			return unit == caster
+		"others":
+			return unit != caster
+		"all", "any":
+			return true
+		"undead_enemy":
+			return not same_team and "undead" in unit.character_data.get("tags", [])
+		"living_enemy":
+			return not same_team and not ("undead" in unit.character_data.get("tags", []))
+	return not same_team   # "enemy", and the default
 
 
 ## Calculate total spell bonus from all applicable schools
@@ -4858,8 +5143,12 @@ func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: 
 			pass  # continuous — read at the point they apply, never applied here
 
 		_:
+			# Zones share this function and carry no `source_kind`, so every
+			# key here is read with a default — a diagnostic that crashes is
+			# worse than the thing it was diagnosing.
 			push_warning("AuraSystem: aura '%s' (%s '%s') — %s"
-				% [aura["id"], aura["source_kind"], aura["source_id"],
+				% [aura.get("id", "?"), aura.get("source_kind", "zone"),
+					aura.get("source_id", "?"),
 					AuraSystem.explain_unknown_kind(kind)])
 
 
@@ -4893,6 +5182,12 @@ func _refresh_aura_max_hp() -> void:
 ## them. Cheap: a refresh that changes nothing exits on a zero delta.
 func _on_unit_moved_refresh_auras(_unit: Node, _from: Vector2i, _to: Vector2i) -> void:
 	_refresh_aura_max_hp()
+
+
+## Crossing into a zone is a movement event, so it rides the movement signal —
+## which means a push, a teleport and a walk all trigger it alike.
+func _on_unit_moved_check_zones(unit: Node, _from: Vector2i, _to: Vector2i) -> void:
+	_zones_check_entry(unit)
 
 
 ## Distance between two units, as AuraSystem wants it: a Callable, so that file
@@ -7748,6 +8043,9 @@ func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 
 	# --- Auras projected by any unit on the field, including this one ---
 	total += int(round(AuraSystem.stat_bonus(unit, stat, all_units, _aura_distance)))
+
+	# --- And the ground underfoot, which uses the same payload vocabulary ---
+	total += int(round(_zone_stat_bonus(unit, stat)))
 
 	# --- Equipment-based bonuses (apply regardless of whether the unit has perks) ---
 	match stat:

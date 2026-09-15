@@ -950,6 +950,76 @@ for _st in load("resources/data/statuses.json")["statuses"]:
             "`grants_resistance`")
 
 
+# ── Zones ───────────────────────────────────────────────────────────────────
+#
+# Zones share the aura payload vocabulary on purpose, so the checks are the
+# same ones: a trigger nothing fires, a payload kind nothing resolves, and a
+# status that does not exist are all silent no-ops.
+_zone_src = open(os.path.join(ROOT, "scripts/combat/zone.gd"), encoding="utf-8").read()
+_zone_triggers = _gd_list(_zone_src, "TRIGGERS")
+_zone_affects = _gd_list(_zone_src, "AFFECTS")
+_zone_drifts = set(re.findall(r'"(\w*)"', re.search(
+    r"const DRIFTS[^=]*=\s*\[(.*?)\]", _zone_src, re.S).group(1))) \
+    if re.search(r"const DRIFTS", _zone_src) else set()
+
+_zones = load("resources/data/zones.json")["zones"]
+_zone_ids = {k for k in _zones if not k.startswith("_")}
+# Zones use the aura payload vocabulary — read from the same source, so the
+# two cannot drift — plus `raise`, which summons rather than modifying a unit.
+_aura_src_for_zones = open(os.path.join(ROOT, "scripts/combat/aura_system.gd"),
+    encoding="utf-8").read()
+_zone_payload_kinds = _gd_list(_aura_src_for_zones, "PAYLOAD_KINDS") | {"raise"}
+
+for _zid in sorted(_zone_ids):
+    _zdef = _zones[_zid]
+    if _zdef.get("affects", "all") not in _zone_affects:
+        err("data->code", f"zone '{_zid}' affects '{_zdef.get('affects')}', "
+            "which Zone.reaches() does not recognise")
+    if _zone_drifts and str(_zdef.get("drift", "")) not in _zone_drifts:
+        err("data->code", f"zone '{_zid}' drifts '{_zdef.get('drift')}', "
+            "which is not in Zone.DRIFTS")
+    _has_payloads = False
+    for _key in _zdef:
+        if _key.startswith("_") or _key in ("name", "affects", "drift"):
+            continue
+        if _key not in _zone_triggers:
+            err("data->code", f"zone '{_zid}' has trigger '{_key}', which is "
+                "not in Zone.TRIGGERS — it would never fire")
+            continue
+        for _pl in _zdef[_key]:
+            _has_payloads = True
+            if _pl.get("kind") not in _zone_payload_kinds:
+                err("data->code", f"zone '{_zid}' {_key} payload kind "
+                    f"'{_pl.get('kind')}' is resolved by nothing")
+            if _pl.get("affects", "all") not in _zone_affects:
+                err("data->code", f"zone '{_zid}' {_key} payload affects "
+                    f"'{_pl.get('affects')}', which is not recognised")
+            if _pl.get("status") and _pl["status"] not in _status_names:
+                err("data->code", f"zone '{_zid}' grants status "
+                    f"'{_pl['status']}', which does not exist")
+            if _pl.get("summon") and _pl["summon"] not in _summon_templates:
+                err("data->code", f"zone '{_zid}' raises '{_pl['summon']}', "
+                    "and no summon template by that name exists")
+    if not _has_payloads:
+        err("data->code", f"zone '{_zid}' has no payloads under any trigger — "
+            "it would sit on the ground doing nothing")
+
+# Every zone a spell names must exist, and every zone must be reachable.
+_named_zones = set()
+for _sid, _sp in _spells.items():
+    _z = _sp.get("zone")
+    if not _z:
+        continue
+    _named_zones.add(str(_z))
+    if _z not in _zone_ids:
+        err("data->code", f"spell '{_sid}' places unknown zone '{_z}'")
+    if not _sp.get("aoe"):
+        err("data->code", f"spell '{_sid}' places a zone but has no `aoe` "
+            "block, so the zone would have no footprint")
+for _zid in sorted(_zone_ids - _named_zones):
+    err("data->code", f"zone '{_zid}' is defined and no spell places it")
+
+
 # ── Auras ────────────────────────────────────────────────────────────────────
 #
 # Four kinds of source may declare an aura, and all four name it the same way.

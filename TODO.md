@@ -228,6 +228,16 @@ and events too.
       on it hard: nothing shows an aura in the UI, and the AI does not know
       auras exist, so it will not step into or out of one.
 
+- [ ] **Zones** (`zone.gd`, `resources/data/zones.json`) — an aura with a place
+      instead of a body: a footprint of tiles taken from the casting spell's
+      own `aoe`, a duration of its own, and three triggers an aura cannot
+      offer (`while_inside`, `on_enter`, `on_death_inside`) plus drift. Five
+      definitions exist and five spells use them. Any spell that reads "the
+      ground stays X afterwards", "enemies entering take", or "while they
+      stand there" is a zone written the long way — and a spell may both hit
+      and leave one, as Rain of Mud does. Same two gaps as auras: nothing
+      draws a zone in the UI, and the AI will not walk around one.
+
 - [ ] **AoE shapes with falloff** (`aoe_resolver.gd`) — circle, nova, line,
       arc, cone, cross, band, plus opt-in per-ring damage falloff. The shape
       vocabulary is much richer than the spell list uses; most area spells are
@@ -319,7 +329,7 @@ and events too.
       taking the most recent loss — the chooser needs UI and currently defaults
       to "last".
 
-## 4. Terrain and zones — vocabulary and zoom done; zones remain
+## 4. Terrain and zones — done
 
 **Steps 1–3 done 2026-09-15.** One terrain vocabulary lives in
 `resources/data/terrain.json` and is read through `Ground` by the overworld map
@@ -337,10 +347,34 @@ from the hills onto the grass beside them and stops dead at the water's edge,
 and mountains rise higher than hills while a road stays graded and level. Even
 grassland undulates a little, because not much land is flat.
 
-**Still to do: zones (step 4).**
-Zones are the bigger one and five spells wait on them; the proposal is in the
-audit — a zone is an aura with a place instead of a body, so it should reuse
-`AuraSystem`'s payload vocabulary rather than grow a second one.
+**Zones done 2026-09-15 (step 4).** A zone is an aura with a place instead of
+a body: `Zone` + `resources/data/zones.json` reuse `AuraSystem`'s payload
+vocabulary rather than growing a second one, and `validate_data.py` reads
+`PAYLOAD_KINDS` out of `aura_system.gd` so the two cannot drift apart. What a
+zone has that an aura does not is tiles (from the casting spell's own `aoe`,
+so every `AoEResolver` shape comes free), a duration of its own, triggers
+(`while_inside`, `on_enter`, `on_death_inside`) and drift. Five zones ship —
+`grave_soil`, `shroud_of_darkness`, `vajra_mandala`, `mud`, `tornado` — wiring
+five spells that were inert.
+
+Two findings worth remembering, both of the house type:
+
+- **A continuous payload needs a READ hook, not an apply hook.** The mandala's
+  `damage_taken_pct` did nothing: auras were asked for it inside `apply_damage`
+  and `get_continuous_stat_bonus`, zones were asked nowhere. Sharing a payload
+  vocabulary means sharing both halves of it.
+- **`_spell_is_offensive()` read `spell.effects`, an array no spell in the
+  database has**, so it answered false for every spell ever cast — and the AoE
+  targeting branch used it to pick a side. All 57 area spells therefore
+  selected the CASTER'S OWN TEAM: Meteor Shower fell on your party and spared
+  the enemy standing in it. Who an area spell catches now comes from the
+  spell's own `target.eligible`, through `_eligible_reaches()`, which is the
+  same word the single-target branch already read.
+
+**Deferred, for want of something else:** `false_terrain` still needs a
+renderer that can disguise a tile, and `vajra_gate` needs paired zones — two
+footprints that know about each other, so stepping into one puts you out of
+the other. Neither is a zone-system gap; both are the thing next to it.
 
 **The three open questions are answered (2026-09-15).**
 
@@ -739,6 +773,36 @@ miss: `camp_system.gd:156` already has a forage camp action open to everyone,
 and the perk that is supposed to improve it is never consulted.
 
 ## 11. Things to ponder
+
+### Marking the ground a battle was fought on
+
+Cheap, and it has more in it than it looks. When combat ends, flag the
+overworld tile: *a fight happened here.* Nothing else.
+
+What it unlocks, none of which is built:
+
+- **Speaking with the dead.** The Black magic perk deferred on 2026-09-15
+  needs somewhere the dead are, and a battlefield is the obvious one. A party
+  with the training learns what happened here; a party without it walks past a
+  field of bones.
+- **Grave soil, without the spell.** `grave_soil` makes ground where the dying
+  rise again. Old battlefields being *naturally* a little like that — a higher
+  chance of undead encounters, a Black magic bonus, a Summoning affinity that
+  is not the terrain's own — costs nothing once the flag exists.
+- **A run that leaves marks.** The party walks back through a realm (portals
+  are two-way now) and the map remembers where it bled. That is atmosphere
+  for almost no data: one boolean per tile, and maps already persist.
+
+Deliberately NOT built yet. A flag nothing reads is the bug this project keeps
+digging out, and every use above is content that does not exist. Build it with
+the first thing that wants it — most likely the perk.
+
+Decided against alongside it: **terrain that combat destroys** — burn a forest
+and the tile becomes plains, so fire is a travel strategy. It sounds better
+than it plays. The party rarely walks back across a tile it fought on, so the
+payoff almost never lands, and it needs a rule for what every damage type does
+to every terrain.
+
 
 ### Resurrection in events — what should it cost?
 
