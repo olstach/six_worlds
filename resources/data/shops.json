@@ -3127,7 +3127,6 @@
       "buys_items": false,
       "items": {},
       "spells": [
-        "converse_with_the_dead",
         "ancestral_spirit",
         "lifelink",
         "ancestral_guardian"

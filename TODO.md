@@ -168,15 +168,19 @@ The mirror image of dead data: code paths that work and are never exercised.
       spell whose entire point is the conversation afterwards is not finished
       until the conversation exists. Bring it back when this does.
 
-- [ ] **Conversation with the dead, as an event option.** `converse_with_the
-      _dead` (L1 White/Black) has no combat use and no map use — speaking with
-      a corpse is an *event* beat. It should appear as a blue requirement
-      option gated on a degree of Black magic, letting a party with the skill
-      learn something at a battlefield, a charnel ground or a fresh grave that
-      a party without it walks past. No new machinery: blue options and skill
-      gates both exist. It wants written events, not code. The spell's
-      `out_of_combat` tag was removed 2026-09-14 so it stops offering a Cast
-      button that does nothing.
+- [ ] **Speaking with the dead — a Black magic perk, with its content.**
+      Removed as a spell on 2026-09-15: it had no combat use, no map use, and
+      speaking with a corpse is not really a spell — it is a thing a certain
+      kind of practitioner can do. It should return as a **Black magic perk**
+      that unlocks a blue requirement option at battlefields, charnel grounds
+      and fresh graves, letting a party with the training learn something a
+      party without it walks past.
+
+      No new machinery: blue options and skill gates both exist. It is waiting
+      on written events, and on deciding what the dead are actually worth
+      telling you — rumours about the region, what killed them, where they hid
+      something, who else passed this way. Deferred until there is content to
+      hang on it.
 
 - [ ] **`wound` and `sever_part` event rewards** are still unused by any event —
   nothing in the game maims you outside combat.
@@ -315,11 +319,38 @@ and events too.
       taking the most recent loss — the chooser needs UI and currently defaults
       to "last".
 
-## 4. Terrain and zones — wants its own audit
+## 4. Terrain and zones — audited 2026-09-15, see `docs/plans/TERRAIN_AUDIT.md`
 
-Deferred deliberately (2026-09-13) until the spell pass finished. It is a
-system question, not a handful of spell fixes, and the spell audit kept running
-into its edges.
+Audited. The full write-up is in `docs/plans/TERRAIN_AUDIT.md`; the headline
+is that Olaf's goal — the battle map reading as a zoom into the overworld tile,
+Moonring-style — is blocked by two things rather than one.
+
+**The systems share no vocabulary.** The overworld has fourteen `Terrain`
+types; the battle grid has `TileType` (5), `TerrainEffect` (11), `ObstacleType`
+(6) and a height integer. Nothing is named the same in both, and the two
+collisions are false friends: overworld WATER is impassable ground while combat
+WATER is a wadeable tile type, and overworld ICE is fast ground while combat
+ICE is a hazard sitting on top of one.
+
+**The bridge is statistical, not spatial.** A 5×5 window around the party is
+counted, the counts become obstacle budgets, and the obstacles are scattered at
+random across 48×30. The battlefield reflects the proportions of nearby terrain
+and discards its arrangement — which is exactly the half a zoom needs.
+
+Also found: the terrain-to-battlefield mapping is a `match` on bare integers
+with the names in comments (two tables do this, so reordering the enum would
+silently remap every battlefield); five of fourteen terrains generate nothing
+at all, so a desert fight looks like a grassland one; `dominant` is computed,
+stored, passed and never read; nine of eleven terrain effects are never placed;
+and HILLS and MOUNTAINS produce rocks rather than height, despite height having
+complete cover, accuracy, range and damage rules already.
+
+The proposal, in short: give battle tiles a **ground type** from the same
+fourteen names, generate the field as a 5×5 arrangement of ~9×6 blocks so
+arrangement survives, move the mapping into data so the validator can see it,
+and build **zones as auras with a place instead of a body** — `AuraSystem`'s
+payload vocabulary already answers "what does an area do to whoever is in it",
+and five inert spells want exactly that anchored to tiles.
 
 **What points at it.** Five spells are inert for want of it — `false_terrain`,
 `grave_soil`, `rain_of_mud`, `vajra_gate` and `shroud_of_darkness` — and three

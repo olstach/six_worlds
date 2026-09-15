@@ -8041,30 +8041,6 @@
       },
       "description": "Major AoE white damage, devastating to undead and demons"
     },
-    "converse_with_the_dead": {
-      "name": "Converse with the Dead",
-      "subschool": "Black",
-      "schools": [
-        "White",
-        "Black"
-      ],
-      "level": 1,
-      "theme": "ancestral",
-      "tags": [
-        "ancestral",
-        "utility"
-      ],
-      "mana_cost": 15,
-      "target": {
-        "type": "single",
-        "eligible": "corpse"
-      },
-      "special": {
-        "speak_with_dead": true,
-        "gain_information": true
-      },
-      "description": "Speak with a corpse to gain information"
-    },
     "ancestral_guidance": {
       "name": "Ancestral Guidance",
       "subschool": "Black",
