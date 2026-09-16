@@ -167,11 +167,8 @@ static func get_spell_skill_reqs(spell: Dictionary) -> String:
 const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
 	"fire": 1,        # TerrainEffect.FIRE
 	"ice": 2,         # TerrainEffect.ICE
-	"cold": 2,        # TerrainEffect.ICE
 	"poison": 3,      # TerrainEffect.POISON
-	"acid": 4,        # TerrainEffect.ACID
 	"white": 5,       # TerrainEffect.BLESSED
-	"holy": 5,        # TerrainEffect.BLESSED
 	"black": 6,       # TerrainEffect.CURSED
 	"water": 7,       # TerrainEffect.WET
 	"air": 8,         # TerrainEffect.STORMY
@@ -1728,11 +1725,9 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				var oil_dmg = oil.get("bonus_damage", 0)
 				var oil_dmg_type = oil.get("bonus_damage_type", "fire")
 				if oil_dmg > 0:
-					var resist = defender.get_resistance(oil_dmg_type)
-					var final_oil_dmg = int(oil_dmg * (1.0 - resist / 100.0))
-					final_oil_dmg = maxi(1, final_oil_dmg)
-					apply_damage(defender, final_oil_dmg, oil_dmg_type)
-					result["oil_damage"] = final_oil_dmg
+					# Resistance is applied once, inside apply_damage().
+					apply_damage(defender, oil_dmg, oil_dmg_type)
+					result["oil_damage"] = oil_dmg
 					result["oil_damage_type"] = oil_dmg_type
 				# Roll for status proc
 				var oil_status = oil.get("status", "")
@@ -2288,10 +2283,9 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 			combat_log.emit("Called shot lands! +15% damage.")
 			break
 
-	# Apply physical resistance (checks specific subtype first, then falls back to generic "physical")
-	var phys_resist = defender.get_resistance(dmg_type)
-	damage = int(damage * (1.0 - phys_resist / 100.0))
-	damage = maxi(1, damage)
+	# Resistance is NOT applied here. apply_damage() resolves it once, for every
+	# source of damage in the game — which is what stopped nine call sites out
+	# of sixty-one from being the only ones that respected it.
 
 	# Lord of Death DY: empowered summons deal 30% bonus damage
 	if "lord_of_death_empowered" in attacker and attacker.lord_of_death_empowered:
@@ -2331,51 +2325,107 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 	if target.has_status("Frozen"):
 		damage = int(damage * 1.30)
 
-	# Apply elemental resistance
-	var resistance = target.get_resistance(element)
-	damage = int(damage * (1.0 - resistance / 100.0))
-	damage = maxi(0, damage)  # Magic can be fully resisted
-
+	# Resistance is resolved once, in apply_damage(). Reported here so the UI
+	# and the log can still say how much of the hit the target will turn.
 	return {
 		"damage": damage,
 		"base_damage": base_damage,
 		"element": element,
-		"resistance": resistance,
+		"resistance": target.get_resistance(element),
 		"damage_type": element
 	}
 
 
-## Apply damage to a unit
+## Apply damage to a unit, in one documented order.
+##
+## THE ORDER, and it is a multiplicative chain:
+##
+##   1. Resistance to the damage type, through `Resistance` — compound types
+##      split and each half resisted separately; absorption heals instead.
+##   2. Defender-side multipliers: Marked_for_Death.
+##   3. Armour (physical only) and the Yoga table's equanimity (magic only),
+##      each capped at 90%.
+##   4. Aura and zone `damage_taken_pct`.
+##   5. Shields, the ancestors' reprieve, and the floors that keep a unit at
+##      1 HP.
+##
+## Attacker-side multipliers are deliberately NOT here. Feed the Fire,
+## Permafrost, brands and called shots are facts about the attack rather than
+## the defender, so they belong where the damage is computed — which is also
+## why Permafrost's +30% lands before resistance and Marked_for_Death's +50%
+## after it. That was an accident before it was a rule; now it is the rule.
 func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	# God mode: player units take no damage
 	if CheatConsole and CheatConsole.god_mode and "team" in unit and unit.team == Team.PLAYER:
 		unit_damaged.emit(unit, 0, damage_type)
 		return
 
-	# Marked_for_Death: damage_taken_increase makes unit take 50% more damage
+	# ── 1. Resistance to the damage type ────────────────────────────────────
+	#
+	# This is the step that was missing. `apply_damage` never consulted
+	# resistance; every caller was expected to have applied it already, as
+	# `damage * (1.0 - r / 100.0)`, hand-written. Of 61 call sites, 9 did. So
+	# damage-over-time ticks, terrain hazards, aura and zone payloads,
+	# retaliation, splash, cleave and every perk burst ignored resistance and
+	# immunity entirely: a Solar Form character, immune to fire, took full
+	# damage standing in a fire tile.
+	#
+	# Resolving it here covers every source at once, splits compound types so
+	# each half meets its own resistance, and is where absorption turns a hit
+	# into healing.
+	if damage > 0:
+		var resisted: Dictionary = Resistance.resolve(unit, damage, damage_type)
+		if int(resisted.healed) > 0:
+			# The unit is not hurt by this, it is fed: a fire elemental drinks
+			# fire. No damage side effects fire, because nothing was damaged.
+			var fed: int = int(resisted.healed)
+			unit.heal(fed)
+			unit_healed.emit(unit, fed)
+			combat_log.emit("%s drinks in the %s." % [unit.unit_name,
+				DamageType.display_name(damage_type).to_lower()])
+			if int(resisted.damage) <= 0:
+				return
+		damage = int(resisted.damage)
+		if damage <= 0:
+			unit_damaged.emit(unit, 0, damage_type)
+			return
+
+	# ── 2. Defender-side multipliers ────────────────────────────────────────
+	#
+	# Marked_for_Death: damage_taken_increase makes the unit take 50% more.
+	# Attacker-side multipliers (Feed the Fire, Permafrost, brands) stay where
+	# the damage is computed — they are facts about the attack, not the target.
 	if damage > 0 and _unit_has_effect(unit, "damage_taken_increase"):
 		damage = int(damage * 1.5)
 
-	# Flat damage reduction from the Armor skill table and passive perks.
-	# Capped at 90% so no build becomes untouchable.
+	# ── 3. Armour, and equanimity ───────────────────────────────────────────
+	#
+	# The Armor table's flat reduction is PHYSICAL ONLY. It used to reduce every
+	# damage type, magic included, on top of the Yoga table's magic resistance —
+	# so a heavy-armour build resisted fireballs too and the two tables were not
+	# complementary but stacked, with armour the better buy at every point.
+	# Both stay capped at 90%.
 	if damage > 0 and "character_data" in unit:
-		var reduction: float = unit.character_data.get("derived", {}).get("damage_reduction_pct", 0.0)
-		if reduction > 0.0:
-			damage = maxi(1, int(damage * (1.0 - minf(reduction, 90.0) / 100.0)))
+		var derived: Dictionary = unit.character_data.get("derived", {})
+		if DamageType.is_physical(damage_type) and not DamageType.ignores_armour(damage_type):
+			var reduction: float = derived.get("damage_reduction_pct", 0.0)
+			if reduction > 0.0:
+				damage = maxi(1, int(damage * (1.0 - minf(reduction, 90.0) / 100.0)))
 
-		# Magic resistance from the Yoga table. Applies to the elemental and
-		# arcane damage types only — a sword is not resisted by equanimity.
-		if damage_type in MAGIC_DAMAGE_TYPES:
-			var magic_resist: float = unit.character_data.get("derived", {}).get(
-				"magic_resistance_pct", 0.0)
+		# Magic resistance from the Yoga table. A sword is not resisted by
+		# equanimity, and neither is venom — see DamageType.is_magic().
+		if DamageType.is_magic(damage_type):
+			var magic_resist: float = derived.get("magic_resistance_pct", 0.0)
 			if magic_resist > 0.0:
 				damage = maxi(1, int(damage * (1.0 - minf(magic_resist, 90.0) / 100.0)))
 
-	# Aura protection (Dampening_Aura and anything else declaring
-	# damage_taken_pct). Sits here rather than in the spell path so it covers
-	# every source of magic damage, not just the one that had it hardcoded.
+	# ── 4. Auras and the ground ─────────────────────────────────────────────
+	#
+	# Dampening_Aura and anything else declaring damage_taken_pct, a unit's own
+	# or the zone it is standing in. Multiplicative with everything above, and
+	# with each other.
 	if damage > 0:
-		var kind: String = "magic" if damage_type in MAGIC_DAMAGE_TYPES else "physical"
+		var kind: String = "magic" if DamageType.is_magic(damage_type) else "physical"
 		var aura_mult: float = AuraSystem.damage_taken_multiplier(
 			unit, kind, all_units, _aura_distance)
 		# And the ground they are standing on, which asks the same question of
@@ -2384,6 +2434,8 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 		if not is_equal_approx(aura_mult, 1.0):
 			damage = maxi(1, int(damage * aura_mult))
 
+	# ── 5. Shields, and the things that keep a unit alive ───────────────────
+	#
 	# Mantric_Armor: hp_shield absorbs damage before HP. Shield pool lives in the
 	# status entry's "value" field (0/unset → default 25); status expires when spent.
 	if damage > 0:
@@ -3872,11 +3924,6 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		var variance = randf_range(0.85, 1.15)
 		total_damage = int(total_damage * variance)
 
-		# Apply resistance
-		var resistance = target.get_resistance(element)
-		total_damage = int(total_damage * (1.0 - resistance / 100.0))
-		total_damage = maxi(1, total_damage)
-
 		# Magic_Shield / Golden_Defense: 25% spell damage reduction
 		if _unit_has_effect(target, "spell_damage_reduction"):
 			total_damage = int(total_damage * 0.75)
@@ -4060,9 +4107,6 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 				var total_damage = base_value + bonus
 				var variance = randf_range(0.85, 1.15)
 				total_damage = int(total_damage * variance)
-				var resistance = target.get_resistance(element)
-				total_damage = int(total_damage * (1.0 - resistance / 100.0))
-				total_damage = maxi(1, total_damage)
 				apply_damage(target, total_damage, element)
 				effect_result = {"type": "damage", "amount": total_damage, "element": element}
 
@@ -4316,7 +4360,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Measured Radiance: white damage spells have 25% chance to blind for 1 turn
 	if PerkSystem.has_perk(caster_char, "measured_radiance") and has_damage:
-		var is_white = element in ["white", "holy"] or schools.any(func(s): return s.to_lower() in ["white", "holy"])
+		var is_white = element == "white" or schools.any(func(s): return s.to_lower() == "white")
 		if is_white and randf() < 0.25:
 			_apply_status_effect(target, "Blinded", 1, 0, caster)
 
@@ -4330,7 +4374,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Creeping Cold: ice/cold spells that deal damage also apply -1 Movement for 2 turns
 	if PerkSystem.has_perk(caster_char, "creeping_cold") and has_damage:
-		var is_cold = element in ["ice", "cold", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
+		var is_cold = element in ["ice", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
 		if is_cold:
 			_apply_stat_modifier(target, "movement", -1, 2)
 
@@ -4411,7 +4455,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Tidal Surge (Water 2): after casting a Water spell, caster gains +1 Movement for 1 turn
 	if PerkSystem.has_perk(caster_char, "tidal_surge"):
-		var is_water_ts = element in ["water", "ice", "cold"] or schools.any(func(s): return s.to_lower() == "water")
+		var is_water_ts = element in ["water", "ice"] or schools.any(func(s): return s.to_lower() == "water")
 		if is_water_ts:
 			_apply_stat_modifier(caster, "movement", 1, 1)
 
@@ -4588,6 +4632,21 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 
 	# --- Character perk immunity/resistance checks ---
 	if _check_perk_status_immunity(unit, status):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+
+	# --- Affliction resistance: a chance not to catch it at all ---
+	#
+	# Some resistances are to a THING THAT HAPPENS TO YOU rather than to a
+	# damage type: you resist starting to bleed, not the damage once you are.
+	# Stone Body's "+25% resistance to bleed" meant this from the day it was
+	# written and was read by nothing — PerkSystem wrote `bleed` into
+	# derived.resistances and no code ever asked. The status declares which
+	# affliction it is, so the rule is data rather than a list of status names.
+	var affliction: String = str(def.get("affliction", ""))
+	if affliction != "" and Resistance.resists_affliction(unit, affliction):
+		combat_log.emit("%s shrugs off the %s." % [unit.unit_name, affliction])
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
 		return
@@ -4848,6 +4907,24 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 ## Handles DoT, HoT, incapacitation, saving throws, escalating damage,
 ## expiry callbacks, and status spread.
 ## Returns true if the unit should skip their turn (incapacitated).
+## The damage type a status's DoT deals, read from its `<type>_damage_per_turn`
+## effect string.
+##
+## A status may override it with an explicit `element`; nothing does yet. The
+## fallback is physical, which is what a wound is when nothing says otherwise.
+func _dot_element(effect_def: Dictionary) -> String:
+	for name in effect_def.get("effects", []):
+		var text: String = str(name)
+		if not text.ends_with("_damage_per_turn"):
+			continue
+		var candidate: String = text.trim_suffix("_damage_per_turn")
+		if DamageType.exists(candidate):
+			return candidate
+		push_warning("CombatManager: status effect '%s' names damage type '%s', "
+			% [text, candidate] + DamageType.explain_unknown(candidate))
+	return "physical"
+
+
 func _process_status_effects(unit: Node) -> bool:
 	if not "status_effects" in unit or unit.status_effects.is_empty():
 		return false
@@ -4874,7 +4951,13 @@ func _process_status_effects(unit: Node) -> bool:
 				var extra = effect.get("_escalation_ticks", 0) * escalation
 				damage += extra
 				effect["_escalation_ticks"] = effect.get("_escalation_ticks", 0) + 1
-			var element = effect_def.get("element", "physical")
+			# The element of a damage-over-time tick. It defaulted to
+			# `physical` and no status in the game declares an `element`, so
+			# every DoT dealt physical damage — Burning included. Fire
+			# resistance did nothing against burning, and armour reduced it.
+			# The element is in the effect string (`fire_damage_per_turn`),
+			# which is where it has been all along.
+			var element = str(effect_def.get("element", _dot_element(effect_def)))
 			# Fan_the_Flames: source with increase_burning_damage_dealt adds 50% to fire DoT
 			if element == "fire" and effect.has("source"):
 				var dot_source = effect["source"]
@@ -5315,8 +5398,6 @@ func _process_status_weapon_enchants(attacker: Node, defender: Node, result: Dic
 			if enchant_effect in seffects:
 				var element = enchant_map[enchant_effect]
 				var bonus_dmg = maxi(1, ceili(enchant_base * 0.20))  # +20% as elemental damage
-				var resist = defender.get_resistance(element)
-				bonus_dmg = maxi(1, int(bonus_dmg * (1.0 - resist / 100.0)))
 				apply_damage(defender, bonus_dmg, element)
 				var key = "enchant_%s_damage" % element
 				result[key] = result.get(key, 0) + bonus_dmg
@@ -5982,12 +6063,9 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 
 		# Apply damage (respects resistance)
 		if total_damage > 0:
-			var resist = target.get_resistance(damage_type)
-			var final_damage = int(total_damage * (1.0 - resist / 100.0))
-			final_damage = maxi(1, final_damage)
-			apply_damage(target, final_damage, damage_type)
+			apply_damage(target, total_damage, damage_type)
 			unit_result.effects_applied.append({
-				"type": "damage", "amount": final_damage, "element": damage_type
+				"type": "damage", "amount": total_damage, "element": damage_type
 			})
 
 		# Apply status effects
@@ -6185,11 +6263,11 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 # ACTIVE SKILLS
 # ============================================
 
-## Damage types magic_resistance_pct applies to. Physical damage is not on the
-## list: the Yoga table's resistance is to magic, not to being hit.
-const MAGIC_DAMAGE_TYPES: Array[String] = [
-	"space", "air", "fire", "water", "earth", "holy", "shadow", "arcane",
-]
+## What the Yoga table's magic_resistance_pct applies to now lives in
+## damage_types.json, behind DamageType.is_magic(). The constant that was here
+## listed holy, shadow and arcane — dealt by nothing — and omitted black and
+## white, so equanimity did nothing against the two schools most obviously
+## made of magic.
 
 
 ## Effect strings `use_active_skill` below dispatches to a real resolver.
@@ -7506,10 +7584,8 @@ func _resolve_aoe_damage_and_status(user: Node, combat_data: Dictionary, target_
 		base_dmg = int(base_dmg * AoEResolver.falloff_at(
 			_skill_aoe_block(combat_data), user.grid_position, target_pos,
 			enemy.grid_position))
-		var resist = enemy.get_resistance(damage_element) if enemy.has_method("get_resistance") else 0.0
-		var actual_dmg = maxi(1, int(base_dmg * (1.0 - resist / 100.0)))
-		apply_damage(enemy, actual_dmg, damage_element)
-		effects.append({"type": "damage", "target": enemy, "damage": actual_dmg})
+		apply_damage(enemy, base_dmg, damage_element)
+		effects.append({"type": "damage", "target": enemy, "damage": base_dmg})
 
 		# Status on failed save
 		if not _skill_save(user, enemy, combat_data, save_type).success and enemy.is_alive():
@@ -8439,10 +8515,8 @@ func _process_ammo_special_effect(attacker: Node, defender: Node, ammo: Dictiona
 				var dist = abs(unit.grid_position.x - defender.grid_position.x) \
 						 + abs(unit.grid_position.y - defender.grid_position.y)
 				if dist > 0 and dist <= radius:
-					var resistance = unit.get_resistance(element) if unit.has_method("get_resistance") else 0.0
-					var final_dmg = maxi(1, int(aoe_damage * (1.0 - resistance / 100.0)))
-					apply_damage(unit, final_dmg, element)
-					combat_log.emit("%s takes %d %s damage from the explosion." % [unit.unit_name, final_dmg, element])
+					apply_damage(unit, aoe_damage, element)
+					combat_log.emit("%s is caught in the explosion." % unit.unit_name)
 
 		"status":
 			var chance = effect.get("chance", 100)
@@ -8676,20 +8750,16 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				break
 	if _aots_active:
 		var aots_air_dmg = maxi(1, int(result.get("damage", 0) * 0.05))
-		var aots_resist = defender.get_resistance("air")
-		var final_aots_dmg = maxi(1, int(aots_air_dmg * (1.0 - aots_resist / 100.0)))
-		apply_damage(defender, final_aots_dmg, "air")
-		result["aots_air_damage"] = final_aots_dmg
+		apply_damage(defender, aots_air_dmg, "air")
+		result["aots_air_damage"] = aots_air_dmg
 		if randf() < 0.10:
 			_apply_status_effect(defender, "Stunned", 1, 0, attacker)
 
 	# Static Edge (Air 1): attacks deal +10% weapon damage as bonus Air damage
 	if _unit_has_perk(attacker, "static_edge"):
 		var air_dmg = maxi(1, int(result.get("damage", 0) * 0.10))
-		var air_resist = defender.get_resistance("air")
-		var final_air_dmg = maxi(1, int(air_dmg * (1.0 - air_resist / 100.0)))
-		apply_damage(defender, final_air_dmg, "air")
-		result["static_edge_damage"] = final_air_dmg
+		apply_damage(defender, air_dmg, "air")
+		result["static_edge_damage"] = air_dmg
 
 	# Cheap Shot: record that this enemy has now been attacked (removes the crit bonus on future attacks)
 	if "enemies_hit_this_combat" in attacker and not defender in attacker.enemies_hit_this_combat:
@@ -8756,9 +8826,6 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				var pct = brand_map[perk_id][1]
 				var bonus_dmg = ceili(base_damage * pct)
 				if bonus_dmg > 0:
-					# Apply resistance to bonus damage
-					var resist = defender.get_resistance(element)
-					bonus_dmg = maxi(1, int(bonus_dmg * (1.0 - resist / 100.0)))
 					apply_damage(defender, bonus_dmg, element)
 					result["brand_damage"] = result.get("brand_damage", 0) + bonus_dmg
 					result["brand_element"] = element
@@ -9453,7 +9520,7 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 			# Enemies in 3 tiles take Cold damage 3% Spellpower × stacks; allies +3% resist per stack
 			var cold_dmg = ceili(spellpower * 0.03 * stacks)
 			for e in enemies_3:
-				apply_damage(e, cold_dmg, "cold")
+				apply_damage(e, cold_dmg, "ice")
 				_apply_status_effect(e, "Slowed", 2, 0, unit)
 			for a in allies_with_self:
 				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 3
@@ -9750,7 +9817,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 			var cold_burst = ceili(spellpower * 0.30)
 			for e in all_enemies:
 				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
-					apply_damage(e, cold_burst, "cold")
+					apply_damage(e, cold_burst, "ice")
 					_apply_status_effect(e, "Frozen", 2, 0, unit)
 			for a in allies_with_self:
 				_apply_status_effect(a, "Fortified", 3, 0, unit)

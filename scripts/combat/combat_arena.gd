@@ -4466,15 +4466,31 @@ func _show_examine_window(unit: CombatUnit) -> void:
 			examine_content.add_child(skill_grid)
 
 	# --- RESISTANCES (requires observe_carefully perk for enemies) ---
+	#
+	# What lands, not what is declared. This read `unit.resistances` — the
+	# static dict merged from race, traits and equipment — so nothing a status,
+	# perk, aura or zone contributed ever showed: a character under Stone Skin
+	# examined identically to one without. Resistance.damage_taken_pct() is the
+	# figure the damage path actually uses, armour and equanimity included.
 	if can_see_resistances or is_player:
-		var resistances = unit.resistances if "resistances" in unit else {}
-		# Filter non-zero
 		var res_pairs: Array = []
-		for element in resistances:
-			var val = resistances[element]
-			if val != 0:
-				var prefix = "+" if val > 0 else ""
-				res_pairs.append([element.capitalize(), prefix + str(val) + "%"])
+		var own: Dictionary = unit.resistances if "resistances" in unit else {}
+		for damage_type in DamageType.all():
+			if DamageType.category_of(damage_type) in ["special", "compound", "random"]:
+				continue   # a compound shows through its components
+			if DamageType.subtype_of(damage_type) != "" and not own.has(damage_type):
+				continue   # only show a subtype the unit treats differently
+			var taken: float = Resistance.damage_taken_pct(unit, damage_type)
+			if is_equal_approx(taken, 100.0):
+				continue   # neither resisted nor feared: not worth a row
+			var label: String = DamageType.display_name(damage_type)
+			var total: float = Resistance.total(unit, damage_type)
+			if total > Resistance.DECLARED_IMMUNITY:
+				res_pairs.append([label, "absorbs"])
+			elif taken <= 0.0:
+				res_pairs.append([label, "immune"])
+			else:
+				res_pairs.append([label, "%d%% taken" % int(round(taken))])
 		if not res_pairs.is_empty():
 			_add_examine_separator()
 			var res_header = _create_examine_section_header("Resistances")

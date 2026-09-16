@@ -1,0 +1,68 @@
+{
+  "_comment": "The one damage-type vocabulary. Every `damage_type` in spells.json, statuses.json, zones.json and auras.json, every key in a `resistances` block, and every literal passed to CombatManager.apply_damage() is one of these names — validate_data.py checks all four against this file.",
+
+  "_comment_why": "There were three vocabularies before, and they disagreed. PHYSICAL_SUBTYPES knew about slashing/crushing/piercing; MAGIC_DAMAGE_TYPES listed holy, shadow and arcane, which nothing deals, and omitted black and white, which eleven and four spells deal; and the `damage_type` field itself was an open string, so five spells dealt `ice` while every resistance in the game said `cold`. Nothing could notice, because `.get(key, 0)` answers a missing key with zero resistance.",
+
+  "_comment_compounds": "A compound type is dealt as its components in equal shares: a `solar` hit is half white and half fire, each half resisted separately. That is what makes a compound worth having — it is hard to wall off with one resistance and gains nothing against a defender who resists neither. `components` is the mechanic; the NAME is flavour, which is why white_fire and solar are both white+fire. A funeral pyre is not sunlight.",
+
+  "_comment_magic": "`magic: true` is what the Yoga table's magic_resistance_pct applies to — equanimity in the face of sorcery. Physical damage is not on the list, and neither is poison: equanimity does not thin venom.",
+
+  "damage_types": {
+    "physical": { "name": "Physical", "category": "physical", "magic": false,
+      "description": "Force applied to a body. The fallback for every subtype." },
+    "slashing": { "name": "Slashing", "category": "physical", "magic": false, "subtype_of": "physical",
+      "description": "Edges. Falls back to physical resistance where a unit declares none of its own." },
+    "crushing": { "name": "Crushing", "category": "physical", "magic": false, "subtype_of": "physical",
+      "description": "Weight and impact. What a skeleton fears." },
+    "piercing": { "name": "Piercing", "category": "physical", "magic": false, "subtype_of": "physical",
+      "description": "Points. What armour turns and flesh does not." },
+
+    "fire": { "name": "Fire", "category": "element", "magic": true,
+      "description": "Heat and burning." },
+    "water": { "name": "Water", "category": "element", "magic": true,
+      "description": "Weight of water, drowning, corrosion." },
+    "air": { "name": "Air", "category": "element", "magic": true,
+      "description": "Wind, lightning, pressure." },
+    "earth": { "name": "Earth", "category": "element", "magic": true,
+      "description": "Stone and the ground itself." },
+    "space": { "name": "Space", "category": "element", "magic": true,
+      "description": "Distance folded, void, the gap between things." },
+    "ice": { "name": "Ice", "category": "element", "magic": true,
+      "description": "Cold as a weapon. Called `cold` in the data for months while every spell dealt `ice`, which is exactly the kind of gap this file exists to close." },
+
+    "white": { "name": "White", "category": "school", "magic": true,
+      "description": "Radiance. What the undead flinch from." },
+    "black": { "name": "Black", "category": "school", "magic": true,
+      "description": "Decay, curse, the appetite of the grave." },
+    "poison": { "name": "Poison", "category": "bodily", "magic": false,
+      "description": "Venom and rot working through a body. Not magic: equanimity is no antidote." },
+
+    "solar": { "name": "Solar", "category": "compound", "components": ["white", "fire"],
+      "description": "Sunlight given weight — half radiance, half heat." },
+    "white_fire": { "name": "White Fire", "category": "compound", "components": ["white", "fire"],
+      "description": "Sacred flame. The same halves as solar, and a different thing to stand in front of." },
+    "fire_black": { "name": "Hellfire", "category": "compound", "components": ["fire", "black"],
+      "description": "Flame that curses what it burns." },
+    "physical_fire": { "name": "Burning Debris", "category": "compound", "components": ["physical", "fire"],
+      "description": "Rock and flame arriving together — a meteor is both." },
+
+    "prismatic": { "name": "Prismatic", "category": "compound", "components": ["fire", "water", "air", "earth", "space"],
+      "description": "All five elements at once, a fifth each. Sovereign Oil is the only thing that does it, and nothing walls it off." },
+    "random_elemental": { "name": "Random Element", "category": "random", "choices": ["fire", "water", "air", "earth", "space"],
+      "description": "One of the five, chosen afresh each time it lands — the Rainbow spells. Rolled at the moment of damage, so the same cast can hit two targets with two elements." },
+    "none": { "name": "None", "category": "special", "magic": false, "ignores_resistance": true, "ignores_armour": true,
+      "description": "Deals no damage. Smoke bombs and summons whose attack is a status, not a wound." },
+
+    "true": { "name": "True", "category": "special", "magic": false, "ignores_resistance": true, "ignores_armour": true,
+      "description": "Damage that answers to nothing. Reserved for effects that have already decided the outcome — an execute is not a hit that could be resisted." },
+    "sacrifice": { "name": "Sacrifice", "category": "special", "magic": false, "ignores_resistance": true, "ignores_armour": true,
+      "description": "Self-inflicted, by ritual. Armour does not stop a knife you are holding yourself — Chöd's call site has said so in a comment since it was written, while the armour table quietly reduced it anyway." }
+  },
+
+  "_comment_other": "Resistance keys that are NOT damage types. They belong to other systems that happen to use the same word, and the validator knows to leave them alone.",
+  "other_resistances": {
+    "disease": "Afflictions, read by WoundSystem._resisted() as a chance to shrug one off. Never reduces damage.",
+    "bleed": "An affliction, like disease: Stone Body's +25% is a chance not to start bleeding, not a discount on the damage once you are. NOTHING READS IT YET \u2014 PerkSystem writes it into derived.resistances and no code asks for it. Resistance.affliction() is where it belongs; recorded in TODO so it is not lost.",
+    "ranged": "How the damage arrived rather than what it was — Silk armour turns arrows whatever they are made of. The same axis as the Air_Shield status's ranged_damage_reduction, and read in the attack path rather than by damage type."
+  }
+}

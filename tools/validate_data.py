@@ -950,6 +950,92 @@ for _st in load("resources/data/statuses.json")["statuses"]:
             "`grants_resistance`")
 
 
+# ── The damage-type vocabulary ──────────────────────────────────────────────
+#
+# Every `damage_type` in the data and every key in a `resistances` block has to
+# be a name damage_types.json knows, because a resistance key that does not
+# match a damage type reads as zero resistance and nothing complains. That is
+# how five spells came to deal `ice` while all fourteen resistance entries in
+# the game said `cold`, and how six summons resisted `holy`, which nothing has
+# ever dealt.
+_dt_data = load("resources/data/damage_types.json")
+_damage_types = {k for k in _dt_data["damage_types"] if not k.startswith("_")}
+_other_res = {k for k in _dt_data.get("other_resistances", {}) if not k.startswith("_")}
+
+# The class is the authority on which categories exist; read it rather than
+# restating the list here.
+_dt_src = open(os.path.join(ROOT, "scripts/combat/damage_type.gd"), encoding="utf-8").read()
+_dt_categories = _gd_list(_dt_src, "CATEGORIES")
+
+for _name in sorted(_damage_types):
+    _d = _dt_data["damage_types"][_name]
+    _cat = _d.get("category", "")
+    if _cat not in _dt_categories:
+        err("data->code", f"damage type '{_name}' is category '{_cat}', which is "
+            "not in DamageType.CATEGORIES")
+    for _c in _d.get("components", []):
+        if _c not in _damage_types:
+            err("data->code", f"compound damage type '{_name}' is made of "
+                f"'{_c}', which is not a damage type")
+    for _c in _d.get("choices", []):
+        if _c not in _damage_types:
+            err("data->code", f"damage type '{_name}' may roll '{_c}', which is "
+                "not a damage type")
+    if _cat == "compound" and not _d.get("components"):
+        err("data->code", f"damage type '{_name}' is a compound with no "
+            "components, so it would resolve to itself and be resisted by nothing")
+    _sub = _d.get("subtype_of", "")
+    if _sub and _sub not in _damage_types:
+        err("data->code", f"damage type '{_name}' falls back to '{_sub}', which "
+            "is not a damage type")
+
+
+def _walk_damage_types(node, where):
+    """Every damage_type field and resistance key under `node`."""
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k in ("damage_type", "bonus_damage_type", "element_damage_type") \
+                    and isinstance(v, str) and v not in ("", "none"):
+                # A `resistance` effect reuses the `damage_type` field to name
+                # what is resisted, and some of those are afflictions rather
+                # than damage — Stone Body resists bleeding, which is a thing
+                # that happens to you, not a thing that hits you.
+                _affliction_ok = node.get("type") in ("resistance", "vulnerability")
+                if v not in _damage_types and not (_affliction_ok and v in _other_res):
+                    err("data->code", f"{where}: damage type '{v}' is not in "
+                        "damage_types.json, so no resistance can match it")
+            elif k in ("resistances", "grants_resistance", "grants_vulnerability") \
+                    and isinstance(v, dict):
+                for key in v:
+                    if key not in _damage_types and key not in _other_res:
+                        err("data->code", f"{where}: resistance to '{key}', which "
+                            "is not a damage type anything deals")
+            else:
+                _walk_damage_types(v, where)
+    elif isinstance(node, list):
+        for v in node:
+            _walk_damage_types(v, where)
+
+
+for _f in ("spells.json", "statuses.json", "zones.json", "auras.json",
+           "summon_templates.json", "items.json", "traits.json", "races.json",
+           "perks.json", "ammo.json", "equipment_tables.json"):
+    _walk_damage_types(load("resources/data/" + _f), _f)
+for _f in sorted(glob.glob(os.path.join(ROOT, "resources/data/enemies/*.json"))):
+    _walk_damage_types(load(os.path.relpath(_f, ROOT)), os.path.basename(_f))
+
+# And the literals in code: apply_damage(unit, n, "<type>") has to name one too.
+for _gd in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
+    _src = open(_gd, encoding="utf-8").read()
+    _rel = os.path.relpath(_gd, ROOT)
+    # [^,\n] so the match cannot run across lines and pick up a literal from
+    # a comment several lines below an apply_damage() mentioned in prose.
+    for _m in re.finditer(r'apply_damage\([^,\n]+,[^,\n]+,\s*"([a-z_]+)"', _src):
+        if _m.group(1) not in _damage_types:
+            err("code->data", f"{_rel}: apply_damage deals '{_m.group(1)}', which "
+                "is not in damage_types.json")
+
+
 # ── Zones ───────────────────────────────────────────────────────────────────
 #
 # Zones share the aura payload vocabulary on purpose, so the checks are the

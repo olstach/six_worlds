@@ -51,7 +51,7 @@
       "base_stamina": 40,
       "actions": 1,
       "base_damage": 0,
-      "damage_type": "holy",
+      "damage_type": "white",
       "base_initiative": 16,
       "base_movement": 4,
       "base_dodge": 15,
@@ -59,7 +59,7 @@
       "base_crit": 5,
       "base_accuracy": 5,
       "resistances": {
-        "holy": 50
+        "white": 50
       },
       "tags": [
         "white",
@@ -78,7 +78,7 @@
       "base_stamina": 20,
       "actions": 0,
       "base_damage": 0,
-      "damage_type": "cold",
+      "damage_type": "ice",
       "base_initiative": 1,
       "base_movement": 0,
       "base_dodge": 0,
@@ -86,7 +86,7 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "cold": 100,
+        "ice": 100,
         "water": 50,
         "fire": -50
       },
@@ -202,7 +202,7 @@
       "base_accuracy": -5,
       "resistances": {
         "physical": 15,
-        "cold": 25
+        "ice": 25
       },
       "tags": [
         "black",
@@ -245,7 +245,7 @@
       "base_accuracy": 5,
       "resistances": {
         "fire": 50,
-        "cold": -25
+        "ice": -25
       },
       "tags": [
         "fire",
@@ -331,7 +331,7 @@
       "base_stamina": 20,
       "actions": 0,
       "base_damage": 0,
-      "damage_type": "cold",
+      "damage_type": "ice",
       "base_initiative": 1,
       "base_movement": 0,
       "base_dodge": 0,
@@ -339,7 +339,7 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "cold": 100,
+        "ice": 100,
         "fire": -50
       },
       "tags": [
@@ -483,7 +483,7 @@
       "base_accuracy": 0,
       "resistances": {
         "physical": 10,
-        "cold": 25,
+        "ice": 25,
         "poison": 100
       },
       "tags": [
@@ -592,7 +592,7 @@
       "base_stamina": 50,
       "actions": 2,
       "base_damage": 14,
-      "damage_type": "holy",
+      "damage_type": "white",
       "base_initiative": 16,
       "base_movement": 5,
       "base_dodge": 20,
@@ -600,7 +600,7 @@
       "base_crit": 12,
       "base_accuracy": 10,
       "resistances": {
-        "holy": 50,
+        "white": 50,
         "air": 25
       },
       "tags": [
@@ -690,7 +690,7 @@
       "base_stamina": 55,
       "actions": 2,
       "base_damage": 16,
-      "damage_type": "holy",
+      "damage_type": "white",
       "base_initiative": 15,
       "base_movement": 4,
       "base_dodge": 18,
@@ -698,7 +698,7 @@
       "base_crit": 12,
       "base_accuracy": 10,
       "resistances": {
-        "holy": 50,
+        "white": 50,
         "fire": 25
       },
       "tags": [
@@ -737,7 +737,7 @@
       "base_stamina": 55,
       "actions": 2,
       "base_damage": 16,
-      "damage_type": "cold",
+      "damage_type": "ice",
       "base_initiative": 12,
       "base_movement": 4,
       "base_dodge": 12,
@@ -745,7 +745,7 @@
       "base_crit": 8,
       "base_accuracy": 5,
       "resistances": {
-        "cold": 50,
+        "ice": 50,
         "fire": -25
       },
       "tags": [
@@ -760,7 +760,7 @@
       "base_stamina": 40,
       "actions": 1,
       "base_damage": 12,
-      "damage_type": "cold",
+      "damage_type": "ice",
       "base_initiative": 8,
       "base_movement": 0,
       "base_dodge": 0,
@@ -768,7 +768,7 @@
       "base_crit": 5,
       "base_accuracy": 10,
       "resistances": {
-        "cold": 75,
+        "ice": 75,
         "fire": -50
       },
       "tags": [
@@ -983,7 +983,7 @@
       "base_stamina": 40,
       "actions": 1,
       "base_damage": 0,
-      "damage_type": "holy",
+      "damage_type": "white",
       "base_initiative": 10,
       "base_movement": 0,
       "base_dodge": 0,
@@ -991,7 +991,7 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "holy": 75
+        "white": 75
       },
       "tags": [
         "white",
@@ -1064,7 +1064,7 @@
       "base_accuracy": -5,
       "resistances": {
         "physical": 20,
-        "cold": 30,
+        "ice": 30,
         "poison": 100
       },
       "tags": [
@@ -1089,7 +1089,7 @@
       "base_accuracy": 10,
       "resistances": {
         "fire": 75,
-        "cold": -30
+        "ice": -30
       },
       "tags": [
         "fire",
@@ -1186,7 +1186,7 @@
       "base_accuracy": 5,
       "resistances": {
         "fire": 75,
-        "cold": -30
+        "ice": -30
       },
       "tags": [
         "fire",
@@ -1360,7 +1360,7 @@
       "base_accuracy": 0,
       "resistances": {
         "physical": 15,
-        "cold": 30,
+        "ice": 30,
         "poison": 100
       },
       "tags": [
@@ -1385,7 +1385,7 @@
       "base_accuracy": 10,
       "resistances": {
         "fire": 50,
-        "holy": 50
+        "white": 50
       },
       "tags": [
         "fire",
@@ -1505,7 +1505,7 @@
       "base_accuracy": 10,
       "resistances": {
         "fire": 100,
-        "cold": -50
+        "ice": -50
       },
       "tags": [
         "fire",
@@ -1603,7 +1603,7 @@
       "base_accuracy": 5,
       "resistances": {
         "physical": 25,
-        "cold": 40,
+        "ice": 40,
         "poison": 100
       },
       "tags": [
@@ -1753,7 +1753,7 @@
       "base_accuracy": -5,
       "resistances": {
         "physical": 25,
-        "cold": 40,
+        "ice": 40,
         "poison": 100
       },
       "tags": [
@@ -1915,7 +1915,6 @@
       "base_accuracy": 0,
       "resistances": {
         "fire": 100,
-        "smoke": 100,
         "water": -50
       },
       "special": {

@@ -453,49 +453,60 @@ hurts enemies entering — an aura bound to a place rather than a unit.
 enter/leave semantics by recomputation), `unit_moved`, the `terrain` status
 category, `combat_grid` tile state, and `AoEResolver` for shapes.
 
-## 5. Resistances — wants its own audit
+## 5. Resistances — audited and rebuilt
 
-Raised 2026-09-14, after `grants_resistance` turned out not to exist while
-`grants_vulnerability` had been structured and data-driven for months. That
-asymmetry is a symptom: resistance is not one system, it is six that happen to
-reduce damage.
+**Done 2026-09-16.** The audit is `docs/plans/RESISTANCE_AUDIT.md`; what it
+found and what was built:
 
-**What is in play.** `get_resistance()` alone runs about sixty lines of
-special cases, and at least these mechanisms all modify incoming damage
-independently of one another:
+**Resistance was applied by the CALLER, and 9 of 61 call sites did it.**
+`apply_damage()` never consulted it — every caller was expected to have
+written `damage * (1.0 - r / 100.0)` itself. So weapons and spells were fine
+and nothing else was: damage-over-time ticks, terrain hazards, aura payloads,
+zone payloads, retaliation, splash, cleave, oil coatings and every perk burst
+ignored resistance and immunity. A Solar Form character, immune to fire, took
+full damage standing in a fire tile. It is resolved once now, inside
+apply_damage, and the twelve hand-written sites are gone.
 
-- the unit's own `resistances` dictionary, with `PHYSICAL_SUBTYPES` falling
-  back from `crushing`/`slashing`/`piercing` to a generic `physical`
-- `grants_resistance` and `grants_vulnerability`, structured per-status
-- `vulnerability_pct`, a separate per-status number
-- named effect strings — `physical_resist_50`, `vulnerable_to_physical`,
-  `physical_immunity`, `fire_damage_immunity`, and a dozen siblings
-- `damage_reduction_pct` from the Armor skill table, capped at 90%
-- `magic_resistance_pct` from the Yoga table, applying only to
-  `MAGIC_DAMAGE_TYPES`
-- aura `damage_taken_pct`, added 2026-09-13
-- `spell_damage_reduction` as a flat 25% status branch inside the damage path
+**Three vocabularies that disagreed** are one: `DamageType` +
+`resources/data/damage_types.json`. `MAGIC_DAMAGE_TYPES` had listed holy,
+shadow and arcane — dealt by nothing — and omitted black and white, so
+equanimity did nothing against the two schools most obviously made of magic.
+Five spells dealt `ice` while all fourteen resistance entries said `cold`.
+Compound types (`solar`, `fire_black`, `physical_fire`, `white_fire`,
+`prismatic`) are dealt as their components in equal shares, so each half meets
+its own resistance; `random_elemental` rolls per hit.
 
-**Questions the audit should answer.**
+**One order, stated on `apply_damage`:** resistance → defender-side
+multipliers → armour (physical only now) and equanimity (magic only) → aura
+and zone `damage_taken_pct` → shields and floors. Attacker-side multipliers
+stay where the damage is computed, which is the rule that explains why
+Permafrost lands before resistance and Marked_for_Death after.
 
-- What is the ORDER of application, and is it additive or multiplicative? Two
-  sources of 50% are either 100% (immune) or 75%, and nothing states which.
-- Is there a cap? `damage_reduction_pct` has one at 90%; nothing else does, so
-  a stacked build may already be able to reach zero.
-- Do the elemental types form a closed set? The spell audit found compound
-  damage types (`fire_black`, `physical_fire`, `white_fire`) alongside the
-  `physical`/`crushing`/`slashing`/`piercing` split — two schemes in one field.
-- Should immunity be a resistance of 100, or a separate thing that short-
-  circuits? Both exist now.
-- Resistance and vulnerability are the same axis with opposite signs, and the
-  data has them as two fields. Should they be one?
-- What does the player SEE? A character sheet cannot currently show a true
-  figure for "how much fire damage do I take", because the answer is scattered
-  across six systems and three files.
+**Absorption exists**, Final Fantasy style: resistance above 100 heals for the
+excess. Contributions sum and the sum clamps to [-100, +90], so only a single
+declaration may cross 100 — you cannot buff your way into drinking fireballs.
 
-**Likely shape of the fix:** one `Resistances` resolver, in the mould of
-`AuraSystem` and `StatusOps` — every source declared, one documented order of
-application, one cap, and a single function the UI can call to show a number.
+**Also found:** every DoT dealt physical damage (the tick read an `element`
+field no status declares, and the element was in the effect string all along);
+seven spellings of "+N% physical resistance"; and `bleed` resistance written
+into `derived.resistances` by PerkSystem and read by nothing, which was Stone
+Body's entire description. Afflictions — bleed, poison, disease — are declared
+by the status now and resisted as a chance not to catch them.
+
+**Still open, small:**
+
+- The twenty legacy effect strings live in `Resistance.LEGACY_EFFECTS` rather
+  than in the statuses that use them. The table exists so that migrating them
+  to the structured `grants_resistance` they should always have used is a DATA
+  change with nothing to rewrite in code. Worth doing on the next pass through
+  statuses.json.
+- `ranged` resistance (Silk armour, +10) is a resistance to how the damage
+  arrived rather than to what it was. `Air_Shield`'s `ranged_damage_reduction`
+  is the same axis and IS read; the armour-material version is not. Wiring it
+  means reading it in the attack path, next to that one.
+- Nothing absorbs anything yet. The mechanic is built and checked; a fire
+  elemental that drinks fire, or an undead thing that feeds on Black magic, is
+  content waiting to be written.
 
 ## 6. Data with no consumer
 
