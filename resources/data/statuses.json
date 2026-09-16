@@ -41,6 +41,7 @@
 	},
 	{
 	  "name": "Poisoned",
+	  "affliction": "poison",
 	  "type": "debuff",
 	  "category": "dot",
 	  "effects": [
@@ -57,6 +58,7 @@
 	},
 	{
 	  "name": "Bleeding",
+	  "affliction": "bleed",
 	  "type": "debuff",
 	  "category": "dot",
 	  "effects": [
@@ -779,6 +781,7 @@
 	},
 	{
 	  "name": "Festering",
+	  "affliction": "poison",
 	  "type": "debuff",
 	  "category": "dot",
 	  "effects": [
@@ -796,6 +799,7 @@
 	},
 	{
 	  "name": "Diseased",
+	  "affliction": "disease",
 	  "type": "debuff",
 	  "category": "dot_debuff",
 	  "effects": [

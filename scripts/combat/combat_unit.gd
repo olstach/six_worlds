@@ -1140,104 +1140,19 @@ func get_magic_skill_bonus(element: String) -> int:
 
 
 ## Physical damage subtypes that fall back to "physical" resistance
+## Kept for the handful of call sites that still name the three subtypes
+## directly; DamageType.is_physical() is the question to ask now, and
+## damage_types.json is where the list lives.
 const PHYSICAL_SUBTYPES = ["slashing", "crushing", "piercing"]
 
-## Get resistance to a damage type (includes status effect modifiers).
-## For physical subtypes (slashing/crushing/piercing), checks specific first then falls back to "physical".
+## How much of `damage_type` this unit resists, as a percentage.
+##
+## Sixty lines of hand-written `if`s lived here, one branch per status that had
+## ever needed resistance — seven of them different spellings of "+N%
+## physical". Every source now lives in Resistance, which is also where the
+## order of application and the caps are stated.
 func get_resistance(damage_type: String) -> float:
-	var base: float
-	if damage_type in PHYSICAL_SUBTYPES:
-		# Check for specific resistance first (e.g., skeleton weak to crushing)
-		if resistances.has(damage_type):
-			base = float(resistances[damage_type])
-		else:
-			# Fall back to generic physical resistance
-			base = float(resistances.get("physical", 0))
-	else:
-		base = float(resistances.get(damage_type, 0))
-
-	# Apply status effect resistance modifiers
-	for effect in status_effects:
-		var status_name = effect.get("status", "")
-		var def = CombatManager.get_status_definition(status_name)
-		var effects = def.get("effects", [])
-
-		# Vulnerability effects (lower resistance)
-		if damage_type == "physical" or damage_type in PHYSICAL_SUBTYPES:
-			if "vulnerable_to_physical" in effects:
-				base -= 50.0  # Frozen makes you take 50% more physical
-			if "physical_immunity" in effects or "physical_immune" in effects:
-				base = 100.0  # Petrified/Fluid Form/Thin_Air: immune to physical
-			if "physical_resist_50" in effects:
-				base += 50.0
-			if "physical_damage_negation_50_percent" in effects:
-				base += 50.0
-			if "physical_damage_reduction_25" in effects:
-				base += 25.0  # Bark Skin
-			if "physical_damage_reduction_50" in effects:
-				base += 50.0  # Stone Skin
-			if "physical_damage_reduction_75" in effects:
-				base += 75.0  # Steel Skin
-			if "physical_resistance_plus_25" in effects:
-				base += 25.0  # Fortified
-			if "physical_resistance_plus_50" in effects:
-				base += 50.0  # Golden Defense
-
-		if damage_type == "fire":
-			if "fire_resistance_minus_50" in effects:
-				base -= 50.0
-			if "fire_damage_immunity" in effects:
-				base = 100.0  # Solar Form / Fire Immune
-			if "fire_resistance_plus_25" in effects:
-				base += 25.0  # Cooling Mist
-			if "fire_vulnerability" in effects:
-				var vuln_pct = float(def.get("vulnerability_pct", 50))
-				base -= vuln_pct  # Fire_Vulnerable_50: -50% fire resistance
-		if damage_type == "water":
-			if "water_resistance_minus_25" in effects:
-				base -= 25.0
-			if "water_resistance_minus_50" in effects:
-				base -= 50.0
-			if "water_damage_immunity" in effects:
-				base = 100.0  # Fluid Form
-		if damage_type == "air":
-			if "air_damage_immunity" in effects or "air_immune" in effects:
-				base = 100.0  # Lightning_Form: immune to air
-
-		# grants_resistance: the symmetric partner of grants_vulnerability, and
-		# missing until Inner Flame needed it. A status could make you weaker to
-		# an element in data and could only make you stronger through a
-		# hand-written effect string.
-		var resist: Dictionary = def.get("grants_resistance", {})
-		if resist.has(damage_type):
-			base += float(resist[damage_type])
-
-		# grants_vulnerability field (used by Smoke_Form, Lightning_Form)
-		var vuln = def.get("grants_vulnerability", {})
-		if vuln.has(damage_type):
-			base -= float(vuln[damage_type])
-
-		# General elemental resistance boost
-		if "elemental_resistance_25" in effects and damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
-			base += 25.0
-
-		# Rainbow_Cloak: resistance_pct to all non-physical elements
-		if "all_element_resistance" in effects and damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
-			base += float(def.get("resistance_pct", 25))
-
-		# Magic resistance bonus (Praying status: +15 vs all non-physical damage)
-		if "magic_resistance_bonus" in effects and damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
-			base += 15.0
-
-		# Immune to all damage (Invulnerable)
-		if "immune_to_all_damage" in effects:
-			base = 100.0
-
-	# Mantra-based magic resistance bonus (non-physical types only)
-	if damage_type not in PHYSICAL_SUBTYPES and damage_type != "physical":
-		base += float(mantra_stat_bonuses.get("magic_resist", 0))
-
-	return base
+	return Resistance.total(self, damage_type)
 
 
 ## Set resistance (for buffs/debuffs)
