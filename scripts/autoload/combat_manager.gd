@@ -425,6 +425,7 @@ func end_combat(victory: bool) -> void:
 	battlefield_overworld_terrain = -1
 	active_zones.clear()
 	_timed_obstacles.clear()
+	_guarded.clear()
 
 
 ## Apply emotional pressure to party based on combat outcome.
@@ -1309,6 +1310,9 @@ func _start_new_round() -> void:
 	# And whatever somebody built during the fight
 	_tick_placed_obstacles()
 
+	# And whoever is standing in front of somebody else
+	_tick_guards()
+
 	# Check win/lose conditions
 	var result = _check_combat_end()
 	if result != -1:
@@ -1567,6 +1571,15 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	# Sanctuary on defender: cannot be targeted by attacks
 	if _unit_has_effect(defender, "cannot_be_targeted") and not defender.has_status("Invisible"):
 		return {"success": false, "reason": "Target is protected — cannot be attacked"}
+
+	# Somebody may be standing in front of this one. Stalwart Guardian is the
+	# only thing that does it: the blow is aimed at the ward and lands on the
+	# guard, which is the whole of what guarding means.
+	var guard: Node = redirect_target(defender, attacker)
+	if guard != null and guard != attacker:
+		combat_log.emit("%s steps into the blow meant for %s."
+			% [guard.unit_name, defender.unit_name])
+		defender = guard
 
 	# Charmed units cannot attack the caster who charmed them
 	var charm_source = get_cc_source(attacker, "charmed")
@@ -2391,7 +2404,12 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	# Resolving it here covers every source at once, splits compound types so
 	# each half meets its own resistance, and is where absorption turns a hit
 	# into healing.
-	if damage > 0:
+	if damage > 0 and _ignoring_resistance:
+		# Too Fast to React: this one spell answers to nothing. The flag is
+		# consumed by cast_spell, not here, because a spell that hits five
+		# targets should ignore resistance on all five.
+		pass
+	elif damage > 0:
 		var resisted: Dictionary = Resistance.resolve(unit, damage, damage_type)
 		if int(resisted.healed) > 0:
 			# The unit is not hurt by this, it is fed: a fire elemental drinks
@@ -3681,6 +3699,15 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		return {"success": true, "spell": spell, "targets": [], "results": [ground_result], "mana_cost": mana_cost}
 
 	# Apply effects to each target
+	#
+	# Too Fast to React, if it is queued: held across every target of this one
+	# cast and dropped afterwards, so a spell that hits five people ignores
+	# resistance on all five and the next spell is ordinary again.
+	_ignoring_resistance = bool(caster.get_meta("ignore_resistances_next", false))
+	if _ignoring_resistance:
+		caster.set_meta("ignore_resistances_next", false)
+		combat_log.emit("%s's spell answers to nothing." % caster.unit_name)
+
 	var results: Array[Dictionary] = []
 	var is_offensive = _spell_is_offensive(spell)
 	for target in targets:
@@ -3704,6 +3731,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		if spell_damage_type != "":
 			var aoe_radius = spell.get("aoe_radius", 1)
 			_create_ground_effects_from_damage(target_pos, aoe_radius, spell_damage_type, 2)
+
+	_ignoring_resistance = false
 
 	# The ground the spell left behind, reported next to what it did to people.
 	if not zone_left.is_empty():
@@ -5304,6 +5333,7 @@ func _perform_reaction(unit: Node, against: Node, status_name: String,
 				acted = true
 				var spec_move: Dictionary = {
 					"mode": str(spec.get("reposition_mode", "scatter")),
+					"range": int(spec.get("reposition_tiles", 1)),
 					"tiles": int(spec.get("reposition_tiles", 1)),
 				}
 				reposition(unit, spec_move, unit, unit.grid_position)
@@ -5346,6 +5376,169 @@ func _perform_reaction(unit: Node, against: Node, status_name: String,
 ## because the attack path takes no such argument. Set for Charge is the only
 ## thing that uses it, and it is cleared immediately.
 var _reaction_damage_mult: float = 1.0
+
+
+## Heal somebody who is not you.
+##
+## `_resolve_heal_self` ignored its own `targeting` field and always healed the
+## user, so Field Medic — "heal an ADJACENT ALLY" — healed the medic.
+func _resolve_heal_ally(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var target: Node = get_unit_at(target_pos)
+	if target == null or not target.is_alive():
+		return {"success": false, "reason": "No ally there"}
+	if not "team" in target or target.team != user.team:
+		return {"success": false, "reason": "Not an ally"}
+	var reach: int = int(combat_data.get("range", 1))
+	if _grid_distance(user.grid_position, target_pos) > reach:
+		return {"success": false, "reason": "Out of reach"}
+
+	var amount: int = int(combat_data.get("heal_value", 0))
+	var scale: String = str(combat_data.get("scale_stat", ""))
+	var pct: float = float(combat_data.get("scale_pct", 25)) / 100.0
+	match scale:
+		"spellpower":
+			amount += int(user.get_spellpower() * pct)
+		"awareness":
+			amount += int(user.character_data.get("attributes", {}).get("awareness", 10) * pct)
+		"focus":
+			amount += int(user.character_data.get("attributes", {}).get("focus", 10) * pct)
+	amount = maxi(1, amount)
+	target.heal(amount)
+	unit_healed.emit(target, amount)
+	combat_log.emit("%s patches %s up for %d." % [user.unit_name, target.unit_name, amount])
+	return {"success": true, "effects": [{"type": "heal", "target": target, "amount": amount}]}
+
+
+## A trap is a zone that waits: nothing happens until somebody steps on it.
+##
+## Which is why it costs nothing new — zones already answer "who just walked
+## in", and Trap Maker is that question with the trapper's Focus behind it.
+func _resolve_place_trap(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var reach: int = int(combat_data.get("range", 1))
+	if _grid_distance(user.grid_position, target_pos) > reach:
+		return {"success": false, "reason": "Too far to reach the ground there"}
+	if combat_grid != null and combat_grid.is_occupied(target_pos):
+		return {"success": false, "reason": "Somebody is standing there"}
+
+	var zone_id: String = str(combat_data.get("zone", "snare_trap"))
+	var turns: int = int(combat_data.get("duration", 6))
+	if not place_zone(zone_id, [target_pos], user, turns):
+		return {"success": false, "reason": "The ground will not take it"}
+
+	# The trap's bite scales with whoever set it, so a master trapper's snare
+	# is worth stepping around.
+	var focus: int = int(user.character_data.get("attributes", {}).get("focus", 10))
+	var scaled: int = maxi(1, int(focus * float(combat_data.get("damage_pct_of_focus", 30)) / 100.0))
+	active_zones[-1]["payload_scale"] = scaled
+	combat_log.emit("%s sets a trap." % user.unit_name)
+	return {"success": true, "effects": [{"type": "trap", "pos": target_pos}]}
+
+
+## Everyone, somewhere else. One side of the field at a time, through the same
+## repositioning vocabulary a single teleport uses.
+func _resolve_mass_teleport(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var side: String = str(combat_data.get("side", "allies"))
+	var spec: Dictionary = {
+		"mode": str(combat_data.get("mode", "scatter")),
+		"range": int(combat_data.get("tiles", 4)),
+		"tiles": int(combat_data.get("tiles", 4)),
+	}
+	var moved: Array = []
+	for unit in all_units:
+		if unit.is_dead or not "team" in unit or not "grid_position" in unit:
+			continue
+		var same: bool = unit.team == user.team
+		if (side == "allies" and not same) or (side == "enemies" and same):
+			continue
+		if combat_grid != null and not combat_grid.has_line_of_sight(
+				user.grid_position, unit.grid_position):
+			continue
+		var result: Dictionary = reposition(unit, spec, user, target_pos)
+		if result.get("ok", false):
+			moved.append(unit)
+	if moved.is_empty():
+		return {"success": false, "reason": "Nobody to move"}
+	combat_log.emit("%s rearranges the field — %d moved." % [user.unit_name, moved.size()])
+	return {"success": true, "effects": [{"type": "mass_teleport", "count": moved.size()}]}
+
+
+## Stand in front of somebody. Attacks aimed at them may find you instead.
+func _resolve_guard_ally(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var ward: Node = get_unit_at(target_pos)
+	if ward == null or ward == user or not ward.is_alive():
+		return {"success": false, "reason": "No ally there"}
+	if not "team" in ward or ward.team != user.team:
+		return {"success": false, "reason": "Not an ally"}
+	if _grid_distance(user.grid_position, target_pos) > int(combat_data.get("range", 1)):
+		return {"success": false, "reason": "Out of reach"}
+
+	_guarded[ward.get_instance_id()] = {
+		"guard": user,
+		"chance": float(combat_data.get("redirect_chance", 50)) / 100.0,
+		"turns_left": int(combat_data.get("duration", 1)),
+	}
+	for entry in combat_data.get("statuses", []):
+		_apply_status_effect(user, str(entry.get("status", "")), int(entry.get("duration", 1)))
+	combat_log.emit("%s steps in front of %s." % [user.unit_name, ward.unit_name])
+	return {"success": true, "effects": [{"type": "guard", "target": ward}]}
+
+
+## Set while a spell that ignores resistance is resolving. A flag rather than a
+## damage type, because the spell is ordinary in every other way — and cleared
+## in the same breath it is set, so nothing can leak past one cast.
+var _ignoring_resistance: bool = false
+
+
+## Who is standing in front of whom: {warded_id: {guard, chance, turns_left}}.
+var _guarded: Dictionary = {}
+
+
+## The guard who may take this blow instead, or null.
+func redirect_target(defender: Node, attacker: Node = null) -> Node:
+	var entry: Dictionary = _guarded.get(defender.get_instance_id(), {})
+	if entry.is_empty():
+		return null
+	var guard: Node = entry.get("guard")
+	if guard == null or not is_instance_valid(guard) or guard.is_dead:
+		_guarded.erase(defender.get_instance_id())
+		return null
+	if _grid_distance(guard.grid_position, defender.grid_position) > 2:
+		return null   # they have been separated
+	# And the blow has to be able to find them: stepping in front of somebody
+	# only works if you are somewhere the attacker could have struck.
+	if attacker != null and "grid_position" in attacker:
+		var reach: int = attacker.get_attack_range() \
+			if attacker.has_method("get_attack_range") else 1
+		if _grid_distance(attacker.grid_position, guard.grid_position) > reach:
+			return null
+	if randf() > float(entry.get("chance", 0.5)):
+		return null
+	return guard
+
+
+## Count down every guard, and forget the ones whose watch has ended.
+func _tick_guards() -> void:
+	for warded_id in _guarded.keys():
+		var entry: Dictionary = _guarded[warded_id]
+		entry.turns_left = int(entry.turns_left) - 1
+		if int(entry.turns_left) <= 0:
+			_guarded.erase(warded_id)
+
+
+## The next spell this unit casts answers to no resistance.
+##
+## Too Fast to React is the only thing that does this, and it is a flag rather
+## than a damage type because the spell is ordinary in every other way.
+func _resolve_ignore_resistances(user: Node, combat_data: Dictionary) -> Dictionary:
+	user.set_meta("ignore_resistances_next", true)
+	for entry in combat_data.get("statuses", []):
+		_apply_status_effect(user, str(entry.get("status", "")), int(entry.get("duration", 1)))
+	combat_log.emit("%s gathers a spell nothing will turn." % user.unit_name)
+	return {"success": true, "effects": [{"type": "ignore_resistances"}]}
 
 
 ## Put something on the ground that was not there before.
@@ -6781,7 +6974,8 @@ const IMPLEMENTED_SKILL_EFFECTS: Array[String] = [
 	"grapple", "overcast", "retreat", "aoe_damage_and_status",
 	"buff_allies_debuff_enemies", "dispel_and_invert", "aggro_aura",
 	"share_buffs", "double_buffs", "chod_offering", "throw_phurba",
-	"create_terrain", "collapse_terrain", "open_gate",
+	"create_terrain", "collapse_terrain", "open_gate", "heal_ally",
+	"place_trap", "mass_teleport", "guard_ally", "ignore_resistances",
 ]
 
 
@@ -6915,6 +7109,16 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_collapse_terrain(user, combat_data, target_pos)
 		"open_gate":
 			result = _resolve_open_gate(user, combat_data, target_pos)
+		"heal_ally":
+			result = _resolve_heal_ally(user, combat_data, target_pos)
+		"place_trap":
+			result = _resolve_place_trap(user, combat_data, target_pos)
+		"mass_teleport":
+			result = _resolve_mass_teleport(user, combat_data, target_pos)
+		"guard_ally":
+			result = _resolve_guard_ally(user, combat_data, target_pos)
+		"ignore_resistances":
+			result = _resolve_ignore_resistances(user, combat_data)
 		"chod_offering":
 			result = _resolve_chod_offering(user, combat_data)
 		"throw_phurba":
