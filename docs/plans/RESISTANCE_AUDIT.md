@@ -1,5 +1,10 @@
 # Resistance audit
 
+> **Built 2026-09-16** in three commits — the vocabulary, then the resolver
+> with every source moved into `apply_damage`, then the UI figure. What follows
+> is the audit as written; TODO §5 records what shipped and the three small
+> things left open.
+
 *2026-09-15. Raised in TODO §5 after `grants_resistance` turned out not to
 exist while `grants_vulnerability` had been structured and data-driven for
 months. That asymmetry was the symptom; this is the disease.*
