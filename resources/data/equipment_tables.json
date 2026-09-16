@@ -1119,7 +1119,7 @@
 	  ]
 	},
 	"insulated": {
-	  "air_resistance": 15,
+	  "lightning_resistance": 15,
 	  "budget_cost": 2,
 	  "types": [
 		"armor",
@@ -1128,7 +1128,7 @@
 	  ]
 	},
 	"waterproof": {
-	  "water_resistance": 15,
+	  "ice_resistance": 15,
 	  "budget_cost": 2,
 	  "types": [
 		"armor",

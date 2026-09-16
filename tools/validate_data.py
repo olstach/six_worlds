@@ -1004,6 +1004,21 @@ def _walk_damage_types(node, where):
                 if v not in _damage_types and not (_affliction_ok and v in _other_res):
                     err("data->code", f"{where}: damage type '{v}' is not in "
                         "damage_types.json, so no resistance can match it")
+            elif k.endswith("_resistance") and isinstance(v, (int, float)):
+                # The other shape a resistance takes: ItemSystem turns a
+                # `<type>_resistance` passive into resistances[<type>], so an
+                # armour trait reading `water_resistance: 15` silently grants
+                # resistance to a type nothing deals. Two traits and four
+                # talisman stats were in that state after the reshape, and the
+                # `resistances` check above could not see them.
+                _base = k[:-len("_resistance")]
+                # `elemental_resistance` and `pierce_all_resistance` are
+                # scopes rather than types: all elements, and all resistance.
+                if _base not in _damage_types and _base not in _other_res \
+                        and _base not in ("debuff", "magic", "mental", "status",
+                                          "all", "elemental", "pierce_all"):
+                    err("data->code", f"{where}: '{k}' grants resistance to "
+                        f"'{_base}', which is not a damage type anything deals")
             elif k in ("resistances", "grants_resistance", "grants_vulnerability") \
                     and isinstance(v, dict):
                 for key in v:
@@ -1019,7 +1034,8 @@ def _walk_damage_types(node, where):
 
 for _f in ("spells.json", "statuses.json", "zones.json", "auras.json",
            "summon_templates.json", "items.json", "traits.json", "races.json",
-           "perks.json", "ammo.json", "equipment_tables.json"):
+           "perks.json", "ammo.json", "equipment_tables.json",
+           "talisman_tables.json"):
     _walk_damage_types(load("resources/data/" + _f), _f)
 for _f in sorted(glob.glob(os.path.join(ROOT, "resources/data/enemies/*.json"))):
     _walk_damage_types(load(os.path.relpath(_f, ROOT)), os.path.basename(_f))
