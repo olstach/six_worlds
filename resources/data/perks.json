@@ -1756,68 +1756,84 @@
     "alchemy": {
       "stats": [
         "consumable_power_pct",
-        "crafting_yield_pct"
+        "crafting_yield_pct",
+        "poison_damage_pct"
       ],
       "per_level": {
         "1": {
           "consumable_power_pct": 3.8,
-          "crafting_yield_pct": 10.0
+          "crafting_yield_pct": 10.0,
+          "poison_damage_pct": 1.9
         },
         "2": {
           "consumable_power_pct": 7.7,
-          "crafting_yield_pct": 15.0
+          "crafting_yield_pct": 15.0,
+          "poison_damage_pct": 5.8
         },
         "3": {
           "consumable_power_pct": 13.5,
-          "crafting_yield_pct": 25.0
+          "crafting_yield_pct": 25.0,
+          "poison_damage_pct": 11.5
         },
         "4": {
           "consumable_power_pct": 19.2,
-          "crafting_yield_pct": 35.0
+          "crafting_yield_pct": 35.0,
+          "poison_damage_pct": 19.2
         },
         "5": {
           "consumable_power_pct": 28.8,
-          "crafting_yield_pct": 50.0
+          "crafting_yield_pct": 50.0,
+          "poison_damage_pct": 28.8
         },
         "6": {
           "consumable_power_pct": 34.6,
-          "crafting_yield_pct": 55.0
+          "crafting_yield_pct": 55.0,
+          "poison_damage_pct": 34.6
         },
         "7": {
           "consumable_power_pct": 38.5,
-          "crafting_yield_pct": 60.0
+          "crafting_yield_pct": 60.0,
+          "poison_damage_pct": 38.5
         },
         "8": {
           "consumable_power_pct": 42.3,
-          "crafting_yield_pct": 65.0
+          "crafting_yield_pct": 65.0,
+          "poison_damage_pct": 42.3
         },
         "9": {
           "consumable_power_pct": 46.2,
-          "crafting_yield_pct": 70.0
+          "crafting_yield_pct": 70.0,
+          "poison_damage_pct": 46.2
         },
         "10": {
           "consumable_power_pct": 50.0,
-          "crafting_yield_pct": 75.0
+          "crafting_yield_pct": 75.0,
+          "poison_damage_pct": 50.0
         },
         "11": {
           "consumable_power_pct": 50.0,
-          "crafting_yield_pct": 75.0
+          "crafting_yield_pct": 75.0,
+          "poison_damage_pct": 50.0
         },
         "12": {
           "consumable_power_pct": 50.0,
-          "crafting_yield_pct": 75.0
+          "crafting_yield_pct": 75.0,
+          "poison_damage_pct": 50.0
         },
         "13": {
           "consumable_power_pct": 50.0,
-          "crafting_yield_pct": 75.0
+          "crafting_yield_pct": 75.0,
+          "poison_damage_pct": 50.0
         },
         "14": {
           "consumable_power_pct": 50.0,
-          "crafting_yield_pct": 75.0
+          "crafting_yield_pct": 75.0,
+          "poison_damage_pct": 50.0
         },
         "15": {
           "consumable_power_pct": 50.0,
-          "crafting_yield_pct": 75.0
+          "crafting_yield_pct": 75.0,
+          "poison_damage_pct": 50.0
         }
       }
     },
@@ -6480,6 +6496,7 @@
       "required_level": 7,
       "requires_perks": [],
       "description": "Allies within 2 tiles have a 15% passive chance each turn to shrug off poison, bleed, or disease effects.",
+      "aura": "immune_system",
       "flavor": "",
       "is_mantra": false
     },

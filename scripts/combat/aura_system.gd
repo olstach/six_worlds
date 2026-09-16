@@ -57,6 +57,7 @@ const PAYLOAD_KINDS: Array[String] = [
 	"damage",            # per turn  — CombatManager._process_auras()
 	"max_hp",            # stored    — CombatManager._refresh_aura_max_hp()
 	"damage_taken_pct",  # continuous — CombatManager.apply_damage()
+	"resistance",        # continuous — Resistance.total(), by damage type or affliction
 ]
 
 ## Who an aura reaches. `self_included` adds the emitter on top of any of these.
@@ -305,6 +306,32 @@ static func stat_bonus(unit: Node, stat: String, units: Array, distance_fn: Call
 			for p in aura["payloads"]:
 				if p.get("kind", "") == "stat" and p.get("stat", "") == stat:
 					total += float(p.get("amount", 0)) * mult
+	return total
+
+
+## Resistance to `damage_type` granted to `unit` by every `resistance` aura
+## reaching it, as a percentage to add to the unit's own.
+##
+## The payload names what it protects against in its `type` field, and that may
+## be a damage type or an affliction — Immune System guards against poison,
+## bleed and disease, which are three things that happen to you rather than
+## three things that hit you, and `Resistance` reads both through the same
+## call.
+static func resistance_bonus(unit: Node, damage_type: String, units: Array,
+		distance_fn: Callable) -> float:
+	var total := 0.0
+	for other in units:
+		for aura in emitted_by(other):
+			var dist: int = distance_fn.call(other, unit)
+			if not reaches(aura, other, unit, dist):
+				continue
+			var mult := sign_for(aura, other, unit)
+			for p in aura["payloads"]:
+				if p.get("kind", "") != "resistance":
+					continue
+				if str(p.get("type", "")) != damage_type:
+					continue
+				total += float(p.get("amount", 0)) * mult
 	return total
 
 

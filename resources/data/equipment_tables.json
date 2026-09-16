@@ -888,6 +888,15 @@
         "javelin"
 	  ]
 	},
+	"envenomed": {
+	  "poison_chance": 30,
+	  "budget_cost": 5,
+	  "types": [
+		"dagger",
+		"spear",
+        "javelin"
+	  ]
+	},
 	"blessed": {
 	  "damage_pct": 5,
 	  "spellpower_pct": 10,
@@ -1143,6 +1152,15 @@
 		"robe",
 		"hat",
         "shield"
+	  ]
+	},
+	"antivenom_lined": {
+	  "poison_resistance": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"gloves",
+        "boots"
 	  ]
 	},
 	"steadfast": {

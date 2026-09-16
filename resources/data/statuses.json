@@ -804,9 +804,9 @@
 	  "category": "dot_debuff",
 	  "effects": [
 		"poison_damage_per_turn",
-		"stat_penalties",
-        "spreads_on_contact"
+		"stat_penalties"
 	  ],
+	  "spread": { "chance": "medium", "range": "melee" },
 	  "damage_per_turn": 10,
 	  "duration_type": "spellpower",
 	  "dispellable": true,

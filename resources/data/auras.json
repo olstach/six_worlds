@@ -3,7 +3,21 @@
   "_comment_radius": "Radius is in grid tiles, Chebyshev distance, and never includes the emitter unless `affects` is 'self' or 'all'.",
   "_comment_affects": "allies | enemies | all | self. `invert_for_enemies` flips the sign of every numeric payload for units on the other team, which is how one declaration expresses 'helps my side, hurts theirs'.",
   "auras": {
-    "favorable_wind": {
+    "_comment_immune_system": "A `resistance` payload names what it guards against in `type`, which may be a damage type or an affliction. Immune System guards against three afflictions — things that happen to you rather than things that hit you — so its 15 reads as a 15% chance not to catch them, through Resistance.resists_affliction().",
+
+  "immune_system": {
+    "name": "Immune System",
+    "radius": 2,
+    "affects": "allies",
+    "self_included": true,
+    "payloads": [
+      { "kind": "resistance", "type": "poison",  "amount": 15 },
+      { "kind": "resistance", "type": "bleed",   "amount": 15 },
+      { "kind": "resistance", "type": "disease", "amount": 15 }
+    ]
+  },
+
+  "favorable_wind": {
       "name": "Favorable Wind",
       "radius": 2,
       "affects": "allies",

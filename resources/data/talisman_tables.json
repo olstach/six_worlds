@@ -71,6 +71,7 @@
 				{"stat": "crushing_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
 				{"stat": "lightning_resistance",     "cost_per_point": 0.2, "min": 5, "max": 25},
 				{"stat": "space_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "poison_resistance",  "cost_per_point": 0.2, "min": 5, "max": 25},
 				{"stat": "physical_resistance","cost_per_point": 0.3, "min": 3, "max": 15}
 			]
 		}
@@ -187,6 +188,7 @@
 			"crushing_resistance":   "of Iron Ward",
 			"lightning_resistance":     "of Storm Ward",
 			"space_resistance":   "of Void Ward",
+			"poison_resistance":  "of Serpent Ward",
 			"physical_resistance":"of Iron Skin"
 		}
 	},
@@ -212,6 +214,7 @@
 		"crushing_resistance": "earth",
 		"lightning_resistance": "air",
 		"space_resistance": "space",
+		"poison_resistance": "water",
 		"physical_resistance": "earth"
 	},
 

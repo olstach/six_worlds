@@ -1222,7 +1222,7 @@ func update_derived_stats(character: Dictionary) -> void:
 			"magic_resistance_pct", "movement_pct", "summon_hp_pct",
 			"xp_gain_pct", "loot_chance_pct", "spellpower_fire",
 			"consumable_power_pct", "repair_efficiency_pct",
-			"effect_duration_turns", "burning_damage_pct",
+			"effect_duration_turns", "burning_damage_pct", "poison_damage_pct",
 			"status_effect_chance_pct", "stun_chance_pct"]:
 		derived[accumulated] = 0.0
 
@@ -1279,6 +1279,8 @@ func update_derived_stats(character: Dictionary) -> void:
 				+ int(bonus.get("effect_duration_turns", 0))
 			derived["burning_damage_pct"] = derived.get("burning_damage_pct", 0.0) \
 				+ float(bonus.get("burning_damage_pct", 0.0))
+			derived["poison_damage_pct"] = derived.get("poison_damage_pct", 0.0) \
+				+ float(bonus.get("poison_damage_pct", 0.0))
 			derived["status_effect_chance_pct"] = derived.get("status_effect_chance_pct", 0.0) \
 				+ float(bonus.get("status_effect_chance_pct", 0.0))
 			derived["stun_chance_pct"] = derived.get("stun_chance_pct", 0.0) \

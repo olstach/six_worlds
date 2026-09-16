@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 7
+const EXPECTED_CHECKS: int = 8
 
 
 func _ready() -> void:
@@ -21,6 +21,7 @@ func _ready() -> void:
 	_check_consumable_power_scales_potions()
 	_check_repair_efficiency_cuts_scrap_cost()
 	_check_alchemy_keeps_paying_past_level_five()
+	_check_a_camp_activity_can_require_a_perk()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -154,4 +155,36 @@ func _check_alchemy_keeps_paying_past_level_five() -> void:
 				% [level, pct, at_five] + "curve still falls off past level 5")
 		if level == 10 and pct <= 0.0:
 			_fail("Alchemy 10 gives no consumable bonus at all")
+	_done()
+
+
+## Brew Coatings is the first camp activity gated on a PERK as well as a skill,
+## because Applied Toxicology promised craftable coatings and nothing in the
+## game could craft one. A `perk_req` nothing reads would hand the recipe to
+## everybody.
+func _check_a_camp_activity_can_require_a_perk() -> void:
+	var alchemist: Dictionary = CharacterSystem.create_blank_character()
+	alchemist["skills"] = {"alchemy": 9}
+
+	var without: Array = CampSystem.get_available_activities([alchemist], 3, true)
+	var has_it := func(list: Array) -> bool:
+		for activity in list:
+			if str(activity.get("id", "")) == "brew_coatings":
+				return true
+		return false
+	if has_it.call(without):
+		_fail("Brew Coatings was offered to an alchemist without Applied "
+			+ "Toxicology — the perk requirement is not being read")
+
+	alchemist["perks"] = ["applied_toxicology"]
+	var with_perk: Array = CampSystem.get_available_activities([alchemist], 3, true)
+	if not has_it.call(with_perk):
+		_fail("Brew Coatings was withheld from an alchemist who has Applied "
+			+ "Toxicology")
+
+	# The skill still matters: the perk alone is not enough.
+	var untrained: Dictionary = CharacterSystem.create_blank_character()
+	untrained["perks"] = ["applied_toxicology"]
+	if has_it.call(CampSystem.get_available_activities([untrained], 3, true)):
+		_fail("Brew Coatings was offered to someone with no Alchemy at all")
 	_done()

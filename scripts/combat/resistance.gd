@@ -292,6 +292,18 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 		if mantra != 0.0:
 			_add(acc, mantra, "mantra")
 
+	# 5. Auras and the ground underfoot. A `resistance` payload is continuous
+	#    like `stat` and `damage_taken_pct`: it has to be READ where it applies,
+	#    which is here, or it does nothing at all.
+	if CombatManager != null and "grid_position" in unit:
+		var from_auras: float = AuraSystem.resistance_bonus(
+			unit, damage_type, CombatManager.all_units, CombatManager._aura_distance)
+		if from_auras != 0.0:
+			_add(acc, from_auras, "aura")
+		var from_ground: float = CombatManager.zone_resistance_bonus(unit, damage_type)
+		if from_ground != 0.0:
+			_add(acc, from_ground, "ground")
+
 	return acc
 
 

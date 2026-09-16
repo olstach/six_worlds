@@ -82,6 +82,7 @@ const DERIVED: Array[String] = [
 	"repair_efficiency_pct",   # CampSystem.repair_scrap_cost()
 	"effect_duration_turns",   # CombatManager._calculate_status_duration()
 	"burning_damage_pct",      # CombatManager fire damage-over-time tick
+	"poison_damage_pct",       # CombatManager poison damage-over-time tick
 	"status_effect_chance_pct",# CombatManager.effective_status_chance()
 	"stun_chance_pct",         # CombatManager._process_on_hit_perks(), mace only
 	"party_social_roll_pct",   # EventManager.get_roll_bonus(), social checks

@@ -2917,6 +2917,7 @@
         "cloud_effect": true,
         "heavy_sinks_to_low_ground": true
       },
+      "zone": "poison_cloud",
       "description": "Persistent poison cloud, damage + poisoned + slowed"
     },
     "wilting_curse": {
@@ -5785,6 +5786,7 @@
         "cloud_effect": true,
         "damages_and_poisons_in_area": true
       },
+      "zone": "poison_cloud",
       "description": "Cloud that damages and poisons enemies inside"
     },
     "suffocate": {
@@ -10852,6 +10854,74 @@
         "herbs": 4
       },
       "description": "Food enough for one good night, and herbs to go with it — topped up to exactly that and no further. It will not fill a storehouse; a caster who spends forty mana a night is not spending it elsewhere."
-    }
+    },
+      "draw_out_the_venom": {
+        "name": "Draw Out the Venom",
+        "subschool": "White",
+        "schools": [
+          "Water",
+          "White"
+        ],
+        "level": 3,
+        "theme": "poison",
+        "tags": [
+          "poison",
+          "cleanse",
+          "utility"
+        ],
+        "mana_cost": 40,
+        "target": {
+          "type": "single",
+          "eligible": "ally"
+        },
+        "description": "Every affliction on an ally is drawn out whole and pressed into the nearest enemy — a cure that costs somebody else. Tibetan medicine holds that illness has an owner; this spell disagrees about who.",
+        "status_ops": [
+          {
+            "op": "transfer",
+            "select": {
+              "tag": "all_negative"
+            },
+            "from": "target",
+            "to": "nearest_enemy"
+          }
+        ]
+      },
+      "coil_of_the_naga": {
+        "name": "Coil of the Naga",
+        "subschool": "Black",
+        "schools": [
+          "Water",
+          "Black"
+        ],
+        "level": 7,
+        "theme": "poison",
+        "tags": [
+          "poison",
+          "dot",
+          "cc",
+          "naga"
+        ],
+        "mana_cost": 135,
+        "damage": 20,
+        "damage_type": "poison",
+        "save_type": "Constitution",
+        "target": {
+          "type": "single",
+          "eligible": "enemy"
+        },
+        "duration": "spellpower",
+        "description": "A naga's coil closes on one body. The offended water spirits answer as Tibetan medicine says they do — with illness, and with the strength gone out of your limbs.",
+        "on_failed_save": {
+          "statuses": [
+            "Festering",
+            "Weakened"
+          ]
+        },
+        "on_passed_save": {
+          "statuses": [
+            "Poisoned"
+          ]
+        }
+      }
   }
 }
