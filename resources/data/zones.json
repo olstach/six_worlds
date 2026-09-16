@@ -107,6 +107,16 @@
       "_comment": "One end of a gate. Stepping onto it puts you out of the other end — the pairing is what CombatManager does with `pair: gate`, and the payload is only what the crossing feels like. Allies come out of it moving; anyone else simply arrives."
     },
 
+    "snare_trap": {
+      "name": "Snare",
+      "affects": "all",
+      "on_enter": [
+        { "kind": "damage", "amount": 12, "element": "piercing", "affects": "enemies" },
+        { "kind": "grant_status", "status": "Immobilized", "duration": 1, "affects": "enemies" }
+      ],
+      "_comment": "What Trap Maker leaves on a tile. A trap is a zone that waits — nothing happens until somebody steps on it, which is the one thing an aura could never do. Enemies only: you know where you put it."
+    },
+
     "mud": {
       "name": "Mud",
       "affects": "all",

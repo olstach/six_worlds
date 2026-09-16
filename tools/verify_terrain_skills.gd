@@ -14,7 +14,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 9
+const EXPECTED_CHECKS: int = 14
 var grid: CombatGrid
 
 
@@ -34,6 +34,13 @@ func _ready() -> void:
 	_check_a_circle_makes_casting_cheaper_where_it_lies()
 	_check_a_gate_puts_you_out_of_its_far_end()
 	_check_a_gate_with_a_blocked_exit_keeps_you()
+
+	# The small ones, each its own missing resolver.
+	_check_a_medic_heals_somebody_else()
+	_check_a_trap_waits_for_somebody_to_step_on_it()
+	_check_a_mass_teleport_moves_one_side_only()
+	_check_a_guard_takes_the_blow_meant_for_another()
+	_check_one_spell_can_answer_to_no_resistance()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -80,8 +87,14 @@ func _cleanup(units: Array) -> void:
 		u.queue_free()
 	CombatManager.active_zones.clear()
 	CombatManager._timed_obstacles.clear()
+	CombatManager._guarded.clear()
 	CombatManager.turn_order = []
 	CombatManager.current_unit_index = 0
+	# A fresh field between checks. These skills leave things ON THE GROUND —
+	# smoke, walls, ice — and the fog laid down by one check blocked the line
+	# of sight another one needed, which read as "nobody to move".
+	grid.setup_from_map({"size": Vector2i(40, 40), "tiles": {}, "obstacles": [],
+		"effects": [], "heights": []})
 
 
 ## Use `perk_id` as its own data says to, from `user`, aimed at `at`.
@@ -355,3 +368,214 @@ func _check_a_gate_with_a_blocked_exit_keeps_you() -> void:
 			% str(second.grid_position))
 	_cleanup([mage, blocker, traveller, walled, second])
 	_done()
+
+
+## `_resolve_heal_self` ignored its own `targeting` and always healed the user,
+## so Field Medic — "heal an ADJACENT ALLY" — healed the medic.
+func _check_a_medic_heals_somebody_else() -> void:
+	var medic := _make_unit(Vector2i(10, 10), 0)
+	var hurt := _make_unit(Vector2i(11, 10), 0)
+	var distant := _make_unit(Vector2i(20, 20), 0)
+	medic.current_hp = medic.max_hp - 400
+	hurt.current_hp = hurt.max_hp - 400
+	distant.current_hp = distant.max_hp - 400
+
+	var result: Dictionary = _use(medic, "field_medic", hurt.grid_position)
+	if not bool(result.get("success", false)):
+		_fail("field_medic failed: %s" % str(result.get("reason", "?")))
+	elif hurt.current_hp <= hurt.max_hp - 400:
+		_fail("the ally the medic was aimed at was not healed")
+	if medic.current_hp != medic.max_hp - 400:
+		_fail("the medic healed themselves instead of the ally beside them")
+
+	# Out of reach is out of reach.
+	var far_result: Dictionary = _use(medic, "field_medic", distant.grid_position)
+	if bool(far_result.get("success", false)):
+		_fail("field_medic reached an ally ten tiles away")
+	# And it is for allies.
+	var foe := _make_unit(Vector2i(9, 10), 1)
+	foe.current_hp = foe.max_hp - 400
+	if bool(_use(medic, "field_medic", foe.grid_position).get("success", false)):
+		_fail("field_medic patched up an enemy")
+	_cleanup([medic, hurt, distant, foe])
+	_done()
+
+
+## A trap is a zone that waits: nothing happens until somebody steps on it,
+## which is the one thing an aura could never do.
+func _check_a_trap_waits_for_somebody_to_step_on_it() -> void:
+	var trapper := _make_unit(Vector2i(10, 10), 0)
+	var at := Vector2i(11, 10)
+	var result: Dictionary = _use(trapper, "trap_maker", at)
+	if not bool(result.get("success", false)):
+		_fail("trap_maker failed: %s" % str(result.get("reason", "?")))
+	elif CombatManager.zones_at(at).is_empty():
+		_fail("trap_maker left nothing on the tile")
+
+	# Nothing happens to the trapper standing beside it.
+	CombatManager._tick_zones()
+	if trapper.current_hp < trapper.max_hp:
+		_fail("the trap went off on its own")
+
+	# It goes off when somebody arrives.
+	var victim := _make_unit(Vector2i(12, 10), 1)
+	victim.current_hp = victim.max_hp
+	victim.grid_position = at
+	CombatManager._zones_check_entry(victim)
+	if victim.current_hp >= victim.max_hp:
+		_fail("an enemy stepped onto the trap and nothing happened")
+	if not victim.has_status("Immobilized"):
+		_fail("the trap hurt the enemy but did not hold them")
+
+	# And not on your own people.
+	var ally := _make_unit(Vector2i(9, 9), 0)
+	ally.current_hp = ally.max_hp
+	ally.grid_position = at
+	CombatManager._zones_check_entry(ally)
+	if ally.current_hp < ally.max_hp:
+		_fail("the trapper's own trap caught their ally — you know where you "
+			+ "put it")
+	_cleanup([trapper, victim, ally])
+	_done()
+
+
+func _check_a_mass_teleport_moves_one_side_only() -> void:
+	var mage := _make_unit(Vector2i(10, 10), 0)
+	var foe_a := _make_unit(Vector2i(13, 10), 1)
+	var foe_b := _make_unit(Vector2i(14, 11), 1)
+	var ally := _make_unit(Vector2i(11, 11), 0)
+	var before := {foe_a: foe_a.grid_position, foe_b: foe_b.grid_position,
+		ally: ally.grid_position}
+
+	var result: Dictionary = _use(mage, "everyone_is_somewhere_else_now", Vector2i(20, 20))
+	if not bool(result.get("success", false)):
+		_fail("everyone_is_somewhere_else_now failed: %s" % str(result.get("reason", "?")))
+	var moved := 0
+	for unit in [foe_a, foe_b]:
+		if unit.grid_position != before[unit]:
+			moved += 1
+	if moved == 0:
+		_fail("nobody moved")
+	if ally.grid_position != before[ally]:
+		_fail("the caster's own ally was scattered by a spell aimed at enemies")
+	if mage.grid_position != Vector2i(10, 10):
+		_fail("the caster moved themselves")
+	_cleanup([mage, foe_a, foe_b, ally])
+	_done()
+
+
+## Standing in front of somebody: the blow is aimed at the ward and lands on
+## the guard.
+func _check_a_guard_takes_the_blow_meant_for_another() -> void:
+	# The guard stands where the blow could have found them anyway — beside
+	# both the ward and the attacker. Stepping in front of somebody from across
+	# the field is not stepping in front of them.
+	var guard := _make_unit(Vector2i(11, 11), 0)
+	var ward := _make_unit(Vector2i(11, 10), 0)
+	var attacker := _make_unit(Vector2i(12, 10), 1)
+	guard.character_data["derived"]["accuracy"] = 999
+	attacker.character_data["derived"]["accuracy"] = 999
+	ward.character_data["derived"]["dodge"] = 0
+
+	var result: Dictionary = _use(guard, "stalwart_guardian", ward.grid_position)
+	if not bool(result.get("success", false)):
+		_fail("stalwart_guardian failed: %s" % str(result.get("reason", "?")))
+	if not guard.has_status("Guarding"):
+		_fail("the guard did not take up the stance's own status")
+
+	# Over enough swings, some land on the guard instead of the ward.
+	var took_it := 0
+	for _swing in 40:
+		guard.current_hp = guard.max_hp
+		ward.current_hp = ward.max_hp
+		attacker.actions_remaining = 9
+		CombatManager.turn_order = [attacker]
+		CombatManager.current_unit_index = 0
+		CombatManager.attack_unit(attacker, ward)
+		if guard.current_hp < guard.max_hp:
+			took_it += 1
+	if took_it == 0:
+		_fail("forty blows aimed at the ward and the guard took none of them")
+	# A 50% redirect against 95%-capped hits lands about nineteen of forty on
+	# the guard; an always-redirect lands about thirty-eight. Thirty is a wide
+	# gap between those two, and the point is that the roll is a roll.
+	if took_it >= 30:
+		_fail("the guard took %d of forty blows — a 50%% redirect is not being "
+			% took_it + "rolled")
+
+	# And a guard who is nowhere near the attacker cannot step in front of
+	# anything: standing over somebody means standing where the blow was going.
+	# Beside the ward — so the guarding itself is legal — but two tiles from
+	# the attacker, which is further than the blow can reach.
+	var distant := _make_unit(Vector2i(10, 10), 0)
+	distant.character_data["derived"]["accuracy"] = 999
+	var took_up: Dictionary = _use(distant, "stalwart_guardian", ward.grid_position)
+	if not bool(took_up.get("success", false)):
+		_fail("the second guard could not take up the watch: %s"
+			% str(took_up.get("reason", "?")))
+	var distant_took := 0
+	var ward_took := 0
+	for _swing in 20:
+		distant.current_hp = distant.max_hp
+		ward.current_hp = ward.max_hp
+		attacker.actions_remaining = 9
+		CombatManager.turn_order = [attacker]
+		CombatManager.current_unit_index = 0
+		CombatManager.attack_unit(attacker, ward)
+		if distant.current_hp < distant.max_hp:
+			distant_took += 1
+		if ward.current_hp < ward.max_hp:
+			ward_took += 1
+	if distant_took > 0:
+		_fail("a guard three tiles from the attacker took %d blows meant for "
+			% distant_took + "somebody standing next to them")
+	# And the blow still lands on the ward. A redirect to somebody the attacker
+	# cannot reach would have the attack refused outright, so the ward would be
+	# protected by a guard who never arrived.
+	# Nearly all of them land on the ward: 95%-capped hits, and no redirect.
+	# A redirect to somebody the attacker cannot reach has the attack refused
+	# outright, so half the swings would land on nobody at all and the ward
+	# would be protected by a guard who never arrived.
+	if ward_took < 15:
+		_fail("only %d of twenty blows at the ward landed — the rest were " % ward_took
+			+ "redirected to a guard who could not be reached, and hit nobody")
+	_cleanup([guard, ward, attacker, distant])
+	_done()
+
+
+## Too Fast to React: one spell that answers to nothing, and only one.
+func _check_one_spell_can_answer_to_no_resistance() -> void:
+	var sorcerer := _make_unit(Vector2i(10, 10), 0)
+	sorcerer.character_data["skills"] = {"sorcery": 9, "fire_magic": 9}
+	CharacterSystem.update_derived_stats(sorcerer.character_data)
+	var fireproof := _make_unit(Vector2i(11, 10), 1)
+	fireproof.resistances = {"fire": 100}
+
+	# Ordinarily, immune is immune.
+	fireproof.current_hp = fireproof.max_hp
+	_cast(sorcerer, "firebolt", fireproof.grid_position)
+	if fireproof.current_hp < fireproof.max_hp:
+		_fail("a fire-immune unit took fire damage with no perk in play")
+
+	_use(sorcerer, "too_fast_to_react", sorcerer.grid_position)
+	fireproof.current_hp = fireproof.max_hp
+	_cast(sorcerer, "firebolt", fireproof.grid_position)
+	if fireproof.current_hp >= fireproof.max_hp:
+		_fail("the spell that answers to nothing was still turned by immunity")
+
+	# And only the one.
+	fireproof.current_hp = fireproof.max_hp
+	_cast(sorcerer, "firebolt", fireproof.grid_position)
+	if fireproof.current_hp < fireproof.max_hp:
+		_fail("the next spell ignored resistance too — the flag is not being "
+			+ "spent")
+	_cleanup([sorcerer, fireproof])
+	_done()
+
+
+func _cast(caster: CombatUnit, spell_id: String, at: Vector2i) -> void:
+	caster.current_mana = 500
+	caster.actions_remaining = 9
+	CombatManager.turn_order = [caster]
+	CombatManager.current_unit_index = 0
+	CombatManager.cast_spell(caster, spell_id, at)

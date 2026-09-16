@@ -774,11 +774,12 @@ immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
 `escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
 1–2 always fire, 3+ still roll).
 
-### The active perks still without a resolver (11, was 26 — 2026-09-16)
+### The active perks still without a resolver (6, was 26 — 2026-09-16)
 
-75 of 109 active perks were wired in b746bc1; the six reaction stances and the
-nine terrain-placing perks followed on 2026-09-16. These 11 are the remainder,
-each
+75 of 109 active perks were wired in b746bc1. On 2026-09-16: the six reaction
+stances, the nine terrain-placing perks, and five singles — Field Medic, Trap
+Maker, Everyone Is Somewhere Else Now, Stalwart Guardian and Too Fast to
+React. These 6 are the remainder, each
 blocked on machinery that does not exist. They stay correctly greyed out in the
 skill panel until it does. `tools/verify_active_perks.tscn` reprints this list
 on every run, so it cannot silently drift.
@@ -806,21 +807,28 @@ on every run, so it cannot silently drift.
       stance lasting until your next turn, the status declares trigger,
       responses, reach and per-round allowance, and both hooks read whoever has
       one. See `verify_reactions.tscn` (13 checks, 15/15 mutations caught).
-- [ ] **`heal_ally`** — `field_medic`. `_resolve_heal_self` ignores its own
-      `targeting` field and always heals the user; splitting out a targeted
-      version is small.
+- [x] ~~**`heal_ally`**~~ — built 2026-09-16. `_resolve_heal_self` ignored its
+      own `targeting` field and always healed the user, so Field Medic — "heal
+      an adjacent ALLY" — healed the medic.
 - [ ] **`create_images`** — `smoke_and_mirrors` (illusion units with 1 HP).
 - [ ] **`imbued_attack`** — `arcane_archer` (attack + spell hybrid).
 - [ ] **`consume_charm`** — `attune_charm`.
-- [ ] **`mass_teleport`** — `everyone_is_somewhere_else_now`.
+- [x] ~~**`mass_teleport`**~~ — built 2026-09-16, through the repositioning
+      vocabulary a single teleport already used. One side of the field at a
+      time, and only what the caster can see.
 - [ ] **`recruit_or_pacify`** — `magnetism`.
-- [ ] **`place_trap`** — `trap_maker`.
+- [x] ~~**`place_trap`**~~ — built 2026-09-16. A trap is a zone that waits:
+      nothing happens until somebody steps on it, which is the one thing an
+      aura could never do. Its bite scales with the trapper's Focus.
 - [ ] **`steal_item`** — `the_invisible_hand`.
-- [ ] **`guard_ally`** — `stalwart_guardian`.
+- [x] ~~**`guard_ally`**~~ — built 2026-09-16. The blow is aimed at the ward
+      and lands on the guard, on a roll — and only when the guard is standing
+      somewhere the attacker could have struck anyway.
 - [ ] **`choose_one`** — `improvised_masterpiece`. Needs a pick-a-branch UI;
       `disrupting_palm` is wired to its first branch as a stopgap.
-- [ ] **`ignore_resistances` on overcast** — `too_fast_to_react`. One field in
-      `cast_spell`'s resistance step.
+- [x] ~~**`ignore_resistances`**~~ — built 2026-09-16 as a flag held across
+      one cast, so a spell that hits five people ignores resistance on all
+      five and the next spell is ordinary again.
 - [x] ~~**`none_shall_pass`**~~ — resolved 2026-09-16 in favour of what the
       perk says: a stance that ends your turn, threatens two tiles, and answers
       with a free attack and a Slow. The always-on passive branch is gone.

@@ -2800,6 +2800,16 @@
       "requires_perks": [
         "forced_translation"
       ],
+        "combat_data": {
+          "effect": "mass_teleport",
+          "targeting": "aoe_point",
+          "range": 8,
+          "mana_cost": 20,
+          "once_per_combat": true,
+          "side": "enemies",
+          "mode": "scatter",
+          "tiles": 4
+        },
       "description": "Active (20 Mana, once per combat). A teleport spell affects all allies _or_ all enemies in line of sight.",
       "flavor": "",
       "is_mantra": false
@@ -5070,6 +5080,11 @@
       "skill": "sorcery",
       "required_level": 9,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "ignore_resistances",
+          "targeting": "self",
+          "once_per_combat": true
+        },
       "description": "Active (once per combat). Your next Sorcery spell ignores all resistances.",
       "flavor": "",
       "is_mantra": false
@@ -6525,6 +6540,13 @@
       "skill": "medicine",
       "required_level": 1,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "heal_ally",
+          "targeting": "single_ally",
+          "range": 1,
+          "scale_stat": "awareness",
+          "scale_pct": 25
+        },
       "description": "Active (1 action). Heal an adjacent ally for 25% of your Awareness as HP.",
       "flavor": "",
       "is_mantra": false
@@ -7257,6 +7279,19 @@
       "skill": "armor",
       "required_level": 8,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "guard_ally",
+          "targeting": "single_ally",
+          "range": 1,
+          "redirect_chance": 50,
+          "duration": 1,
+          "statuses": [
+            {
+              "status": "Guarding",
+              "duration": 1
+            }
+          ]
+        },
       "description": "Active (1 action). Choose an adjacent ally. Until your next turn, attacks targeting that ally have a 50% chance of targeting you instead. You gain +15% Armor while guarding.",
       "flavor": "",
       "is_mantra": false
@@ -8151,6 +8186,14 @@
       "skill": "smithing",
       "required_level": 6,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "place_trap",
+          "targeting": "aoe_point",
+          "range": 1,
+          "zone": "snare_trap",
+          "duration": 6,
+          "damage_pct_of_focus": 30
+        },
       "description": "Active (1 action). Place a trap on an adjacent tile. The first enemy to enter takes damage equal to 30% of your Focus and is immobilized for 1 turn.",
       "flavor": "",
       "is_mantra": false

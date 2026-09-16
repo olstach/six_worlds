@@ -2749,6 +2749,21 @@
 	    "dispel"
 	  ],
 	  "description": "The reach of a spear, declared as a rule rather than a threat."
+	},
+	{
+	  "name": "Guarding",
+	  "type": "buff",
+	  "category": "stance",
+	  "effects": [
+	    "physical_damage_reduction_25"
+	  ],
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+	    "dispel"
+	  ],
+	  "description": "Standing in front of somebody. Harder to put down for it."
 	}
   ]
 }
