@@ -372,9 +372,9 @@ Two findings worth remembering, both of the house type:
   same word the single-target branch already read.
 
 **Deferred, for want of something else:** `false_terrain` still needs a
-renderer that can disguise a tile, and `vajra_gate` needs paired zones — two
-footprints that know about each other, so stepping into one puts you out of
-the other. Neither is a zone-system gap; both are the thing next to it.
+renderer that can disguise a tile. `vajra_gate` wanted paired zones, and got
+them on 2026-09-16 — `pair: "gate"`, built for The Door Stands Open — so the
+spell is now a data entry away.
 
 **The three open questions are answered (2026-09-15).**
 
@@ -774,21 +774,28 @@ immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
 `escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
 1–2 always fire, 3+ still roll).
 
-### The active perks still without a resolver (20, was 26 — 2026-09-16)
+### The active perks still without a resolver (11, was 26 — 2026-09-16)
 
-75 of 109 active perks were wired in b746bc1; the six reaction stances followed
-on 2026-09-16. These 20 are the remainder, each
+75 of 109 active perks were wired in b746bc1; the six reaction stances and the
+nine terrain-placing perks followed on 2026-09-16. These 11 are the remainder,
+each
 blocked on machinery that does not exist. They stay correctly greyed out in the
 skill panel until it does. `tools/verify_active_perks.tscn` reprints this list
 on every run, so it cannot silently drift.
 
-- [ ] **`create_terrain`** — timed terrain tiles placed by a skill (9 perks):
-      `black_ice`, `fog_of_war`, `gravity_well`, `raise_wall`,
-      `crumbling_avalanche`, `improvised_barricade`, `prepared_ground`,
-      `inscribed_circle`, `the_door_stands_open`.
-      `CombatGrid` already has `add_terrain_effect()` and destructible
-      obstacles; what is missing is a resolver that places them and a duration
-      that ticks down.
+- [x] ~~**`create_terrain`**~~ — built 2026-09-16, all nine. The grid had
+      everything: `set_tile_obstacle`, `add_terrain_effect`, destructible
+      obstacles and, since the terrain audit, zones. What was missing was a
+      resolver that reads what a perk wants to PLACE, a duration for the things
+      that should not be permanent (`_timed_obstacles`, ticked with the zones),
+      and a way for two zones to know about each other. A perk declares
+      `places: [{zone|terrain|obstacle, ...}]` and may name any combination:
+      Fog of War is a zone that blinds over a SMOKE terrain that blocks sight,
+      because line of sight is the grid's business and not a payload's.
+      Crumbling Avalanche brings down only what its caster raised. The Door
+      Stands Open is a PAIRED zone — `pair: "gate"` — which also clears the
+      `vajra_gate` deferral from the zone work. See
+      `verify_terrain_skills.tscn` (9 checks, 17/17 mutations caught).
 - [x] ~~**Counter/reaction stances**~~ — built 2026-09-16 as `Reaction`
       (`scripts/combat/reaction.gd`). Six perks, not five: `none_shall_pass`
       came with them. The game had two reaction HOOKS and no reaction system —

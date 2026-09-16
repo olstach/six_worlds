@@ -3978,6 +3978,22 @@
       "skill": "ritual",
       "required_level": 4,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_terrain",
+          "targeting": "self",
+          "places": [
+            {
+              "zone": "inscribed_circle",
+              "duration": 5,
+              "origin": "caster",
+              "aoe": {
+                "type": "circle",
+                "size": 0,
+                "origin": "caster"
+              }
+            }
+          ]
+        },
       "description": "Active (1 action). Create a ritual circle on your tile. While standing in it, -25% mana cost on all spells.",
       "flavor": "",
       "is_mantra": false
@@ -6047,6 +6063,28 @@
       "skill": "water_magic",
       "required_level": 4,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_terrain",
+          "targeting": "aoe_point",
+          "range": 5,
+          "mana_cost": 5,
+          "places": [
+            {
+              "zone": "fog_of_war",
+              "duration": 3,
+              "aoe": {
+                "type": "circle",
+                "size": 2,
+                "origin": "target"
+              }
+            },
+            {
+              "terrain": "smoke",
+              "radius": 2,
+              "duration": 3
+            }
+          ]
+        },
       "description": "Active (5 Mana). Create a fog bank in a 2-tile radius. Enemies inside suffer -20% accuracy. Ranged attacks and targeted spells cannot pass through fog. Lasts 3 turns.",
       "flavor": "",
       "is_mantra": false
@@ -6056,6 +6094,28 @@
       "skill": "water_magic",
       "required_level": 6,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_terrain",
+          "targeting": "aoe_point",
+          "range": 5,
+          "mana_cost": 6,
+          "places": [
+            {
+              "zone": "black_ice",
+              "duration": 3,
+              "aoe": {
+                "type": "circle",
+                "size": 2,
+                "origin": "target"
+              }
+            },
+            {
+              "terrain": "ice",
+              "radius": 2,
+              "duration": 3
+            }
+          ]
+        },
       "description": "Active (6 Mana). Create ice terrain in a 2-tile radius for 3 turns. Enemies moving through it must pass a Finesse save or fall prone. Allies are unaffected.",
       "flavor": "",
       "is_mantra": false
@@ -7364,6 +7424,21 @@
       "skill": "earth_magic",
       "required_level": 5,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_terrain",
+          "targeting": "aoe_point",
+          "range": 4,
+          "mana_cost": 6,
+          "places": [
+            {
+              "obstacle": "pillar",
+              "shape": "line",
+              "length": 3,
+              "duration": 4,
+              "hp_from_spellpower": 1.5
+            }
+          ]
+        },
       "description": "Active (6 Mana). Create a stone wall (3 tiles long, blocks movement and line of sight). Destructible (moderate HP). Lasts 4 turns.",
       "flavor": "",
       "is_mantra": false
@@ -7384,6 +7459,18 @@
       "skill": "earth_magic",
       "required_level": 6,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "collapse_terrain",
+          "targeting": "aoe_point",
+          "range": 6,
+          "radius": 2,
+          "damage_pct_of_spellpower": 50,
+          "damage_type": "crushing",
+          "save_type": "Constitution",
+          "save_dc": 13,
+          "status": "Knocked_Down",
+          "status_duration": 1
+        },
       "description": "Active. Destroy one of your stone walls. All enemies within 2 tiles take Earth damage (50% Spellpower) and are knocked prone (Constitution save negates knockdown).",
       "flavor": "",
       "is_mantra": false
@@ -7393,6 +7480,23 @@
       "skill": "earth_magic",
       "required_level": 5,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_terrain",
+          "targeting": "aoe_point",
+          "range": 4,
+          "mana_cost": 8,
+          "places": [
+            {
+              "zone": "gravity_well",
+              "duration": 3,
+              "aoe": {
+                "type": "circle",
+                "size": 2,
+                "origin": "target"
+              }
+            }
+          ]
+        },
       "description": "Active (8 Mana). Create a 2-tile radius zone for 3 turns. Enemies inside suffer -2 Movement and -15% Dodge.",
       "flavor": "",
       "is_mantra": false
@@ -7719,6 +7823,34 @@
       "skill": "logistics",
       "required_level": 9,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_terrain",
+          "targeting": "aoe_point",
+          "range": 6,
+          "once_per_combat": true,
+          "places": [
+            {
+              "obstacle": "barricade",
+              "duration": 6,
+              "hp": 20
+            },
+            {
+              "zone": "caltrops",
+              "duration": 6,
+              "aoe": {
+                "type": "circle",
+                "size": 1,
+                "origin": "target"
+              }
+            },
+            {
+              "terrain": "blessed",
+              "radius": 1,
+              "duration": 6,
+              "value": 5
+            }
+          ]
+        },
       "description": "Active (once per combat, before first turn). Place 3 tiles of terrain: barricade (half cover), caltrops (movement damage), or blessed ground (minor healing).",
       "flavor": "",
       "is_mantra": false
@@ -7998,6 +8130,18 @@
       "skill": "smithing",
       "required_level": 4,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_terrain",
+          "targeting": "aoe_point",
+          "range": 1,
+          "places": [
+            {
+              "obstacle": "barricade",
+              "duration": 3,
+              "hp": 20
+            }
+          ]
+        },
       "description": "Active (1 action). Create a 1-tile barricade at an adjacent position. Provides half cover (+15% Armor) for anyone behind it. Lasts 3 turns.",
       "flavor": "",
       "is_mantra": false
@@ -8216,6 +8360,15 @@
       "skill": "space_magic",
       "required_level": 10,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "open_gate",
+          "targeting": "aoe_point",
+          "range": 8,
+          "mana_cost": 15,
+          "once_per_combat": true,
+          "zone": "open_door",
+          "duration": 3
+        },
       "description": "Active (once per combat, 15 Mana). Open a gate between any two tiles you can see. It persists for 3 turns; any unit may step through, and allies who do gain +2 Initiative.",
       "flavor": "Distance was always a courtesy, not a law.",
       "is_mantra": false
