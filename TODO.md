@@ -854,6 +854,39 @@ payoff almost never lands, and it needs a rule for what every damage type does
 to every terrain.
 
 
+### Mob behaviour as a system
+
+Raised 2026-09-15 and recorded here 2026-09-16, when it turned out never to
+have been written down.
+
+The AI decides what a unit does by reading the situation each turn. What it
+does NOT read is most of what has been built since: it does not know auras
+exist, so it will not step into a friendly one, out of a hostile one, or focus
+the unit projecting it; it does not know zones exist, so it will walk through a
+tornado; it does not use the terrain it is standing on, the height it could
+hold, or the repositioning it could inflict. Every one of those is a
+player-side advantage by default, which is the wrong shape for a tactical game.
+
+The idea is a **set of behaviour rules a mob carries**, the way it carries
+resistances — so a wolf pack, a temple guard and a hungry ghost want different
+things out of the same turn, and an archetype says which it is rather than the
+AI inferring it. Enemy-summoned creatures inherit the summoner's rules;
+player-summoned ones stay party-controlled, which is already true.
+
+What points at it:
+
+- Nothing steps into or out of an aura or a zone (`aura_system.gd`,
+  `zone.gd` — both note the gap in §3).
+- Coordinated group AI — focus fire, flanking — is listed in §12 as a larger
+  feature and is really the same feature.
+- `behind_you`'s `assassin_setup` wants a flanking rule that does not exist.
+- Four behaviour types exist already (`erratic_movement`, `priority_target`,
+  and two more wired in 2026-09), which is the seed of a vocabulary rather
+  than a system.
+
+Not small. Worth doing after a playthrough, because the right rules are the
+ones the fights actually want.
+
 ### Resurrection in events — what should it cost?
 
 The mechanism is built: `CharacterSystem.fallen` records everyone the run has
