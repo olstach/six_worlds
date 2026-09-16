@@ -37,7 +37,7 @@
       "base_crit": 8,
       "base_accuracy": 0,
       "resistances": {
-        "water": 20
+        "ice": 20
       },
       "tags": [
         "water",
@@ -87,7 +87,7 @@
       "base_accuracy": 0,
       "resistances": {
         "ice": 100,
-        "water": 50,
+        "ice": 50,
         "fire": -50
       },
       "tags": [
@@ -133,7 +133,7 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "earth": 25,
+        "crushing": 25,
         "fire": -25
       },
       "tags": [
@@ -179,7 +179,7 @@
       "base_accuracy": 5,
       "resistances": {
         "fire": 50,
-        "air": 25
+        "lightning": 25
       },
       "tags": [
         "fire",
@@ -316,7 +316,7 @@
       "base_crit": 15,
       "base_accuracy": 10,
       "resistances": {
-        "air": 25
+        "lightning": 25
       },
       "tags": [
         "air",
@@ -355,7 +355,7 @@
       "base_stamina": 45,
       "actions": 2,
       "base_damage": 11,
-      "damage_type": "air",
+      "damage_type": "space",
       "base_initiative": 15,
       "base_movement": 5,
       "base_dodge": 18,
@@ -363,7 +363,7 @@
       "base_crit": 10,
       "base_accuracy": 5,
       "resistances": {
-        "air": 30
+        "lightning": 30
       },
       "tags": [
         "air",
@@ -386,7 +386,7 @@
       "base_crit": 8,
       "base_accuracy": 5,
       "resistances": {
-        "water": 30,
+        "ice": 30,
         "poison": 50
       },
       "tags": [
@@ -410,7 +410,7 @@
       "base_crit": 18,
       "base_accuracy": 5,
       "resistances": {
-        "air": 20
+        "lightning": 20
       },
       "tags": [
         "air",
@@ -448,7 +448,7 @@
       "base_stamina": 35,
       "actions": 1,
       "base_damage": 4,
-      "damage_type": "air",
+      "damage_type": "space",
       "base_initiative": 16,
       "base_movement": 6,
       "base_dodge": 22,
@@ -456,7 +456,7 @@
       "base_crit": 8,
       "base_accuracy": 5,
       "resistances": {
-        "air": 25
+        "lightning": 25
       },
       "tags": [
         "air",
@@ -506,7 +506,7 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "earth": 50,
+        "crushing": 50,
         "physical": 25
       },
       "tags": [
@@ -546,7 +546,7 @@
       "base_stamina": 50,
       "actions": 2,
       "base_damage": 13,
-      "damage_type": "earth",
+      "damage_type": "crushing",
       "base_initiative": 12,
       "base_movement": 4,
       "base_dodge": 12,
@@ -554,7 +554,7 @@
       "base_crit": 8,
       "base_accuracy": 0,
       "resistances": {
-        "earth": 25
+        "crushing": 25
       },
       "tags": [
         "earth",
@@ -568,7 +568,7 @@
       "base_stamina": 45,
       "actions": 2,
       "base_damage": 11,
-      "damage_type": "earth",
+      "damage_type": "crushing",
       "base_initiative": 14,
       "base_movement": 4,
       "base_dodge": 18,
@@ -576,7 +576,7 @@
       "base_crit": 10,
       "base_accuracy": 5,
       "resistances": {
-        "earth": 20,
+        "crushing": 20,
         "poison": 25
       },
       "tags": [
@@ -601,7 +601,7 @@
       "base_accuracy": 10,
       "resistances": {
         "white": 50,
-        "air": 25
+        "lightning": 25
       },
       "tags": [
         "air",
@@ -650,7 +650,7 @@
       "base_crit": 5,
       "base_accuracy": 0,
       "resistances": {
-        "water": 30,
+        "ice": 30,
         "physical": 20
       },
       "tags": [
@@ -793,7 +793,7 @@
       "base_accuracy": 0,
       "resistances": {
         "physical": 25,
-        "earth": 15
+        "crushing": 15
       },
       "tags": [
         "earth",
@@ -854,7 +854,7 @@
       "base_stamina": 60,
       "actions": 2,
       "base_damage": 18,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "base_initiative": 16,
       "base_movement": 5,
       "base_dodge": 18,
@@ -862,7 +862,7 @@
       "base_crit": 15,
       "base_accuracy": 10,
       "resistances": {
-        "air": 50,
+        "lightning": 50,
         "fire": 25
       },
       "tags": [
@@ -920,7 +920,7 @@
       "base_crit": 5,
       "base_accuracy": 0,
       "resistances": {
-        "earth": 50,
+        "crushing": 50,
         "physical": 15
       },
       "tags": [
@@ -936,7 +936,7 @@
       "base_stamina": 50,
       "actions": 0,
       "base_damage": 0,
-      "damage_type": "earth",
+      "damage_type": "crushing",
       "base_initiative": 1,
       "base_movement": 0,
       "base_dodge": 0,
@@ -944,7 +944,7 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "earth": 50,
+        "crushing": 50,
         "physical": 30
       },
       "tags": [
@@ -1015,7 +1015,7 @@
       "base_crit": 15,
       "base_accuracy": 5,
       "resistances": {
-        "earth": 25,
+        "crushing": 25,
         "fire": -25
       },
       "tags": [
@@ -1137,7 +1137,7 @@
       "base_crit": 20,
       "base_accuracy": 10,
       "resistances": {
-        "air": 30
+        "lightning": 30
       },
       "tags": [
         "air",
@@ -1208,7 +1208,7 @@
       "base_crit": 18,
       "base_accuracy": 15,
       "resistances": {
-        "air": 30
+        "lightning": 30
       },
       "tags": [
         "air",
@@ -1232,7 +1232,7 @@
       "base_crit": 5,
       "base_accuracy": -5,
       "resistances": {
-        "earth": 25,
+        "crushing": 25,
         "physical": 15,
         "poison": 100
       },
@@ -1249,7 +1249,7 @@
       "base_stamina": 65,
       "actions": 2,
       "base_damage": 19,
-      "damage_type": "air",
+      "damage_type": "space",
       "base_initiative": 16,
       "base_movement": 5,
       "base_dodge": 18,
@@ -1257,7 +1257,7 @@
       "base_crit": 12,
       "base_accuracy": 10,
       "resistances": {
-        "air": 40,
+        "lightning": 40,
         "fire": 15
       },
       "tags": [
@@ -1277,7 +1277,7 @@
       "base_stamina": 65,
       "actions": 2,
       "base_damage": 20,
-      "damage_type": "air",
+      "damage_type": "space",
       "base_initiative": 16,
       "base_movement": 5,
       "base_dodge": 18,
@@ -1285,7 +1285,7 @@
       "base_crit": 12,
       "base_accuracy": 10,
       "resistances": {
-        "air": 40
+        "lightning": 40
       },
       "tags": [
         "air",
@@ -1310,7 +1310,7 @@
       "base_accuracy": 5,
       "resistances": {
         "black": 40,
-        "earth": 20
+        "crushing": 20
       },
       "tags": [
         "black",
@@ -1334,7 +1334,7 @@
       "base_crit": 10,
       "base_accuracy": 5,
       "resistances": {
-        "water": 40,
+        "ice": 40,
         "poison": 75
       },
       "tags": [
@@ -1400,7 +1400,7 @@
       "base_stamina": 30,
       "actions": 0,
       "base_damage": 0,
-      "damage_type": "earth",
+      "damage_type": "crushing",
       "base_initiative": 1,
       "base_movement": 0,
       "base_dodge": 0,
@@ -1408,7 +1408,7 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "earth": 75,
+        "crushing": 75,
         "physical": 30
       },
       "tags": [
@@ -1473,7 +1473,7 @@
       "base_stamina": 70,
       "actions": 2,
       "base_damage": 23,
-      "damage_type": "earth",
+      "damage_type": "crushing",
       "base_initiative": 12,
       "base_movement": 4,
       "base_dodge": 12,
@@ -1481,7 +1481,7 @@
       "base_crit": 8,
       "base_accuracy": 0,
       "resistances": {
-        "earth": 35
+        "crushing": 35
       },
       "tags": [
         "earth",
@@ -1568,7 +1568,7 @@
       "base_stamina": 85,
       "actions": 2,
       "base_damage": 29,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "base_initiative": 20,
       "base_movement": 7,
       "base_dodge": 22,
@@ -1576,7 +1576,7 @@
       "base_crit": 18,
       "base_accuracy": 15,
       "resistances": {
-        "air": 75,
+        "lightning": 75,
         "fire": 25
       },
       "tags": [
@@ -1643,7 +1643,7 @@
       "base_stamina": 80,
       "actions": 2,
       "base_damage": 27,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "base_initiative": 18,
       "base_movement": 6,
       "base_dodge": 22,
@@ -1651,7 +1651,7 @@
       "base_crit": 16,
       "base_accuracy": 15,
       "resistances": {
-        "air": 75
+        "lightning": 75
       },
       "tags": [
         "air",
@@ -1676,7 +1676,7 @@
       "base_crit": 12,
       "base_accuracy": 10,
       "resistances": {
-        "water": 50,
+        "ice": 50,
         "poison": 100
       },
       "tags": [
@@ -1702,7 +1702,7 @@
       "base_accuracy": 10,
       "resistances": {
         "fire": 75,
-        "air": 40
+        "lightning": 40
       },
       "tags": [
         "fire",
@@ -1769,7 +1769,7 @@
       "base_stamina": 85,
       "actions": 2,
       "base_damage": 30,
-      "damage_type": "earth",
+      "damage_type": "crushing",
       "base_initiative": 13,
       "base_movement": 4,
       "base_dodge": 13,
@@ -1777,7 +1777,7 @@
       "base_crit": 10,
       "base_accuracy": 5,
       "resistances": {
-        "earth": 50,
+        "crushing": 50,
         "physical": 15
       },
       "tags": [
@@ -1813,7 +1813,7 @@
       "base_stamina": 30,
       "actions": 2,
       "base_damage": 14,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "base_initiative": 16,
       "base_movement": 4,
       "base_dodge": 18,
@@ -1821,7 +1821,7 @@
       "base_crit": 12,
       "base_accuracy": 85,
       "resistances": {
-        "air": 30
+        "lightning": 30
       },
       "tags": [
         "air",
@@ -1844,7 +1844,7 @@
       "base_crit": 5,
       "base_accuracy": 80,
       "resistances": {
-        "earth": 25,
+        "crushing": 25,
         "physical": 15
       },
       "tags": [
@@ -1915,7 +1915,7 @@
       "base_accuracy": 0,
       "resistances": {
         "fire": 100,
-        "water": -50
+        "ice": -50
       },
       "special": {
         "immovable": true,
@@ -1951,8 +1951,8 @@
         "slashing": 40,
         "piercing": 40,
         "fire": 35,
-        "water": 35,
-        "air": 35,
+        "ice": 35,
+        "lightning": 35,
         "space": 25,
         "crushing": -40
       },

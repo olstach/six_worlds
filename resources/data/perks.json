@@ -3271,17 +3271,12 @@
         },
         {
           "type": "resistance",
-          "damage_type": "water",
+          "damage_type": "ice",
           "value": 20
         },
         {
           "type": "resistance",
-          "damage_type": "air",
-          "value": 20
-        },
-        {
-          "type": "resistance",
-          "damage_type": "earth",
+          "damage_type": "lightning",
           "value": 20
         },
         {

@@ -1051,15 +1051,15 @@ func _check_a_transfer_cannot_create_what_is_not_there() -> void:
 func _check_inner_flame_grants_resistance() -> void:
 	var caster := _make_unit(Vector2i(5, 5), 0, 12)
 	var before_fire: float = caster.get_resistance("fire")
-	var before_water: float = caster.get_resistance("water")
+	var before_ice: float = caster.get_resistance("ice")
 
 	CombatManager._apply_spell_effects(caster, caster,
 		CombatManager.get_spell("inner_flame"), 0)
 
 	if caster.get_resistance("fire") <= before_fire:
 		_fail("inner_flame left fire resistance at %.0f" % caster.get_resistance("fire"))
-	if caster.get_resistance("water") <= before_water:
-		_fail("inner_flame left water resistance at %.0f" % caster.get_resistance("water"))
+	if caster.get_resistance("ice") <= before_ice:
+		_fail("inner_flame left ice resistance at %.0f" % caster.get_resistance("ice"))
 	_cleanup([caster])
 	_done()
 

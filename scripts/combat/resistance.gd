@@ -68,11 +68,16 @@ const LEGACY_EFFECTS: Dictionary = {
 	"fire_resistance_minus_50":  {"type": "fire",  "amount": -50.0},
 	"fire_damage_immunity":      {"type": "fire",  "amount": 100.0},
 	"fire_vulnerability":        {"type": "fire",  "amount": -50.0, "field": "vulnerability_pct", "negated": true},
-	"water_resistance_minus_25": {"type": "water", "amount": -25.0},
-	"water_resistance_minus_50": {"type": "water", "amount": -50.0},
-	"water_damage_immunity":     {"type": "water", "amount": 100.0},
-	"air_damage_immunity":       {"type": "air",   "amount": 100.0},
-	"air_immune":                {"type": "air",   "amount": 100.0},
+	# The four strings below still say `water` and `air` because that is what
+	# the statuses declaring them say. The TYPES those used to name are gone:
+	# water damage was impact, ice and drowning wearing one name, and air
+	# damage was lightning every time it was dealt. Fluid Form's immunity is to
+	# ice and Lightning Form's is to lightning.
+	"water_resistance_minus_25": {"type": "ice",       "amount": -25.0},
+	"water_resistance_minus_50": {"type": "ice",       "amount": -50.0},
+	"water_damage_immunity":     {"type": "ice",       "amount": 100.0},
+	"air_damage_immunity":       {"type": "lightning", "amount": 100.0},
+	"air_immune":                {"type": "lightning", "amount": 100.0},
 
 	# Everything that is not force.
 	"elemental_resistance_25": {"scope": "non_physical", "amount": 25.0},
@@ -124,10 +129,18 @@ static func resists_affliction(unit: Node, affliction: String) -> bool:
 
 ## Resolve a hit of `damage_type` for `damage` points against this unit.
 ##
-## Returns {damage, healed, parts}. A compound type is split first and each
-## component resisted on its own — half of a solar hit meets white resistance
-## and half meets fire — which is the entire reason compound types exist. A
-## random type has already been rolled to a concrete one by DamageType.
+## Returns {damage, healed, parts}.
+##
+## A COMPOUND ARRIVES AS WHICHEVER COMPONENT THE TARGET RESISTS LESS. A solar
+## hit against something fireproof lands as white; against a thing that fears
+## fire it lands as fire. So a mixed type cannot be walled off by resisting one
+## half, and choosing one is a decision about the target rather than a hedge —
+## which is the whole reason to have them.
+##
+## That is why resolution lives here and not in DamageType: which half arrives
+## depends on the defender, and DamageType has no defender. An earlier version
+## split the damage in half and resisted each half separately; this is the same
+## vocabulary read the other way.
 ##
 ## `healed` is absorption: the unit is not hurt, it is fed.
 static func resolve(unit: Node, damage: int, damage_type: String) -> Dictionary:
@@ -138,39 +151,48 @@ static func resolve(unit: Node, damage: int, damage_type: String) -> Dictionary:
 		out.damage = damage
 		return out
 
-	for part in DamageType.split(damage_type, damage):
-		var part_type: String = str(part.type)
-		var part_damage: int = int(part.damage)
-		if part_damage <= 0:
-			continue
-		var pct: float = total(unit, part_type)
-		if pct > DECLARED_IMMUNITY:
-			# Absorption: the excess over immunity is healed.
-			var healed: int = int(round(float(part_damage)
-				* (pct - DECLARED_IMMUNITY) / 100.0))
-			out.healed = int(out.healed) + maxi(1, healed)
-			out.parts.append({"type": part_type, "damage": 0,
-				"healed": maxi(1, healed), "resistance": pct})
-			continue
-		var taken: int = int(round(float(part_damage) * (1.0 - pct / 100.0)))
-		taken = maxi(0, taken)
-		out.damage = int(out.damage) + taken
-		out.parts.append({"type": part_type, "damage": taken,
-			"healed": 0, "resistance": pct})
+	var arriving: String = concrete_type(unit, damage_type)
+	var pct: float = total(unit, arriving)
 
-	# A hit that was not fully resisted still lands for something, so a rounding
-	# error cannot turn a real hit into nothing. Immunity takes nothing at all —
-	# and for a compound that means immunity to EVERY component, which is why
-	# this asks the parts rather than the compound type (whose own resistance
-	# is always zero, so it would have floored an immune unit at 1).
-	if int(out.damage) == 0 and int(out.healed) == 0 and damage > 0:
-		var all_immune := true
-		for part in out.parts:
-			if float(part.resistance) < DECLARED_IMMUNITY:
-				all_immune = false
-		if not all_immune:
-			out.damage = 1
+	if pct > DECLARED_IMMUNITY:
+		# Absorption: the excess over immunity is healed.
+		var healed: int = maxi(1, int(round(float(damage)
+			* (pct - DECLARED_IMMUNITY) / 100.0)))
+		out.healed = healed
+		out.parts.append({"type": arriving, "damage": 0, "healed": healed,
+			"resistance": pct})
+		return out
+
+	var taken: int = maxi(0, int(round(float(damage) * (1.0 - pct / 100.0))))
+	# A hit that was not fully resisted still lands for something, so rounding
+	# cannot turn a real hit into nothing. Immunity takes nothing at all.
+	if taken == 0 and pct < DECLARED_IMMUNITY:
+		taken = 1
+	out.damage = taken
+	out.parts.append({"type": arriving, "damage": taken, "healed": 0,
+		"resistance": pct})
 	return out
+
+
+## Which damage type a hit of `damage_type` actually arrives as, against this
+## unit: itself for a simple type, a roll for a random one, and for a compound
+## the component this unit resists LEAST.
+##
+## Ties go to the first component listed, so the vocabulary decides and the
+## result is stable.
+static func concrete_type(unit: Node, damage_type: String) -> String:
+	var components: Array = DamageType.components_of(damage_type)
+	if components.is_empty():
+		return DamageType.concrete(damage_type)   # itself, or a random roll
+	var best: String = str(components[0])
+	var best_pct: float = total(unit, best)
+	for i in range(1, components.size()):
+		var candidate: String = str(components[i])
+		var pct: float = total(unit, candidate)
+		if pct < best_pct:
+			best = candidate
+			best_pct = pct
+	return best
 
 
 ## The one number a character sheet can show: what percentage of a hit of this

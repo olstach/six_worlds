@@ -11,12 +11,13 @@ class_name DamageType
 ## while every resistance entry in the game said `cold`. Nothing could notice,
 ## because a missing resistance key reads as zero resistance.
 ##
-## COMPOUNDS ARE SPLIT, NOT PICKED. A `solar` hit is half white and half fire,
-## each half resisted separately. That is the whole reason to have compound
-## types: hard to wall off with one resistance, worth nothing against a
-## defender who resists neither half. `resolve()` is the function that does
-## it, and it answers for simple types too — one share of one type — so a
-## caller never needs to ask which kind it has.
+## COMPOUNDS ARE PICKED, NOT SPLIT. A `solar` hit arrives as whichever of
+## white and fire the TARGET resists less: as white against something
+## fireproof, as fire against something that fears fire. So a mixed type
+## cannot be walled off by resisting one half, and choosing one is a decision
+## about the target rather than a hedge. Because the answer depends on the
+## defender, it is Resistance.concrete_type() that decides and this class only
+## says what a compound is made of.
 
 const DATA_PATH := "res://resources/data/damage_types.json"
 
@@ -116,49 +117,15 @@ static func ignores_armour(name: String) -> bool:
 	return bool(get_type(name).get("ignores_armour", false))
 
 
-## How a hit of this type divides up: an Array of {type, share} with the shares
-## summing to 1.0.
+## What a compound type is made of, or [] for a simple one.
 ##
-## A simple type is one share of itself, so callers do not branch. A compound
-## is its components in equal shares — half white and half fire for solar —
-## which is what makes each half resisted separately.
-##
-## An unknown type resolves to itself with a warning rather than to nothing:
-## a typo should deal unresisted damage and be noisy, not silently deal none.
-static func resolve(name: String) -> Array[Dictionary]:
-	var parts: Array[Dictionary] = []
-	var def: Dictionary = get_type(name)
-	if def.is_empty():
-		push_warning("DamageType: %s" % explain_unknown(name))
-		parts.append({"type": name, "share": 1.0})
-		return parts
-	var choices: Array = def.get("choices", [])
-	if not choices.is_empty():
-		# Rolled here, so a Rainbow Spray can hit two targets with two elements.
-		parts.append({"type": concrete(name), "share": 1.0})
-		return parts
-	var components: Array = def.get("components", [])
-	if components.is_empty():
-		parts.append({"type": name, "share": 1.0})
-		return parts
-	var share: float = 1.0 / float(components.size())
-	for component in components:
-		parts.append({"type": str(component), "share": share})
-	return parts
-
-
-## Split a damage number the way `resolve` splits the type, with the remainder
-## going to the first component so nothing is lost to integer division.
-static func split(name: String, damage: int) -> Array[Dictionary]:
-	var parts: Array[Dictionary] = resolve(name)
-	var out: Array[Dictionary] = []
-	var spent := 0
-	for i in range(parts.size()):
-		var amount: int = damage - spent if i == parts.size() - 1 \
-			else int(floor(float(damage) * float(parts[i].share)))
-		spent += amount
-		out.append({"type": str(parts[i].type), "damage": amount})
-	return out
+## WHICH component arrives is not decided here: it is whichever the DEFENDER
+## resists least, and this class has no defender. See Resistance.concrete_type().
+## An earlier version split the damage into equal shares and resisted each
+## share separately, which needed no defender and made a compound a hedge
+## rather than a choice.
+static func components_of(name: String) -> Array:
+	return get_type(name).get("components", [])
 
 
 static func explain_unknown(name: String) -> String:

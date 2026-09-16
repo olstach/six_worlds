@@ -62,7 +62,7 @@
       },
       "resistances": {
         "fire": 100,
-        "water": -50
+        "ice": -50
       },
       "special": {
         "immovable": true,
