@@ -45,6 +45,12 @@ const DRIFTS: Array[String] = ["", "random"]
 ## deferred when zones were built; The Door Stands Open wants the same thing.
 const PAIR_ROLES: Array[String] = ["", "gate"]
 
+## A zone may be a TRAP: something hidden, which somebody with the training may
+## notice and step around. Thievery's `trap_detection_pct` had been written into
+## derived stats for months and read by nothing, because until Trap Maker there
+## were no traps to detect.
+const TRAP_FIELD := "trap"
+
 const DATA_PATH := "res://resources/data/zones.json"
 
 static var _definitions: Dictionary = {}

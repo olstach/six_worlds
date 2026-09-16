@@ -841,7 +841,13 @@ func _exec_brew_coatings(performer: Dictionary) -> Dictionary:
 		return {"message": "Not enough herbs to render down.", "ok": false}
 	var alchemy := CharacterSystem.get_effective_skill_level(performer, "alchemy")
 	var table: Array = COATING_TABLE_MASTER if alchemy >= 7 else COATING_TABLE
-	var count := 1 + int(alchemy >= 5)
+	# `crafting_yield_pct` is Alchemy's, and Brew Coatings is the one camp
+	# activity Alchemy owns — so this is where it finally means something.
+	# Whole hundreds are extra doses; the remainder is a chance at one.
+	var yield_pct: float = float(performer.get("derived", {}).get("crafting_yield_pct", 0.0))
+	var count := 1 + int(yield_pct / 100.0)
+	if randf() < fmod(yield_pct, 100.0) / 100.0:
+		count += 1
 	var brewed: Array[String] = []
 	for _i in range(count):
 		var recipe: Dictionary = table[randi() % table.size()]

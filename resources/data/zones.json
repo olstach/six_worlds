@@ -89,6 +89,7 @@
 
     "caltrops": {
       "name": "Caltrops",
+      "trap": true,
       "affects": "all",
       "on_enter": [
         { "kind": "damage", "amount": 10, "element": "piercing" },
@@ -109,6 +110,7 @@
 
     "snare_trap": {
       "name": "Snare",
+      "trap": true,
       "affects": "all",
       "on_enter": [
         { "kind": "damage", "amount": 12, "element": "piercing", "affects": "enemies" },

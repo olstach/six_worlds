@@ -718,15 +718,22 @@ func _collect_enemy_loot() -> Dictionary:
 	# Sort best items first — ensures the player always gets the most valuable pieces first
 	above_floor.sort_custom(func(a, b): return a.value > b.value)
 
-	# Drop fraction boosted by Thievery — skilled thieves know where to look
-	var best_thievery := 0
+	# Drop fraction boosted by Thievery — skilled thieves know where to look.
+	#
+	# This was `best_thievery * 0.03` capped at 0.30, a magic number that meant
+	# exactly what the Thievery table's `loot_quality_pct` says and disagreed
+	# with it. The table value is read as a percentage of the HEADROOM between
+	# the roll and the maximum, so a master thief gets most of the way to the
+	# best case and the bound holds by construction.
+	var best_quality := 0.0
 	for member in CharacterSystem.get_party():
-		var t: int = member.get("skills", {}).get("thievery", 0)
-		if t > best_thievery:
-			best_thievery = t
-	var thievery_bonus: float = clampf(best_thievery * 0.03, 0.0, 0.30)
+		var q: float = float(member.get("derived", {}).get("loot_quality_pct", 0.0))
+		if q > best_quality:
+			best_quality = q
+	var rolled: float = randf_range(LOOT_DROP_FRACTION_MIN, LOOT_DROP_FRACTION_MAX)
+	var headroom: float = LOOT_DROP_FRACTION_MAX - rolled
 	var drop_fraction: float = clampf(
-		randf_range(LOOT_DROP_FRACTION_MIN, LOOT_DROP_FRACTION_MAX) + thievery_bonus,
+		rolled + headroom * clampf(best_quality / 100.0, 0.0, 1.0),
 		LOOT_DROP_FRACTION_MIN, LOOT_DROP_FRACTION_MAX
 	)
 
@@ -2998,6 +3005,13 @@ func _zones_check_entry(unit: Node) -> void:
 		var was_inside: bool = (zone.entered as Dictionary).has(unit.get_instance_id())
 		if inside and not was_inside:
 			zone.entered[unit.get_instance_id()] = true
+			# A trap is a thing you can spot. Thievery's `trap_detection_pct`
+			# was written into derived stats and read by nothing, because until
+			# Trap Maker there were no traps to detect.
+			if bool(zone.def.get("trap", false)) and _steps_around_trap(unit):
+				combat_log.emit("%s spots the trap and steps around it."
+					% unit.unit_name)
+				continue
 			for payload in zone.def.get("on_enter", []):
 				if Zone.reaches(payload, zone.def, zone.source, unit):
 					_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
@@ -3007,6 +3021,20 @@ func _zones_check_entry(unit: Node) -> void:
 				_step_through_gate(unit, zone)
 		elif was_inside and not inside:
 			zone.entered.erase(unit.get_instance_id())
+
+
+## Does this unit notice the trap in time?
+##
+## Their own skill, not the party's best: spotting a snare is something you do
+## with your own eyes, and the table key is unprefixed for that reason.
+func _steps_around_trap(unit: Node) -> bool:
+	if not "character_data" in unit:
+		return false
+	var chance: float = float(unit.character_data.get("derived", {}).get(
+		"trap_detection_pct", 0.0))
+	if chance <= 0.0:
+		return false
+	return randf() < clampf(chance / 100.0, 0.0, 0.95)
 
 
 ## Move a unit from one end of a gate to the other.
@@ -4691,6 +4719,31 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 
 ## Check if a unit's talisman perks grant immunity or resistance to a status.
 ## Returns true if the status should be blocked entirely.
+## Is this unit wearing something that refuses this status outright?
+func _equipment_grants_immunity(unit: Node, status: String) -> bool:
+	if not "character_data" in unit:
+		return false
+	# Walk the equipment dictionary itself rather than asking per slot: a
+	# weapon SET stores a dictionary under one slot key, and
+	# get_equipped_item() is typed for the simple case.
+	var equipment: Dictionary = unit.character_data.get("equipment", {})
+	var worn: Array[String] = []
+	for slot in equipment:
+		var value = equipment[slot]
+		if value is String and value != "":
+			worn.append(value)
+		elif value is Dictionary:
+			for inner in value.values():
+				if inner is String and inner != "":
+					worn.append(inner)
+	for item_id in worn:
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		for named in item.get("passive", {}).get("status_immunity", []):
+			if str(named) == status:
+				return true
+	return false
+
+
 func _check_talisman_status_immunity(unit: Node, status: String) -> bool:
 	var perks = _get_talisman_perks(unit)
 	if perks.is_empty():
@@ -4748,6 +4801,19 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 
 	# --- Character perk immunity/resistance checks ---
 	if _check_perk_status_immunity(unit, status):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+
+	# --- Equipment that simply says no ---
+	#
+	# An item may declare `passive.status_immunity`, and the item names the
+	# status rather than the code naming the item: Smoked Glass Lenses said in
+	# a `todo` key for months that they should stop you being Blinded, and no
+	# code read it.
+	if _equipment_grants_immunity(unit, status):
+		combat_log.emit("%s's gear turns the %s aside."
+			% [unit.unit_name, status.replace("_", " ")])
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
 		return
