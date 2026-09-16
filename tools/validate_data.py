@@ -1133,12 +1133,18 @@ for _zid in sorted(_zone_ids):
     if _zdef.get("affects", "all") not in _zone_affects:
         err("data->code", f"zone '{_zid}' affects '{_zdef.get('affects')}', "
             "which Zone.reaches() does not recognise")
+    _zone_pairs = set(re.findall(r'"(\w*)"', re.search(
+        r"const PAIR_ROLES[^=]*=\s*\[(.*?)\]", _zone_src, re.S).group(1))) \
+        if re.search(r"const PAIR_ROLES", _zone_src) else set()
+    if _zone_pairs and str(_zdef.get("pair", "")) not in _zone_pairs:
+        err("data->code", f"zone '{_zid}' declares pair role "
+            f"'{_zdef.get('pair')}', which is not in Zone.PAIR_ROLES")
     if _zone_drifts and str(_zdef.get("drift", "")) not in _zone_drifts:
         err("data->code", f"zone '{_zid}' drifts '{_zdef.get('drift')}', "
             "which is not in Zone.DRIFTS")
     _has_payloads = False
     for _key in _zdef:
-        if _key.startswith("_") or _key in ("name", "affects", "drift"):
+        if _key.startswith("_") or _key in ("name", "affects", "drift", "pair"):
             continue
         if _key not in _zone_triggers:
             err("data->code", f"zone '{_zid}' has trigger '{_key}', which is "
@@ -1179,8 +1185,22 @@ for _sid, _sp in _spells.items():
     if not _sp.get("aoe"):
         err("data->code", f"spell '{_sid}' places a zone but has no `aoe` "
             "block, so the zone would have no footprint")
+# Perks place zones too, through a `create_terrain` active skill.
+_perks_for_zones = load("resources/data/perks.json")
+for _section in ("skill_perks", "cross_perks"):
+    for _pid, _pk in _perks_for_zones.get(_section, {}).items():
+        if not isinstance(_pk, dict):
+            continue
+        _cd = _pk.get("combat_data", {})
+        for _z in ([_cd["zone"]] if _cd.get("zone") else []) \
+                + [str(_o.get("zone", "")) for _o in _cd.get("places", []) if _o.get("zone")]:
+            _named_zones.add(str(_z))
+            if _z not in _zone_ids:
+                err("data->code", f"perk '{_pid}' places unknown zone '{_z}'")
+
 for _zid in sorted(_zone_ids - _named_zones):
-    err("data->code", f"zone '{_zid}' is defined and no spell places it")
+    err("data->code", f"zone '{_zid}' is defined and nothing — spell or perk — "
+        "places it")
 
 
 # ── Auras ────────────────────────────────────────────────────────────────────

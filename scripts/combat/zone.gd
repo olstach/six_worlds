@@ -39,6 +39,12 @@ const AFFECTS: Array[String] = ["allies", "enemies", "all"]
 ## How a zone moves, if it moves.
 const DRIFTS: Array[String] = ["", "random"]
 
+## A zone may be one end of a pair. Stepping into one end puts you out of the
+## other, which is the whole of what a gate is — and the reason zones needed a
+## way to know about each other at all. `vajra_gate` wanted this and was
+## deferred when zones were built; The Door Stands Open wants the same thing.
+const PAIR_ROLES: Array[String] = ["", "gate"]
+
 const DATA_PATH := "res://resources/data/zones.json"
 
 static var _definitions: Dictionary = {}

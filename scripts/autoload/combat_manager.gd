@@ -424,6 +424,7 @@ func end_combat(victory: bool) -> void:
 	combat_grid = null
 	battlefield_overworld_terrain = -1
 	active_zones.clear()
+	_timed_obstacles.clear()
 
 
 ## Apply emotional pressure to party based on combat outcome.
@@ -1304,6 +1305,9 @@ func _start_new_round() -> void:
 
 	# And the zones standing on it
 	_tick_zones()
+
+	# And whatever somebody built during the fight
+	_tick_placed_obstacles()
 
 	# Check win/lose conditions
 	var result = _check_combat_end()
@@ -2801,6 +2805,24 @@ func _kill_unit(unit: Node) -> void:
 ##
 ## The footprint comes from the casting spell's own `aoe` block, so every shape
 ## AoEResolver knows is available without zones naming any of them.
+## Put two ends of a gate on the ground, linked to each other.
+##
+## Returns whether both went down. A gate with one end is a hole.
+func place_gate(zone_id: String, here: Array, there: Array, source: Node,
+		turns: int) -> bool:
+	if not place_zone(zone_id, here, source, turns):
+		return false
+	var first: Dictionary = active_zones[-1]
+	if not place_zone(zone_id, there, source, turns):
+		active_zones.erase(first)
+		return false
+	var second: Dictionary = active_zones[-1]
+	first["linked_to"] = second
+	second["linked_to"] = first
+	combat_log.emit("A door stands open.")
+	return true
+
+
 func place_zone(zone_id: String, tiles: Array, source: Node, turns: int) -> bool:
 	var def: Dictionary = Zone.get_definition(zone_id)
 	if def.is_empty():
@@ -2961,8 +2983,35 @@ func _zones_check_entry(unit: Node) -> void:
 			for payload in zone.def.get("on_enter", []):
 				if Zone.reaches(payload, zone.def, zone.source, unit):
 					_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
+			# A gate puts you out of its other end. Marked as having entered
+			# THAT end too, or the far side charges you for arriving.
+			if str(zone.def.get("pair", "")) == "gate" and zone.has("linked_to"):
+				_step_through_gate(unit, zone)
 		elif was_inside and not inside:
 			zone.entered.erase(unit.get_instance_id())
+
+
+## Move a unit from one end of a gate to the other.
+func _step_through_gate(unit: Node, entrance: Dictionary) -> void:
+	var exit_zone: Dictionary = entrance.linked_to
+	if exit_zone == null or exit_zone.is_empty():
+		return
+	var landing := Vector2i(-1, -1)
+	for tile in (exit_zone.tiles as Dictionary):
+		if combat_grid == null or (combat_grid.is_valid_position(tile)
+				and not combat_grid.is_occupied(tile)):
+			landing = tile
+			break
+	if landing.x < 0:
+		combat_log.emit("The far side of the door is blocked.")
+		return
+	if combat_grid != null:
+		combat_grid.move_unit(unit, landing)
+	else:
+		unit.grid_position = landing
+	exit_zone.entered[unit.get_instance_id()] = true
+	unit_moved.emit(unit, entrance.tiles.keys()[0], landing)
+	combat_log.emit("%s steps through the door." % unit.unit_name)
 
 
 ## Fire `on_death_inside` for whichever zone the unit died on.
@@ -3338,6 +3387,13 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		mana_cost = int(mana_cost * 0.60)
 		caster.damaru_charges = 0
 		combat_log.emit("%s's Damaru rhythm peaks — spell costs 40%% less mana!" % caster.unit_name)
+
+	# Ground that makes casting cheaper. `mana_cost_pct` is continuous — read
+	# where it applies, like every other zone and aura stat — so an Inscribed
+	# Circle discounts whoever is standing in it rather than whoever drew it.
+	var ground_mana_pct: int = get_continuous_stat_bonus(caster, "mana_cost_pct")
+	if ground_mana_pct != 0:
+		mana_cost = maxi(1, int(mana_cost * (1.0 + float(ground_mana_pct) / 100.0)))
 
 	# Skill-level mana cost reduction: apply only when at least one spell school
 	# matches a magic skill the caster has invested in (school-specific efficiency).
@@ -5292,6 +5348,234 @@ func _perform_reaction(unit: Node, against: Node, status_name: String,
 var _reaction_damage_mult: float = 1.0
 
 
+## Put something on the ground that was not there before.
+##
+## Nine active perks wanted this and none of them could have it: Black Ice, Fog
+## of War, Gravity Well, Raise Wall, Crumbling Avalanche, Improvised Barricade,
+## Prepared Ground, Inscribed Circle and The Door Stands Open. What was missing
+## was never the grid — `set_tile_obstacle`, `add_terrain_effect` and zones all
+## existed — but a resolver that reads what a perk wants to place, and a
+## DURATION for the things that should not be permanent.
+##
+## Three kinds of thing, any combination, declared in `places`:
+##
+##   {"zone": "black_ice", "aoe": {...}, "duration": 3}
+##   {"terrain": "smoke", "radius": 2, "duration": 3}
+##   {"obstacle": "barricade", "shape": "line", "length": 3, "duration": 4, "hp": 30}
+func _resolve_create_terrain(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	if combat_grid == null:
+		return {"success": false, "reason": "No battlefield"}
+
+	var effects: Array = []
+	var placed_anything := false
+	var bonus: int = user.get_spellpower() if user.has_method("get_spellpower") else 0
+
+	for spec in combat_data.get("places", []):
+		var duration: int = int(spec.get("duration", 3))
+
+		# --- A zone -------------------------------------------------------
+		if spec.has("zone"):
+			var footprint: Dictionary = spec.get("aoe",
+				{"type": "circle", "size": 1, "origin": "target"})
+			var where: Vector2i = user.grid_position \
+				if str(spec.get("origin", "target")) == "caster" else target_pos
+			var tiles: Array = AoEResolver.get_tiles(
+				footprint, user.grid_position, where, combat_grid.grid_size)
+			if place_zone(str(spec["zone"]), tiles, user, duration):
+				placed_anything = true
+				effects.append({"type": "zone", "zone": str(spec["zone"]),
+					"tiles": tiles.size()})
+
+		# --- A terrain effect on the tiles themselves ---------------------
+		if spec.has("terrain"):
+			var effect_id: int = _hazard_id(str(spec["terrain"]))
+			var radius: int = int(spec.get("radius", 1))
+			var centre: Vector2i = user.grid_position \
+				if str(spec.get("origin", "target")) == "caster" else target_pos
+			var touched := 0
+			for tile in combat_grid.get_tiles_in_radius(centre, radius):
+				combat_grid.add_terrain_effect(tile, effect_id, duration,
+					int(spec.get("value", 0)))
+				touched += 1
+			if touched > 0:
+				placed_anything = true
+				effects.append({"type": "terrain", "effect": str(spec["terrain"]),
+					"tiles": touched})
+
+		# --- An obstacle, which now knows when to fall down ----------------
+		if spec.has("obstacle"):
+			var obstacle_id: int = _obstacle_id(str(spec["obstacle"]))
+			var hp: int = int(spec.get("hp", -1))
+			if hp < 0 and spec.has("hp_from_spellpower"):
+				hp = maxi(10, int(bonus * float(spec["hp_from_spellpower"])))
+			var spots: Array = _obstacle_footprint(user, spec, target_pos)
+			var built := 0
+			for spot in spots:
+				if combat_grid.is_occupied(spot) or combat_grid.has_blocking_obstacle(spot):
+					continue
+				combat_grid.set_tile_obstacle(spot, obstacle_id, hp)
+				_timed_obstacles.append({
+					"pos": spot, "turns_left": duration, "owner": user,
+				})
+				built += 1
+			if built > 0:
+				placed_anything = true
+				effects.append({"type": "obstacle", "obstacle": str(spec["obstacle"]),
+					"tiles": built})
+
+	if not placed_anything:
+		return {"success": false, "reason": "Nowhere to put it"}
+	return {"success": true, "effects": effects}
+
+
+## The tiles an obstacle covers: one tile, or a line of them drawn across the
+## caster's line of sight to the target, which is what a wall is for.
+func _obstacle_footprint(user: Node, spec: Dictionary, target_pos: Vector2i) -> Array:
+	var spots: Array = [target_pos]
+	var length: int = int(spec.get("length", 1))
+	if str(spec.get("shape", "tile")) != "line" or length <= 1:
+		return spots
+	# Perpendicular to the direction the wall is raised in, so it blocks rather
+	# than points.
+	var facing: Vector2i = _dir_toward(user.grid_position, target_pos)
+	var across := Vector2i(-facing.y, facing.x)
+	if across == Vector2i.ZERO:
+		across = Vector2i(0, 1)
+	spots.clear()
+	var half: int = length / 2
+	for step in range(-half, length - half):
+		var at: Vector2i = target_pos + across * step
+		if combat_grid.is_valid_position(at):
+			spots.append(at)
+	return spots
+
+
+## Open a gate between two tiles: where you stand and where you point.
+##
+## The near end is the caster's own tile, so "between any two tiles you can
+## see" costs the caster the ground they are on — which is the decision the
+## perk is actually offering.
+func _resolve_open_gate(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var zone_id: String = str(combat_data.get("zone", "open_door"))
+	var turns: int = int(combat_data.get("duration", 3))
+	var here: Array = [user.grid_position]
+	var there: Array = [target_pos]
+	if combat_grid != null and not combat_grid.is_valid_position(target_pos):
+		return {"success": false, "reason": "Nowhere to open it onto"}
+	if not place_gate(zone_id, here, there, user, turns):
+		return {"success": false, "reason": "The door will not hold"}
+	return {"success": true, "effects": [{"type": "gate", "from": here[0], "to": there[0]}]}
+
+
+## Bring down something you put up, on whoever is standing near it.
+##
+## Only your own: `_collapse_placed_obstacle` looks through the obstacles this
+## unit placed, so an avalanche cannot be called down out of a tree that was
+## always there.
+func _resolve_collapse_terrain(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var fallen: Dictionary = _collapse_placed_obstacle(user, target_pos)
+	if fallen.is_empty():
+		return {"success": false, "reason": "Nothing of yours to bring down"}
+
+	var at: Vector2i = fallen.pos
+	var radius: int = int(combat_data.get("radius", 2))
+	var bonus: int = user.get_spellpower() if user.has_method("get_spellpower") else 0
+	var damage: int = maxi(1, int(bonus * float(combat_data.get("damage_pct_of_spellpower", 50)) / 100.0))
+	var element: String = str(combat_data.get("damage_type", "crushing"))
+	var save_attr: String = str(combat_data.get("save_type", "constitution")).to_lower()
+	var give: String = str(combat_data.get("status", ""))
+
+	var effects: Array = []
+	for unit in all_units:
+		if unit == user or unit.is_dead or not "grid_position" in unit:
+			continue
+		if not "team" in unit or unit.team == user.team:
+			continue
+		if _grid_distance(at, unit.grid_position) > radius:
+			continue
+		apply_damage(unit, damage, element)
+		effects.append({"type": "damage", "target": unit, "amount": damage})
+		if give != "":
+			var roll: Dictionary = SaveSystem.roll(unit, save_attr,
+				int(combat_data.get("save_dc", 13)))
+			if not roll.success:
+				_apply_status_effect(unit, give, int(combat_data.get("status_duration", 1)), 0, user)
+	combat_log.emit("%s brings the stone down." % user.unit_name)
+	return {"success": true, "effects": effects}
+
+
+## Obstacles placed by a skill, which fall down again when their time runs out.
+## The grid's own obstacles are permanent, and should be: these are the ones
+## somebody built during a fight.
+var _timed_obstacles: Array[Dictionary] = []
+
+
+## Count down every placed obstacle and remove what has expired.
+func _tick_placed_obstacles() -> void:
+	for i in range(_timed_obstacles.size() - 1, -1, -1):
+		var entry: Dictionary = _timed_obstacles[i]
+		entry.turns_left = int(entry.turns_left) - 1
+		if int(entry.turns_left) > 0:
+			continue
+		if combat_grid != null:
+			combat_grid.remove_obstacle(entry.pos)
+		_timed_obstacles.remove_at(i)
+
+
+## Remove one obstacle `owner` placed, nearest to `near`, and say where it was.
+## Crumbling Avalanche brings down your own wall; it should not be able to
+## bring down a tree that was always there.
+func _collapse_placed_obstacle(owner: Node, near: Vector2i) -> Dictionary:
+	var best := -1
+	var best_dist := 1 << 30
+	for i in range(_timed_obstacles.size()):
+		if _timed_obstacles[i].owner != owner:
+			continue
+		var dist: int = _grid_distance(near, _timed_obstacles[i].pos)
+		if dist < best_dist:
+			best_dist = dist
+			best = i
+	if best < 0:
+		return {}
+	var at: Vector2i = _timed_obstacles[best].pos
+	if combat_grid != null:
+		combat_grid.remove_obstacle(at)
+	_timed_obstacles.remove_at(best)
+	return {"pos": at}
+
+
+## Terrain effect and obstacle names, resolved through the same words
+## BattlefieldGenerator uses so the data reads the same everywhere.
+func _hazard_id(name: String) -> int:
+	match name:
+		"fire":    return CombatGrid.TerrainEffect.FIRE
+		"ice":     return CombatGrid.TerrainEffect.ICE
+		"poison":  return CombatGrid.TerrainEffect.POISON
+		"acid":    return CombatGrid.TerrainEffect.ACID
+		"blessed": return CombatGrid.TerrainEffect.BLESSED
+		"cursed":  return CombatGrid.TerrainEffect.CURSED
+		"wet":     return CombatGrid.TerrainEffect.WET
+		"stormy":  return CombatGrid.TerrainEffect.STORMY
+		"void":    return CombatGrid.TerrainEffect.VOID
+		"smoke":   return CombatGrid.TerrainEffect.SMOKE
+	push_warning("CombatManager: no terrain effect named '%s'" % name)
+	return CombatGrid.TerrainEffect.NONE
+
+
+func _obstacle_id(name: String) -> int:
+	match name:
+		"tree":        return CombatGrid.ObstacleType.TREE
+		"rock":        return CombatGrid.ObstacleType.ROCK
+		"pillar":      return CombatGrid.ObstacleType.PILLAR
+		"barricade":   return CombatGrid.ObstacleType.BARRICADE
+		"fallen_tree": return CombatGrid.ObstacleType.FALLEN_TREE
+	push_warning("CombatManager: no obstacle named '%s'" % name)
+	return CombatGrid.ObstacleType.NONE
+
+
 ## Process status spread — statuses with "spread" data can jump to adjacent units.
 ## Called once per unit per turn, after normal status processing.
 func _process_status_spread(unit: Node) -> void:
@@ -6497,6 +6781,7 @@ const IMPLEMENTED_SKILL_EFFECTS: Array[String] = [
 	"grapple", "overcast", "retreat", "aoe_damage_and_status",
 	"buff_allies_debuff_enemies", "dispel_and_invert", "aggro_aura",
 	"share_buffs", "double_buffs", "chod_offering", "throw_phurba",
+	"create_terrain", "collapse_terrain", "open_gate",
 ]
 
 
@@ -6624,6 +6909,12 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_share_buffs(user, combat_data)
 		"double_buffs":
 			result = _resolve_double_buffs(user, combat_data, target_pos)
+		"create_terrain":
+			result = _resolve_create_terrain(user, combat_data, target_pos)
+		"collapse_terrain":
+			result = _resolve_collapse_terrain(user, combat_data, target_pos)
+		"open_gate":
+			result = _resolve_open_gate(user, combat_data, target_pos)
 		"chod_offering":
 			result = _resolve_chod_offering(user, combat_data)
 		"throw_phurba":

@@ -49,6 +49,64 @@
       "_comment": "What Poisonous Cloud and Miasma leave behind. Affects everyone, because a cloud does not know whose side you are on — which is the interesting half of casting one, and the reason both spells carried an unread `cloud_effect: true` for months."
     },
 
+    "black_ice": {
+      "name": "Black Ice",
+      "affects": "all",
+      "on_enter": [
+        { "kind": "grant_status", "status": "Knocked_Down", "duration": 1, "affects": "enemies",
+          "save": { "attribute": "finesse", "dc": 13 } }
+      ],
+      "_comment": "Ice you put where somebody has to cross. Allies are told where it is, which is the whole difference between a trap and a hazard — the payload names enemies."
+    },
+
+    "fog_of_war": {
+      "name": "Fog of War",
+      "affects": "all",
+      "while_inside": [
+        { "kind": "stat", "stat": "accuracy", "amount": -20, "affects": "enemies" }
+      ],
+      "_comment": "A bank of fog. The accuracy is the zone's; the sight-blocking is a SMOKE terrain effect laid under it, because line of sight is the grid's business and not a payload's."
+    },
+
+    "gravity_well": {
+      "name": "Gravity Well",
+      "affects": "all",
+      "while_inside": [
+        { "kind": "stat", "stat": "movement", "amount": -2, "affects": "enemies" },
+        { "kind": "stat", "stat": "dodge", "amount": -15, "affects": "enemies" }
+      ],
+      "_comment": "Ground that has become heavier than it was. Slower and easier to hit, which is what a well does to anyone in it."
+    },
+
+    "inscribed_circle": {
+      "name": "Inscribed Circle",
+      "affects": "allies",
+      "while_inside": [
+        { "kind": "stat", "stat": "mana_cost_pct", "amount": -25 }
+      ],
+      "_comment": "A ritual circle drawn where you stand. Ritual is the skill of ceremony done in a place, so its circle is a place — and the discount follows whoever stands in it, not whoever drew it."
+    },
+
+    "caltrops": {
+      "name": "Caltrops",
+      "affects": "all",
+      "on_enter": [
+        { "kind": "damage", "amount": 10, "element": "piercing" },
+        { "kind": "grant_status", "status": "Slowed", "duration": 1, "chance": 0.5 }
+      ],
+      "_comment": "Scattered iron. Hurts whoever walks onto it and does not ask whose boots they are — Prepared Ground is a logistics perk, and logistics does not aim."
+    },
+
+    "open_door": {
+      "name": "Open Door",
+      "affects": "all",
+      "pair": "gate",
+      "on_enter": [
+        { "kind": "grant_status", "status": "Hasted", "duration": 1, "affects": "allies" }
+      ],
+      "_comment": "One end of a gate. Stepping onto it puts you out of the other end — the pairing is what CombatManager does with `pair: gate`, and the payload is only what the crossing feels like. Allies come out of it moving; anyone else simply arrives."
+    },
+
     "mud": {
       "name": "Mud",
       "affects": "all",
