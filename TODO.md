@@ -774,9 +774,10 @@ immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
 `escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
 1–2 always fire, 3+ still roll).
 
-### The 26 active perks still without a resolver (2026-09-10)
+### The active perks still without a resolver (20, was 26 — 2026-09-16)
 
-75 of 109 active perks were wired in b746bc1. These 26 are the remainder, each
+75 of 109 active perks were wired in b746bc1; the six reaction stances followed
+on 2026-09-16. These 20 are the remainder, each
 blocked on machinery that does not exist. They stay correctly greyed out in the
 skill panel until it does. `tools/verify_active_perks.tscn` reprints this list
 on every run, so it cannot silently drift.
@@ -788,10 +789,16 @@ on every run, so it cannot silently drift.
       `CombatGrid` already has `add_terrain_effect()` and destructible
       obstacles; what is missing is a resolver that places them and a duration
       that ticks down.
-- [ ] **Counter/reaction stances** (5 perks): `counterstrike`,
-      `stand_in_the_gap`, `set_for_charge`, `kill_zone`, `heavenly_counterflow`.
-      Needs an on-being-attacked hook. The ZoC on-move hook already exists
-      (`_check_zoc_reactions`), so this is the sibling of a solved problem.
+- [x] ~~**Counter/reaction stances**~~ — built 2026-09-16 as `Reaction`
+      (`scripts/combat/reaction.gd`). Six perks, not five: `none_shall_pass`
+      came with them. The game had two reaction HOOKS and no reaction system —
+      movement reactions were hardcoded `if has_perk(...)` branches inside
+      `_check_zoc_reactions`, and being-hit reactions were `retaliation`
+      blocks that could deal damage, reflect a percentage or apply a status but
+      could not swing a weapon. A reaction is a STATUS now: the perk applies a
+      stance lasting until your next turn, the status declares trigger,
+      responses, reach and per-round allowance, and both hooks read whoever has
+      one. See `verify_reactions.tscn` (13 checks, 15/15 mutations caught).
 - [ ] **`heal_ally`** — `field_medic`. `_resolve_heal_self` ignores its own
       `targeting` field and always heals the user; splitting out a targeted
       version is small.
@@ -807,11 +814,9 @@ on every run, so it cannot silently drift.
       `disrupting_palm` is wired to its first branch as a stopgap.
 - [ ] **`ignore_resistances` on overcast** — `too_fast_to_react`. One field in
       `cast_spell`'s resistance step.
-- [ ] **`none_shall_pass`** — not missing machinery, a spec mismatch. Written as
-      "Active. End your turn. Until your next turn, enemies cannot move through
-      your threatened area (2-tile reach) without taking a free attack and
-      suffering -2 Movement for 1 turn." Implemented as an always-on passive
-      free attack, with no turn-ending and no -2 Movement. Decide which it is.
+- [x] ~~**`none_shall_pass`**~~ — resolved 2026-09-16 in favour of what the
+      perk says: a stance that ends your turn, threatens two tiles, and answers
+      with a free attack and a Slow. The always-on passive branch is gone.
 
 ### The seven overworld perks are data with no consumer
 

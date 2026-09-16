@@ -1059,6 +1059,55 @@ for _gd in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
                 "is not in damage_types.json")
 
 
+# ── Reaction stances ────────────────────────────────────────────────────────
+#
+# A reaction declared with a trigger nothing fires, or a response nothing
+# performs, is a stance that costs a turn and answers nothing. The vocabulary
+# is read from reaction.gd rather than restated.
+_reaction_src = open(os.path.join(ROOT, "scripts/combat/reaction.gd"), encoding="utf-8").read()
+_reaction_triggers = _gd_list(_reaction_src, "TRIGGERS")
+_reaction_responses = _gd_list(_reaction_src, "RESPONSES")
+if not _reaction_triggers or not _reaction_responses:
+    err("data->code", "could not read Reaction.TRIGGERS/RESPONSES — reactions unchecked")
+
+_reposition_src = open(os.path.join(ROOT, "scripts/combat/repositioning.gd"), encoding="utf-8").read()
+_reposition_modes = _gd_list(_reposition_src, "MODES")
+
+for _st in load("resources/data/statuses.json")["statuses"]:
+    _rx = _st.get("reaction")
+    if _rx is None:
+        continue
+    _name = _st.get("name", "?")
+    if not isinstance(_rx, dict):
+        err("data->code", f"status '{_name}' has a non-object `reaction`")
+        continue
+    if _rx.get("trigger") not in _reaction_triggers:
+        err("data->code", f"status '{_name}' reacts to '{_rx.get('trigger')}', "
+            "which is not in Reaction.TRIGGERS — nothing would fire it")
+    _responses = _rx.get("responses", [])
+    if not _responses:
+        err("data->code", f"status '{_name}' declares a reaction with no "
+            "responses, so it fires and does nothing")
+    for _r in _responses:
+        if _r not in _reaction_responses:
+            err("data->code", f"status '{_name}' responds with '{_r}', which is "
+                "not in Reaction.RESPONSES")
+    if _rx.get("status") and _rx["status"] not in _status_names:
+        err("data->code", f"status '{_name}' reacts by applying "
+            f"'{_rx['status']}', which does not exist")
+    if "status" in _responses and not _rx.get("status"):
+        err("data->code", f"status '{_name}' lists a `status` response and "
+            "names no status to apply")
+    if _rx.get("reposition_mode") and _reposition_modes \
+            and _rx["reposition_mode"] not in _reposition_modes:
+        err("data->code", f"status '{_name}' repositions with mode "
+            f"'{_rx['reposition_mode']}', which is not in Repositioning.MODES")
+    _reach = _rx.get("reach", 1)
+    if isinstance(_reach, str) and _reach != "weapon":
+        err("data->code", f"status '{_name}' reaches '{_reach}'; the only word "
+            "Reaction.reach_of() knows is 'weapon'")
+
+
 # ── Zones ───────────────────────────────────────────────────────────────────
 #
 # Zones share the aura payload vocabulary on purpose, so the checks are the

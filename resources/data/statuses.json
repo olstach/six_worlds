@@ -2615,6 +2615,140 @@
         "cleanse"
 	  ],
 	  "description": "Nothing on the road notices the party pass. Rāhu swallows the sun and is not observed doing it."
+	},
+	{
+	  "name": "Counterstance",
+	  "type": "buff",
+	  "category": "stance",
+	  "effects": [],
+	  "reaction": {
+		"trigger": "attacked_in_melee",
+		"responses": [
+	      "attack"
+		],
+		"once_per_attacker": true,
+		"max_per_round": 3
+	  },
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+	    "dispel"
+	  ],
+	  "description": "Blade held ready. The first blow each attacker throws is answered."
+	},
+	{
+	  "name": "Guarding_The_Gap",
+	  "type": "buff",
+	  "category": "stance",
+	  "effects": [],
+	  "reaction": {
+		"trigger": "ally_threatened",
+		"reach": 1,
+		"responses": [
+	      "attack"
+		],
+		"max_per_round": 3
+	  },
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+	    "dispel"
+	  ],
+	  "description": "Standing over someone. Whoever comes for them comes past you first."
+	},
+	{
+	  "name": "Set_For_Charge",
+	  "type": "buff",
+	  "category": "stance",
+	  "effects": [],
+	  "reaction": {
+		"trigger": "enemy_enters_reach",
+		"reach": 2,
+		"responses": [
+	      "attack"
+		],
+		"damage_mult": 2.0,
+		"max_per_round": 1
+	  },
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+	    "dispel"
+	  ],
+	  "description": "Butt of the spear in the dirt. Whatever runs onto it runs onto it hard."
+	},
+	{
+	  "name": "Kill_Zone",
+	  "type": "buff",
+	  "category": "stance",
+	  "effects": [],
+	  "reaction": {
+		"trigger": "enemy_enters_reach",
+		"reach": "weapon",
+		"responses": [
+	      "attack"
+		],
+		"max_per_round": 3
+	  },
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+	    "dispel"
+	  ],
+	  "description": "Ground you have already decided about. Three shots, and then you are reloading."
+	},
+	{
+	  "name": "Heavenly_Counterflow",
+	  "type": "buff",
+	  "category": "stance",
+	  "effects": [],
+	  "reaction": {
+		"trigger": "attacked_in_melee",
+		"responses": [
+		  "auto_dodge",
+		  "attack",
+	      "reposition"
+		],
+		"damage_mult": 1.3,
+		"reposition_mode": "scatter",
+		"reposition_tiles": 2,
+		"max_per_round": 1
+	  },
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+	    "dispel"
+	  ],
+	  "description": "The blow arrives and finds nobody there. You are already elsewhere, and already answering."
+	},
+	{
+	  "name": "None_Shall_Pass",
+	  "type": "buff",
+	  "category": "stance",
+	  "effects": [],
+	  "reaction": {
+		"trigger": "enemy_enters_reach",
+		"reach": 2,
+		"responses": [
+		  "attack",
+	      "status"
+		],
+		"status": "Slowed",
+		"status_duration": 1,
+		"max_per_round": 3
+	  },
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+	    "dispel"
+	  ],
+	  "description": "The reach of a spear, declared as a rule rather than a threat."
 	}
   ]
 }
