@@ -2481,6 +2481,16 @@
       "skill": "swords",
       "required_level": 5,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "stance",
+          "targeting": "self",
+          "statuses": [
+            {
+              "status": "Guarding_The_Gap",
+              "duration": 1
+            }
+          ]
+        },
       "description": "Active. End your turn. Until your next turn, enemies moving past or attacking allies within 1 tile of you provoke a free sword attack.",
       "flavor": "",
       "is_mantra": false
@@ -2499,6 +2509,19 @@
       "skill": "swords",
       "required_level": 7,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "stance",
+          "targeting": "self",
+          "stamina_cost": 6,
+          "cooldown": 3,
+          "ends_turn": false,
+          "statuses": [
+            {
+              "status": "Counterstance",
+              "duration": 1
+            }
+          ]
+        },
       "description": "Active (6 Stamina, 3-turn cooldown). Until your next turn, each melee attack against you triggers a counterattack (once per attacker per round).",
       "flavor": "",
       "is_mantra": false
@@ -2679,6 +2702,19 @@
       "skill": "martial_arts",
       "required_level": 10,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "stance",
+          "targeting": "self",
+          "stamina_cost": 8,
+          "once_per_combat": true,
+          "ends_turn": false,
+          "statuses": [
+            {
+              "status": "Heavenly_Counterflow",
+              "duration": 1
+            }
+          ]
+        },
       "description": "Active (8 Stamina, once per combat). Until your next turn, the first melee attack against you is automatically Dodged, and you immediately reposition up to 2 tiles and counterattack with +30% damage.",
       "flavor": "",
       "is_mantra": false
@@ -3536,6 +3572,17 @@
       "skill": "ranged",
       "required_level": 6,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "stance",
+          "targeting": "self",
+          "stamina_cost": 7,
+          "statuses": [
+            {
+              "status": "Kill_Zone",
+              "duration": 1
+            }
+          ]
+        },
       "description": "Active (7 Stamina). End your turn. Until your next turn, make a free ranged attack against each enemy that moves within your weapon range (max 3 attacks).",
       "flavor": "",
       "is_mantra": false
@@ -5776,6 +5823,16 @@
       "skill": "spears",
       "required_level": 4,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "stance",
+          "targeting": "self",
+          "statuses": [
+            {
+              "status": "Set_For_Charge",
+              "duration": 1
+            }
+          ]
+        },
       "description": "Active. End your turn. If an enemy moves into your reach before your next turn, your reaction attack deals double damage.",
       "flavor": "",
       "is_mantra": false
@@ -5785,6 +5842,16 @@
       "skill": "spears",
       "required_level": 9,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "stance",
+          "targeting": "self",
+          "statuses": [
+            {
+              "status": "None_Shall_Pass",
+              "duration": 1
+            }
+          ]
+        },
       "description": "Active. End your turn. Until your next turn, enemies cannot move through your threatened area (2-tile reach) without taking a free attack and suffering -2 Movement for 1 turn.",
       "flavor": "",
       "is_mantra": false

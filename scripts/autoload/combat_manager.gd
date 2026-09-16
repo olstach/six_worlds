@@ -1143,6 +1143,14 @@ func _start_current_turn() -> void:
 	if unit == null:
 		return
 
+	# A reaction stance lasts "until your next turn", so its per-round budget
+	# refills here rather than on the round boundary — initiative means those
+	# are not the same moment.
+	if "status_effects" in unit:
+		for entry in unit.status_effects:
+			if not Reaction.of(_status_effects.get(str(entry.get("status", "")), {})).is_empty():
+				Reaction.refresh(entry)
+
 	# Units with no actions (illusions/decoys) skip their turn automatically
 	if unit.get_max_actions() == 0:
 		_advance_turn()
@@ -2291,6 +2299,11 @@ func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String 
 	# Lord of Death DY: empowered summons deal 30% bonus damage
 	if "lord_of_death_empowered" in attacker and attacker.lord_of_death_empowered:
 		damage = int(damage * 1.3)
+
+	# A braced spear hits harder than a swing of opportunity. Set around
+	# attack_unit() by _perform_reaction() and cleared immediately after.
+	if not is_equal_approx(_reaction_damage_mult, 1.0):
+		damage = int(damage * _reaction_damage_mult)
 
 	return {
 		"damage": damage,
@@ -5141,6 +5154,144 @@ func _on_status_expired(unit: Node, status_name: String, def: Dictionary, effect
 		combat_log.emit("Something tears its way out of %s." % unit.unit_name)
 
 
+## Fire every reaction `unit` carries whose trigger matches.
+##
+## `in_range` is the trigger's own range test, done by the caller because only
+## it knows what "in range" means for that trigger.
+func _fire_reactions(unit: Node, against: Node, trigger: String, in_range: bool,
+		result: Dictionary = {}) -> void:
+	if not in_range or unit == null or against == null:
+		return
+	if not is_instance_valid(unit) or unit.is_dead or not "status_effects" in unit:
+		return
+	if not is_instance_valid(against) or against.is_dead:
+		return
+
+	for entry in unit.status_effects:
+		var status_name: String = str(entry.get("status", ""))
+		var spec: Dictionary = Reaction.of(_status_effects.get(status_name, {}))
+		if spec.is_empty() or str(spec.get("trigger", "")) != trigger:
+			continue
+		if not Reaction.is_trigger(str(spec.get("trigger", ""))):
+			push_warning("CombatManager: status '%s' — %s"
+				% [status_name, Reaction.explain_unknown_trigger(str(spec.get("trigger", "")))])
+			continue
+		if not Reaction.can_fire(spec, entry, against):
+			continue
+		if _perform_reaction(unit, against, status_name, spec, result):
+			Reaction.spend(entry, against)
+
+
+## The movement trigger, which needs the distances the mover crossed.
+func _fire_move_reactions(reactor: Node, mover: Node, old_dist: int, new_dist: int,
+		_old_pos: Vector2i, new_pos: Vector2i) -> void:
+	if not "status_effects" in reactor:
+		return
+	for entry in reactor.status_effects:
+		var status_name: String = str(entry.get("status", ""))
+		var spec: Dictionary = Reaction.of(_status_effects.get(status_name, {}))
+		if spec.is_empty():
+			continue
+		var trigger: String = str(spec.get("trigger", ""))
+		var reach: int = Reaction.reach_of(spec, reactor)
+
+		var fires := false
+		if trigger == "enemy_enters_reach":
+			# Crossing IN, not merely being in: a unit walking around inside
+			# your reach provokes once, when it arrives.
+			fires = new_dist <= reach and old_dist > reach
+		elif trigger == "ally_threatened":
+			# Somebody has come for one of the people you are standing over.
+			for ally in all_units:
+				if ally == reactor or ally.is_dead or not "team" in ally:
+					continue
+				if ally.team != reactor.team or not "grid_position" in ally:
+					continue
+				if _grid_distance(reactor.grid_position, ally.grid_position) > reach:
+					continue
+				if _grid_distance(new_pos, ally.grid_position) <= 1:
+					fires = true
+					break
+		if not fires or not Reaction.can_fire(spec, entry, mover):
+			continue
+		if _perform_reaction(reactor, mover, status_name, spec, {}):
+			Reaction.spend(entry, mover)
+
+
+## Carry out one reaction's responses, in the order they are declared.
+##
+## Returns whether anything actually happened, because a reaction that could
+## not reach its target must not spend the round's allowance: a spear braced
+## against a charge that stops three tiles out is still braced.
+func _perform_reaction(unit: Node, against: Node, status_name: String,
+		spec: Dictionary, result: Dictionary) -> bool:
+	var label: String = status_name.replace("_", " ")
+	var acted := false
+	for response in spec.get("responses", []):
+		match str(response):
+			"auto_dodge":
+				acted = true
+				# The blow that triggered this one never lands. The reactive
+				# hook runs AFTER the damage is applied, so turning a blow
+				# aside means giving back what it just took rather than
+				# preventing it — the same answer, one step later.
+				var landed: int = int(result.get("damage", 0))
+				if landed > 0 and unit.has_method("heal"):
+					unit.heal(landed)
+				result["hit"] = false
+				result["damage"] = 0
+				result["dodged"] = true
+				combat_log.emit("%s: %s — the blow finds nobody there."
+					% [unit.unit_name, label])
+
+			"reposition":
+				acted = true
+				var spec_move: Dictionary = {
+					"mode": str(spec.get("reposition_mode", "scatter")),
+					"tiles": int(spec.get("reposition_tiles", 1)),
+				}
+				reposition(unit, spec_move, unit, unit.grid_position)
+
+			"attack":
+				if not is_instance_valid(against) or against.is_dead:
+					continue
+				# A free attack still has to be able to reach: a stance may
+				# threaten two tiles because it is a spear stance, and the same
+				# rule keeps a swordsman from answering across the gap.
+				var range_ok: int = unit.get_attack_range() \
+					if unit.has_method("get_attack_range") else 1
+				if _grid_distance(unit.grid_position, against.grid_position) > range_ok:
+					continue
+				acted = true
+				combat_log.emit("%s: %s!" % [unit.unit_name, label])
+				var mult: float = float(spec.get("damage_mult", 1.0))
+				if is_equal_approx(mult, 1.0):
+					attack_unit(unit, against, true)
+				else:
+					# A braced spear hits harder than a swing of opportunity.
+					_reaction_damage_mult = mult
+					attack_unit(unit, against, true)
+					_reaction_damage_mult = 1.0
+
+			"status":
+				var give: String = str(spec.get("status", ""))
+				if give != "" and is_instance_valid(against) and not against.is_dead:
+					acted = true
+					_apply_status_effect(against, give,
+						int(spec.get("status_duration", 1)), 0, unit)
+
+			_:
+				push_warning("CombatManager: status '%s' — %s"
+					% [status_name, Reaction.explain_unknown_response(str(response))])
+	return acted
+
+
+## Multiplier applied to the next reaction attack, set around attack_unit()
+## because the attack path takes no such argument. Set for Charge is the only
+## thing that uses it, and it is cleared immediately.
+var _reaction_damage_mult: float = 1.0
+
+
 ## Process status spread — statuses with "spread" data can jump to adjacent units.
 ## Called once per unit per turn, after normal status processing.
 func _process_status_spread(unit: Node) -> void:
@@ -5373,6 +5524,13 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 		return
 
 	var is_melee = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
+
+	# --- Reaction stances: answering a blow with a blow ---
+	#
+	# `retaliation` could deal flat damage, reflect a percentage or apply a
+	# status; it could not swing a weapon, which is what a counterstance is.
+	# Six active perks waited on that half.
+	_fire_reactions(defender, attacker, "attacked_in_melee", is_melee, result)
 
 	for effect in defender.status_effects:
 		var status_name = effect.get("status", "")
@@ -7020,13 +7178,17 @@ func _resolve_stance(user: Node, combat_data: Dictionary) -> Dictionary:
 		_apply_status_effect(user, status_entry.get("status", ""), status_entry.get("duration", 1))
 		effects.append({"type": "status", "status": status_entry.status, "duration": status_entry.duration})
 
-	# Stances end your turn — use all remaining actions
-	var unit = get_current_unit()
-	if unit == user:
-		while unit.actions_remaining > 1:  # Leave 1 for the use_action call in use_active_skill
-			unit.actions_remaining -= 1
+	# Most stances end your turn — that is the cost of holding one. Two do not
+	# say so in their own text (Counterstrike, Heavenly Counterflow), so the
+	# data decides rather than the resolver.
+	var ends_turn: bool = bool(combat_data.get("ends_turn", true))
+	if ends_turn:
+		var unit = get_current_unit()
+		if unit == user:
+			while unit.actions_remaining > 1:  # Leave 1 for use_active_skill's use_action
+				unit.actions_remaining -= 1
 
-	return {"success": true, "ends_turn": true, "effects": effects}
+	return {"success": true, "ends_turn": ends_turn, "effects": effects}
 
 
 ## Heal self (Mantra of Healing, etc.)
@@ -9271,6 +9433,17 @@ func _check_zoc_reactions(mover: Node, old_pos: Vector2i, new_pos: Vector2i) -> 
 	if PerkSystem.has_perk(mover_char, "skirmisher"):
 		return
 
+	# Reaction stances first: an enemy stepping into a threatened area, or up to
+	# an ally somebody is guarding. Declared by the status rather than branched
+	# on per perk — the three branches below this are the older way, kept
+	# because they are passives rather than stances.
+	for reactor in all_units:
+		if reactor.is_dead or not "team" in reactor or reactor.team == mover.team:
+			continue
+		var old_dist: int = _grid_distance(reactor.grid_position, old_pos)
+		var new_dist: int = _grid_distance(reactor.grid_position, new_pos)
+		_fire_move_reactions(reactor, mover, old_dist, new_dist, old_pos, new_pos)
+
 	# Scan all enemies of the mover (i.e., potential reactors on the other team)
 	for reactor in all_units:
 		if reactor.is_dead or reactor.team == mover.team:
@@ -9301,11 +9474,9 @@ func _check_zoc_reactions(mover: Node, old_pos: Vector2i, new_pos: Vector2i) -> 
 			if dist_new <= reach and dist_old > reach:
 				_apply_status_effect(mover, "Slowed", 2, 0, reactor)
 
-		# None Shall Pass (Spears 9): reaction attack against ALL enemies entering reach
-		if is_spear and PerkSystem.has_perk(reactor_char, "none_shall_pass"):
-			if dist_new <= reach and dist_old > reach:
-				combat_log.emit("%s: None Shall Pass reaction!" % reactor.unit_name)
-				attack_unit(reactor, mover, true)
+		# None Shall Pass was here as an always-on passive: a free attack with
+		# no turn-ending and no -2 Movement, which is not what the perk says.
+		# It is a stance now — see the None_Shall_Pass status.
 
 		# Sentinel (Swords/MA cross): reaction attack when enemy LEAVES melee range (1 tile)
 		if PerkSystem.has_perk(reactor_char, "sentinel"):
