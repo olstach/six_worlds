@@ -931,11 +931,18 @@ func _open_rest_panel() -> void:
 	var food_discount:      int = best_logistics / 3
 	var herb_scrap_discount: int = best_logistics / 4
 
+	# Insatiable eats half again as much, so the party's food bill is counted
+	# in MOUTHS rather than heads. The trait said "consume 50% more food per
+	# meal and rest" in a `todo` key and nothing read it.
+	var mouths: float = 0.0
+	for char in party:
+		mouths += TraitSystem.food_multiplier(char) if TraitSystem else 1.0
+
 	# Per-tier costs
 	var food_costs:  Array[int] = [
-		maxi(1, 2 - food_discount) * party_size,
-		maxi(1, 4 - food_discount) * party_size,
-		maxi(1, 6 - food_discount) * party_size,
+		maxi(1, int(ceil(maxi(1, 2 - food_discount) * mouths))),
+		maxi(1, int(ceil(maxi(1, 4 - food_discount) * mouths))),
+		maxi(1, int(ceil(maxi(1, 6 - food_discount) * mouths))),
 	]
 	var herbs_costs: Array[int] = [0, maxi(0, 2 - herb_scrap_discount), maxi(0, 4 - herb_scrap_discount)]
 	var scrap_costs: Array[int] = [
@@ -1300,14 +1307,17 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 		var max_hp:      int = int(derived.get("max_hp",      100))
 		var max_mana:    int = int(derived.get("max_mana",     50))
 		var max_stamina: int = int(derived.get("max_stamina",  50))
-		var new_hp: int = int(derived.get("current_hp", max_hp)) + floori(max_hp * restore_pct)
+		# An Insatiable body takes half the good out of a night's sleep.
+		var own_pct: float = restore_pct \
+			* (TraitSystem.rest_recovery_multiplier(char) if TraitSystem else 1.0)
+		var new_hp: int = int(derived.get("current_hp", max_hp)) + floori(max_hp * own_pct)
 		if new_hp > max_hp:
 			derived["temp_hp"]    = new_hp - max_hp
 			derived["current_hp"] = max_hp
 		else:
 			derived["current_hp"] = new_hp
-		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * restore_pct))
-		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * restore_pct))
+		derived["current_mana"]    = mini(max_mana,    int(derived.get("current_mana",    max_mana))    + floori(max_mana    * own_pct))
+		derived["current_stamina"] = mini(max_stamina, int(derived.get("current_stamina", max_stamina)) + floori(max_stamina * own_pct))
 
 		# Yoga skill increases pressure decay: +2 per Yoga level on top of tier base
 		var yoga_level: int = CharacterSystem.get_effective_skill_level(char, "yoga")

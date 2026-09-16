@@ -1223,7 +1223,8 @@ func update_derived_stats(character: Dictionary) -> void:
 			"xp_gain_pct", "loot_chance_pct", "spellpower_fire",
 			"consumable_power_pct", "repair_efficiency_pct",
 			"effect_duration_turns", "burning_damage_pct", "poison_damage_pct",
-			"status_effect_chance_pct", "stun_chance_pct"]:
+			"status_effect_chance_pct", "stun_chance_pct",
+			"crafting_yield_pct", "loot_quality_pct", "trap_detection_pct"]:
 		derived[accumulated] = 0.0
 
 	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
@@ -1281,6 +1282,15 @@ func update_derived_stats(character: Dictionary) -> void:
 				+ float(bonus.get("burning_damage_pct", 0.0))
 			derived["poison_damage_pct"] = derived.get("poison_damage_pct", 0.0) \
 				+ float(bonus.get("poison_damage_pct", 0.0))
+			# The last three skill-table keys that nothing read: Alchemy's
+			# crafting yield (Brew Coatings), and Thievery's loot quality
+			# (the drop fraction) and trap detection (stepping around a snare).
+			derived["crafting_yield_pct"] = derived.get("crafting_yield_pct", 0.0) \
+				+ float(bonus.get("crafting_yield_pct", 0.0))
+			derived["loot_quality_pct"] = derived.get("loot_quality_pct", 0.0) \
+				+ float(bonus.get("loot_quality_pct", 0.0))
+			derived["trap_detection_pct"] = derived.get("trap_detection_pct", 0.0) \
+				+ float(bonus.get("trap_detection_pct", 0.0))
 			derived["status_effect_chance_pct"] = derived.get("status_effect_chance_pct", 0.0) \
 				+ float(bonus.get("status_effect_chance_pct", 0.0))
 			derived["stun_chance_pct"] = derived.get("stun_chance_pct", 0.0) \

@@ -1081,10 +1081,7 @@
       "water_breather"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "water_tile_movement: grant party-wide water traversal when all members have aquatic"
-    ]
+    "purge_difficulty": 0
   },
   "flying": {
     "name": "Flying",
@@ -1104,10 +1101,7 @@
       "flying"
     ],
     "purgeable_by": [],
-    "purge_difficulty": 0,
-    "todo": [
-      "air_tile_movement: grant party-wide air traversal when all members have flying"
-    ]
+    "purge_difficulty": 0
   },
   "armored": {
     "name": "Armored",
@@ -1351,10 +1345,8 @@
     ],
     "purgeable_by": [],
     "purge_difficulty": 0,
-    "todo": [
-      "food_consumption: consume 50% more food per meal and rest",
-      "rest_healing: receive 50% less HP and MP from rest"
-    ]
+    "food_multiplier": 1.5,
+    "rest_recovery_multiplier": 0.5
   },
   "better_starting_weapon": {
     "name": "Armory Rights",

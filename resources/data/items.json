@@ -13921,9 +13921,11 @@
       "abilities": [],
       "durability": 40,
       "max_durability": 40,
-      "todo": [
-        "blindness_immunity: grants immunity to the Blinded status effect when equipped; wire passive check in CombatUnit or ItemSystem when applying the blinded status"
-      ],
+      "passive": {
+        "status_immunity": [
+          "Blinded"
+        ]
+      },
       "material": "copper",
       "quality": "good",
       "enchantment": "none"

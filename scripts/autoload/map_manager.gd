@@ -809,7 +809,38 @@ func refresh_movement_abilities(party: Array, status_defs: Dictionary) -> void:
 		if PerkSystem:
 			for perk_id in PerkSystem.get_owned_perk_ids(character):
 				_collect_movement_ability(PerkSystem.get_perk_data(perk_id), granted)
+
+	# And from what the party IS, when all of it is the same thing.
+	#
+	# Aquatic and Flying both say "if the ENTIRE party shares this trait, the
+	# party may traverse..." — a rule that cannot be per-member, because the
+	# party moves as one body on the overworld and the slowest member decides.
+	# Both traits carried the promise in a `todo` key and nothing read it.
+	for trait_id in TRAIT_TRAVERSAL:
+		if _whole_party_has(party, trait_id):
+			granted[TRAIT_TRAVERSAL[trait_id]] = true
+
 	movement_abilities = granted
+
+
+## Traits that open terrain for the whole party, and the ability each grants.
+## Declared here rather than in traits.json because the rule is "everybody" —
+## a property of the PARTY, which no single trait entry can express.
+const TRAIT_TRAVERSAL: Dictionary = {
+	"aquatic": "water_walking",
+	"flying": "flight",
+}
+
+
+## Does every living member of the party carry this trait? An empty party does
+## not, or a party of nobody would swim.
+func _whole_party_has(party: Array, trait_id: String) -> bool:
+	if party.is_empty():
+		return false
+	for character in party:
+		if not trait_id in character.get("traits", []):
+			return false
+	return true
 
 
 ## Read a `grants_movement_ability` declaration, which may name one or several.

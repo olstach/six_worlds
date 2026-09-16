@@ -547,41 +547,37 @@ the Earth/Black plant line — so the work went where the gaps were:
   elemental that drinks fire, or an undead thing that feeds on Black magic, is
   content waiting to be written.
 
-## 6. Data with no consumer
+## 6. Data with no consumer — nearly cleared
 
-- [ ] **27 of the 40 `base_bonuses` stat keys are read by nothing.** Full table
-  with owning skill, L1/L5/L10 values and the system each would hook into is in
-  Part III below. This is the largest single gap: most general skills currently
-  pay out only their combat numbers.
+- [x] ~~**27 of the 40 `base_bonuses` stat keys are read by nothing**~~ — it was
+  **4 of 39** by the time anyone looked again (2026-09-16); the September
+  wiring phases had cleared the rest and this entry was never updated. Three of
+  the four are wired now, and each turned out to have a consumer waiting rather
+  than needing one invented:
 
-  **Renamed 2026-09-12 so the trap is visible in the name.** `_pct` is a
-  percentage, `party_` means one member's skill pays the whole party, a bare
-  name is flat. The convention is recorded in `perks.json`'s `base_bonuses._comment`
-  and enforced by `validate_data.py`. Five live keys were renamed at the same
-  time because their names misled: `attack` → `accuracy` (it lands on
-  `derived.accuracy`), `armor_penetration` → `armor_pierce`, `stamina` →
-  `max_stamina` (a maximum, not current), `mana_cost` → `mana_cost_reduction`
-  (negative values mean cheaper), `strength_weapon_damage` →
-  `weapon_damage_from_strength`. Verified behaviour-preserving: derived stats
-  for every skill at levels 1/5/10/15 are byte-identical before and after.
+  - **`crafting_yield_pct`** (Alchemy) → Brew Coatings, the one camp activity
+    Alchemy owns, which arrived with the poison pass a day earlier. Whole
+    hundreds are extra doses; the remainder is a chance at one.
+  - **`loot_quality_pct`** (Thievery) → the loot drop fraction, which was
+    `best_thievery * 0.03` capped at 0.30: a magic number that meant what the
+    table says and disagreed with it. Read now as a percentage of the HEADROOM
+    between the roll and the maximum, so the bound holds by construction.
+  - **`trap_detection_pct`** (Thievery) → a chance to step around a trap,
+    which became possible the moment Trap Maker existed. Their own skill, not
+    the party's best: spotting a snare is something you do with your own eyes.
 
-  **They were never the simple renames they looked like.** It is tempting to map
-  the dead keys onto live derived stats by name — `mental_resistance` onto
-  `mental_resistance_pct`, `movement_speed` onto `movement`. Checked against the
-  values, most of that is wrong:
+  **`crafting_quality_pct`** (Smithing) is the one left, and for the reason
+  already recorded: camp crafting pulls rope, torch, bandage and arrowhead
+  from a fixed table with no quality concept. Building one is a feature, not a
+  wiring job — and quality means little for a torch.
 
-  | dead key | skill | L1 → L15 | why not a rename |
-  |---|---|---|---|
-  | `movement_speed` | grace | 10 → 65 | `derived.movement` is in **tiles** (base 3–4). This is a percentage; renaming grants 65 tiles. |
-  | `healing_effectiveness_(party)` | medicine | 10 → 130 | party-wide; `healing_pct` is per-character |
-  | `magic_damage_resistance` | yoga | 5 → 75 | magic only; `damage_reduction_pct` is all damage |
-  | `party_xp_gain` | learning | 3 → 42 | party-wide; `xp_gain_pct` is per-character |
-  | `loot_quality` | thievery | 5 → 75 | quality is not `loot_chance_pct`'s chance |
-  | `mental_resistance` | yoga | 5 → 125 | same concept as `mental_resistance_pct`, but +125% is an auto-pass and needs rescaling |
-
-  What the table still needs is two things that do not exist: **consumers for
-  the percentage stats**, and a **party-wide propagation mechanism** for the
-  `party_` keys.
+  **The renaming note is still worth keeping.** `_pct` is a percentage,
+  `party_` means one member's skill pays the whole party, a bare name is flat;
+  the convention lives in `perks.json`'s `base_bonuses._comment` and
+  validate_data.py enforces it. And the dead keys were never the simple
+  renames they looked like: `movement_speed` was a percentage where
+  `derived.movement` is in tiles, so mapping one onto the other would have
+  granted 65 tiles of movement.
 
 - [x] **Party-wide bonuses** — built 2026-09-12 as `PartyBonuses`, best member,
       with `update_party_derived_stats()` firing on skill change and party
@@ -653,15 +649,30 @@ the Earth/Black plant line — so the work went where the gaps were:
   checked for values that no code reads. Known gaps live in
   `tools/vocabulary_baseline.json` with a reason attached, so the check fails
   only on new drift. Shrink the baseline by wiring a consumer.
-- [ ] **6 embedded `todo` keys in the data files** promise mechanics no code
-  reads. Nothing in TODO.md ever tracked them:
-  - `traits.json` — `aquatic` / `flying` party-wide tile traversal,
-    `night_vision` darkness immunity, `insatiable` (+50% food, −50% rest
-    recovery)
-  - `items.json` — `smoked_lenses` blindness immunity
-  - `races.json` — `shambler` **background** (not race, as previously recorded)
-    is −7 net attributes with no compensating passive; `jaina` background wants
-    karma wiring (slower animal karma, drift toward human/god)
+- [x] ~~**6 embedded `todo` keys**~~ — three kept, three left with reasons
+  (2026-09-16). Nothing in TODO.md had ever tracked them.
+
+  Kept: **Aquatic** and **Flying** grant party-wide traversal when EVERY
+  member has the trait — a rule that cannot be per-member, because the party
+  moves as one body on the overworld, so `MapManager.TRAIT_TRAVERSAL` asks the
+  party rather than the character. **Insatiable** eats half again as much and
+  takes half the good out of a night's sleep; the trait declares
+  `food_multiplier` and `rest_recovery_multiplier` and TraitSystem reads both,
+  so the party's food bill is counted in mouths rather than heads.
+  **Smoked Glass Lenses** stop the Blinded they name, through a general
+  `passive.status_immunity` list — the ITEM names the status rather than the
+  code naming the item. And Dré's empty `todo: []` is gone.
+
+  Left, each blocked on something real:
+  - **Night Vision's darkness immunity** — there is no darkness system to be
+    immune to. Wiring it would be data with no consumer in the other
+    direction.
+  - **Shambler** is −7 net attributes with no compensating passive. That is a
+    design decision, not a wiring job.
+  - **Jaina** wants karma wiring: slower animal-realm karma, drift toward
+    human and god through non-violent play. KarmaSystem has no per-race
+    modifier, so this is a small feature rather than a read.
+
 - [ ] **`skeleton_king_duel`** stops at 10% HP — verify the special win
   condition still fires after the combat refactors.
 

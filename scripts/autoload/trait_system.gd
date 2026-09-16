@@ -200,6 +200,34 @@ func traits_with_bond_tag(character: Dictionary, bond_tag: String) -> Array:
 ## Read by CharacterSystem.update_derived_stats() into derived.resistances,
 ## which is what CombatUnit.get_resistance() consults — so this is the only
 ## place trait resistances need to exist.
+## How much food this character eats, as a multiplier on one share.
+##
+## Insatiable's own description — "mouth like a gate, throat like a needle" —
+## promised this in a `todo` key for months, alongside the rest penalty below,
+## and nothing read either.
+func food_multiplier(character: Dictionary) -> float:
+	var mult := 1.0
+	for trait_id in character.get("traits", []):
+		mult *= float(_trait_field(str(trait_id), "food_multiplier", 1.0))
+	return mult
+
+
+## How much of a rest this character actually gets.
+func rest_recovery_multiplier(character: Dictionary) -> float:
+	var mult := 1.0
+	for trait_id in character.get("traits", []):
+		mult *= float(_trait_field(str(trait_id), "rest_recovery_multiplier", 1.0))
+	return clampf(mult, 0.1, 2.0)
+
+
+## One numeric field off a trait definition, or `fallback`.
+func _trait_field(trait_id: String, field: String, fallback: float) -> float:
+	var def: Dictionary = get_trait(trait_id)
+	if def.is_empty() or not def.has(field):
+		return fallback
+	return float(def[field])
+
+
 func get_resistances(character: Dictionary) -> Dictionary:
 	var total: Dictionary = {}
 	for trait_id in character.get("traits", []):

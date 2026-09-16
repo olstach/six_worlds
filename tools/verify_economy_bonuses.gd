@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 8
+const EXPECTED_CHECKS: int = 12
 
 
 func _ready() -> void:
@@ -22,6 +22,13 @@ func _ready() -> void:
 	_check_repair_efficiency_cuts_scrap_cost()
 	_check_alchemy_keeps_paying_past_level_five()
 	_check_a_camp_activity_can_require_a_perk()
+
+	# The last of the stat keys nothing read, and the trait promises kept in a
+	# `todo` field.
+	_check_crafting_yield_pays_for_coatings()
+	_check_loot_quality_widens_the_drop()
+	_check_an_insatiable_eats_more()
+	_check_an_insatiable_sleeps_worse()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -187,4 +194,95 @@ func _check_a_camp_activity_can_require_a_perk() -> void:
 	untrained["perks"] = ["applied_toxicology"]
 	if has_it.call(CampSystem.get_available_activities([untrained], 3, true)):
 		_fail("Brew Coatings was offered to someone with no Alchemy at all")
+	_done()
+
+
+## `crafting_yield_pct` is Alchemy's, and Brew Coatings is the one camp activity
+## Alchemy owns — so this is the consumer it waited for.
+func _check_crafting_yield_pays_for_coatings() -> void:
+	var novice: Dictionary = CharacterSystem.create_blank_character()
+	novice["skills"] = {"alchemy": 1}
+	novice["perks"] = ["applied_toxicology"]
+	CharacterSystem.update_derived_stats(novice)
+	var master: Dictionary = CharacterSystem.create_blank_character()
+	master["skills"] = {"alchemy": 10}
+	master["perks"] = ["applied_toxicology"]
+	CharacterSystem.update_derived_stats(master)
+
+	if float(master.derived.get("crafting_yield_pct", 0.0)) <= 0.0:
+		_fail("Alchemy 10 produced no crafting_yield_pct at all")
+
+	var novice_total := 0
+	var master_total := 0
+	for _run in 30:
+		GameState.herbs = 99
+		novice_total += _brew(novice)
+		GameState.herbs = 99
+		master_total += _brew(master)
+	if novice_total == 0 or master_total == 0:
+		_fail("brewing produced nothing (novice %d, master %d)"
+			% [novice_total, master_total])
+	elif master_total <= novice_total:
+		_fail("thirty brews yielded %d coatings for a master and %d for a "
+			% [master_total, novice_total] + "novice")
+	_done()
+
+
+## How many coatings one Brew Coatings produced.
+func _brew(performer: Dictionary) -> int:
+	var before: int = ItemSystem.get_inventory_count("poison_oil") \
+		+ ItemSystem.get_inventory_count("paralyzing_oil") \
+		+ ItemSystem.get_inventory_count("whetstone_oil") \
+		+ ItemSystem.get_inventory_count("warding_oil") \
+		+ ItemSystem.get_inventory_count("void_oil")
+	CampSystem.execute_activity("brew_coatings", performer, [performer])
+	var after: int = ItemSystem.get_inventory_count("poison_oil") \
+		+ ItemSystem.get_inventory_count("paralyzing_oil") \
+		+ ItemSystem.get_inventory_count("whetstone_oil") \
+		+ ItemSystem.get_inventory_count("warding_oil") \
+		+ ItemSystem.get_inventory_count("void_oil")
+	return after - before
+
+
+## The loot drop fraction was `best_thievery * 0.03`, a magic number that meant
+## what the Thievery table's `loot_quality_pct` says and disagreed with it.
+func _check_loot_quality_widens_the_drop() -> void:
+	var thief: Dictionary = CharacterSystem.create_blank_character()
+	thief["skills"] = {"thievery": 10}
+	CharacterSystem.update_derived_stats(thief)
+	if float(thief.derived.get("loot_quality_pct", 0.0)) <= 0.0:
+		_fail("Thievery 10 produced no loot_quality_pct at all")
+	var plain: Dictionary = CharacterSystem.create_blank_character()
+	CharacterSystem.update_derived_stats(plain)
+	if float(plain.derived.get("loot_quality_pct", 0.0)) != 0.0:
+		_fail("an untrained character has loot_quality_pct %.0f"
+			% float(plain.derived.get("loot_quality_pct", 0.0)))
+	_done()
+
+
+func _check_an_insatiable_eats_more() -> void:
+	var ordinary: Dictionary = CharacterSystem.create_blank_character()
+	var hungry: Dictionary = CharacterSystem.create_blank_character()
+	hungry["traits"] = ["insatiable"]
+	var plain_mult: float = TraitSystem.food_multiplier(ordinary)
+	var hungry_mult: float = TraitSystem.food_multiplier(hungry)
+	if not is_equal_approx(plain_mult, 1.0):
+		_fail("an ordinary character eats %.2f shares" % plain_mult)
+	if hungry_mult <= plain_mult:
+		_fail("an Insatiable eats %.2f shares where an ordinary character eats "
+			% hungry_mult + "%.2f" % plain_mult)
+	_done()
+
+
+func _check_an_insatiable_sleeps_worse() -> void:
+	var ordinary: Dictionary = CharacterSystem.create_blank_character()
+	var hungry: Dictionary = CharacterSystem.create_blank_character()
+	hungry["traits"] = ["insatiable"]
+	var plain_rest: float = TraitSystem.rest_recovery_multiplier(ordinary)
+	var hungry_rest: float = TraitSystem.rest_recovery_multiplier(hungry)
+	if not is_equal_approx(plain_rest, 1.0):
+		_fail("an ordinary character recovers %.2f of a rest" % plain_rest)
+	if hungry_rest >= plain_rest:
+		_fail("an Insatiable recovers %.2f of a rest where an ordinary "
+			% hungry_rest + "character recovers %.2f" % plain_rest)
 	_done()

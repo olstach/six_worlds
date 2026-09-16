@@ -1144,7 +1144,7 @@ for _zid in sorted(_zone_ids):
             "which is not in Zone.DRIFTS")
     _has_payloads = False
     for _key in _zdef:
-        if _key.startswith("_") or _key in ("name", "affects", "drift", "pair"):
+        if _key.startswith("_") or _key in ("name", "affects", "drift", "pair", "trap"):
             continue
         if _key not in _zone_triggers:
             err("data->code", f"zone '{_zid}' has trigger '{_key}', which is "

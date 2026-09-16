@@ -14,7 +14,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 14
+const EXPECTED_CHECKS: int = 16
 var grid: CombatGrid
 
 
@@ -41,6 +41,8 @@ func _ready() -> void:
 	_check_a_mass_teleport_moves_one_side_only()
 	_check_a_guard_takes_the_blow_meant_for_another()
 	_check_one_spell_can_answer_to_no_resistance()
+	_check_a_thief_steps_around_a_trap()
+	_check_gear_can_refuse_a_status()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -579,3 +581,82 @@ func _cast(caster: CombatUnit, spell_id: String, at: Vector2i) -> void:
 	CombatManager.turn_order = [caster]
 	CombatManager.current_unit_index = 0
 	CombatManager.cast_spell(caster, spell_id, at)
+
+
+## Thievery's `trap_detection_pct` was written into derived stats for months
+## and read by nothing, because until Trap Maker there were no traps.
+func _check_a_thief_steps_around_a_trap() -> void:
+	var trapper := _make_unit(Vector2i(10, 10), 0)
+	var thief := _make_unit(Vector2i(20, 20), 1)
+	var oaf := _make_unit(Vector2i(22, 22), 1)
+	thief.character_data["skills"] = {"thievery": 10}
+	CharacterSystem.update_derived_stats(thief.character_data)
+	if float(thief.character_data.derived.get("trap_detection_pct", 0.0)) <= 0.0:
+		_fail("Thievery 10 produced no trap_detection_pct")
+
+	var at := Vector2i(11, 10)
+	var thief_caught := 0
+	var oaf_caught := 0
+	for _try in 30:
+		for probe in [thief, oaf]:
+			CombatManager.active_zones.clear()
+			_use(trapper, "trap_maker", at)
+			probe.current_hp = probe.max_hp
+			probe.status_effects.clear()
+			probe.grid_position = Vector2i(12, 12)
+			probe.grid_position = at
+			CombatManager._zones_check_entry(probe)
+			if probe.current_hp < probe.max_hp:
+				if probe == thief:
+					thief_caught += 1
+				else:
+					oaf_caught += 1
+	if oaf_caught == 0:
+		_fail("thirty traps and the untrained probe walked into none of them")
+	if thief_caught >= oaf_caught:
+		_fail("a master thief triggered %d traps where an untrained unit "
+			% thief_caught + "triggered %d" % oaf_caught)
+
+	# And it is a roll, not a rule: over two hundred snares a master thief
+	# walks into some of them, and an untrained one into all.
+	var spotted := 0
+	for _roll in 200:
+		if CombatManager._steps_around_trap(thief):
+			spotted += 1
+	if spotted == 200:
+		_fail("a master thief spotted all two hundred traps — detection is not "
+			+ "being rolled")
+	if spotted < 100:
+		_fail("a master thief spotted only %d of two hundred traps" % spotted)
+	for _roll in 50:
+		if CombatManager._steps_around_trap(oaf):
+			_fail("an untrained unit spotted a trap")
+			break
+	_cleanup([trapper, thief, oaf])
+	_done()
+
+
+## An item may declare `passive.status_immunity`, and the ITEM names the status
+## rather than the code naming the item. Smoked Glass Lenses promised this in a
+## `todo` key for months.
+func _check_gear_can_refuse_a_status() -> void:
+	var bare := _make_unit(Vector2i(10, 10), 0)
+	var shaded := _make_unit(Vector2i(11, 10), 0)
+	# Straight into the slot: equip_item() wants the thing in the inventory
+	# first, and what is under test is the reader, not the shop.
+	shaded.character_data["equipment"]["face"] = "smoked_lenses"
+
+	CombatManager._apply_status_effect(bare, "Blinded", 3)
+	CombatManager._apply_status_effect(shaded, "Blinded", 3)
+	if not bare.has_status("Blinded"):
+		_fail("a bare-eyed probe was not blinded, so the check below proves "
+			+ "nothing")
+	if shaded.has_status("Blinded"):
+		_fail("the lenses did not stop the Blinded they name")
+
+	# And only what they name.
+	CombatManager._apply_status_effect(shaded, "Slowed", 3)
+	if not shaded.has_status("Slowed"):
+		_fail("the lenses stopped a status they never mention")
+	_cleanup([bare, shaded])
+	_done()

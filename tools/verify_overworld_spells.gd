@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 37
+const EXPECTED_CHECKS: int = 38
 
 var _menu: Node
 var _saved_party: Array = []
@@ -46,6 +46,7 @@ func _ready() -> void:
 	_check_overworld_statuses_expire()
 
 	_check_water_walking_opens_water()
+	_check_a_party_of_swimmers_needs_all_of_them()
 	_check_sure_footing_removes_the_slowdown()
 	_check_an_ability_lapses_when_its_status_does()
 	_check_flight_grants_both_of_its_abilities()
@@ -1129,4 +1130,54 @@ func _check_a_portal_leads_back_once_unlocked() -> void:
 
 	GameState.current_world = saved_world
 	GameState.unlocked_worlds.assign(saved_unlocked)
+	_done()
+
+
+## Aquatic and Flying both say "if the ENTIRE party shares this trait, the
+## party may traverse" — a rule that cannot be per-member, because the party
+## moves as one body on the overworld. Both carried the promise in a `todo`
+## key and nothing read it.
+func _check_a_party_of_swimmers_needs_all_of_them() -> void:
+	_party(2)
+	var tile := Vector2i(3, 5)
+	MapManager.tiles[tile] = MapManager.Terrain.WATER
+	MapManager.map_size = Vector2i(maxi(MapManager.map_size.x, 8),
+		maxi(MapManager.map_size.y, 8))
+
+	# One swimmer is not a swimming party.
+	CharacterSystem.party[0]["traits"] = ["aquatic"]
+	CharacterSystem.party[1]["traits"] = []
+	MapManager.refresh_movement_abilities(CharacterSystem.party,
+		CombatManager._status_effects)
+	if MapManager.is_passable(tile):
+		_fail("one Aquatic member carried the whole party across water")
+
+	# All of them is.
+	CharacterSystem.party[1]["traits"] = ["aquatic"]
+	MapManager.refresh_movement_abilities(CharacterSystem.party,
+		CombatManager._status_effects)
+	if not MapManager.is_passable(tile):
+		_fail("a party of nothing but Aquatics still cannot cross water "
+			+ "(abilities: %s)" % str(MapManager.movement_abilities))
+
+	# And it is recomputed, not remembered: one of them leaves, the water
+	# closes again.
+	CharacterSystem.party[1]["traits"] = []
+	MapManager.refresh_movement_abilities(CharacterSystem.party,
+		CombatManager._status_effects)
+	if MapManager.is_passable(tile):
+		_fail("the party kept its water crossing after losing a swimmer")
+
+	# Flying opens the mountains the same way.
+	var peak := Vector2i(4, 6)
+	MapManager.tiles[peak] = MapManager.Terrain.MOUNTAINS
+	for member in CharacterSystem.party:
+		member["traits"] = ["flying"]
+	MapManager.refresh_movement_abilities(CharacterSystem.party,
+		CombatManager._status_effects)
+	if not MapManager.is_passable(peak):
+		_fail("a party of nothing but fliers still cannot cross mountains")
+	MapManager.tiles.erase(tile)
+	MapManager.tiles.erase(peak)
+	MapManager.clear_movement_abilities()
 	_done()
