@@ -167,11 +167,8 @@ static func get_spell_skill_reqs(spell: Dictionary) -> String:
 const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
 	"fire": 1,        # TerrainEffect.FIRE
 	"ice": 2,         # TerrainEffect.ICE
-	"cold": 2,        # TerrainEffect.ICE
 	"poison": 3,      # TerrainEffect.POISON
-	"acid": 4,        # TerrainEffect.ACID
 	"white": 5,       # TerrainEffect.BLESSED
-	"holy": 5,        # TerrainEffect.BLESSED
 	"black": 6,       # TerrainEffect.CURSED
 	"water": 7,       # TerrainEffect.WET
 	"air": 8,         # TerrainEffect.STORMY
@@ -2365,7 +2362,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 
 		# Magic resistance from the Yoga table. Applies to the elemental and
 		# arcane damage types only — a sword is not resisted by equanimity.
-		if damage_type in MAGIC_DAMAGE_TYPES:
+		if DamageType.is_magic(damage_type):
 			var magic_resist: float = unit.character_data.get("derived", {}).get(
 				"magic_resistance_pct", 0.0)
 			if magic_resist > 0.0:
@@ -2375,7 +2372,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 	# damage_taken_pct). Sits here rather than in the spell path so it covers
 	# every source of magic damage, not just the one that had it hardcoded.
 	if damage > 0:
-		var kind: String = "magic" if damage_type in MAGIC_DAMAGE_TYPES else "physical"
+		var kind: String = "magic" if DamageType.is_magic(damage_type) else "physical"
 		var aura_mult: float = AuraSystem.damage_taken_multiplier(
 			unit, kind, all_units, _aura_distance)
 		# And the ground they are standing on, which asks the same question of
@@ -4316,7 +4313,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Measured Radiance: white damage spells have 25% chance to blind for 1 turn
 	if PerkSystem.has_perk(caster_char, "measured_radiance") and has_damage:
-		var is_white = element in ["white", "holy"] or schools.any(func(s): return s.to_lower() in ["white", "holy"])
+		var is_white = element == "white" or schools.any(func(s): return s.to_lower() == "white")
 		if is_white and randf() < 0.25:
 			_apply_status_effect(target, "Blinded", 1, 0, caster)
 
@@ -4330,7 +4327,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Creeping Cold: ice/cold spells that deal damage also apply -1 Movement for 2 turns
 	if PerkSystem.has_perk(caster_char, "creeping_cold") and has_damage:
-		var is_cold = element in ["ice", "cold", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
+		var is_cold = element in ["ice", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
 		if is_cold:
 			_apply_stat_modifier(target, "movement", -1, 2)
 
@@ -4411,7 +4408,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Tidal Surge (Water 2): after casting a Water spell, caster gains +1 Movement for 1 turn
 	if PerkSystem.has_perk(caster_char, "tidal_surge"):
-		var is_water_ts = element in ["water", "ice", "cold"] or schools.any(func(s): return s.to_lower() == "water")
+		var is_water_ts = element in ["water", "ice"] or schools.any(func(s): return s.to_lower() == "water")
 		if is_water_ts:
 			_apply_stat_modifier(caster, "movement", 1, 1)
 
@@ -6185,11 +6182,11 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 # ACTIVE SKILLS
 # ============================================
 
-## Damage types magic_resistance_pct applies to. Physical damage is not on the
-## list: the Yoga table's resistance is to magic, not to being hit.
-const MAGIC_DAMAGE_TYPES: Array[String] = [
-	"space", "air", "fire", "water", "earth", "holy", "shadow", "arcane",
-]
+## What the Yoga table's magic_resistance_pct applies to now lives in
+## damage_types.json, behind DamageType.is_magic(). The constant that was here
+## listed holy, shadow and arcane — dealt by nothing — and omitted black and
+## white, so equanimity did nothing against the two schools most obviously
+## made of magic.
 
 
 ## Effect strings `use_active_skill` below dispatches to a real resolver.
@@ -9453,7 +9450,7 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 			# Enemies in 3 tiles take Cold damage 3% Spellpower × stacks; allies +3% resist per stack
 			var cold_dmg = ceili(spellpower * 0.03 * stacks)
 			for e in enemies_3:
-				apply_damage(e, cold_dmg, "cold")
+				apply_damage(e, cold_dmg, "ice")
 				_apply_status_effect(e, "Slowed", 2, 0, unit)
 			for a in allies_with_self:
 				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + stacks * 3
@@ -9750,7 +9747,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 			var cold_burst = ceili(spellpower * 0.30)
 			for e in all_enemies:
 				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
-					apply_damage(e, cold_burst, "cold")
+					apply_damage(e, cold_burst, "ice")
 					_apply_status_effect(e, "Frozen", 2, 0, unit)
 			for a in allies_with_self:
 				_apply_status_effect(a, "Fortified", 3, 0, unit)

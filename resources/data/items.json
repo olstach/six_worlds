@@ -2591,7 +2591,7 @@
       "description": "A flash-freezing alchemical flask.",
       "effect": {
         "damage": 15,
-        "damage_type": "cold",
+        "damage_type": "ice",
         "aoe_radius": 1,
         "range": 4,
         "statuses": [
@@ -2658,7 +2658,7 @@
       "description": "Consecrated water that scalds the unholy.",
       "effect": {
         "damage": 25,
-        "damage_type": "holy",
+        "damage_type": "white",
         "aoe_radius": 1,
         "range": 4,
         "statuses": []
@@ -2696,7 +2696,7 @@
       "description": "A corrosive splash that eats through armor.",
       "effect": {
         "damage": 15,
-        "damage_type": "acid",
+        "damage_type": "poison",
         "aoe_radius": 1,
         "range": 4,
         "statuses": [
@@ -2757,7 +2757,7 @@
       "description": "Coats a weapon with bitter cold. Next 3 attacks deal bonus cold damage and may chill.",
       "effect": {
         "bonus_damage": 5,
-        "bonus_damage_type": "cold",
+        "bonus_damage_type": "ice",
         "attacks": 3,
         "status": "Chilled",
         "status_chance": 30,
@@ -2791,7 +2791,7 @@
       "description": "Blessed ointment that imbues a weapon with divine wrath.",
       "effect": {
         "bonus_damage": 8,
-        "bonus_damage_type": "holy",
+        "bonus_damage_type": "white",
         "attacks": 3,
         "status": "",
         "status_chance": 0,
@@ -2879,7 +2879,7 @@
       "description": "Distilled from extraplanar essence. Strikes from a voided blade silence spellcasters.",
       "effect": {
         "bonus_damage": 12,
-        "bonus_damage_type": "void",
+        "bonus_damage_type": "space",
         "attacks": 4,
         "status": "Silenced",
         "status_chance": 50,
@@ -2999,7 +2999,7 @@
       "description": "A flask of corrosive alchemical acid. Dissolves armor on impact.",
       "effect": {
         "damage": 15,
-        "damage_type": "acid",
+        "damage_type": "poison",
         "aoe_radius": 1,
         "range": 4,
         "statuses": [
@@ -3018,7 +3018,7 @@
       "description": "A blinding alchemical burst. Disorients all enemies in the area.",
       "effect": {
         "damage": 5,
-        "damage_type": "light",
+        "damage_type": "white",
         "aoe_radius": 2,
         "range": 4,
         "statuses": [
@@ -3057,7 +3057,7 @@
       "description": "Compressed extraplanar energy. On detonation, creates a spatial rift that disrupts all magic in the area.",
       "effect": {
         "damage": 45,
-        "damage_type": "void",
+        "damage_type": "space",
         "aoe_radius": 2,
         "range": 5,
         "statuses": [
