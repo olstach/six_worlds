@@ -503,6 +503,35 @@ into `derived.resistances` by PerkSystem and read by nothing, which was Stone
 Body's entire description. Afflictions — bleed, poison, disease — are declared
 by the status now and resisted as a chance not to catch them.
 
+**Poison, audited and filled out 2026-09-16.** The spell ladder was already
+complete — Poison Sting (1), Festering Wound and Poison Skin (3), Venomous
+Tide and Poisonous Cloud (5), Miasma (7), Deathfog and Plague Waters (9), plus
+the Earth/Black plant line — so the work went where the gaps were:
+
+- **Four things that described themselves and did nothing.** `immune_system`
+  is an aura now, which needed a `resistance` payload kind auras and zones did
+  not have; `applied_toxicology` has a camp activity to craft the coatings it
+  promised, gated by a new `perk_req` on camp activities; `poisoner` doubles
+  them; and Diseased spreads — it declared `spreads_on_contact`, which nothing
+  reads, while the spread mechanism that has worked for months wanted a
+  `spread` block. Two ways to say one thing, and the status picked the one
+  with no reader. Spread also now honours the `range` every spreading status
+  declared and none of them got.
+- **`poison_damage_pct` on the Alchemy table**, on the same curve Fire Magic
+  uses for burning, read off whoever applied the venom — so an alchemist's
+  poison bites harder than a novice's, which fire has enjoyed for months.
+  Weapon procs and oils now record their source, so the scaling reaches them.
+- **Equipment:** `antivenom_lined` armour (poison had no ward while fire, ice,
+  lightning and space all did), `envenomed` weapons at twice `venomous`'s
+  chance, and a Serpent Ward talisman stat. Venom arrows already existed.
+- **Two spells:** Draw Out the Venom (Water/White 3) moves every affliction
+  from an ally to the nearest enemy — a cure that costs somebody else, and the
+  first user of the new `nearest_enemy` role — and Coil of the Naga
+  (Water/Black 7), a save-gated Festering, nagas being what Tibetan medicine
+  blames illness on.
+- **Poisonous Cloud and Miasma leave a cloud.** Both carried an unread
+  `cloud_effect: true` and dispersed the moment they landed.
+
 **Still open, small:**
 
 - The twenty legacy effect strings live in `Resistance.LEGACY_EFFECTS` rather

@@ -12,6 +12,8 @@ const WEAPON_SKILLS: Array[String] = [
 ## skill_req: Dictionary — all entries must be met; checked as best-in-party per skill.
 ## skill_req_any: Array[Dictionary] — OR list; any one dict fully met by party = available.
 ## skill_req_any_weapon: int — available if any party member has any weapon skill >= this.
+## perk_req: String — a perk id someone in the party must have, checked in
+##   addition to whatever skill requirement the activity carries.
 ## min_tier: minimum rest tier (1=quick, 2=camp, 3=full). Quick has 0 slots so never shows.
 ## costs: Dictionary {resource: amount} — consumed on execute beyond base rest costs.
 ## stub: bool — show in list but greyed out; depends on a future system.
@@ -225,6 +227,17 @@ const ACTIVITIES: Array = [
 		"effect_desc": "Gain 1–2 supplies (rope, torch, bandage, or arrowhead)",
 	},
 	{
+		"id": "brew_coatings",
+		"name": "Brew Coatings",
+		"category": "Maintenance",
+		"skill_req": {"alchemy": 3},
+		"perk_req": "applied_toxicology",
+		"min_tier": 2,
+		"costs": {"herbs": 2},
+		"description": "Render herbs down into what will sit on a blade",
+		"effect_desc": "Gain 1–2 weapon coatings; Alchemy 7+ may yield a rare one",
+	},
+	{
 		"id": "craft_charm",
 		"name": "Craft Charm",
 		"category": "Spiritual",
@@ -335,6 +348,7 @@ func execute_activity(activity_id: String, performer: Dictionary, party: Array, 
 		"brew_combat":        return _exec_brew_combat(performer)
 		"deep_repair":        return _exec_deep_repair(party)
 		"weapon_work":        return _exec_weapon_work(party)
+		"brew_coatings":      return _exec_brew_coatings(performer)
 		"craft_item":         return _exec_craft_item(performer)
 		"craft_charm":        return _exec_craft_charm(performer)
 		"set_snares":         return _exec_set_snares(performer)
@@ -355,6 +369,19 @@ func execute_activity(activity_id: String, performer: Dictionary, party: Array, 
 # ─── Requirement checking ────────────────────────────────────────────────────
 
 func _party_meets_req(party: Array, activity: Dictionary) -> bool:
+	# A perk requirement gates on top of any skill requirement rather than
+	# instead of it: Brew Coatings wants Alchemy 3 AND Applied Toxicology, which
+	# is what the perk means by "can craft weapon coatings".
+	if activity.has("perk_req"):
+		var perk_id: String = str(activity.perk_req)
+		var anyone := false
+		for char in party:
+			if PerkSystem and PerkSystem.has_perk(char, perk_id):
+				anyone = true
+				break
+		if not anyone:
+			return false
+
 	if activity.has("skill_req"):
 		for skill_id: String in activity.skill_req:
 			var min_level: int = activity.skill_req[skill_id]
@@ -792,6 +819,40 @@ const CRAFT_TABLE: Array = [
 	{"id": "bandage",   "name": "Bandage"},
 	{"id": "arrowhead", "name": "Arrowhead"},
 ]
+
+## The coatings Applied Toxicology promised. The perk read "can craft weapon
+## coatings: poison, paralysis, weakening" and nothing in the game could craft
+## one — the oils existed only to be bought.
+const COATING_TABLE: Array = [
+	{"id": "poison_oil",     "name": "Poison Oil"},
+	{"id": "paralyzing_oil", "name": "Paralyzing Oil"},
+	{"id": "whetstone_oil",  "name": "Whetstone Oil"},
+]
+const COATING_TABLE_MASTER: Array = [
+	{"id": "poison_oil",     "name": "Poison Oil"},
+	{"id": "paralyzing_oil", "name": "Paralyzing Oil"},
+	{"id": "warding_oil",    "name": "Warding Oil"},
+	{"id": "void_oil",       "name": "Void Oil"},
+]
+
+
+func _exec_brew_coatings(performer: Dictionary) -> Dictionary:
+	if not GameState.consume_supply("herbs", 2):
+		return {"message": "Not enough herbs to render down.", "ok": false}
+	var alchemy := CharacterSystem.get_effective_skill_level(performer, "alchemy")
+	var table: Array = COATING_TABLE_MASTER if alchemy >= 7 else COATING_TABLE
+	var count := 1 + int(alchemy >= 5)
+	var brewed: Array[String] = []
+	for _i in range(count):
+		var recipe: Dictionary = table[randi() % table.size()]
+		ItemSystem.add_to_inventory(recipe.id, 1)
+		brewed.append(recipe.name)
+	return {
+		"message": "%s works the herbs down to a residue: %s."
+			% [performer.get("name", "Performer"), ", ".join(brewed)],
+		"ok": true,
+	}
+
 
 func _exec_craft_item(performer: Dictionary) -> Dictionary:
 	if not GameState.consume_supply("scrap", 2):

@@ -650,7 +650,14 @@ _tags = _gd_list(_so_src, "TAGS")
 if not _ops or not _tags:
     err("data->code", "could not read StatusOps.OPS/TAGS — status ops unchecked")
 
-_roles = {"caster", "target", "all_allies", "all_enemies"}
+# Read from the resolver's own match arms rather than restated here, so a role
+# added in code is a role the data may use, and one removed stops validating.
+_role_src = open(os.path.join(ROOT, "scripts/autoload/combat_manager.gd"), encoding="utf-8").read()
+_m_roles = re.search(r"func _units_for_role.*?\n\treturn \[target\]", _role_src, re.S)
+_roles = set(re.findall(r'^\t\t"(\w+)":', _m_roles.group(0), re.M)) if _m_roles else set()
+if not _roles:
+    err("data->code", "could not read the roles from _units_for_role() — status "
+        "op roles unchecked")
 for _sid, _sp in _spells.items():
     for _op in _sp.get("status_ops", []):
         if _op.get("op") not in _ops:
@@ -1004,6 +1011,21 @@ def _walk_damage_types(node, where):
                 if v not in _damage_types and not (_affliction_ok and v in _other_res):
                     err("data->code", f"{where}: damage type '{v}' is not in "
                         "damage_types.json, so no resistance can match it")
+            elif k.endswith("_resistance") and isinstance(v, (int, float)):
+                # The other shape a resistance takes: ItemSystem turns a
+                # `<type>_resistance` passive into resistances[<type>], so an
+                # armour trait reading `water_resistance: 15` silently grants
+                # resistance to a type nothing deals. Two traits and four
+                # talisman stats were in that state after the reshape, and the
+                # `resistances` check above could not see them.
+                _base = k[:-len("_resistance")]
+                # `elemental_resistance` and `pierce_all_resistance` are
+                # scopes rather than types: all elements, and all resistance.
+                if _base not in _damage_types and _base not in _other_res \
+                        and _base not in ("debuff", "magic", "mental", "status",
+                                          "all", "elemental", "pierce_all"):
+                    err("data->code", f"{where}: '{k}' grants resistance to "
+                        f"'{_base}', which is not a damage type anything deals")
             elif k in ("resistances", "grants_resistance", "grants_vulnerability") \
                     and isinstance(v, dict):
                 for key in v:
@@ -1019,7 +1041,8 @@ def _walk_damage_types(node, where):
 
 for _f in ("spells.json", "statuses.json", "zones.json", "auras.json",
            "summon_templates.json", "items.json", "traits.json", "races.json",
-           "perks.json", "ammo.json", "equipment_tables.json"):
+           "perks.json", "ammo.json", "equipment_tables.json",
+           "talisman_tables.json"):
     _walk_damage_types(load("resources/data/" + _f), _f)
 for _f in sorted(glob.glob(os.path.join(ROOT, "resources/data/enemies/*.json"))):
     _walk_damage_types(load(os.path.relpath(_f, ROOT)), os.path.basename(_f))
@@ -1083,6 +1106,11 @@ for _zid in sorted(_zone_ids):
             if _pl.get("status") and _pl["status"] not in _status_names:
                 err("data->code", f"zone '{_zid}' grants status "
                     f"'{_pl['status']}', which does not exist")
+            if _pl.get("kind") == "resistance":
+                _zrt = str(_pl.get("type", ""))
+                if _zrt not in _damage_types and _zrt not in _other_res:
+                    err("data->code", f"zone '{_zid}' grants resistance to "
+                        f"'{_zrt}', which is neither a damage type nor an affliction")
             if _pl.get("summon") and _pl["summon"] not in _summon_templates:
                 err("data->code", f"zone '{_zid}' raises '{_pl['summon']}', "
                     "and no summon template by that name exists")
@@ -1132,6 +1160,14 @@ for _aid, _adef in _auras.items():
         if _kind not in _payload_kinds:
             err("data->code", f"aura '{_aid}' has payload kind '{_kind}', "
                 f"which is not in AuraSystem.PAYLOAD_KINDS — nothing resolves it")
+        if _kind == "resistance":
+            # The `type` a resistance payload guards against has to be
+            # something that can actually arrive, or the aura protects against
+            # nothing and says so nowhere.
+            _rt = str(_pl.get("type", ""))
+            if _rt not in _damage_types and _rt not in _other_res:
+                err("data->code", f"aura '{_aid}' grants resistance to '{_rt}', "
+                    "which is neither a damage type nor an affliction")
     if _adef.get("affects", "allies") not in ("allies", "enemies", "all", "self"):
         err("data->code", f"aura '{_aid}' affects '{_adef.get('affects')}', "
             "which AuraSystem.reaches() does not recognise — it will reach nobody")

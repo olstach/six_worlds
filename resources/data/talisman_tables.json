@@ -67,10 +67,11 @@
 			"weight": 10,
 			"options": [
 				{"stat": "fire_resistance",    "cost_per_point": 0.2, "min": 5, "max": 25},
-				{"stat": "water_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
-				{"stat": "earth_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
-				{"stat": "air_resistance",     "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "ice_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "crushing_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "lightning_resistance",     "cost_per_point": 0.2, "min": 5, "max": 25},
 				{"stat": "space_resistance",   "cost_per_point": 0.2, "min": 5, "max": 25},
+				{"stat": "poison_resistance",  "cost_per_point": 0.2, "min": 5, "max": 25},
 				{"stat": "physical_resistance","cost_per_point": 0.3, "min": 3, "max": 15}
 			]
 		}
@@ -183,10 +184,11 @@
 			"crit_chance":  "of Precision",
 			"initiative":   "of Haste",
 			"fire_resistance":    "of Flame Ward",
-			"water_resistance":   "of Tide Ward",
-			"earth_resistance":   "of Stone Ward",
-			"air_resistance":     "of Wind Ward",
+			"ice_resistance":   "of Frost Ward",
+			"crushing_resistance":   "of Iron Ward",
+			"lightning_resistance":     "of Storm Ward",
 			"space_resistance":   "of Void Ward",
+			"poison_resistance":  "of Serpent Ward",
 			"physical_resistance":"of Iron Skin"
 		}
 	},
@@ -208,10 +210,11 @@
 		"crit_chance": "air",
 		"initiative": "air",
 		"fire_resistance": "fire",
-		"water_resistance": "water",
-		"earth_resistance": "earth",
-		"air_resistance": "air",
+		"ice_resistance": "water",
+		"crushing_resistance": "earth",
+		"lightning_resistance": "air",
 		"space_resistance": "space",
+		"poison_resistance": "water",
 		"physical_resistance": "earth"
 	},
 

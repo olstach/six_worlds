@@ -39,6 +39,16 @@
       "_comment": "A circle of orbiting vajras. Allies inside are sheltered from magic and cast from a consecrated circle — a mandala is what Ritual is for — while enemies pay to cross the line, once, each time they cross it. The shelter and the spellpower are the two payload kinds that are READ where they apply rather than pushed on a tick; see CombatManager._zone_damage_taken_multiplier."
     },
 
+    "poison_cloud": {
+      "name": "Poison Cloud",
+      "affects": "all",
+      "while_inside": [
+        { "kind": "damage", "amount": 8, "element": "poison" },
+        { "kind": "grant_status", "status": "Poisoned", "duration": 2, "chance": 0.5 }
+      ],
+      "_comment": "What Poisonous Cloud and Miasma leave behind. Affects everyone, because a cloud does not know whose side you are on — which is the interesting half of casting one, and the reason both spells carried an unread `cloud_effect: true` for months."
+    },
+
     "mud": {
       "name": "Mud",
       "affects": "all",

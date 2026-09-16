@@ -1736,7 +1736,9 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				if oil_status != "" and oil_chance > 0:
 					if randf() * 100.0 <= oil_chance:
 						var oil_duration = oil.get("status_duration", 2)
-						_apply_status_effect(defender, oil_status, oil_duration)
+						# Source: the alchemist who coated the blade, so their
+						# poison_damage_pct reaches the venom they mixed.
+						_apply_status_effect(defender, oil_status, oil_duration, 0, attacker)
 						result["oil_status"] = oil_status
 				# Track remaining charges (unit's weapon_oil already decremented)
 				var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
@@ -2852,6 +2854,23 @@ func _zone_stat_bonus(unit: Node, stat: String) -> float:
 	for zone in zones_at(unit.grid_position):
 		for payload in zone.def.get("while_inside", []):
 			if payload.get("kind", "") != "stat" or payload.get("stat", "") != stat:
+				continue
+			if Zone.reaches(payload, zone.def, zone.source, unit):
+				total += float(payload.get("amount", 0))
+	return total
+
+
+## Resistance granted by the ground a unit is standing on — the zone twin of
+## AuraSystem.resistance_bonus(), reading the same payload kind.
+func zone_resistance_bonus(unit: Node, damage_type: String) -> float:
+	var total := 0.0
+	if not "grid_position" in unit:
+		return total
+	for zone in zones_at(unit.grid_position):
+		for payload in zone.def.get("while_inside", []):
+			if payload.get("kind", "") != "resistance":
+				continue
+			if str(payload.get("type", "")) != damage_type:
 				continue
 			if Zone.reaches(payload, zone.def, zone.source, unit):
 				total += float(payload.get("amount", 0))
@@ -4775,6 +4794,22 @@ func _units_for_role(role: String, caster: Node, target: Node) -> Array:
 			return get_team_units(caster.team if "team" in caster else 0)
 		"all_enemies":
 			return get_team_units(1 - (caster.team if "team" in caster else 0))
+		"nearest_enemy":
+			# The closest living enemy to the CASTER, or nobody. Draw Out the
+			# Venom needs somewhere to put what it pulls out of an ally, and
+			# "the nearest enemy" is the answer a spell like that wants.
+			var closest: Node = null
+			var best: int = 1 << 30
+			for unit in all_units:
+				if not is_instance_valid(unit) or unit.is_dead:
+					continue
+				if not "team" in unit or unit.team == caster.team:
+					continue
+				var dist: int = _grid_distance(caster.grid_position, unit.grid_position)
+				if dist < best:
+					best = dist
+					closest = unit
+			return [closest] if closest != null else []
 	return [target]
 
 
@@ -4957,6 +4992,18 @@ func _process_status_effects(unit: Node) -> bool:
 			# The element is in the effect string (`fire_damage_per_turn`),
 			# which is where it has been all along.
 			var element = str(effect_def.get("element", _dot_element(effect_def)))
+
+			# Alchemy makes venom bite harder, the way Fire Magic makes a burn
+			# bite harder. Read off whoever applied it, which the status entry
+			# already remembers — the poisoner's skill, not the victim's.
+			if element == "poison" and effect.has("source"):
+				var venom_source = effect["source"]
+				if is_instance_valid(venom_source) and "character_data" in venom_source:
+					var venom_pct: float = venom_source.character_data.get("derived", {}).get(
+						"poison_damage_pct", 0.0)
+					if venom_pct > 0.0:
+						damage = int(damage * (1.0 + venom_pct / 100.0))
+
 			# Fan_the_Flames: source with increase_burning_damage_dealt adds 50% to fire DoT
 			if element == "fire" and effect.has("source"):
 				var dot_source = effect["source"]
@@ -5111,8 +5158,14 @@ func _process_status_spread(unit: Node) -> void:
 		if chance <= 0.0 or randf() > chance:
 			continue
 
-		# Find adjacent units to spread to
-		var adjacent = _get_units_in_range(unit, 1)
+		# Find units close enough to catch it. `range` was declared by every
+		# spreading status and read by none of them — "melee" means adjacent,
+		# and a number means that many tiles.
+		var reach: int = 1
+		var declared_range = spread.get("range", "melee")
+		if declared_range is int or declared_range is float:
+			reach = maxi(1, int(declared_range))
+		var adjacent = _get_units_in_range(unit, reach)
 		for adj in adjacent:
 			if adj.is_dead or adj.is_bleeding_out:
 				continue
@@ -6107,6 +6160,11 @@ func _apply_oil(user: Node, item: Dictionary) -> Dictionary:
 		attacks += 2
 	elif alchemy_level >= 3:
 		attacks += 1
+
+	# Poisoner: "weapon coatings last twice as long (double applications per
+	# dose)". The perk said so in its description and nothing read it.
+	if PerkSystem.has_perk(user.character_data, "poisoner"):
+		attacks *= 2
 
 	# Overwrite any existing oil (only one active at a time)
 	user.weapon_oil = {
@@ -8453,7 +8511,10 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 	}
 	for key in status_procs:
 		if key in passive and randf() * 100.0 <= passive[key]:
-			_apply_status_effect(defender, status_procs[key], 3)
+			# The attacker is the source, so a burn or a venom applied by a
+			# weapon scales with the skill of whoever swung it — the same way
+			# one applied by a spell already did.
+			_apply_status_effect(defender, status_procs[key], 3, 0, attacker)
 
 	# Dispel: remove one random buff from the defender
 	# status_effects is an Array of {status, duration} dicts — NOT a Dictionary

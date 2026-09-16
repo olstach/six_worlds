@@ -888,6 +888,15 @@
         "javelin"
 	  ]
 	},
+	"envenomed": {
+	  "poison_chance": 30,
+	  "budget_cost": 5,
+	  "types": [
+		"dagger",
+		"spear",
+        "javelin"
+	  ]
+	},
 	"blessed": {
 	  "damage_pct": 5,
 	  "spellpower_pct": 10,
@@ -1119,7 +1128,7 @@
 	  ]
 	},
 	"insulated": {
-	  "air_resistance": 15,
+	  "lightning_resistance": 15,
 	  "budget_cost": 2,
 	  "types": [
 		"armor",
@@ -1128,7 +1137,7 @@
 	  ]
 	},
 	"waterproof": {
-	  "water_resistance": 15,
+	  "ice_resistance": 15,
 	  "budget_cost": 2,
 	  "types": [
 		"armor",
@@ -1143,6 +1152,15 @@
 		"robe",
 		"hat",
         "shield"
+	  ]
+	},
+	"antivenom_lined": {
+	  "poison_resistance": 15,
+	  "budget_cost": 2,
+	  "types": [
+		"armor",
+		"gloves",
+        "boots"
 	  ]
 	},
 	"steadfast": {

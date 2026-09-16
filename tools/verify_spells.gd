@@ -15,7 +15,7 @@ var failures: int = 0
 var grid: CombatGrid
 
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 64
+const EXPECTED_CHECKS: int = 66
 
 
 func _ready() -> void:
@@ -89,6 +89,8 @@ func _ready() -> void:
 	_check_a_status_can_hatch_a_creature_on_expiry()
 
 	_check_an_area_spell_falls_on_the_side_it_names()
+	_check_venom_is_drawn_out_of_an_ally_and_into_an_enemy()
+	_check_a_cloud_leaves_a_cloud()
 	_check_casting_a_zone_spell_puts_it_on_the_ground()
 	_check_a_zone_spell_still_resolves_its_own_effects()
 	_check_a_zone_covers_the_ground_its_shape_names()
@@ -1303,6 +1305,90 @@ func _check_an_area_spell_falls_on_the_side_it_names() -> void:
 			% int((1 if ally in wet else 0) + (1 if foe in wet else 0))
 			+ "is being read as one side")
 	_cleanup([caster, ally, foe])
+	_done()
+
+
+## Draw Out the Venom moves every affliction off an ally and onto the nearest
+## enemy — a cure that costs somebody else. It is the first spell to use the
+## `nearest_enemy` role, which is the half most likely to silently resolve to
+## the target and cure nobody.
+func _check_venom_is_drawn_out_of_an_ally_and_into_an_enemy() -> void:
+	var caster := _make_unit(Vector2i(5, 5), 0, 12)
+	var patient := _make_unit(Vector2i(6, 5), 0)
+	var near_foe := _make_unit(Vector2i(7, 5), 1)
+	var far_foe := _make_unit(Vector2i(30, 20), 1)
+	caster.current_mana = 300
+	caster.actions_remaining = 2
+	caster.character_data["skills"] = {"water_magic": 9, "white_magic": 9}
+	CombatManager.turn_order = [caster]
+	CombatManager.current_unit_index = 0
+
+	CombatManager._apply_status_effect(patient, "Poisoned", 5)
+	CombatManager._apply_status_effect(patient, "Bleeding", 5)
+	var result: Dictionary = CombatManager.cast_spell(
+		caster, "draw_out_the_venom", patient.grid_position)
+	if not result.get("success", false):
+		_fail("draw_out_the_venom failed: %s" % str(result.get("reason", "?")))
+	elif patient.has_status("Poisoned") or patient.has_status("Bleeding"):
+		_fail("the ally kept their afflictions")
+	elif not near_foe.has_status("Poisoned"):
+		_fail("the venom went nowhere — the nearest enemy is not poisoned")
+	elif far_foe.has_status("Poisoned"):
+		_fail("the venom reached an enemy twenty-five tiles away, so `nearest` "
+			+ "is not being resolved")
+
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_cleanup([caster, patient, near_foe, far_foe])
+	_done()
+
+
+## Poisonous Cloud and Miasma both carried `cloud_effect: true`, which nothing
+## reads, and dispersed the moment they landed. A cloud that does not linger is
+## a burst with a misleading name.
+func _check_a_cloud_leaves_a_cloud() -> void:
+	_clear_zones()
+	var caster := _make_unit(Vector2i(19, 15), 0, 12)
+	caster.current_mana = 500
+	caster.actions_remaining = 2
+	caster.character_data["skills"] = {"air_magic": 9, "black_magic": 9, "water_magic": 9}
+	CombatManager.turn_order = [caster]
+	CombatManager.current_unit_index = 0
+
+	var at := Vector2i(20, 15)
+	var result: Dictionary = CombatManager.cast_spell(caster, "poisonous_cloud", at)
+	if not result.get("success", false):
+		_fail("poisonous_cloud failed: %s" % str(result.get("reason", "?")))
+	elif CombatManager.zones_at(at).is_empty():
+		_fail("poisonous_cloud left no cloud on the ground it was cast at")
+	elif str(CombatManager.zones_at(at)[0].id) != "poison_cloud":
+		_fail("poisonous_cloud left a '%s'" % str(CombatManager.zones_at(at)[0].id))
+
+	# And it poisons whoever stands in it, both sides, because a cloud does not
+	# know whose side you are on.
+	var ally := _make_unit(at, 0)
+	var hurt := false
+	var poisoned := false
+	for _round in 12:
+		ally.current_hp = ally.max_hp
+		ally.status_effects.clear()
+		CombatManager._tick_zones()
+		if ally.current_hp < ally.max_hp:
+			hurt = true
+		if ally.has_status("Poisoned"):
+			poisoned = true
+		if hurt and poisoned:
+			break
+	if not hurt:
+		_fail("twelve rounds in the cloud did not scratch the ally standing in it")
+	if not poisoned:
+		_fail("twelve rounds in the cloud never poisoned anyone — a poison "
+			+ "cloud that only bruises is a burst with a misleading name")
+
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_clear_zones()
+	_cleanup([caster, ally])
 	_done()
 
 

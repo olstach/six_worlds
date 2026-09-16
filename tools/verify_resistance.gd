@@ -16,7 +16,7 @@ extends Node
 var failures: int = 0
 var checks_run: int = 0
 var grid: CombatGrid
-const EXPECTED_CHECKS: int = 21
+const EXPECTED_CHECKS: int = 27
 
 
 func _ready() -> void:
@@ -48,6 +48,14 @@ func _ready() -> void:
 	_check_a_compound_meets_both_resistances()
 	_check_armour_is_physical_and_equanimity_is_magic()
 	_check_an_affliction_can_be_shrugged_off()
+
+	# Poison, and the four features that declared themselves and did nothing.
+	_check_an_aura_can_grant_resistance()
+	_check_the_ground_can_grant_resistance()
+	_check_disease_spreads_to_whoever_is_close()
+	_check_spread_honours_the_reach_it_declares()
+	_check_alchemy_makes_venom_bite_harder()
+	_check_a_poisoner_gets_twice_the_coating()
 	_check_a_small_hit_is_not_rounded_away()
 	_check_the_ui_number_matches_what_lands()
 
@@ -710,4 +718,205 @@ func _check_the_ui_number_matches_what_lands() -> void:
 		_fail("the sheet predicts %d of a 200 physical hit and %d lands"
 			% [predicted, actual])
 	_cleanup([unit])
+	_done()
+
+
+# ── poison, and the things that only said they worked ────────────────────────
+
+## A `resistance` aura payload. Immune System promised allies within 2 tiles a
+## 15% chance to shrug off poison, bleed and disease, and auras had no way to
+## grant resistance at all.
+func _check_an_aura_can_grant_resistance() -> void:
+	var medic := _make_unit(Vector2i(10, 10), 0)
+	var near := _make_unit(Vector2i(11, 10), 0)
+	var far := _make_unit(Vector2i(24, 24), 0)
+	var foe := _make_unit(Vector2i(12, 10), 1)
+	medic.character_data["perks"] = ["immune_system"]
+
+	if Resistance.total(near, "poison") <= 0.0:
+		_fail("an ally beside the medic has %.0f%% poison resistance — the "
+			% Resistance.total(near, "poison") + "aura is not reaching them")
+	if Resistance.total(far, "poison") != 0.0:
+		_fail("an ally 14 tiles away picked up %.0f%% poison resistance"
+			% Resistance.total(far, "poison"))
+	if Resistance.total(foe, "poison") != 0.0:
+		_fail("the medic's aura protected an enemy")
+	# It guards afflictions, which are not damage types, through the same call.
+	if Resistance.total(near, "bleed") <= 0.0:
+		_fail("the aura granted no bleed resistance, though it names one")
+	# And ONLY what it names: a medic is no help against a fireball.
+	for unnamed in ["fire", "ice", "physical", "black"]:
+		if Resistance.total(near, unnamed) != 0.0:
+			_fail("the aura granted %.0f%% %s resistance, which it never names"
+				% [Resistance.total(near, unnamed), unnamed])
+	# And it is continuous: it goes when the medic does, with nothing to reset.
+	medic.character_data["perks"] = []
+	if Resistance.total(near, "poison") != 0.0:
+		_fail("poison resistance survived the medic losing the perk — a "
+			+ "continuous payload must not be stored")
+	_cleanup([medic, near, far, foe])
+	_done()
+
+
+## The same payload kind, anchored to the ground instead of a body — one
+## vocabulary, two anchors, as with every other aura payload.
+func _check_the_ground_can_grant_resistance() -> void:
+	CombatManager.active_zones.clear()
+	var unit := _make_unit(Vector2i(14, 9))
+	var zone_def: Dictionary = {"name": "Probe Ward", "affects": "all",
+		"while_inside": [{"kind": "resistance", "type": "poison", "amount": 40}]}
+	CombatManager.active_zones.append({
+		"id": "_probe_ward", "name": "Probe Ward", "def": zone_def,
+		"tiles": {Vector2i(14, 9): true}, "source": null,
+		"turns_left": 5, "entered": {}})
+
+	if Resistance.total(unit, "poison") != 40.0:
+		_fail("standing on warded ground gave %.0f%% poison resistance"
+			% Resistance.total(unit, "poison"))
+	for unnamed in ["fire", "ice", "physical"]:
+		if Resistance.total(unit, unnamed) != 0.0:
+			_fail("warded ground granted %.0f%% %s resistance, which it never "
+				% [Resistance.total(unit, unnamed), unnamed] + "names")
+	unit.grid_position = Vector2i(30, 20)
+	if Resistance.total(unit, "poison") != 0.0:
+		_fail("the ward followed the unit off its own tiles")
+	CombatManager.active_zones.clear()
+	_cleanup([unit])
+	_done()
+
+
+## Diseased is the one status whose whole idea is catching it from somebody,
+## and it did not spread: it declared `spreads_on_contact` in its effects list,
+## which nothing reads, while the spread mechanism that has worked for months
+## wanted a `spread` block. Two ways to say one thing, and the status picked
+## the one with no reader.
+func _check_disease_spreads_to_whoever_is_close() -> void:
+	var carrier := _make_unit(Vector2i(10, 10), 0)
+	var beside := _make_unit(Vector2i(11, 10), 1)
+	var away := _make_unit(Vector2i(25, 25), 1)
+
+	var caught := 0
+	for _i in 60:
+		beside.status_effects.clear()
+		away.status_effects.clear()
+		carrier.status_effects.clear()
+		CombatManager._apply_status_effect(carrier, "Diseased", 5)
+		CombatManager._process_status_spread(carrier)
+		if beside.has_status("Diseased"):
+			caught += 1
+		if away.has_status("Diseased"):
+			_fail("disease reached a unit fifteen tiles away")
+			break
+	if caught == 0:
+		_fail("sixty rounds beside a plague carrier and nobody caught it")
+	if caught == 60:
+		_fail("everybody beside a carrier caught it every single round — the "
+			+ "chance is not being rolled")
+	_cleanup([carrier, beside, away])
+	_done()
+
+
+## The reach a spreading status declares. Every one of them carried a `range`
+## and the spreader ignored it, always reaching exactly one tile.
+func _check_spread_honours_the_reach_it_declares() -> void:
+	var carrier := _make_unit(Vector2i(10, 10), 0)
+	var two_away := _make_unit(Vector2i(12, 10), 1)
+	CombatManager._status_effects["_probe_plague"] = {
+		"name": "_probe_plague", "type": "debuff", "default_duration": 3,
+		"spread": {"chance": "high", "range": 3},
+	}
+
+	var caught := false
+	for _i in 40:
+		two_away.status_effects.clear()
+		carrier.status_effects.clear()
+		CombatManager._apply_status_effect(carrier, "_probe_plague", 5)
+		CombatManager._process_status_spread(carrier)
+		if two_away.has_status("_probe_plague"):
+			caught = true
+			break
+	if not caught:
+		_fail("a status declaring range 3 never reached a unit two tiles away")
+
+	# And a melee one does not.
+	CombatManager._status_effects["_probe_touch"] = {
+		"name": "_probe_touch", "type": "debuff", "default_duration": 3,
+		"spread": {"chance": "high", "range": "melee"},
+	}
+	for _i in 40:
+		two_away.status_effects.clear()
+		carrier.status_effects.clear()
+		CombatManager._apply_status_effect(carrier, "_probe_touch", 5)
+		CombatManager._process_status_spread(carrier)
+		if two_away.has_status("_probe_touch"):
+			_fail("a melee-range status jumped two tiles")
+			break
+	CombatManager._status_effects.erase("_probe_plague")
+	CombatManager._status_effects.erase("_probe_touch")
+	_cleanup([carrier, two_away])
+	_done()
+
+
+## Fire Magic has made burns bite harder for months through
+## `burning_damage_pct`, read off whoever set the fire. Venom had no such
+## thing: an Alchemy 15 master poisoned exactly as hard as a novice.
+func _check_alchemy_makes_venom_bite_harder() -> void:
+	var master := _make_unit(Vector2i(4, 4), 0)
+	var novice := _make_unit(Vector2i(5, 4), 0)
+	master.character_data["skills"] = {"alchemy": 10}
+	CharacterSystem.update_derived_stats(master.character_data)
+	if float(master.character_data.derived.get("poison_damage_pct", 0.0)) <= 0.0:
+		_fail("Alchemy 10 produced no poison_damage_pct at all")
+
+	var bitten := _make_unit(Vector2i(20, 20), 1)
+	var mildly := _make_unit(Vector2i(21, 20), 1)
+	CombatManager._apply_status_effect(bitten, "Poisoned", 5, 0, master)
+	CombatManager._apply_status_effect(mildly, "Poisoned", 5, 0, novice)
+	bitten.current_hp = bitten.max_hp
+	mildly.current_hp = mildly.max_hp
+	CombatManager._process_status_effects(bitten)
+	CombatManager._process_status_effects(mildly)
+	var hard: int = bitten.max_hp - bitten.current_hp
+	var soft: int = mildly.max_hp - mildly.current_hp
+	if soft <= 0:
+		_fail("an unskilled poisoner's venom did nothing at all")
+	if hard <= soft:
+		_fail("a master alchemist's venom ticked for %d and a novice's for %d"
+			% [hard, soft])
+
+	# It is the POISONER's skill, not the victim's.
+	var skilled_victim := _make_unit(Vector2i(22, 20), 1)
+	skilled_victim.character_data["skills"] = {"alchemy": 10}
+	CharacterSystem.update_derived_stats(skilled_victim.character_data)
+	CombatManager._apply_status_effect(skilled_victim, "Poisoned", 5, 0, novice)
+	skilled_victim.current_hp = skilled_victim.max_hp
+	CombatManager._process_status_effects(skilled_victim)
+	if skilled_victim.max_hp - skilled_victim.current_hp != soft:
+		_fail("the victim's own Alchemy changed how hard they were poisoned")
+	_cleanup([master, novice, bitten, mildly, skilled_victim])
+	_done()
+
+
+## "Weapon coatings last twice as long (double applications per dose)" — the
+## Poisoner perk said so and nothing read it.
+func _check_a_poisoner_gets_twice_the_coating() -> void:
+	var plain := _make_unit(Vector2i(3, 3), 0)
+	var poisoner := _make_unit(Vector2i(4, 3), 0)
+	poisoner.character_data["perks"] = ["poisoner"]
+	var oil: Dictionary = ItemSystem.get_item("poison_oil")
+	if oil.is_empty():
+		_fail("poison_oil is not in items.json")
+		_done()
+		return
+
+	CombatManager._apply_oil(plain, oil)
+	CombatManager._apply_oil(poisoner, oil)
+	var plain_attacks: int = int(plain.weapon_oil.get("attacks_remaining", 0))
+	var perk_attacks: int = int(poisoner.weapon_oil.get("attacks_remaining", 0))
+	if plain_attacks <= 0:
+		_fail("applying an oil left no attacks on it at all")
+	elif perk_attacks != plain_attacks * 2:
+		_fail("a poisoner got %d applications where an ordinary character got "
+			% perk_attacks + "%d — the perk promises double" % plain_attacks)
+	_cleanup([plain, poisoner])
 	_done()
