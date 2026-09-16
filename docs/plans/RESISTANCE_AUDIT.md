@@ -1,5 +1,17 @@
 # Resistance audit
 
+> **Reshaped 2026-09-16, after review.** The vocabulary shipped with one damage
+> type per magic school — `water`, `air` and `earth` among them — and Olaf
+> caught it against the original design: physical (slashing, piercing,
+> crushing) plus fire, ice, lightning, space, black and white. The content
+> agreed with him. All eight spells dealing `air` were lightning; no spell at
+> all dealt `earth`; and `water` was three jobs under one name — four pushes,
+> three falling vajras, one sleet of ice crystals, one drowning grip. A damage
+> type is not a magic school, and the data already knew: Ice Bolt, Blizzard and
+> Ice Age are Water+Sorcery spells dealing ice. Compounds changed with it, from
+> equal shares to **whichever component the target resists less**, which makes
+> a mixed type a strategic pick rather than a hedge.
+>
 > **Built 2026-09-16** in three commits — the vocabulary, then the resolver
 > with every source moved into `apply_damage`, then the UI figure. What follows
 > is the audit as written; TODO §5 records what shipped and the three small

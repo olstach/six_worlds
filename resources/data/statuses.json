@@ -492,7 +492,7 @@
         "can_move_through_enemies"
 	  ],
 	  "grants_vulnerability": {
-		"water": 25
+		"ice": 25
 	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
@@ -677,7 +677,7 @@
         "grants_flight"
 	  ],
 	  "grants_vulnerability": {
-		"water": 50
+		"ice": 50
 	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
@@ -1784,7 +1784,7 @@
         "adds_fire_damage_to_attacks"
 	  ],
 	  "grants_vulnerability": {
-		"water": 50
+		"ice": 50
 	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
@@ -2489,7 +2489,7 @@
 	  "effects": [],
 	  "grants_resistance": {
 		"fire": 25,
-		"water": 25
+		"ice": 25
 	  },
 	  "retaliation": {
 		"range": "melee",

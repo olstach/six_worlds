@@ -2718,7 +2718,7 @@
       "description": "A concussive blast that stuns those caught in the detonation.",
       "effect": {
         "damage": 30,
-        "damage_type": "air",
+        "damage_type": "lightning",
         "aoe_radius": 1,
         "range": 5,
         "statuses": [
@@ -13897,7 +13897,7 @@
         "initiative": 1
       },
       "resistances": {
-        "air": 5
+        "lightning": 5
       },
       "abilities": [],
       "durability": 30,

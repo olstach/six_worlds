@@ -28,7 +28,7 @@ func _ready() -> void:
 	_check_the_vocabulary_loads()
 	_check_every_damage_type_has_a_category()
 	_check_compounds_split_into_real_types()
-	_check_splitting_loses_no_damage()
+	_check_a_compound_arrives_as_the_lesser_resisted_half()
 	_check_a_random_type_resolves_to_one_of_its_choices()
 	_check_physical_subtypes_fall_back()
 	_check_magic_covers_the_schools()
@@ -78,8 +78,8 @@ func _check_the_vocabulary_loads() -> void:
 	if all.is_empty():
 		_fail("DamageType.all() is empty — damage_types.json did not load")
 	# The names every other system depends on.
-	for required in ["physical", "slashing", "fire", "water", "air", "earth",
-			"space", "ice", "white", "black", "poison"]:
+	for required in ["physical", "slashing", "crushing", "piercing", "fire",
+			"ice", "lightning", "space", "white", "black", "poison"]:
 		if not DamageType.exists(required):
 			_fail("damage type '%s' is missing from the vocabulary" % required)
 	# And the two that caused this audit.
@@ -88,6 +88,13 @@ func _check_the_vocabulary_loads() -> void:
 			+ "is how five spells came to deal a type nothing resisted")
 	if DamageType.exists("holy"):
 		_fail("'holy' is back in the vocabulary — it is `white`")
+	# The three that were damage types and should not have been: air damage was
+	# lightning every time it was dealt, earth damage was dealt by no spell at
+	# all, and water damage was impact, ice and drowning under one name.
+	for gone in ["air", "water", "earth"]:
+		if DamageType.exists(gone):
+			_fail("'%s' is a damage type again — it is a magic SCHOOL, and the "
+				% gone + "damage its spells deal is lightning, ice or impact")
 	_done()
 
 
@@ -100,49 +107,57 @@ func _check_every_damage_type_has_a_category() -> void:
 	_done()
 
 
-## A compound is dealt as its components, so every component has to be a type
-## something can actually resist.
+## A compound arrives as one of its components, so every component has to be a
+## type something can actually resist — and never itself a compound.
 func _check_compounds_split_into_real_types() -> void:
 	var compounds := 0
 	for name in DamageType.all():
-		if not DamageType.is_compound(name):
+		var components: Array = DamageType.components_of(name)
+		if components.is_empty():
 			continue
 		compounds += 1
-		var parts: Array[Dictionary] = DamageType.resolve(name)
-		if parts.size() < 2:
-			_fail("compound '%s' resolved to %d part(s)" % [name, parts.size()])
-		var total := 0.0
-		for part in parts:
-			total += float(part.share)
-			if not DamageType.exists(str(part.type)):
+		if components.size() < 2:
+			_fail("compound '%s' has one component, so it is a rename" % name)
+		for component in components:
+			if not DamageType.exists(str(component)):
 				_fail("compound '%s' is made of '%s', which is not a damage type"
-					% [name, str(part.type)])
-			if DamageType.is_compound(str(part.type)):
+					% [name, str(component)])
+			if not DamageType.components_of(str(component)).is_empty():
 				_fail("compound '%s' is made of compound '%s' — a component has "
-					% [name, str(part.type)] + "to be something resistance can match")
-		if not is_equal_approx(total, 1.0):
-			_fail("compound '%s' shares sum to %.2f, not 1.0" % [name, total])
+					% [name, str(component)] + "to be something resistance can match")
 	if compounds == 0:
 		_fail("no compound damage types at all — solar, white_fire, fire_black "
 			+ "and physical_fire were the reason the vocabulary exists")
 	_done()
 
 
-## Integer division must not eat damage: 25 solar is 12 white and 13 fire, not
-## 12 and 12.
-func _check_splitting_loses_no_damage() -> void:
-	for amount in [1, 2, 3, 7, 25, 100, 999]:
-		for name in ["solar", "fire_black", "physical_fire", "prismatic", "fire"]:
-			var total := 0
-			for part in DamageType.split(name, amount):
-				total += int(part.damage)
-			if total != amount:
-				_fail("splitting %d %s damage produced %d"
-					% [amount, name, total])
-	# And a single-type hit is one whole share, so callers need no branch.
-	var simple: Array[Dictionary] = DamageType.split("fire", 30)
-	if simple.size() != 1 or int(simple[0].damage) != 30:
-		_fail("a simple type did not split into one whole share")
+## The rule: a mixed type arrives as whichever component the TARGET resists
+## less, so it is a strategic pick rather than a hedge.
+func _check_a_compound_arrives_as_the_lesser_resisted_half() -> void:
+	var unit := _make_unit()
+
+	unit.resistances = {"fire": 80, "white": 0}
+	if Resistance.concrete_type(unit, "solar") != "white":
+		_fail("against 80%% fire resistance, solar arrived as '%s'"
+			% Resistance.concrete_type(unit, "solar"))
+	unit.resistances = {"fire": 0, "white": 80}
+	if Resistance.concrete_type(unit, "solar") != "fire":
+		_fail("against 80%% white resistance, solar arrived as '%s'"
+			% Resistance.concrete_type(unit, "solar"))
+
+	# A vulnerability counts as resisting less, so a mixed type finds the
+	# weakness — which is the point of casting one.
+	unit.resistances = {"fire": 0, "white": -50}
+	if Resistance.concrete_type(unit, "solar") != "white":
+		_fail("solar did not find a -50%% white vulnerability")
+
+	# A simple type is unchanged, and an unknown one arrives as itself.
+	if Resistance.concrete_type(unit, "fire") != "fire":
+		_fail("a simple type was rewritten to '%s'"
+			% Resistance.concrete_type(unit, "fire"))
+	if Resistance.concrete_type(unit, "no_such_type") != "no_such_type":
+		_fail("an unknown type did not arrive as itself")
+	_cleanup([unit])
 	_done()
 
 
@@ -189,7 +204,7 @@ func _check_physical_subtypes_fall_back() -> void:
 ## equanimity did nothing against the two schools most obviously made of magic,
 ## and listed holy, shadow and arcane, which nothing deals.
 func _check_magic_covers_the_schools() -> void:
-	for name in ["black", "white", "fire", "water", "air", "earth", "space", "ice"]:
+	for name in ["black", "white", "fire", "ice", "lightning", "space"]:
 		if not DamageType.is_magic(name):
 			_fail("'%s' does not count as magic, so magic_resistance_pct will "
 				% name + "not apply to it")
@@ -211,9 +226,11 @@ func _check_specials_answer_to_nothing() -> void:
 		if DamageType.ignores_resistance(name) or DamageType.ignores_armour(name):
 			_fail("'%s' ignores resistance or armour" % name)
 	# An unknown type must arrive unresisted and noisy, not silently harmless.
-	var parts: Array[Dictionary] = DamageType.resolve("no_such_type")
-	if parts.size() != 1 or str(parts[0].type) != "no_such_type":
-		_fail("an unknown damage type did not resolve to itself")
+	var stranger := _make_unit(Vector2i(9, 9))
+	if _taken(stranger, 40, "no_such_type") != 40:
+		_fail("a hit of an unknown damage type dealt %d of 40 — it should "
+			% _taken(stranger, 40, "no_such_type") + "arrive unresisted")
+	_cleanup([stranger])
 	_done()
 
 
@@ -289,7 +306,7 @@ func _check_a_status_can_grant_and_take_away() -> void:
 	# And the other direction: grants_vulnerability subtracts.
 	CombatManager._apply_status_effect(unit, "Smoke_Form", 5)
 	var vulnerable := false
-	for element in ["fire", "water", "air", "earth", "space", "physical"]:
+	for element in ["fire", "ice", "lightning", "space", "physical", "black", "white"]:
 		if Resistance.total(unit, element) < 0.0:
 			vulnerable = true
 	if not vulnerable:
@@ -517,23 +534,24 @@ func _check_every_damage_source_respects_resistance() -> void:
 	_done()
 
 
-## Half a solar hit is white and half is fire, each resisted on its own. So a
-## fire-immune unit takes half of it, not none and not all.
+## A whole solar hit arrives as one half or the other, so a unit immune to fire
+## alone is not protected from it at all — it comes as white instead.
 func _check_a_compound_meets_both_resistances() -> void:
 	var fireproof := _make_unit()
 	var bare := _make_unit(Vector2i(6, 5))
 	fireproof.resistances = {"fire": 100}
 
-	var half: int = _taken(fireproof, 100, "solar")
+	var through: int = _taken(fireproof, 100, "solar")
 	var whole: int = _taken(bare, 100, "solar")
-	if half == 0:
-		_fail("fire immunity stopped a whole solar hit — half of it is white")
-	if half >= whole:
+	if through != whole:
 		_fail("a fire-immune unit took %d of a solar hit where a bare one took "
-			% half + "%d" % whole)
-	if absi(half - whole / 2) > 2:
-		_fail("a fire-immune unit took %d of a 100 solar hit, expected about "
-			% half + "half of %d" % whole)
+			% through + "%d — the white half should arrive undiminished" % whole)
+
+	# Resisting the other half instead sends it back through fire.
+	fireproof.resistances = {"fire": 100, "white": 50}
+	if _taken(fireproof, 100, "solar") != 50:
+		_fail("against fire immunity and 50%% white, a 100 solar hit dealt %d, "
+			% _taken(fireproof, 100, "solar") + "expected the 50 the white half costs")
 
 	# Immune to both halves is immune to the compound.
 	fireproof.resistances = {"fire": 100, "white": 100}
@@ -631,15 +649,12 @@ func _check_a_small_hit_is_not_rounded_away() -> void:
 		_fail("a fire-immune unit took %d from a 1-point fire hit"
 			% _taken(immune, 1, "fire"))
 
-	# And a compound where only one half is stopped still lands for its other
-	# half. Three points, not one: splitting 1 point two ways gives one half
-	# nothing at all, so a single point of a compound CAN be fully stopped by
-	# immunity to whichever half the remainder went to. That is noise, not a
-	# rule worth bending the split for.
+	# And a compound whose other half is unresisted lands in full, because it
+	# arrives as that half rather than as a share of each.
 	immune.resistances = {"fire": 100}
-	if _taken(immune, 3, "solar") < 1:
-		_fail("a 3-point solar hit on a fire-immune unit dealt nothing — the "
-			+ "white half is not immune")
+	if _taken(immune, 3, "solar") != 3:
+		_fail("a 3-point solar hit on a fire-immune unit dealt %d — it should "
+			% _taken(immune, 3, "solar") + "arrive as white and land whole")
 	immune.resistances = {"fire": 100, "white": 100}
 	if _taken(immune, 3, "solar") != 0:
 		_fail("a unit immune to both halves took %d from a solar hit"

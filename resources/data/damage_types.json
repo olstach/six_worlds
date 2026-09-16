@@ -3,7 +3,7 @@
 
   "_comment_why": "There were three vocabularies before, and they disagreed. PHYSICAL_SUBTYPES knew about slashing/crushing/piercing; MAGIC_DAMAGE_TYPES listed holy, shadow and arcane, which nothing deals, and omitted black and white, which eleven and four spells deal; and the `damage_type` field itself was an open string, so five spells dealt `ice` while every resistance in the game said `cold`. Nothing could notice, because `.get(key, 0)` answers a missing key with zero resistance.",
 
-  "_comment_compounds": "A compound type is dealt as its components in equal shares: a `solar` hit is half white and half fire, each half resisted separately. That is what makes a compound worth having — it is hard to wall off with one resistance and gains nothing against a defender who resists neither. `components` is the mechanic; the NAME is flavour, which is why white_fire and solar are both white+fire. A funeral pyre is not sunlight.",
+  "_comment_compounds": "A compound type arrives as WHICHEVER COMPONENT THE TARGET RESISTS LESS. A solar hit against something fireproof lands as white; against a thing that fears fire it lands as fire. That is what makes a mixed type a strategic pick rather than a hedge: you cannot wall it off by resisting one half, and choosing it is a decision about the target. Resolution therefore depends on the defender and lives in Resistance, not here — this file only says what a compound is MADE of. The NAME is flavour, which is why white_fire and solar are both white+fire. A funeral pyre is not sunlight.",
 
   "_comment_magic": "`magic: true` is what the Yoga table's magic_resistance_pct applies to — equanimity in the face of sorcery. Physical damage is not on the list, and neither is poison: equanimity does not thin venom.",
 
@@ -19,14 +19,10 @@
 
     "fire": { "name": "Fire", "category": "element", "magic": true,
       "description": "Heat and burning." },
-    "water": { "name": "Water", "category": "element", "magic": true,
-      "description": "Weight of water, drowning, corrosion." },
-    "air": { "name": "Air", "category": "element", "magic": true,
-      "description": "Wind, lightning, pressure." },
-    "earth": { "name": "Earth", "category": "element", "magic": true,
-      "description": "Stone and the ground itself." },
+    "lightning": { "name": "Lightning", "category": "element", "magic": true,
+      "description": "The storm's own weapon. Called `air` until the audit counted the spells that dealt it — Lightning, Chain Lightning, Ball Lightning, Thunderclap, Thunderstorm, Shocking Grasp: every one of them lightning, none of them wind." },
     "space": { "name": "Space", "category": "element", "magic": true,
-      "description": "Distance folded, void, the gap between things." },
+      "description": "Distance folded, void, the gap between things — and sound, which is why a Kinnara's song is space damage rather than air." },
     "ice": { "name": "Ice", "category": "element", "magic": true,
       "description": "Cold as a weapon. Called `cold` in the data for months while every spell dealt `ice`, which is exactly the kind of gap this file exists to close." },
 
@@ -46,9 +42,9 @@
     "physical_fire": { "name": "Burning Debris", "category": "compound", "components": ["physical", "fire"],
       "description": "Rock and flame arriving together — a meteor is both." },
 
-    "prismatic": { "name": "Prismatic", "category": "compound", "components": ["fire", "water", "air", "earth", "space"],
+    "prismatic": { "name": "Prismatic", "category": "compound", "components": ["fire", "ice", "lightning", "space"],
       "description": "All five elements at once, a fifth each. Sovereign Oil is the only thing that does it, and nothing walls it off." },
-    "random_elemental": { "name": "Random Element", "category": "random", "choices": ["fire", "water", "air", "earth", "space"],
+    "random_elemental": { "name": "Random Element", "category": "random", "choices": ["fire", "ice", "lightning", "space"],
       "description": "One of the five, chosen afresh each time it lands — the Rainbow spells. Rolled at the moment of damage, so the same cast can hit two targets with two elements." },
     "none": { "name": "None", "category": "special", "magic": false, "ignores_resistance": true, "ignores_armour": true,
       "description": "Deals no damage. Smoke bombs and summons whose attack is a status, not a wound." },

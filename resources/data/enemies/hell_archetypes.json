@@ -251,7 +251,7 @@
         "armor_type": "none"
       },
       "resistances": {
-        "water": 50,
+        "ice": 50,
         "fire": -50,
         "physical": 10
       },
@@ -296,7 +296,7 @@
       },
       "resistances": {
         "fire": 50,
-        "water": -50,
+        "ice": -50,
         "physical": 10
       },
       "threat_multiplier": 0.5,
@@ -392,7 +392,7 @@
         "armor_type": "none"
       },
       "resistances": {
-        "water": 25,
+        "ice": 25,
         "fire": -20
       },
       "threat_multiplier": 0.7,
@@ -441,7 +441,7 @@
       },
       "resistances": {
         "fire": 25,
-        "water": -20
+        "ice": -20
       },
       "threat_multiplier": 0.7,
       "tags": [
@@ -487,8 +487,8 @@
         "armor_type": "none"
       },
       "resistances": {
-        "air": 25,
-        "earth": -15
+        "lightning": 25,
+        "crushing": -15
       },
       "threat_multiplier": 0.7,
       "tags": [
@@ -534,8 +534,8 @@
         "armor_type": "none"
       },
       "resistances": {
-        "earth": 20,
-        "air": -15
+        "crushing": 20,
+        "lightning": -15
       },
       "threat_multiplier": 0.7,
       "tags": [
@@ -721,7 +721,7 @@
         "armor_type": "light"
       },
       "resistances": {
-        "water": 25,
+        "ice": 25,
         "fire": -15
       },
       "threat_multiplier": 1.0,
@@ -763,7 +763,7 @@
         "armor_type": "heavy"
       },
       "resistances": {
-        "water": 30,
+        "ice": 30,
         "fire": -20,
         "physical": 15,
         "piercing": 20,
@@ -805,7 +805,7 @@
         "armor_type": "medium"
       },
       "resistances": {
-        "water": 20,
+        "ice": 20,
         "fire": -15,
         "piercing": 20,
         "slashing": 15,
@@ -849,7 +849,7 @@
         "armor_type": "light"
       },
       "resistances": {
-        "water": 15,
+        "ice": 15,
         "fire": -10
       },
       "threat_multiplier": 1.0,
@@ -894,7 +894,7 @@
         "armor_type": "light"
       },
       "resistances": {
-        "water": 20,
+        "ice": 20,
         "fire": -10
       },
       "threat_multiplier": 1.0,
@@ -936,9 +936,9 @@
         "armor_type": "heavy"
       },
       "resistances": {
-        "water": 25,
+        "ice": 25,
         "fire": -15,
-        "air": 10
+        "lightning": 10
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -982,7 +982,7 @@
         "armor_type": "light"
       },
       "resistances": {
-        "water": 30,
+        "ice": 30,
         "fire": -20
       },
       "threat_multiplier": 1.0,
@@ -1024,7 +1024,7 @@
         "armor_type": "light"
       },
       "resistances": {
-        "water": 15,
+        "ice": 15,
         "fire": -10
       },
       "threat_multiplier": 1.0,
@@ -1069,7 +1069,7 @@
       },
       "resistances": {
         "fire": 40,
-        "water": -25,
+        "ice": -25,
         "physical": 20,
         "slashing": 25,
         "piercing": 25
@@ -1115,7 +1115,7 @@
       },
       "resistances": {
         "fire": 25,
-        "water": -15
+        "ice": -15
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -1158,7 +1158,7 @@
       },
       "resistances": {
         "fire": 15,
-        "water": -10
+        "ice": -10
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -1203,7 +1203,7 @@
       },
       "resistances": {
         "fire": 20,
-        "water": -10
+        "ice": -10
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -1247,7 +1247,7 @@
       },
       "resistances": {
         "fire": 30,
-        "water": -20
+        "ice": -20
       },
       "threat_multiplier": 1.1,
       "tags": [
@@ -1289,7 +1289,7 @@
       },
       "resistances": {
         "fire": 20,
-        "water": -10
+        "ice": -10
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -1334,7 +1334,7 @@
       },
       "resistances": {
         "fire": 30,
-        "water": -20
+        "ice": -20
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -1376,7 +1376,7 @@
         "armor_type": "heavy"
       },
       "resistances": {
-        "earth": 20,
+        "crushing": 20,
         "physical": 10
       },
       "threat_multiplier": 1.0,
@@ -1418,7 +1418,7 @@
         "armor_type": "medium"
       },
       "resistances": {
-        "earth": 15
+        "crushing": 15
       },
       "threat_multiplier": 1.0,
       "starting_inventory": [
@@ -1473,7 +1473,7 @@
         "armor_type": "light"
       },
       "resistances": {
-        "earth": 25,
+        "crushing": 25,
         "physical": 10
       },
       "threat_multiplier": 1.0,
@@ -1516,7 +1516,7 @@
         "armor_type": "light"
       },
       "resistances": {
-        "air": 20
+        "lightning": 20
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -1558,7 +1558,7 @@
         "armor_type": "none"
       },
       "resistances": {
-        "air": 20
+        "lightning": 20
       },
       "threat_multiplier": 1.0,
       "tags": [
@@ -1601,7 +1601,7 @@
         "armor_type": "none"
       },
       "resistances": {
-        "air": 15,
+        "lightning": 15,
         "physical": -10
       },
       "threat_multiplier": 1.0,
@@ -2026,8 +2026,8 @@
       "resistances": {
         "physical": 20,
         "fire": 40,
-        "water": -25,
-        "earth": 30,
+        "ice": -25,
+        "crushing": 30,
         "slashing": 20,
         "piercing": 20
       },

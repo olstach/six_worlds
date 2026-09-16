@@ -1698,7 +1698,7 @@
         "upgrade_scaling": "+1_radius_per_tier"
       },
       "description": "A slashing sleet of ice crystals falls across the area, dealing water damage and coating the ground. Enemies moving over the terrain risk falling (Prone).",
-      "damage_type": "water"
+      "damage_type": "ice"
     },
     "mud": {
       "name": "Mud",
@@ -2016,7 +2016,7 @@
       ],
       "mana_cost": 135,
       "damage": 100,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "statuses_caused": [
         "Confused"
       ],
@@ -2077,7 +2077,7 @@
       ],
       "mana_cost": 15,
       "damage": 5,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "target": {
         "type": "single",
         "eligible": "enemy",
@@ -2138,7 +2138,7 @@
       ],
       "mana_cost": 40,
       "damage": 10,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -2238,7 +2238,7 @@
       ],
       "mana_cost": 75,
       "damage": 15,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -2410,7 +2410,7 @@
       ],
       "mana_cost": 225,
       "damage": 30,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "target": {
         "type": "aoe",
         "eligible": "enemy"
@@ -2860,7 +2860,7 @@
       ],
       "mana_cost": 135,
       "damage": 25,
-      "damage_type": "water",
+      "damage_type": "black",
       "damage_per_turn": true,
       "duration": "until_save",
       "save_type": "Strength",
@@ -2935,7 +2935,7 @@
       ],
       "mana_cost": 225,
       "damage": 150,
-      "damage_type": "water",
+      "damage_type": "black",
       "save_type": "Constitution",
       "target": {
         "type": "global",
@@ -3006,7 +3006,7 @@
       ],
       "mana_cost": 75,
       "damage": 55,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "statuses_caused": [
         "Stunned"
       ],
@@ -3067,7 +3067,7 @@
       "mana_cost": 135,
       "duration": "spellpower",
       "damage": 35,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "statuses_caused": [],
       "target": {
         "type": "ground"
@@ -3124,7 +3124,7 @@
       ],
       "mana_cost": 225,
       "damage": 100,
-      "damage_type": "water",
+      "damage_type": "crushing",
       "statuses_caused": [
         "Frozen",
         "Prone"
@@ -5087,7 +5087,7 @@
       ],
       "mana_cost": 15,
       "damage": 20,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "statuses_caused": [
         "Stunned"
       ],
@@ -5180,7 +5180,7 @@
       ],
       "mana_cost": 40,
       "damage": 25,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "statuses_caused": [
         "Stunned"
       ],
@@ -5249,7 +5249,7 @@
       ],
       "mana_cost": 75,
       "damage": 60,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "statuses_caused": [
         "Stunned"
       ],
@@ -5280,7 +5280,7 @@
       ],
       "mana_cost": 135,
       "damage": 40,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "duration": 4,
       "statuses_caused": [
         "Stunned"
@@ -5313,7 +5313,7 @@
       ],
       "mana_cost": 135,
       "damage": 70,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "statuses_caused": [
         "Stunned"
       ],
@@ -5379,7 +5379,7 @@
       "mana_cost": 225,
       "duration": "spellpower",
       "damage": 50,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "statuses_caused": [
         "Lightning_Form",
         "Air_Immune",
@@ -5442,7 +5442,7 @@
       ],
       "mana_cost": 225,
       "damage": 100,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "statuses_caused": [
         "Stunned"
       ],
@@ -5600,7 +5600,7 @@
       "duration": "spellpower",
       "heal": 10,
       "damage": 15,
-      "damage_type": "air",
+      "damage_type": "lightning",
       "statuses_caused": [
         "Radiance"
       ],

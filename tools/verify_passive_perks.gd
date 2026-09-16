@@ -76,7 +76,10 @@ func _check_resistances() -> void:
 	var character := _blank()
 	_grant(character, "aegis_of_tranquility")
 	var resists: Dictionary = character.derived.get("resistances", {})
-	for element in ["fire", "water", "air", "earth", "space"]:
+	# The four elemental damage types: `water`, `air` and `earth` were damage
+	# types once and are magic SCHOOLS now, their damage arriving as ice,
+	# lightning or impact.
+	for element in ["fire", "ice", "lightning", "space"]:
 		if resists.get(element, 0) != 20:
 			_fail("aegis_of_tranquility: %s resistance is %s, expected 20"
 				% [element, resists.get(element, 0)])

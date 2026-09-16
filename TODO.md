@@ -467,6 +467,16 @@ ignored resistance and immunity. A Solar Form character, immune to fire, took
 full damage standing in a fire tile. It is resolved once now, inside
 apply_damage, and the twelve hand-written sites are gone.
 
+**The list, after review:** physical (slashing, crushing, piercing), fire,
+ice, lightning, space, white, black, and poison. `water`, `air` and `earth`
+were damage types and are magic SCHOOLS only — all eight spells dealing `air`
+were lightning, no spell dealt `earth` at all, and `water` was impact, ice and
+drowning under one name. Their damage arrives as lightning, crushing or ice
+now, per spell. A compound type (`solar`, `fire_black`, `physical_fire`,
+`white_fire`, `prismatic`) arrives as whichever component the target resists
+LESS, so it cannot be walled off by resisting one half and picking one is a
+decision about the target.
+
 **Three vocabularies that disagreed** are one: `DamageType` +
 `resources/data/damage_types.json`. `MAGIC_DAMAGE_TYPES` had listed holy,
 shadow and arcane — dealt by nothing — and omitted black and white, so

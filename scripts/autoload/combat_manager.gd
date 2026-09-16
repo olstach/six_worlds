@@ -170,8 +170,7 @@ const DAMAGE_TYPE_TO_TERRAIN_EFFECT: Dictionary = {
 	"poison": 3,      # TerrainEffect.POISON
 	"white": 5,       # TerrainEffect.BLESSED
 	"black": 6,       # TerrainEffect.CURSED
-	"water": 7,       # TerrainEffect.WET
-	"air": 8,         # TerrainEffect.STORMY
+	"lightning": 8,   # TerrainEffect.STORMY
 	"space": 9,       # TerrainEffect.VOID
 	"solar": 1,       # TerrainEffect.FIRE (solar leaves fire)
 }
@@ -4374,7 +4373,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Creeping Cold: ice/cold spells that deal damage also apply -1 Movement for 2 turns
 	if PerkSystem.has_perk(caster_char, "creeping_cold") and has_damage:
-		var is_cold = element in ["ice", "water"] or schools.any(func(s): return s.to_lower() in ["water"])
+		var is_cold = element == "ice" or schools.any(func(s): return s.to_lower() == "water")
 		if is_cold:
 			_apply_stat_modifier(target, "movement", -1, 2)
 
@@ -4403,7 +4402,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Tremor (Earth 2): Earth AoE spells have 25% chance to knock all targets prone
 	if PerkSystem.has_perk(caster_char, "tremor") and has_damage:
-		var is_earth_tr = element == "earth" or schools.any(func(s): return s.to_lower() == "earth")
+		var is_earth_tr = schools.any(func(s): return s.to_lower() == "earth")
 		var is_aoe_tr = spell.get("targeting", "").begins_with("aoe")
 		if is_earth_tr and is_aoe_tr and randf() < 0.25:
 			_apply_status_effect(target, "Knocked_Down", 1, 0, caster)
@@ -4472,7 +4471,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 				var chain_target = chain_targets[randi() % chain_targets.size()]
 				var chain_dmg = int(result.get("damage", 0) * 0.60)
 				chain_dmg = maxi(1, chain_dmg)
-				apply_damage(chain_target, chain_dmg, "air")
+				apply_damage(chain_target, chain_dmg, "lightning")
 				result["chain_spark_damage"] = chain_dmg
 
 	# Weakening Gaze (Enchantment 1): Enchantment debuff spells last extra turns,
@@ -5502,8 +5501,8 @@ func _process_terrain_effects(unit: Node) -> void:
 			terrain_damage.emit(unit, 0, effect_name)
 
 		CombatGrid.TerrainEffect.STORMY:
-			# Storm terrain deals air damage and has a chance to stun
-			apply_damage(unit, value, "air")
+			# Storm terrain deals lightning damage and has a chance to stun
+			apply_damage(unit, value, "lightning")
 			if randf() < 0.2 and not unit.has_status("Stunned"):
 				_apply_status_effect(unit, "Stunned", 1)
 			terrain_damage.emit(unit, value, effect_name)
@@ -8750,7 +8749,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				break
 	if _aots_active:
 		var aots_air_dmg = maxi(1, int(result.get("damage", 0) * 0.05))
-		apply_damage(defender, aots_air_dmg, "air")
+		apply_damage(defender, aots_air_dmg, "lightning")
 		result["aots_air_damage"] = aots_air_dmg
 		if randf() < 0.10:
 			_apply_status_effect(defender, "Stunned", 1, 0, attacker)
@@ -8758,7 +8757,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	# Static Edge (Air 1): attacks deal +10% weapon damage as bonus Air damage
 	if _unit_has_perk(attacker, "static_edge"):
 		var air_dmg = maxi(1, int(result.get("damage", 0) * 0.10))
-		apply_damage(defender, air_dmg, "air")
+		apply_damage(defender, air_dmg, "lightning")
 		result["static_edge_damage"] = air_dmg
 
 	# Cheap Shot: record that this enemy has now been attacked (removes the crit bonus on future attacks)
@@ -9850,10 +9849,12 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 25
 
 		"mantra_of_the_jeweled_mountain":
-			# Earth damage burst (25% Spellpower) to all enemies in 4 tiles; allies +30% armor
+			# Crushing burst (25% Spellpower) to all enemies in 4 tiles; allies
+			# +30% armor. `earth` was a damage type once; a mountain arriving
+			# is impact, and the Earth SCHOOL is a different question.
 			var dmg = ceili(spellpower * 0.25)
 			for e in enemies_4:
-				apply_damage(e, dmg, "earth")
+				apply_damage(e, dmg, "crushing")
 			for a in allies_with_self:
 				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 30
 
