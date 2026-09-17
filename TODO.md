@@ -785,64 +785,30 @@ immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
 `escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
 1–2 always fire, 3+ still roll).
 
-### The active perks still without a resolver (6, was 26 — 2026-09-16)
+### Active perks without a resolver: none (was 26 — 2026-09-16/17)
 
-75 of 109 active perks were wired in b746bc1. On 2026-09-16: the six reaction
-stances, the nine terrain-placing perks, and five singles — Field Medic, Trap
-Maker, Everyone Is Somewhere Else Now, Stalwart Guardian and Too Fast to
-React. These 6 are the remainder, each
-blocked on machinery that does not exist. They stay correctly greyed out in the
-skill panel until it does. `tools/verify_active_perks.tscn` reprints this list
-on every run, so it cannot silently drift.
+75 of 109 were wired in b746bc1. The rest followed in four batches: the six
+reaction stances, the nine terrain placers, five singles (Field Medic, Trap
+Maker, Everyone Is Somewhere Else Now, Stalwart Guardian, Too Fast to React),
+and the last six — Arcane Archer, Attune Charm, Improvised Masterpiece,
+Magnetism, Smoke and Mirrors, The Invisible Hand.
+`tools/verify_active_perks.tscn` reprints the list on every run, so a new perk
+without a resolver cannot land quietly.
 
-- [x] ~~**`create_terrain`**~~ — built 2026-09-16, all nine. The grid had
-      everything: `set_tile_obstacle`, `add_terrain_effect`, destructible
-      obstacles and, since the terrain audit, zones. What was missing was a
-      resolver that reads what a perk wants to PLACE, a duration for the things
-      that should not be permanent (`_timed_obstacles`, ticked with the zones),
-      and a way for two zones to know about each other. A perk declares
-      `places: [{zone|terrain|obstacle, ...}]` and may name any combination:
-      Fog of War is a zone that blinds over a SMOKE terrain that blocks sight,
-      because line of sight is the grid's business and not a payload's.
-      Crumbling Avalanche brings down only what its caster raised. The Door
-      Stands Open is a PAIRED zone — `pair: "gate"` — which also clears the
-      `vajra_gate` deferral from the zone work. See
-      `verify_terrain_skills.tscn` (9 checks, 17/17 mutations caught).
-- [x] ~~**Counter/reaction stances**~~ — built 2026-09-16 as `Reaction`
-      (`scripts/combat/reaction.gd`). Six perks, not five: `none_shall_pass`
-      came with them. The game had two reaction HOOKS and no reaction system —
-      movement reactions were hardcoded `if has_perk(...)` branches inside
-      `_check_zoc_reactions`, and being-hit reactions were `retaliation`
-      blocks that could deal damage, reflect a percentage or apply a status but
-      could not swing a weapon. A reaction is a STATUS now: the perk applies a
-      stance lasting until your next turn, the status declares trigger,
-      responses, reach and per-round allowance, and both hooks read whoever has
-      one. See `verify_reactions.tscn` (13 checks, 15/15 mutations caught).
-- [x] ~~**`heal_ally`**~~ — built 2026-09-16. `_resolve_heal_self` ignored its
-      own `targeting` field and always healed the user, so Field Medic — "heal
-      an adjacent ALLY" — healed the medic.
-- [ ] **`create_images`** — `smoke_and_mirrors` (illusion units with 1 HP).
-- [ ] **`imbued_attack`** — `arcane_archer` (attack + spell hybrid).
-- [ ] **`consume_charm`** — `attune_charm`.
-- [x] ~~**`mass_teleport`**~~ — built 2026-09-16, through the repositioning
-      vocabulary a single teleport already used. One side of the field at a
-      time, and only what the caster can see.
-- [ ] **`recruit_or_pacify`** — `magnetism`.
-- [x] ~~**`place_trap`**~~ — built 2026-09-16. A trap is a zone that waits:
-      nothing happens until somebody steps on it, which is the one thing an
-      aura could never do. Its bite scales with the trapper's Focus.
-- [ ] **`steal_item`** — `the_invisible_hand`.
-- [x] ~~**`guard_ally`**~~ — built 2026-09-16. The blow is aimed at the ward
-      and lands on the guard, on a roll — and only when the guard is standing
-      somewhere the attacker could have struck anyway.
-- [ ] **`choose_one`** — `improvised_masterpiece`. Needs a pick-a-branch UI;
-      `disrupting_palm` is wired to its first branch as a stopgap.
-- [x] ~~**`ignore_resistances`**~~ — built 2026-09-16 as a flag held across
-      one cast, so a spell that hits five people ignores resistance on all
-      five and the next spell is ordinary again.
-- [x] ~~**`none_shall_pass`**~~ — resolved 2026-09-16 in favour of what the
-      perk says: a stance that ends your turn, threatens two tiles, and answers
-      with a free attack and a Slow. The always-on passive branch is gone.
+**`choose_one` is the piece that unblocked the two that needed a player
+choice.** A skill declares `options`, each naming an effect and its own data;
+the caller passes `chosen_option` and the chosen one is dispatched through the
+same table every other skill uses. Absent a choice it takes `default_option`,
+so a skill works before its picker UI exists rather than being wired to its
+first branch as a stopgap. `disrupting_palm` can be moved onto it whenever
+somebody wants to.
+
+**Two things the last batch found**, both of the same shape as everything else
+this week: `_resolve_debuff_enemies_aoe` applied statuses but not stat
+penalties, while its buff twin always did both — so "-10% to everything
+nearby" had nothing to say it with. And `_resolve_buff_allies_all` buffed the
+whole team whatever radius the skill named, so Improvised Masterpiece's
+"within 3 tiles" was decoration and a bard three rooms away was inspiring.
 
 ### The seven overworld perks are data with no consumer
 

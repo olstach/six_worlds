@@ -82,6 +82,15 @@ func _make_unit(at: Vector2i, team: int = 0) -> CombatUnit:
 	return unit
 
 
+## Put `unit` on `pos`, keeping the grid's own index in step — assigning
+## grid_position alone leaves the grid believing the old tile is occupied, and
+## the next placement there is quietly refused.
+func _place(unit: CombatUnit, pos: Vector2i) -> void:
+	grid.unit_positions.erase(unit.grid_position)
+	unit.grid_position = pos
+	grid.unit_positions[pos] = unit
+
+
 func _cleanup(units: Array) -> void:
 	for u in units:
 		grid.remove_unit(u)
@@ -595,22 +604,12 @@ func _check_a_thief_steps_around_a_trap() -> void:
 		_fail("Thievery 10 produced no trap_detection_pct")
 
 	var at := Vector2i(11, 10)
-	var thief_caught := 0
-	var oaf_caught := 0
-	for _try in 30:
-		for probe in [thief, oaf]:
-			CombatManager.active_zones.clear()
-			_use(trapper, "trap_maker", at)
-			probe.current_hp = probe.max_hp
-			probe.status_effects.clear()
-			probe.grid_position = Vector2i(12, 12)
-			probe.grid_position = at
-			CombatManager._zones_check_entry(probe)
-			if probe.current_hp < probe.max_hp:
-				if probe == thief:
-					thief_caught += 1
-				else:
-					oaf_caught += 1
+	# One probe at a time: place_trap refuses an occupied tile, and with both
+	# probes in one loop the other was always standing on it.
+	_place(oaf, Vector2i(30, 30))
+	var thief_caught: int = _trap_trials(trapper, thief, at, 30)
+	_place(thief, Vector2i(30, 32))
+	var oaf_caught: int = _trap_trials(trapper, oaf, at, 30)
 	if oaf_caught == 0:
 		_fail("thirty traps and the untrained probe walked into none of them")
 	if thief_caught >= oaf_caught:
@@ -634,6 +633,29 @@ func _check_a_thief_steps_around_a_trap() -> void:
 			break
 	_cleanup([trapper, thief, oaf])
 	_done()
+
+
+## Lay a fresh trap `trials` times and count how often `probe` set it off.
+func _trap_trials(trapper: CombatUnit, probe: CombatUnit, at: Vector2i,
+		trials: int) -> int:
+	var caught := 0
+	for _try in trials:
+		CombatManager.active_zones.clear()
+		probe.current_hp = probe.max_hp
+		probe.status_effects.clear()
+		# Off the tile, and TOLD so, before the next trap goes down: place_zone
+		# marks whoever already stands in a zone as having entered it.
+		_place(probe, Vector2i(12, 12))
+		CombatManager._zones_check_entry(probe)
+		var laid: Dictionary = _use(trapper, "trap_maker", at)
+		if CombatManager.zones_at(at).is_empty():
+			_fail("no trap was laid (%s), so this check proves nothing" % str(laid))
+			return caught
+		_place(probe, at)
+		CombatManager._zones_check_entry(probe)
+		if probe.current_hp < probe.max_hp:
+			caught += 1
+	return caught
 
 
 ## An item may declare `passive.status_immunity`, and the ITEM names the status
