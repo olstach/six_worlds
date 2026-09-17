@@ -136,6 +136,73 @@ template and become properties of a *town* — which is what they always meant.
 
 ---
 
+## The goods
+
+Two kinds, doing two different jobs.
+
+### Staples — bulk, cheap, needed everywhere
+
+These drive the stock-and-price mechanism. Every settlement consumes some and
+produces others, so the web is what makes one region need another.
+
+| Good | Produced by | Consumed by |
+|---|---|---|
+| **Grain** | plains, meadow | everywhere; more per tier |
+| **Fish** | water, ocean, ice | everywhere inland |
+| **Salt** | desert, sand, water | everywhere |
+| **Timber** | forest | everywhere that builds |
+| **Ore** | mountains, hills, ruins | everywhere that makes |
+| **Hides** | meadow, forest, snow | everywhere that wears |
+| **Herbs** | swamp, forest, hills | everywhere that heals |
+| **Salvage** | ruins, charnel grounds | smiths and alchemists |
+
+Eight, which is enough for a web and few enough to hold in your head. Read the
+table the other way and the routes appear: mountains grow nothing and need
+grain; plains make no tools and need ore; the ocean has fish and salt and wants
+timber; the swamp has herbs and wants everything.
+
+The terrain column is not a new table — it is `terrain.json`, the same file
+that says what a ground yields to a forager and what it becomes on a
+battlefield. A zone that generated 30% mountains equilibrates high on ore
+because the map generator decided that.
+
+### Specials — one place makes them, and they are worth more the further you carry them
+
+This is your risk-and-reward layer, and it is where the planar gates become
+economic. A special good has a low local price and a premium that grows with
+distance from where it was produced:
+
+```
+sale_price = base × (1 + distance_premium) × scarcity_at_market
+distance_premium = 0.15 per zone crossed          (same realm, capped ~0.6)
+                 + 1.0 to 2.0 per realm crossed   (the gates pay for themselves)
+```
+
+A naga pearl sold at the reef is worth what a pearl is worth. Carried to the
+cold hells it is worth four times that — and everything between here and there
+knows you are carrying it.
+
+| Realm | Special | Produced in | What it is |
+|---|---|---|---|
+| Hell | **Ash-iron** (*thal-lchags*) | fire hells | metal quenched in suffering; smiths pay anything |
+| Hell | **Bitter salt** | cold hells | preserves what should not be preserved |
+| Hungry Ghost | **Grave incense** | charnel grounds | burned to be heard by the dead |
+| Hungry Ghost | **Bog amber** | fetid swamps | resin with something inside it |
+| Animal | **Naga pearl** | ocean | the sea courts' coin, and they remember it leaving |
+| Animal | **Garuda plume** | ridge | taken, not gathered |
+| Human *(unbuilt)* | tea, paper, ink, silk | — | the realm that makes things for other realms |
+| Asura *(unbuilt)* | war-steel, trophies | — | |
+| God *(unbuilt)* | amrita, celestial silk, lotus | — | worth most in the realms that cannot make them |
+
+**The risk is the premium.** One rule: the total premium riding in the party's
+packs raises the chance of a hostile encounter, and a lost fight costs a
+fraction of the cargo. Carry a pearl across three zones and something will come
+for it — which is the difference between a trade route and a delivery.
+
+That also gives the unbuilt realms a reason to exist economically before they
+have content: the Human realm is the one that *makes things*, and the God realm
+sells what nowhere else can grow.
+
 ## How this ties to the terrain work
 
 The terrain audit left one vocabulary (`Ground`, `terrain.json`) shared by the
@@ -154,6 +221,69 @@ generation becomes the thing that lays out the economy** — which is the tie-in
 you named, and the reason to do the two together rather than in either order.
 
 ---
+
+## Generating settlements, and the roads between them
+
+Today the generator places `guaranteed_shops: [1, 2]` per zone from events
+tagged `shop`. On a 192×192 map with three to five zones that is about five
+shops in thirty-seven thousand tiles, each a template with no position of its
+own — which is why the map has no places, only encounters.
+
+What I would generate instead, per zone:
+
+| Tier | Name | Per zone | Spacing | Wants |
+|---|---|---|---|---|
+| 3 | **Town** | 0–1 | ≥ 20 from another town | habitable ground, water or road nearby |
+| 2 | **Village** | 1–2 | ≥ 10 | near what it produces |
+| 1 | **Hamlet** | 2–4 | ≥ 6 | anywhere passable |
+
+Roughly five to seven settlements a zone, fifteen to twenty-five a map: enough
+for routes to exist, few enough that you learn their names. Tier decides what
+the market holds, what the trainers there will teach, and how much stock the
+place can absorb before its prices move — a hamlet is a bad place to sell forty
+bales of anything.
+
+**Placement follows production.** A village that produces ore wants to be on or
+beside mountains; one that produces grain wants plains. So the settlement layer
+reads the terrain the generator has already laid down, and the economy comes out
+of the map rather than being sprinkled on top.
+
+**Then roads, which should go somewhere.** `road_chance` currently scatters
+road tiles at 3–6% per zone: texture, not infrastructure. Instead:
+
+1. Connect the towns to each other with a least-cost path over terrain speed —
+   roads follow the valleys, because that is what `speed` already says.
+2. Connect each village to the nearest town or road, if it is within a
+   reasonable distance.
+3. Leave some hamlets unconnected on purpose. A road that reaches everywhere is
+   a road that means nothing, and the unreached places are where the interesting
+   prices are.
+
+Roads already move the party at 2.0× speed, so a road network immediately
+changes how travel feels — and it gives the trade layer something to price
+against: the cheap route and the fast route stop being the same route.
+
+## Who is on the roads
+
+With settlements in places and roads between them, the friendly-NPC item in
+TODO §2 stops being abstract. Three kinds, all of them moving:
+
+- **Trader caravans** — a market that walks. A caravan carries goods from
+  wherever it set out, so its prices are *that place's* prices: meeting one on
+  the road is a chance to buy a distant market's cheap side without going
+  there. It can be traded with, escorted, or robbed, and robbing it is the
+  obvious way to be paid in cargo and karma both.
+- **Travellers** — rumour. They know what a settlement two zones away is paying
+  for grain, which is exactly the information `supply_and_demand` promises, and
+  they will reveal a settlement you have not met.
+- **Pilgrims** — going somewhere sacred, slowly, with nothing worth taking.
+  Karma, blessings, and the occasional request. The realm decides who they are:
+  hungry ghosts walk to water they cannot drink.
+
+They spawn on roads between settlements and move along them, which means the
+road network is also the NPC schedule. A caravan that left the ore town three
+days ago is somewhere on the road to the grain town, and if you rob it the ore
+town's prices notice.
 
 ## Where the two perks land
 
@@ -190,13 +320,19 @@ you named, and the reason to do the two together rather than in either order.
 
 ## What I need from you
 
-1. **Does gold keep buying attribute points and skill levels?** This decides
-   how careful the rest has to be.
-2. **How far does trade go?** A light version — prices differ by place, the two
-   perks work, no cargo — is layers 1, 2 and 5 and is genuinely useful. The
-   full version adds goods you carry and routes you learn. Both are coherent;
-   the light one is perhaps a third of the work.
-3. **Is a settlement a shop with a position, or a shop *inside* a settlement?**
-   I would build the second — a town holds a market, a trainer, a temple — but
-   it means the nine `town` shop definitions become settlement templates, and
-   that is a data migration you may want to write yourself.
+1. **Does gold keep buying attribute points and skill levels?** Trainers sell
+   them today, so a money press is a progression press. This decides how
+   careful the rest has to be, and it is a question about what gold *is*.
+2. **Are the eight staples the right eight, and are the specials the right
+   ones?** The chart above is a first pass in your register; the names
+   especially want your hand — *thal-lchags* for ash-iron is a guess at the
+   compound.
+3. **How much of the map layer do you want built with this?** The settlement
+   and road generation is the biggest single piece and the one that changes how
+   the game *feels* to travel through. It can be built first, alone, and would
+   be worth having even if no trade good ever existed — or it can wait and the
+   economy can start on the five shops per map that already exist.
+4. **Do the three unbuilt realms get maps designed around this?** Human as the
+   realm that makes things, God as the one that sells what cannot be grown
+   elsewhere. If so, this design should land before those maps are written
+   rather than after.
