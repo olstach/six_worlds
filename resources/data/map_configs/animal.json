@@ -29,6 +29,13 @@
     {
       "_comment": "Bottom section. Entry zone — player arrives from the Hungry Ghost Realm. Vast coastal shelf and open ocean: deep water channels, coral reef flats, rocky islets, sandy shallows. The naga rule here and they remember everything.",
       "id": "ocean",
+      "signature_terrain": { "5": 45 },
+      "biomes": [
+        { "id": "open_water", "name": "The Open Water", "weight": 4, "terrain_weights": { "5": 70, "12": 15, "0": 10, "4": 5 } },
+        { "id": "reef_flats", "name": "The Reef Flats", "weight": 3, "terrain_weights": { "5": 45, "12": 30, "0": 15, "3": 10 } },
+        { "id": "rocky_islets", "name": "The Rocky Islets", "weight": 2, "terrain_weights": { "4": 35, "5": 35, "3": 20, "12": 10 } },
+        { "id": "shallows", "name": "The Shallows", "weight": 2, "terrain_weights": { "12": 40, "5": 35, "0": 20, "6": 5 } }
+      ],
       "rows": [128, 191],
       "terrain_weights": {
         "4": 30,
@@ -57,6 +64,13 @@
     {
       "_comment": "Upper-left section. Dense canopy — dark, layered, territorial. The forest floor is never quiet. Every fallen log is a claim, every fruiting tree a war. The portal to the Human Realm is hidden in the oldest part, near the northwestern corner.",
       "id": "forest",
+      "signature_terrain": { "2": 30 },
+      "biomes": [
+        { "id": "deep_wood", "name": "The Deep Wood", "weight": 4, "terrain_weights": { "2": 60, "3": 20, "0": 15, "6": 5 } },
+        { "id": "clearings", "name": "The Clearings", "weight": 3, "terrain_weights": { "0": 45, "2": 35, "3": 15, "5": 5 } },
+        { "id": "hill_wood", "name": "The Hill Wood", "weight": 2, "terrain_weights": { "3": 40, "2": 35, "0": 20, "4": 5 } },
+        { "id": "fen", "name": "The Fen", "weight": 2, "terrain_weights": { "6": 40, "2": 25, "5": 20, "0": 15 } }
+      ],
       "rows": [0, 119],
       "cols": [0, 95],
       "terrain_weights": {
@@ -87,6 +101,13 @@
     {
       "_comment": "Upper-right section. Open sky-brushed plains, termite cathedrals, migration routes, watering holes. Exposure is the currency here — the khadga charge, the yaksha mark territory, the bhramara darken the midday sun. More dangerous than the forest because there is nowhere to hide.",
       "id": "meadow",
+      "signature_terrain": { "0": 40 },
+      "biomes": [
+        { "id": "open_meadow", "name": "The Open Meadow", "weight": 4, "terrain_weights": { "0": 65, "2": 15, "3": 15, "5": 5 } },
+        { "id": "tall_grass", "name": "The Tall Grass", "weight": 3, "terrain_weights": { "0": 50, "6": 20, "2": 20, "5": 10 } },
+        { "id": "stone_meadow", "name": "The Stone Meadow", "weight": 2, "terrain_weights": { "3": 40, "0": 35, "4": 15, "2": 10 } },
+        { "id": "watering_holes", "name": "The Watering Holes", "weight": 2, "terrain_weights": { "0": 40, "5": 30, "6": 20, "2": 10 } }
+      ],
       "rows": [0, 119],
       "cols": [104, 191],
       "terrain_weights": {

@@ -222,6 +222,49 @@ you named, and the reason to do the two together rather than in either order.
 
 ---
 
+## Subregions: the same fix the battlefield got, one level up
+
+A zone today fills its whole rectangle with weighted-random terrain and then
+smooths it three times. So a zone keeps the PROPORTIONS of its terrain and
+throws away the ARRANGEMENT — which is word for word the flaw the terrain audit
+found in the battlefield generator and fixed with blocks and greeble. The world
+map still has the statistical version.
+
+**Subregions are that fix at map scale.** A zone is divided into a handful of
+contiguous areas, each with its own biome, and the terrain is generated per
+subregion rather than per zone.
+
+**How they are cut.** Seeds on a jittered lattice — a grid, with each point
+pushed off centre — and every tile joins its nearest seed. A plain lattice
+looks like a chessboard and pure random seeds clump; jittering a lattice gives
+organic shapes with a KNOWN COUNT AND SIZE, which is what "regular and
+logically placed, but not overwhelming" needs. Six to nine subregions per zone,
+each roughly 40×20 on a 192-wide map.
+
+**What a subregion is.** An id, a name from the pools that already exist, a
+biome, a centre, and a settlement quota. The biome is drawn from the zone's own
+palette, so a zone becomes "mostly pine slopes with two salt flats and a
+burned-over stretch" rather than an even scatter of everything it contains.
+
+**The seams take care of themselves.** The cellular-automata smoothing already
+runs across the whole zone, so it blurs subregion borders into each other —
+the same job greeble does on a battlefield seam, for free, because the pass was
+already there.
+
+What this buys, beyond looking like a place:
+
+- **Settlements can be placed sensibly.** A quota per subregion — this one has
+  the town, that one has two hamlets — spreads them evenly without a spacing
+  loop fighting itself, and a settlement can be put where its own subregion
+  produces something.
+- **Roads have something to connect.** Subregion centres are the natural nodes
+  of a two-level network: within a subregion, and between neighbours.
+- **The NPC schedule becomes legible.** A caravan travels from one subregion's
+  town to its neighbour's, which is a route a player can learn and intercept.
+- **Battlefields inherit it.** The battlefield generator samples the world map;
+  subregions mean the sample varies by *place* rather than by noise, so a fight
+  in the pine slopes looks different from one on the salt flats.
+
 ## Generating settlements, and the roads between them
 
 Today the generator places `guaranteed_shops: [1, 2]` per zone from events

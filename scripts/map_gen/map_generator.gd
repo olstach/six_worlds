@@ -92,6 +92,7 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 	_objects.clear()
 	_mobs.clear()
 	_regions.clear()
+	_subregion_records.clear()
 	_obj_counter = 0
 	_location_name_pools.clear()
 	# Pre-shuffle each name pool so placement order is random
@@ -148,7 +149,12 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 		"height": _height,
 		"base_speed": config.get("base_speed", 3.0),
 		"start_position": {"x": _start_pos.x, "y": _start_pos.y},
-		"regions": _regions,
+		# Duplicated, like the terrain and the objects beside them: these are
+		# MEMBER collections, and returning the reference means the next
+		# generate() call clears the map somebody is already holding. Nothing
+		# noticed while only one map was ever generated per run.
+		"regions": _regions.duplicate(true),
+		"subregions": _subregion_records.duplicate(true),
 		"terrain": _terrain.duplicate(),
 		"objects": _objects.duplicate(true),
 		"mobs": _mobs.duplicate(true)
@@ -176,15 +182,31 @@ func _generate_zone_terrain(zone: Dictionary) -> void:
 		_generate_mountain_wall(zone, row_start, row_end, col_start, col_end)
 		return
 
-	# Weighted random terrain fill
-	var weights = zone.get("terrain_weights", {"0": 100})
-	var weight_table = _build_weight_table(weights)
+	# ── Subregions ──────────────────────────────────────────────────────────
+	#
+	# A zone used to fill its whole rectangle from one weight table, so it kept
+	# the PROPORTIONS of its terrain and threw away the ARRANGEMENT — word for
+	# word the flaw the terrain audit found in the battlefield generator and
+	# fixed with blocks. This is that fix at map scale: the zone is cut into a
+	# handful of contiguous subregions, each with its own biome, and terrain is
+	# generated per subregion.
+	#
+	# A zone that declares no `biomes` keeps the old behaviour exactly, which is
+	# why this could land without touching the three existing maps at once.
+	var biomes: Array = zone.get("biomes", [])
+	var subregions: Array[Dictionary] = _cut_subregions(zone, row_start, row_end,
+		col_start, col_end, biomes)
 
 	for y in range(row_start, row_end + 1):
 		for x in range(col_start, col_end + 1):
-			_set_terrain(x, y, _pick_weighted(weight_table))
+			var sub: Dictionary = _subregion_at(subregions, x, y)
+			_set_terrain(x, y, _pick_weighted(sub.weight_table))
 
-	# Cellular automata smoothing — 3 passes
+	# Cellular automata smoothing — 3 passes.
+	#
+	# Runs across the whole zone, which means it also blurs the subregion
+	# borders into each other: the same job greeble does on a battlefield seam,
+	# for free, because the pass was already here.
 	for _pass in range(3):
 		var new_terrain: Array[int] = _terrain.duplicate()
 		for y in range(row_start, row_end + 1):
@@ -194,6 +216,138 @@ func _generate_zone_terrain(zone: Dictionary) -> void:
 		for y in range(row_start, row_end + 1):
 			for x in range(col_start, col_end + 1):
 				_terrain[y * _width + x] = new_terrain[y * _width + x]
+
+
+## Cut a zone into subregions and give each one a biome.
+##
+## Seeds on a JITTERED LATTICE rather than at random: a plain lattice reads as
+## a chessboard and random seeds clump, while a lattice pushed off centre gives
+## organic shapes with a known count and size. Every tile then joins its
+## nearest seed, which is a Voronoi partition and needs no flood fill.
+##
+## Each subregion is recorded in `_subregions` so the settlement, road and NPC
+## layers have nodes to work with, and so a battlefield generated from this map
+## varies by PLACE rather than by noise.
+func _cut_subregions(zone: Dictionary, row_start: int, row_end: int,
+		col_start: int, col_end: int, biomes: Array) -> Array[Dictionary]:
+	var zone_id: String = str(zone.get("id", ""))
+	var fallback: Dictionary = zone.get("terrain_weights", {"0": 100})
+
+	# One subregion covering the zone is the old behaviour, and what a zone
+	# with no biomes declared still gets.
+	if biomes.is_empty():
+		var whole: Dictionary = {
+			"id": "%s_whole" % zone_id, "zone": zone_id, "biome": "",
+			"seed": Vector2i((col_start + col_end) / 2, (row_start + row_end) / 2),
+			"weight_table": _build_weight_table(fallback),
+			"rect": [col_start, row_start, col_end, row_end],
+		}
+		var single: Array[Dictionary] = [whole]
+		_record_subregions(single)
+		return single
+
+	var span_x: int = col_end - col_start + 1
+	var span_y: int = row_end - row_start + 1
+
+	# Enough cells to average SUBREGION_TARGET_TILES each, laid out to match the
+	# zone's shape: a tall zone wants a tall lattice. Getting this wrong is not
+	# visible in the map — it just quietly produces too few subregions, which is
+	# how the hungry ghost swamps came out with eight where they wanted twenty.
+	var area: float = float(span_x * span_y)
+	var wanted: float = maxf(2.0, area / float(SUBREGION_TARGET_TILES))
+	var cols_of_cells: int = clampi(
+		int(round(sqrt(wanted * float(span_x) / maxf(1.0, float(span_y))))), 1, 8)
+	var rows_of_cells: int = clampi(
+		int(round(wanted / float(cols_of_cells))), 1, 8)
+
+	# Every biome in the palette appears at least once where there is room for
+	# it, and the rest are drawn by weight. A zone that rolled none of its
+	# wooded subregions reads as a different place than it was written to be.
+	var guaranteed: Array = biomes.duplicate()
+	guaranteed.shuffle()
+
+	var out: Array[Dictionary] = []
+	var index := 0
+	for cell_y in range(rows_of_cells):
+		for cell_x in range(cols_of_cells):
+			var x0: int = col_start + cell_x * span_x / cols_of_cells
+			var x1: int = col_start + (cell_x + 1) * span_x / cols_of_cells - 1
+			var y0: int = row_start + cell_y * span_y / rows_of_cells
+			var y1: int = row_start + (cell_y + 1) * span_y / rows_of_cells - 1
+			# Jitter: the seed sits anywhere in the middle half of its cell, so
+			# the shapes are irregular and the spacing is still controlled.
+			var jx: int = randi_range(x0 + (x1 - x0) / 4, x1 - (x1 - x0) / 4)
+			var jy: int = randi_range(y0 + (y1 - y0) / 4, y1 - (y1 - y0) / 4)
+			var biome: Dictionary = guaranteed.pop_back() if not guaranteed.is_empty() \
+				else _pick_biome(biomes)
+			out.append({
+				"id": "%s_%d" % [zone_id, index],
+				"zone": zone_id,
+				"biome": str(biome.get("id", "")),
+				"name": str(biome.get("name", "")),
+				"seed": Vector2i(jx, jy),
+				"weight_table": _build_weight_table(
+					biome.get("terrain_weights", fallback)),
+				"rect": [x0, y0, x1, y1],
+				"settlements": biome.get("settlements", {}),
+			})
+			index += 1
+	_record_subregions(out)
+	return out
+
+
+## Roughly how many tiles a subregion should cover. Six to nine per zone on a
+## 192-wide map, which is small enough to read as one place and large enough to
+## hold a settlement and its fields.
+const SUBREGION_TARGET_TILES: int = 900
+
+
+## One biome from a zone's palette, by weight.
+func _pick_biome(biomes: Array) -> Dictionary:
+	var total := 0
+	for biome in biomes:
+		total += maxi(1, int(biome.get("weight", 1)))
+	var roll := randi() % maxi(1, total)
+	for biome in biomes:
+		roll -= maxi(1, int(biome.get("weight", 1)))
+		if roll < 0:
+			return biome
+	return biomes[0]
+
+
+## Which subregion owns this tile: the nearest seed.
+func _subregion_at(subregions: Array[Dictionary], x: int, y: int) -> Dictionary:
+	var best: Dictionary = subregions[0]
+	var best_dist: int = 1 << 30
+	for sub in subregions:
+		var seed_pos: Vector2i = sub.seed
+		var dx: int = seed_pos.x - x
+		var dy: int = seed_pos.y - y
+		var dist: int = dx * dx + dy * dy
+		if dist < best_dist:
+			best_dist = dist
+			best = sub
+	return best
+
+
+## Keep the subregions in the map data, without the weight tables — those are
+## generation scratch, and what the rest of the game wants is where a place is
+## and what kind of place it is.
+func _record_subregions(subregions: Array[Dictionary]) -> void:
+	for sub in subregions:
+		_subregion_records.append({
+			"id": sub.id,
+			"zone": sub.zone,
+			"biome": sub.biome,
+			"name": sub.name if sub.has("name") else "",
+			"seed": sub.seed,
+			"rect": sub.rect,
+			"settlements": sub.get("settlements", {}),
+		})
+
+
+## Subregions of every zone, in generation order.
+var _subregion_records: Array[Dictionary] = []
 
 
 ## Fill a zone with mountains and carve passes through it.
