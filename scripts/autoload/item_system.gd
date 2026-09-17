@@ -247,6 +247,15 @@ func equip_item(character: Dictionary, item_id: String, slot: String) -> bool:
 
 
 ## Unequip an item from a slot back to inventory
+## Put a different item in a slot without passing through the inventory.
+##
+## Reinforcing a piece registers a modified INSTANCE of it and swaps that in —
+## improving the shared definition would improve every sword of that make in
+## the world.
+func swap_equipped(character: Dictionary, slot: String, new_item_id: String) -> void:
+	_set_equipped_item(character, slot, new_item_id)
+
+
 func unequip_item(character: Dictionary, slot: String) -> bool:
 	var item_id = get_equipped_item(character, slot)
 	if item_id == "":

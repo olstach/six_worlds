@@ -444,6 +444,15 @@ func get_roll_category(roll_req: Dictionary) -> String:
 ## everything, plus whatever the roll's own category attracts.
 func get_roll_bonus(roll_req: Dictionary) -> int:
 	var bonus: int = get_party_roll_bonus()
+
+	# An Inspiring Sermon is good for the NEXT skill check, so it is spent
+	# here rather than expiring on a clock. Two sermons are two points, as the
+	# perk's "stacks up to 2 times" promises.
+	var sermon: int = int(GameState.flags.get("sermon_skill_bonus", 0))
+	if sermon > 0:
+		bonus += int(round(sermon / 10.0))
+		GameState.set_flag("sermon_skill_bonus", 0)
+
 	if not PartyBonuses:
 		return bonus
 	if get_roll_category(roll_req) == "social":
