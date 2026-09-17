@@ -4,6 +4,7 @@
   "_comment_battle": "`battle` says what a 9x6 block of this ground becomes. `tile` is the default passability for its tiles (floor/water/difficult/wall/pit). `height` raises it. `obstacles` is how many of each to scatter per block, and `hazard` an optional terrain effect with the chance of a tile carrying it. Every terrain has a battle block, including the flat ones — five terrains used to have none at all, which is why a desert fight looked exactly like a grassland one.",
   "terrain": {
     "plains": {
+      "forage": { "food": 2, "herbs": 1 },
       "id": 0,
       "name": "Plains",
       "speed": 1.0,
@@ -17,6 +18,7 @@
       }
     },
     "road": {
+      "forage": { "food": 1 },
       "id": 1,
       "name": "Road",
       "speed": 2.0,
@@ -28,6 +30,7 @@
       }
     },
     "forest": {
+      "forage": { "food": 3, "herbs": 2 },
       "id": 2,
       "name": "Forest",
       "speed": 0.5,
@@ -46,6 +49,7 @@
       }
     },
     "hills": {
+      "forage": { "herbs": 1, "scrap": 2 },
       "id": 3,
       "name": "Hills",
       "speed": 0.5,
@@ -63,6 +67,7 @@
       }
     },
     "mountains": {
+      "forage": { "scrap": 3, "reagents": 1 },
       "id": 4,
       "name": "Mountains",
       "speed": -1.0,
@@ -81,6 +86,7 @@
       }
     },
     "water": {
+      "forage": { "food": 2 },
       "id": 5,
       "name": "Water",
       "speed": -1.0,
@@ -102,6 +108,7 @@
       }
     },
     "swamp": {
+      "forage": { "herbs": 3, "reagents": 1 },
       "id": 6,
       "name": "Swamp",
       "speed": 0.5,
@@ -125,6 +132,7 @@
       }
     },
     "desert": {
+      "forage": { "reagents": 1 },
       "id": 7,
       "name": "Desert",
       "speed": 0.75,
@@ -142,6 +150,7 @@
       }
     },
     "snow": {
+      "forage": { "food": 1 },
       "id": 8,
       "name": "Snow",
       "speed": 0.5,
@@ -164,6 +173,7 @@
       }
     },
     "lava": {
+      "forage": { "reagents": 2 },
       "id": 9,
       "name": "Lava",
       "speed": -1.0,
@@ -187,6 +197,7 @@
       }
     },
     "bridge": {
+      "forage": {},
       "id": 10,
       "name": "Bridge",
       "speed": 1.5,
@@ -200,6 +211,7 @@
       }
     },
     "ice": {
+      "forage": { "food": 1 },
       "id": 11,
       "name": "Ice",
       "speed": 1.25,
@@ -220,6 +232,7 @@
       }
     },
     "sand": {
+      "forage": { "reagents": 1 },
       "id": 12,
       "name": "Sand",
       "speed": 0.75,
@@ -237,6 +250,7 @@
       }
     },
     "ruins": {
+      "forage": { "scrap": 3, "reagents": 1 },
       "id": 13,
       "name": "Ruins",
       "speed": 0.75,
@@ -257,5 +271,7 @@
     }
   },
   "_comment_affinity": "`summon_affinity` is what a Summoning spell draws on when the battle is fought on this ground. It was a second table keyed on bare terrain integers in combat_manager.gd, which is how snow, desert and sand came to have none while ice did.",
+  "_comment_forage": "What a ground yields to somebody searching it, in supplies per forage. Logistics scales it and the `forage` perk doubles it \u2014 the perk promised 'food in forests, herbs in meadows, minerals in mountains' and the camp action it was supposed to improve never looked at the ground at all. Supply names are GameState's: food, herbs, scrap, reagents.",
+
   "_comment_relief": "`relief` is how high this ground may rise, in height levels. It is a CEILING rather than a fixed value: the generator raises mounds across the field and each tile takes the lower of the mound and its own ground's relief, so a hill can spill onto the grass beside it and stops dead at the water's edge. Height pays 5 accuracy and 2 melee damage a level, so three is already a commanding position."
 }

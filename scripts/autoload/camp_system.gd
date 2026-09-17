@@ -227,6 +227,50 @@ const ACTIVITIES: Array = [
 		"effect_desc": "Gain 1–2 supplies (rope, torch, bandage, or arrowhead)",
 	},
 	{
+		"id": "scout_ahead",
+		"name": "Scout Ahead",
+		"category": "Survival",
+		"skill_req": {"logistics": 1},
+		"perk_req": "scout_ahead",
+		"min_tier": 1,
+		"costs": {},
+		"description": "Read the land for a day's march in every direction",
+		"effect_desc": "Reveal a wide area around the camp",
+	},
+	{
+		"id": "guided_practice",
+		"name": "Guided Practice",
+		"category": "Spiritual",
+		"skill_req": {"learning": 3},
+		"perk_req": "guided_practice",
+		"min_tier": 3,
+		"costs": {},
+		"description": "Walk a companion through a spell you know",
+		"effect_desc": "Teach one spell to someone who can already work its school",
+	},
+	{
+		"id": "reinforce",
+		"name": "Reinforce Gear",
+		"category": "Maintenance",
+		"skill_req": {"smithing": 1},
+		"perk_req": "reinforce",
+		"min_tier": 2,
+		"costs": {"scrap": 3},
+		"description": "Work a piece of equipment over until it is better than it was",
+		"effect_desc": "+10% to one equipped item's main stat, permanently",
+	},
+	{
+		"id": "inspiring_sermon",
+		"name": "Inspiring Sermon",
+		"category": "Spiritual",
+		"skill_req": {},
+		"perk_req": "inspiring_sermon",
+		"min_tier": 2,
+		"costs": {},
+		"description": "Say the thing the party needs to hear",
+		"effect_desc": "+5% damage and +10% on skill checks until the next fight; twice at most",
+	},
+	{
 		"id": "brew_coatings",
 		"name": "Brew Coatings",
 		"category": "Maintenance",
@@ -349,6 +393,10 @@ func execute_activity(activity_id: String, performer: Dictionary, party: Array, 
 		"deep_repair":        return _exec_deep_repair(party)
 		"weapon_work":        return _exec_weapon_work(party)
 		"brew_coatings":      return _exec_brew_coatings(performer)
+		"scout_ahead":        return _exec_scout_ahead(performer)
+		"guided_practice":    return _exec_guided_practice(performer, party)
+		"reinforce":          return _exec_reinforce(performer)
+		"inspiring_sermon":   return _exec_inspiring_sermon(performer, party)
 		"craft_item":         return _exec_craft_item(performer)
 		"craft_charm":        return _exec_craft_charm(performer)
 		"set_snares":         return _exec_set_snares(performer)
@@ -639,14 +687,47 @@ func _exec_study(performer: Dictionary) -> Dictionary:
 	}
 
 
+## Search the ground you are standing on.
+##
+## This gave herbs and food wherever you were — a mountainside yielded the same
+## as a forest — while the `forage` perk promised "food in forests, herbs in
+## meadows, minerals in mountains" and was read by nothing. The yields are in
+## terrain.json now, beside everything else that ground decides.
 func _exec_forage(performer: Dictionary, party: Array) -> Dictionary:
 	var logistics := CharacterSystem.get_effective_skill_level(performer, "logistics")
-	var herbs_found := 1 + logistics / 3
-	var food_found  := party.size() + logistics
-	GameState.add_supply("herbs", herbs_found)
-	GameState.add_supply("food",  food_found)
+	var ground: int = MapManager.get_terrain(MapManager.party_position) if MapManager else 0
+	var yields: Dictionary = Ground.forage_of(ground)
+
+	# A trained forager finds half again as much, and finds it where others
+	# would not: the perk is what makes barren ground worth searching.
+	var trained: bool = PerkSystem.has_perk(performer, "forage") if PerkSystem else false
+	var found: Dictionary = {}
+	for supply in yields:
+		var base: int = int(yields[supply])
+		var amount: int = base + logistics / 3
+		if trained:
+			amount = int(ceil(amount * 1.5))
+		if supply == "food":
+			amount += party.size() / 2
+		if amount > 0:
+			GameState.add_supply(supply, amount)
+			found[supply] = amount
+
+	if found.is_empty():
+		if not trained:
+			return {"message": "%s finds nothing on this ground."
+				% performer.get("name", "Performer"), "ok": true}
+		# Somebody who knows how to look finds something almost anywhere.
+		GameState.add_supply("food", 1)
+		found["food"] = 1
+
+	var parts: Array[String] = []
+	for supply in found:
+		parts.append("+%d %s" % [int(found[supply]), supply])
 	return {
-		"message": "%s forages: +%d herbs, +%d food." % [performer.get("name", "Performer"), herbs_found, food_found],
+		"message": "%s forages %s: %s." % [performer.get("name", "Performer"),
+			MapManager.get_terrain_name(MapManager.party_position) if MapManager else "the ground",
+			", ".join(parts)],
 		"ok": true,
 	}
 
@@ -856,6 +937,154 @@ func _exec_brew_coatings(performer: Dictionary) -> Dictionary:
 	return {
 		"message": "%s works the herbs down to a residue: %s."
 			% [performer.get("name", "Performer"), ", ".join(brewed)],
+		"ok": true,
+	}
+
+
+## Read the land further than the ordinary watch does.
+##
+## The camp already had a `scout` action revealing four tiles; this is the
+## Logistics perk that was supposed to do the same thing and had no way to be
+## used, so it does it properly — twice the reach, and further again for a
+## quartermaster who knows the country.
+func _exec_scout_ahead(performer: Dictionary) -> Dictionary:
+	var logistics := CharacterSystem.get_effective_skill_level(performer, "logistics")
+	var radius: int = 8 + logistics / 3
+	MapManager.reveal_area(MapManager.party_position, radius)
+	return {
+		"message": "%s reads the land for %d tiles in every direction."
+			% [performer.get("name", "Performer"), radius],
+		"ok": true,
+	}
+
+
+## Teach somebody a spell you know and they could work.
+##
+## "Meets the basic school requirements" is the check: they need one of the
+## spell's schools at its level, which is the same rule casting uses — so what
+## is taught is something they can actually cast tomorrow.
+func _exec_guided_practice(performer: Dictionary, party: Array) -> Dictionary:
+	var teachable: Array[Dictionary] = []
+	for spell_id in performer.get("known_spells", []):
+		var spell: Dictionary = CombatManager.get_spell(str(spell_id))
+		if spell.is_empty():
+			continue
+		for student in party:
+			# No `student == performer` guard: the teacher necessarily knows
+			# the spell being taught, so the line below already excludes them.
+			# A branch that cannot be reached is a branch nothing can test.
+			if str(spell_id) in student.get("known_spells", []):
+				continue
+			if not _can_learn(student, spell):
+				continue
+			teachable.append({"spell": str(spell_id), "student": student,
+				"level": int(spell.get("level", 1))})
+
+	if teachable.is_empty():
+		return {"message": "Nobody here can take on anything %s knows."
+			% performer.get("name", "Performer"), "ok": false}
+
+	# The most advanced spell somebody can actually take: a lesson is worth
+	# more the further it reaches.
+	teachable.sort_custom(func(a, b): return int(a.level) > int(b.level))
+	var lesson: Dictionary = teachable[0]
+	var student: Dictionary = lesson.student
+	if not student.has("known_spells"):
+		student["known_spells"] = []
+	student["known_spells"].append(str(lesson.spell))
+	var spell_name: String = str(CombatManager.get_spell(str(lesson.spell)).get(
+		"name", lesson.spell))
+	return {
+		"message": "%s teaches %s to %s." % [performer.get("name", "Performer"),
+			spell_name, student.get("name", "a companion")],
+		"ok": true,
+	}
+
+
+## Can this character work this spell's school at its level? The same question
+## casting asks.
+func _can_learn(student: Dictionary, spell: Dictionary) -> bool:
+	var required: int = int(spell.get("level", 1))
+	for school in spell.get("schools", []):
+		var school_lower: String = str(school).to_lower()
+		var skill_id: String = school_lower + "_magic" if school_lower in [
+			"earth", "water", "fire", "air", "space", "white", "black"] else school_lower
+		if CharacterSystem.get_effective_skill_level(student, skill_id) >= required:
+			return true
+	return false
+
+
+## Work a piece of equipment over until it is better than it was.
+##
+## Permanently: the item becomes an instance of its own before it is changed,
+## or improving a sword would improve every sword of that make in the world.
+func _exec_reinforce(performer: Dictionary) -> Dictionary:
+	if not GameState.consume_supply("scrap", 3):
+		return {"message": "Not enough scrap to reinforce anything.", "ok": false}
+
+	var slot: String = ""
+	var item_id: String = ""
+	for candidate in ["weapon_main", "armor", "weapon_off", "helmet", "shield",
+			"gauntlets", "greaves", "boots", "robe"]:
+		var found: String = ItemSystem.get_equipped_item(performer, candidate)
+		if found != "":
+			slot = candidate
+			item_id = found
+			break
+	if item_id == "":
+		return {"message": "%s has nothing equipped to work on."
+			% performer.get("name", "Performer"), "ok": false}
+
+	var item: Dictionary = ItemSystem.get_item(item_id)
+	var stats: Dictionary = item.get("stats", {})
+	# The primary stat is the biggest one the piece has: damage on a blade,
+	# armour on a breastplate, without needing a table to say so.
+	var primary: String = ""
+	var best: float = -1.0
+	for stat in stats:
+		if stats[stat] is int or stats[stat] is float:
+			if float(stats[stat]) > best:
+				best = float(stats[stat])
+				primary = str(stat)
+	if primary == "":
+		return {"message": "%s cannot be improved." % item.get("name", item_id), "ok": false}
+
+	var gain: int = maxi(1, int(ceil(best * 0.10)))
+	item["stats"][primary] = int(best) + gain
+	item["name"] = "%s (reinforced)" % str(item.get("name", item_id)) \
+		if not str(item.get("name", "")).ends_with("(reinforced)") else item.get("name")
+	var new_id: String = ItemSystem.register_runtime_item(item)
+	ItemSystem.swap_equipped(performer, slot, new_id)
+	CharacterSystem.update_derived_stats(performer)
+	return {
+		"message": "%s reinforces %s: +%d %s." % [performer.get("name", "Performer"),
+			item.get("name", new_id), gain, primary],
+		"ok": true,
+	}
+
+
+## Say the thing the party needs to hear.
+##
+## Stacks twice between rests, as the perk says, and lasts until the next
+## fight — which is what `active_map_buffs` already means.
+const SERMON_MAX_STACKS: int = 2
+
+
+func _exec_inspiring_sermon(performer: Dictionary, party: Array) -> Dictionary:
+	var stacks: int = int(GameState.flags.get("sermon_stacks", 0))
+	if stacks >= SERMON_MAX_STACKS:
+		return {"message": "They have heard enough speeches for one night.", "ok": false}
+	GameState.set_flag("sermon_stacks", stacks + 1)
+
+	GameState.active_map_buffs.append({"stat": "damage", "amount": 5,
+		"combats_remaining": 1, "source": "Inspiring Sermon"})
+	GameState.set_flag("sermon_skill_bonus",
+		int(GameState.flags.get("sermon_skill_bonus", 0)) + 10)
+	for character in party:
+		CharacterSystem.update_derived_stats(character)
+	return {
+		"message": "%s speaks, and the party stands a little straighter. (%d/%d)"
+			% [performer.get("name", "Performer"), stacks + 1, SERMON_MAX_STACKS],
 		"ok": true,
 	}
 

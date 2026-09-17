@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 12
+const EXPECTED_CHECKS: int = 18
 
 
 func _ready() -> void:
@@ -29,6 +29,14 @@ func _ready() -> void:
 	_check_loot_quality_widens_the_drop()
 	_check_an_insatiable_eats_more()
 	_check_an_insatiable_sleeps_worse()
+
+	# The overworld perks: five of the seven that were data with no consumer.
+	_check_foraging_reads_the_ground()
+	_check_a_forager_finds_more()
+	_check_scouting_ahead_reaches_further()
+	_check_a_lesson_teaches_something_castable()
+	_check_reinforcing_improves_one_instance()
+	_check_a_sermon_stacks_twice_and_no_more()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -285,4 +293,195 @@ func _check_an_insatiable_sleeps_worse() -> void:
 	if hungry_rest >= plain_rest:
 		_fail("an Insatiable recovers %.2f of a rest where an ordinary "
 			% hungry_rest + "character recovers %.2f" % plain_rest)
+	_done()
+
+
+## The camp's forage gave herbs and food wherever you stood — a mountainside
+## yielded the same as a forest — while the perk promised "food in forests,
+## herbs in meadows, minerals in mountains" and was read by nothing.
+func _check_foraging_reads_the_ground() -> void:
+	var forager: Dictionary = CharacterSystem.create_blank_character()
+	forager["skills"] = {"logistics": 3}
+	CharacterSystem.update_derived_stats(forager)
+
+	var forest: Dictionary = _forage_on(forager, MapManager.Terrain.FOREST)
+	var mountain: Dictionary = _forage_on(forager, MapManager.Terrain.MOUNTAINS)
+	if int(forest.get("food", 0)) <= 0:
+		_fail("a forest yielded no food")
+	if int(mountain.get("scrap", 0)) <= 0:
+		_fail("a mountainside yielded no minerals")
+	if int(mountain.get("food", 0)) >= int(forest.get("food", 0)):
+		_fail("a mountainside yielded %d food and a forest %d"
+			% [int(mountain.get("food", 0)), int(forest.get("food", 0))])
+	_done()
+
+
+## What one forage on `terrain` actually added to the stores.
+func _forage_on(performer: Dictionary, terrain: int) -> Dictionary:
+	MapManager.tiles[MapManager.party_position] = terrain
+	var before := {"food": GameState.food, "herbs": GameState.herbs,
+		"scrap": GameState.scrap, "reagents": GameState.reagents}
+	CampSystem.execute_activity("forage", performer, [performer])
+	return {
+		"food": GameState.food - before.food,
+		"herbs": GameState.herbs - before.herbs,
+		"scrap": GameState.scrap - before.scrap,
+		"reagents": GameState.reagents - before.reagents,
+	}
+
+
+func _check_a_forager_finds_more() -> void:
+	var plain: Dictionary = CharacterSystem.create_blank_character()
+	plain["skills"] = {"logistics": 3}
+	CharacterSystem.update_derived_stats(plain)
+	var trained: Dictionary = CharacterSystem.create_blank_character()
+	trained["skills"] = {"logistics": 3}
+	trained["perks"] = ["forage"]
+	CharacterSystem.update_derived_stats(trained)
+
+	var plain_total := 0
+	var trained_total := 0
+	for _run in 5:
+		var a: Dictionary = _forage_on(plain, MapManager.Terrain.FOREST)
+		var b: Dictionary = _forage_on(trained, MapManager.Terrain.FOREST)
+		for key in a:
+			plain_total += int(a[key])
+			trained_total += int(b[key])
+	if plain_total == 0:
+		_fail("an untrained forager found nothing at all in five forests")
+	if trained_total <= plain_total:
+		_fail("a trained forager found %d where an untrained one found %d"
+			% [trained_total, plain_total])
+
+	# And somebody trained finds something even on bare ground.
+	var barren: Dictionary = _forage_on(trained, MapManager.Terrain.BRIDGE)
+	var barren_total := 0
+	for key in barren:
+		barren_total += int(barren[key])
+	if barren_total <= 0:
+		_fail("a trained forager found nothing on ground that yields nothing — "
+			+ "knowing how to look is the perk")
+	_done()
+
+
+func _check_scouting_ahead_reaches_further() -> void:
+	var scout: Dictionary = CharacterSystem.create_blank_character()
+	scout["skills"] = {"logistics": 6}
+	scout["perks"] = ["scout_ahead"]
+	CharacterSystem.update_derived_stats(scout)
+
+	# The ordinary watch reveals four tiles; this reads the country.
+	var far := MapManager.party_position + Vector2i(7, 0)
+	MapManager.visited_tiles.erase(far)
+	CampSystem.execute_activity("scout", scout, [scout])
+	var after_watch: bool = MapManager.visited_tiles.has(far)
+	CampSystem.execute_activity("scout_ahead", scout, [scout])
+	if not MapManager.visited_tiles.has(far):
+		_fail("Scout Ahead did not reveal ground seven tiles out")
+	if after_watch:
+		_fail("the ordinary watch already revealed it, so this proves nothing")
+	_done()
+
+
+func _check_a_lesson_teaches_something_castable() -> void:
+	var teacher: Dictionary = CharacterSystem.create_blank_character()
+	teacher["skills"] = {"learning": 5, "fire_magic": 5, "sorcery": 5}
+	teacher["perks"] = ["guided_practice"]
+	teacher["known_spells"] = ["firebolt"]
+	CharacterSystem.update_derived_stats(teacher)
+
+	var able: Dictionary = CharacterSystem.create_blank_character()
+	able["name"] = "Able"
+	able["skills"] = {"fire_magic": 5}
+	able["known_spells"] = []
+	CharacterSystem.update_derived_stats(able)
+
+	var result: Dictionary = CampSystem.execute_activity("guided_practice",
+		teacher, [teacher, able])
+	if not bool(result.get("ok", false)):
+		_fail("guided_practice failed: %s" % str(result.get("message", "?")))
+	elif not able["known_spells"].has("firebolt"):
+		_fail("the student learned nothing: %s" % str(able["known_spells"]))
+
+	# A second lesson to the same student teaches nothing new: they already
+	# know it, and the teacher knows nothing else.
+	var before: int = able["known_spells"].size()
+	CampSystem.execute_activity("guided_practice", teacher, [teacher, able])
+	if able["known_spells"].size() != before:
+		_fail("the same spell was taught twice — the student already knew it")
+
+	# Somebody who cannot work the school learns nothing from the same lesson.
+	var unable: Dictionary = CharacterSystem.create_blank_character()
+	unable["name"] = "Unable"
+	unable["skills"] = {}
+	unable["known_spells"] = []
+	CharacterSystem.update_derived_stats(unable)
+	var second: Dictionary = CampSystem.execute_activity("guided_practice",
+		teacher, [teacher, unable])
+	if bool(second.get("ok", false)) and unable["known_spells"].has("firebolt"):
+		_fail("a spell was taught to somebody who cannot work its school")
+	_done()
+
+
+## Permanently, and to ONE piece: improving the shared definition would improve
+## every sword of that make in the world.
+func _check_reinforcing_improves_one_instance() -> void:
+	var smith: Dictionary = CharacterSystem.create_blank_character()
+	smith["skills"] = {"smithing": 5}
+	smith["perks"] = ["reinforce"]
+	CharacterSystem.update_derived_stats(smith)
+	ItemSystem.add_to_inventory("iron_sword", 1)
+	ItemSystem.equip_item(smith, "iron_sword", "weapon_main")
+
+	var before_id: String = ItemSystem.get_equipped_item(smith, "weapon_main")
+	if before_id == "":
+		_fail("the probe smith could not equip a sword")
+		_done()
+		return
+	var before_damage: int = int(ItemSystem.get_item(before_id).get("stats", {}).get("damage", 0))
+	GameState.scrap = 99
+
+	var result: Dictionary = CampSystem.execute_activity("reinforce", smith, [smith])
+	if not bool(result.get("ok", false)):
+		_fail("reinforce failed: %s" % str(result.get("message", "?")))
+		_done()
+		return
+	var after_id: String = ItemSystem.get_equipped_item(smith, "weapon_main")
+	var after_damage: int = int(ItemSystem.get_item(after_id).get("stats", {}).get("damage", 0))
+	if after_id == before_id:
+		_fail("the equipped item was changed in place rather than instanced")
+	if after_damage <= before_damage:
+		_fail("reinforcing left the damage at %d (was %d)"
+			% [after_damage, before_damage])
+	# The definition everybody else's sword comes from is untouched.
+	if int(ItemSystem.get_item("iron_sword").get("stats", {}).get("damage", 0)) != before_damage:
+		_fail("every iron sword in the world was reinforced")
+	_done()
+
+
+func _check_a_sermon_stacks_twice_and_no_more() -> void:
+	var speaker: Dictionary = CharacterSystem.create_blank_character()
+	speaker["perks"] = ["inspiring_sermon"]
+	CharacterSystem.update_derived_stats(speaker)
+	GameState.set_flag("sermon_stacks", 0)
+	GameState.set_flag("sermon_skill_bonus", 0)
+	GameState.active_map_buffs.clear()
+
+	var first: Dictionary = CampSystem.execute_activity("inspiring_sermon", speaker, [speaker])
+	var second: Dictionary = CampSystem.execute_activity("inspiring_sermon", speaker, [speaker])
+	var third: Dictionary = CampSystem.execute_activity("inspiring_sermon", speaker, [speaker])
+	if not bool(first.get("ok", false)) or not bool(second.get("ok", false)):
+		_fail("the first two sermons did not both take")
+	if bool(third.get("ok", false)):
+		_fail("a third sermon took, and the perk says twice")
+	if GameState.active_map_buffs.is_empty():
+		_fail("the sermon left no buff for the next fight")
+	# And the skill bonus is spent by the next check rather than lingering.
+	var bonus_before: int = int(GameState.flags.get("sermon_skill_bonus", 0))
+	if bonus_before <= 0:
+		_fail("the sermon promised a skill-check bonus and stored none")
+	EventManager.get_roll_bonus({"skill": "persuasion", "difficulty": "medium"})
+	if int(GameState.flags.get("sermon_skill_bonus", 0)) != 0:
+		_fail("the sermon's skill bonus was not spent by the next check")
+	GameState.active_map_buffs.clear()
 	_done()

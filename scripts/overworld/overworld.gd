@@ -1284,6 +1284,10 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 			_show_toast("The rest was disturbed! Reduced to %s effectiveness." % ["Quick Rest", "Camp", "Full Rest"][effective_tier - 1])
 			_disturbance_event_id = EventManager.get_random_camp_event(GameState.current_world)
 
+	# "Stacks up to 2 times BETWEEN RESTS" — so a rest is where the count goes
+	# back to nothing, and the night's speeches are spent.
+	GameState.set_flag("sermon_stacks", 0)
+
 	# === Consume resources ===
 	GameState.consume_supply("food", food_cost)
 	if tier >= 2:

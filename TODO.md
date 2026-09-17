@@ -810,14 +810,54 @@ nearby" had nothing to say it with. And `_resolve_buff_allies_all` buffed the
 whole team whatever radius the skill named, so Improvised Masterpiece's
 "within 3 tiles" was decoration and a bard three rooms away was inspiring.
 
-### The seven overworld perks are data with no consumer
+### The overworld perks: five built, two waiting on economy (2026-09-17)
 
-Flagged `non_combat` in b746bc1 so they stop rendering as dead buttons in the
-combat panel — that change did **not** implement them. `scout_ahead`,
-`investment`, `supply_and_demand`, `guided_practice`, `reinforce` and
-`inspiring_sermon` have zero references in `scripts/`. `forage` is the near
-miss: `camp_system.gd:156` already has a forage camp action open to everyone,
-and the perk that is supposed to improve it is never consulted.
+Flagged `non_combat` in b746bc1 so they stopped rendering as dead buttons in
+the combat panel — which did not implement them. Five are camp activities now,
+because that is where a party stops and does something and the activity system
+already gates on a perk (`perk_req`, added 2026-09-16):
+
+- **`forage`** — the camp action existed and gave herbs and food wherever you
+  stood; a mountainside yielded the same as a forest, while the perk promised
+  "food in forests, herbs in meadows, minerals in mountains". The yields are
+  in terrain.json now, beside everything else a ground decides, read through
+  `Ground.forage_of()`. Training finds half again as much — and finds
+  something on ground that yields nothing, which is what knowing how to look
+  is worth.
+- **`scout_ahead`** — twice the reach of the ordinary watch, further with
+  Logistics.
+- **`guided_practice`** — teaches the most advanced spell in the teacher's book
+  that somebody else can actually work, using the same school-and-level rule
+  casting uses, so what is taught is castable tomorrow.
+- **`reinforce`** — +10% to an equipped item's largest stat, permanently. The
+  piece becomes an INSTANCE of itself first (`ItemSystem.swap_equipped`), or
+  improving one sword would improve every sword of that make in the world.
+- **`inspiring_sermon`** — +5% damage until the next fight through
+  `active_map_buffs`, and a skill-check bonus spent by the next roll rather
+  than expiring on a clock. Twice between rests, as the perk says; the count
+  resets when the party rests.
+
+**The two left are economy, and each wants a system rather than a wiring.**
+
+- [ ] **`investment`** (Trade 4) — "Invest gold in a settlement. Returns 150%
+      of the invested amount after several in-game days." Needs a store of
+      outstanding investments (settlement, amount, due day) and a day-boundary
+      hook to mature them. TimeSystem already advances days and the lunar
+      calendar already listens to it, so the hook exists; what does not is
+      anywhere to keep a debt. Smallest honest version: `GameState.investments`
+      as an array, matured on the day tick, paid into gold with a toast. The
+      interesting question is what happens when the settlement is in a realm
+      the party has left — which the two-way portals make a real case rather
+      than a hypothetical.
+- [ ] **`supply_and_demand`** (Trade 5) — "Check available trade goods between
+      known settlements. Buying low and selling high grants triple the normal
+      gold difference." Needs a trade-goods model: per-settlement prices that
+      differ, and a notion of carrying goods between them. ShopSystem has 91
+      shops with modifiers but no goods that have a price *somewhere else*.
+      This is the biggest of the seven by a distance and is really a feature —
+      a caravan game inside the travel game. Worth doing only if travel is
+      meant to carry that weight; otherwise the perk should be rewritten to
+      something Trade can already do.
 
 ## 11. Things to ponder
 
