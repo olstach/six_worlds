@@ -3213,6 +3213,13 @@
       "requires_perks": [
         "compelling_proposal"
       ],
+        "combat_data": {
+          "effect": "recruit_or_pacify",
+          "targeting": "single_enemy",
+          "range": 4,
+          "save_dc": 13,
+          "pacify_duration": 3
+        },
       "description": "Active. Attempt to recruit an enemy. Target makes two Charm saves. Fail both: joins your party. Fail one: becomes Pacified for 3 turns.",
       "flavor": "",
       "is_mantra": false
@@ -3956,6 +3963,29 @@
       "skill": "ritual",
       "required_level": 1,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "choose_one",
+          "targeting": "self",
+          "free_action": true,
+          "default_option": 0,
+          "options": [
+            {
+              "label": "power",
+              "effect": "consume_charm",
+              "spellpower_bonus": 0.2
+            },
+            {
+              "label": "duration",
+              "effect": "consume_charm",
+              "duration_bonus": 1
+            },
+            {
+              "label": "aim",
+              "effect": "consume_charm",
+              "accuracy_bonus": 0.1
+            }
+          ]
+        },
       "description": "Active. Consume a charm to empower the next spell from its school: +20% Spellpower, +1 turn duration, or +10% accuracy.",
       "flavor": "",
       "is_mantra": false
@@ -4263,6 +4293,15 @@
       "skill": "guile",
       "required_level": 6,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "create_images",
+          "targeting": "self",
+          "stamina_cost": 5,
+          "min_images": 1,
+          "max_images": 3,
+          "image_hp": 1,
+          "duration": 3
+        },
       "description": "Active (5 Stamina). Create 1-3 false images around you. Images have 1 HP, high Dodge, and draw enemy attention. They move randomly but do not attack. Last 3 turns.",
       "flavor": "",
       "is_mantra": false
@@ -5809,6 +5848,67 @@
       "skill": "performance",
       "required_level": 8,
       "requires_perks": [],
+        "combat_data": {
+          "effect": "choose_one",
+          "targeting": "self",
+          "default_option": 0,
+          "radius": 3,
+          "options": [
+            {
+              "label": "Inspire",
+              "effect": "buff_allies",
+              "buffs": [
+                {
+                  "stat": "accuracy",
+                  "value": 10,
+                  "duration": 2
+                },
+                {
+                  "stat": "dodge",
+                  "value": 10,
+                  "duration": 2
+                },
+                {
+                  "stat": "damage",
+                  "value": 10,
+                  "duration": 2
+                }
+              ]
+            },
+            {
+              "label": "Demoralize",
+              "effect": "debuff_enemies",
+              "debuffs": [
+                {
+                  "stat": "accuracy",
+                  "value": -10,
+                  "duration": 2
+                },
+                {
+                  "stat": "dodge",
+                  "value": -10,
+                  "duration": 2
+                },
+                {
+                  "stat": "damage",
+                  "value": -10,
+                  "duration": 2
+                }
+              ]
+            },
+            {
+              "label": "Distract",
+              "effect": "debuff_enemies",
+              "debuffs": [
+                {
+                  "stat": "accuracy",
+                  "value": -15,
+                  "duration": 2
+                }
+              ]
+            }
+          ]
+        },
       "description": "Active (1 action). Choose one: Inspire (allies gain +10% all stats), Demoralize (enemies suffer -10% all stats), or Distract (enemies suffer -15% accuracy). Affects all valid targets within 3 tiles for 2 turns.",
       "flavor": "",
       "is_mantra": false
@@ -6918,6 +7018,12 @@
       "requires_perks": [
         "sticky_fingers"
       ],
+        "combat_data": {
+          "effect": "steal_item",
+          "targeting": "single_enemy",
+          "range": 1,
+          "once_per_combat": true
+        },
       "description": "Active (once per combat). Steal one consumable item or minor piece of equipment from an enemy. Does not break stealth.",
       "flavor": "",
       "is_mantra": false
@@ -8815,6 +8921,11 @@
       "requirements": {
         "ranged": 5
       },
+        "combat_data": {
+          "effect": "imbued_attack",
+          "targeting": "self",
+          "stamina_cost": 4
+        },
       "description": "Active (4 Stamina + spell mana cost). Imbue your next ranged attack with a known single-target spell. The arrow delivers the spell on hit, using your ranged accuracy instead of spell accuracy.",
       "flavor": "",
       "is_mantra": false,

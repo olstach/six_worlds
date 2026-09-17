@@ -1320,6 +1320,9 @@ func _start_new_round() -> void:
 	# And whoever is standing in front of somebody else
 	_tick_guards()
 
+	# And the false images, which go when their moment passes
+	_tick_decoys()
+
 	# Check win/lose conditions
 	var result = _check_combat_end()
 	if result != -1:
@@ -1775,6 +1778,24 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				# Track remaining charges (unit's weapon_oil already decremented)
 				var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
 				result["oil_attacks_left"] = remaining
+
+		# --- An imbued arrow delivers its spell on hit ---
+		#
+		# Arcane Archer: the spell was paid for when the arrow was drawn, so
+		# this applies its effects with the ranged accuracy that already
+		# decided the hit — which is the whole trick of the perk.
+		if attacker.has_meta("imbued_spell"):
+			var imbued_id: String = str(attacker.get_meta("imbued_spell"))
+			attacker.remove_meta("imbued_spell")
+			var imbued: Dictionary = get_spell(imbued_id)
+			if not imbued.is_empty():
+				var bonus: int = _calculate_spell_bonus(attacker, imbued)
+				var delivered: Dictionary = _apply_spell_effects(
+					attacker, defender, imbued, bonus)
+				result["imbued_spell"] = imbued_id
+				result["imbued_result"] = delivered
+				combat_log.emit("%s's arrow carries %s home."
+					% [attacker.unit_name, imbued.get("name", imbued_id)])
 
 		# --- Reactive status effects on hit ---
 		_process_reactive_statuses(attacker, defender, result)
@@ -5607,6 +5628,304 @@ func _resolve_ignore_resistances(user: Node, combat_data: Dictionary) -> Diction
 	return {"success": true, "effects": [{"type": "ignore_resistances"}]}
 
 
+## Count down every false image and dismiss the ones whose time is up.
+func _tick_decoys() -> void:
+	for i in range(all_units.size() - 1, -1, -1):
+		var unit: Node = all_units[i]
+		if not is_instance_valid(unit) or not unit.has_meta("decoy_turns_left"):
+			continue
+		var left: int = int(unit.get_meta("decoy_turns_left")) - 1
+		unit.set_meta("decoy_turns_left", left)
+		if left > 0:
+			continue
+		combat_log.emit("%s fades." % unit.unit_name)
+		if combat_grid != null:
+			combat_grid.remove_unit(unit)
+		all_units.erase(unit)
+		turn_order.erase(unit)
+		unit.queue_free()
+
+
+## One false image: a unit with no actions that draws attacks and cannot act.
+##
+## The illusion spell path built this inline; Smoke and Mirrors wants several
+## of them, so it is a function now and both callers use it.
+func _spawn_decoy(owner: Node, at: Vector2i, hp: int, duration: int) -> Node:
+	if combat_grid == null or combat_grid.is_occupied(at):
+		return null
+	var decoy_data: Dictionary = {
+		"name": "Decoy",
+		"archetype_name": "Illusion",
+		"max_hp": maxi(1, hp),
+		"max_mana": 0,
+		"actions": 0,        # an image cannot act
+		"resistances": {},
+		"inventory": [], "skills": {}, "known_spells": [], "perks": [],
+		"tags": ["illusion", "decoy"],
+		"derived": {
+			"max_hp": maxi(1, hp), "current_hp": maxi(1, hp),
+			"max_mana": 0, "current_mana": 0,
+			"max_stamina": 10, "current_stamina": 10,
+			"initiative": 0, "movement": 0,
+			"dodge": 60,     # hard to hit, which is what makes it worth swinging at
+			"armor": 0, "crit_chance": 0, "accuracy": 0,
+			"damage": 0, "damage_type": "none",
+		},
+		"equipped_weapon": {"name": "None", "damage": 0, "damage_type": "none", "range": 1},
+	}
+	var decoy := CombatUnit.new()
+	decoy.summoner_id = owner.get_instance_id()
+	decoy.init_as_enemy(decoy_data)
+	decoy.team = owner.team
+	combat_grid.place_unit(decoy, at)
+	all_units.append(decoy)
+	turn_order.append(decoy)
+	decoy.set_meta("decoy_turns_left", duration)
+	unit_deployed.emit(decoy, at)
+	return decoy
+
+
+## A skill that offers several things and does one of them.
+##
+## The option is chosen by whoever called: the arena passes `chosen_option`
+## when a player picks, and an AI or a test can pass one too. With no choice
+## made it falls back to `default_option`, so the skill is usable before the
+## picker UI exists rather than wired to its first branch as a stopgap.
+##
+## Each option names an `effect` and carries its own data, which is dispatched
+## through the same table every other skill uses — a skill that offers three
+## things does not want a second copy of the code that knows how to do them.
+func _resolve_choose_one(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var options: Array = combat_data.get("options", [])
+	if options.is_empty():
+		return {"success": false, "reason": "Nothing to choose between"}
+
+	var index: int = int(combat_data.get("chosen_option",
+		combat_data.get("default_option", 0)))
+	index = clampi(index, 0, options.size() - 1)
+	var option: Dictionary = options[index]
+
+	# The option inherits the skill's own fields — range, targeting, costs —
+	# and overrides whatever it names itself.
+	var merged: Dictionary = combat_data.duplicate(true)
+	merged.erase("options")
+	for key in option:
+		merged[key] = option[key]
+
+	var chosen_effect: String = str(option.get("effect", ""))
+	if chosen_effect == "" or chosen_effect == "choose_one":
+		return {"success": false, "reason": "That choice does nothing"}
+	var result: Dictionary = _dispatch_skill_effect(user, chosen_effect, merged, target_pos)
+	if bool(result.get("success", false)):
+		combat_log.emit("%s chooses %s." % [user.unit_name,
+			str(option.get("label", chosen_effect.replace("_", " ")))])
+		result["chosen"] = index
+	return result
+
+
+## Spend a charm from the party's stores to empower the next spell of its
+## school.
+##
+## Charms already existed as consumables that set `charm_buff`; what Attune
+## Charm adds is a RITUAL reading of the same object — the charm is prepared
+## rather than merely used, so it grants what the perk names on top of the
+## charm's own mana discount.
+func _resolve_consume_charm(user: Node, combat_data: Dictionary) -> Dictionary:
+	var school: String = str(combat_data.get("school", ""))
+	var found: String = ""
+	for entry in ItemSystem.get_inventory():
+		var item_id: String = str(entry.get("item_id", ""))
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		if str(item.get("type", "")) != "charm":
+			continue
+		var charm_school: String = str(item.get("effect", {}).get("school", ""))
+		if school != "" and charm_school != school:
+			continue
+		found = item_id
+		break
+	if found == "":
+		return {"success": false, "reason": "No charm to attune"}
+
+	var charm: Dictionary = ItemSystem.get_item(found)
+	var effect: Dictionary = charm.get("effect", {})
+	ItemSystem.remove_from_inventory(found, 1)
+	user.charm_buff = {
+		"school": str(effect.get("school", "")),
+		"mana_reduction": float(effect.get("mana_reduction", 0.0)),
+		"spellpower_bonus": float(effect.get("spellpower_bonus", 0.0))
+			+ float(combat_data.get("spellpower_bonus", 0.0)),
+		"duration_bonus": int(combat_data.get("duration_bonus", 0)),
+		"accuracy_bonus": float(combat_data.get("accuracy_bonus", 0.0)),
+	}
+	combat_log.emit("%s attunes %s." % [user.unit_name, charm.get("name", found)])
+	return {"success": true, "effects": [{"type": "charm",
+		"school": user.charm_buff.school, "item": found}]}
+
+
+## False images that draw attention and cannot act.
+##
+## The decoy machinery already existed on a spell path (`creates_illusion`);
+## this is the same spawn, several times, from a skill.
+func _resolve_create_images(user: Node, combat_data: Dictionary) -> Dictionary:
+	if combat_grid == null:
+		return {"success": false, "reason": "No battlefield"}
+	var wanted: int = randi_range(int(combat_data.get("min_images", 1)),
+		int(combat_data.get("max_images", 3)))
+	var duration: int = int(combat_data.get("duration", 3))
+	var made: Array = []
+	for _i in range(wanted):
+		var spot: Vector2i = _free_tile_near(user.grid_position, 2)
+		if spot.x < 0:
+			break
+		var decoy: Node = _spawn_decoy(user, spot, int(combat_data.get("image_hp", 1)), duration)
+		if decoy != null:
+			made.append(decoy)
+	if made.is_empty():
+		return {"success": false, "reason": "No room for the images"}
+	combat_log.emit("%s is suddenly several people." % user.unit_name)
+	return {"success": true, "effects": [{"type": "images", "count": made.size()}]}
+
+
+## The first free, walkable tile within `radius`, or (-1,-1).
+func _free_tile_near(centre: Vector2i, radius: int) -> Vector2i:
+	for r in range(1, radius + 1):
+		for dx in range(-r, r + 1):
+			for dy in range(-r, r + 1):
+				if maxi(absi(dx), absi(dy)) != r:
+					continue
+				var at: Vector2i = centre + Vector2i(dx, dy)
+				if combat_grid.is_valid_position(at) and not combat_grid.is_occupied(at) \
+						and combat_grid.is_tile_walkable(at):
+					return at
+	return Vector2i(-1, -1)
+
+
+## Take something off an enemy without their noticing.
+##
+## Consumables first, because a stolen potion is a stolen potion and a stolen
+## breastplate is a fight. Does not break stealth: that is the whole point of
+## the perk, and the attack path is never entered.
+func _resolve_steal_item(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var mark: Node = get_unit_at(target_pos)
+	if mark == null or not mark.is_alive():
+		return {"success": false, "reason": "Nobody there"}
+	if not "team" in mark or mark.team == user.team:
+		return {"success": false, "reason": "Not a mark"}
+	if _grid_distance(user.grid_position, target_pos) > int(combat_data.get("range", 1)):
+		return {"success": false, "reason": "Too far to reach a pocket"}
+
+	var inventory: Array = mark.character_data.get("inventory", [])
+	var taken: String = ""
+	for i in range(inventory.size()):
+		var item_id: String = str(inventory[i])
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		if item.is_empty():
+			continue
+		if str(item.get("type", "")) in ["potion", "bomb", "oil", "charm", "herb", "medicine"]:
+			taken = item_id
+			inventory.remove_at(i)
+			break
+	if taken == "" and not inventory.is_empty():
+		taken = str(inventory[0])
+		inventory.remove_at(0)
+	if taken == "":
+		return {"success": false, "reason": "Their pockets are empty"}
+
+	ItemSystem.add_to_inventory(taken, 1)
+	combat_log.emit("%s lifts %s off %s." % [user.unit_name,
+		ItemSystem.get_item(taken).get("name", taken), mark.unit_name])
+	return {"success": true, "effects": [{"type": "steal", "item": taken, "from": mark}]}
+
+
+## Put a spell on an arrow. The next ranged attack delivers it on hit.
+##
+## The spell is chosen by the caller where a picker exists; absent one, the
+## highest-level single-target spell the caster can afford, which is the
+## choice an archer would make anyway.
+func _resolve_imbued_attack(user: Node, combat_data: Dictionary) -> Dictionary:
+	if not user.is_ranged_weapon():
+		return {"success": false, "reason": "Needs a ranged weapon"}
+	var spell_id: String = str(combat_data.get("spell", ""))
+	if spell_id == "":
+		spell_id = _best_imbuable_spell(user)
+	if spell_id == "":
+		return {"success": false, "reason": "No single-target spell to imbue"}
+	var spell: Dictionary = get_spell(spell_id)
+	var cost: int = int(spell.get("mana_cost", 0))
+	if user.current_mana < cost:
+		return {"success": false, "reason": "Not enough mana for %s" % spell.get("name", spell_id)}
+
+	user.current_mana -= cost
+	user.set_meta("imbued_spell", spell_id)
+	combat_log.emit("%s draws with %s on the arrow."
+		% [user.unit_name, spell.get("name", spell_id)])
+	return {"success": true, "effects": [{"type": "imbue", "spell": spell_id}]}
+
+
+## The best single-target spell this unit knows and can pay for.
+func _best_imbuable_spell(user: Node) -> String:
+	var best: String = ""
+	var best_level: int = -1
+	for spell_id in user.character_data.get("known_spells", []):
+		var spell: Dictionary = get_spell(str(spell_id))
+		if spell.is_empty():
+			continue
+		if str(spell.get("targeting", "")) != "single":
+			continue
+		if int(spell.get("mana_cost", 0)) > user.current_mana:
+			continue
+		if int(spell.get("level", 1)) > best_level:
+			best_level = int(spell.get("level", 1))
+			best = str(spell_id)
+	return best
+
+
+## Talk somebody out of the fight, or into your side of it.
+##
+## Two Charm saves, as the perk says: fail both and they join you, fail one and
+## they simply stop. Joining means changing sides for THIS fight — whether a
+## recruit stays afterwards is a companion question, and recorded as one.
+func _resolve_recruit_or_pacify(user: Node, combat_data: Dictionary,
+		target_pos: Vector2i) -> Dictionary:
+	var mark: Node = get_unit_at(target_pos)
+	if mark == null or not mark.is_alive():
+		return {"success": false, "reason": "Nobody there"}
+	if not "team" in mark or mark.team == user.team:
+		return {"success": false, "reason": "They are already yours"}
+	if _grid_distance(user.grid_position, target_pos) > int(combat_data.get("range", 4)):
+		return {"success": false, "reason": "Too far to be heard"}
+
+	var dc: int = int(combat_data.get("save_dc", 13))
+	var failed := 0
+	for _attempt in 2:
+		if not SaveSystem.roll(mark, "charm", dc).success:
+			failed += 1
+
+	if failed >= 2:
+		mark.team = user.team
+		mark.set_meta("recruited_by_magnetism", true)
+		# A recruit stops fighting for its old side immediately, which means
+		# dropping whatever was making it fight.
+		if "status_effects" in mark:
+			for entry in mark.status_effects.duplicate():
+				var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
+				if def.get("type", "") == "debuff":
+					_remove_status_by_name(mark, str(entry.get("status", "")))
+		combat_log.emit("%s talks %s round — they change sides."
+			% [user.unit_name, mark.unit_name])
+		return {"success": true, "effects": [{"type": "recruit", "target": mark}]}
+
+	if failed == 1:
+		_apply_status_effect(mark, "Pacified", int(combat_data.get("pacify_duration", 3)), 0, user)
+		combat_log.emit("%s gives %s pause." % [user.unit_name, mark.unit_name])
+		return {"success": true, "effects": [{"type": "pacify", "target": mark}]}
+
+	combat_log.emit("%s is unmoved." % mark.unit_name)
+	return {"success": true, "effects": [{"type": "no_effect"}]}
+
+
 ## Put something on the ground that was not there before.
 ##
 ## Nine active perks wanted this and none of them could have it: Black Ice, Fog
@@ -7042,6 +7361,8 @@ const IMPLEMENTED_SKILL_EFFECTS: Array[String] = [
 	"share_buffs", "double_buffs", "chod_offering", "throw_phurba",
 	"create_terrain", "collapse_terrain", "open_gate", "heal_ally",
 	"place_trap", "mass_teleport", "guard_ally", "ignore_resistances",
+	"choose_one", "consume_charm", "create_images", "steal_item",
+	"imbued_attack", "recruit_or_pacify",
 ]
 
 
@@ -7062,43 +7383,14 @@ func is_active_skill_effect_implemented(effect: String) -> bool:
 	return effect in IMPLEMENTED_SKILL_EFFECTS
 
 
-## Use an active skill. skill_data comes from perks.json with added combat_data.
-## target_pos is used for targeted skills (single_enemy, aoe); ignored for self skills.
-func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) -> Dictionary:
-	if not can_act(1):
-		return {"success": false, "reason": "No actions remaining"}
 
-	var combat_data = skill_data.get("combat_data", {})
-	if combat_data.is_empty():
-		return {"success": false, "reason": "Skill has no combat data"}
-
-	var perk_id = skill_data.get("id", "")
-	var stamina_cost = combat_data.get("stamina_cost", 0)
-
-	# Check cooldown
-	if user.is_skill_on_cooldown(perk_id):
-		return {"success": false, "reason": "Skill on cooldown (%d turns)" % user.skill_cooldowns.get(perk_id, 0)}
-
-	# Check once-per-turn restriction (free-action skills like call_the_shot)
-	if combat_data.get("once_per_turn", false):
-		var used_flag = perk_id + "_used_this_turn"
-		if used_flag in user and user.get(used_flag):
-			return {"success": false, "reason": "Already used this turn"}
-
-	# Check stamina
-	if stamina_cost > 0 and user.current_stamina < stamina_cost:
-		return {"success": false, "reason": "Not enough stamina (%d/%d)" % [user.current_stamina, stamina_cost]}
-
-	# Check weapon requirement — weapon skills need the matching weapon equipped
-	var perk_skill = skill_data.get("skill", "")
-	if not unit_has_required_weapon(user, perk_skill):
-		var required = get_required_weapon_types(perk_skill)
-		return {"success": false, "reason": "Requires %s weapon equipped" % "/".join(required)}
-
-	var effect_type = combat_data.get("effect", "")
-	var targeting = combat_data.get("targeting", "self")
-
-	# Resolve the skill effect
+## Dispatch one active-skill effect to its resolver.
+##
+## Pulled out of use_active_skill() so that `choose_one` can hand a chosen
+## option straight back in — a skill that offers three things does not want a
+## second copy of the table that knows how to do them.
+func _dispatch_skill_effect(user: Node, effect_type: String,
+		combat_data: Dictionary, target_pos: Vector2i) -> Dictionary:
 	var result: Dictionary = {"success": true, "effects": []}
 
 	match effect_type:
@@ -7185,17 +7477,69 @@ func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) 
 			result = _resolve_guard_ally(user, combat_data, target_pos)
 		"ignore_resistances":
 			result = _resolve_ignore_resistances(user, combat_data)
+		"choose_one":
+			result = _resolve_choose_one(user, combat_data, target_pos)
+		"consume_charm":
+			result = _resolve_consume_charm(user, combat_data)
+		"create_images":
+			result = _resolve_create_images(user, combat_data)
+		"steal_item":
+			result = _resolve_steal_item(user, combat_data, target_pos)
+		"imbued_attack":
+			result = _resolve_imbued_attack(user, combat_data)
+		"recruit_or_pacify":
+			result = _resolve_recruit_or_pacify(user, combat_data, target_pos)
 		"chod_offering":
 			result = _resolve_chod_offering(user, combat_data)
 		"throw_phurba":
 			result = _resolve_throw_phurba(user, combat_data, target_pos)
-		# --- Deferred (complex UI/system needed) ---
-		"create_images", "imbued_attack", "mass_teleport", "recruit_or_pacify", \
-		"place_trap", "consume_charm", "steal_item", "choose_one", "guard_ally", \
-		"summon_aura", "create_terrain":
+		# --- Still deferred ---
+		"summon_aura":
 			return {"success": false, "reason": "Skill not yet implemented: " + effect_type}
 		_:
 			return {"success": false, "reason": "Unknown skill effect: " + effect_type}
+	return result
+
+## Use an active skill. skill_data comes from perks.json with added combat_data.
+## target_pos is used for targeted skills (single_enemy, aoe); ignored for self skills.
+func use_active_skill(user: Node, skill_data: Dictionary, target_pos: Vector2i) -> Dictionary:
+	if not can_act(1):
+		return {"success": false, "reason": "No actions remaining"}
+
+	var combat_data = skill_data.get("combat_data", {})
+	if combat_data.is_empty():
+		return {"success": false, "reason": "Skill has no combat data"}
+
+	var perk_id = skill_data.get("id", "")
+	var stamina_cost = combat_data.get("stamina_cost", 0)
+
+	# Check cooldown
+	if user.is_skill_on_cooldown(perk_id):
+		return {"success": false, "reason": "Skill on cooldown (%d turns)" % user.skill_cooldowns.get(perk_id, 0)}
+
+	# Check once-per-turn restriction (free-action skills like call_the_shot)
+	if combat_data.get("once_per_turn", false):
+		var used_flag = perk_id + "_used_this_turn"
+		if used_flag in user and user.get(used_flag):
+			return {"success": false, "reason": "Already used this turn"}
+
+	# Check stamina
+	if stamina_cost > 0 and user.current_stamina < stamina_cost:
+		return {"success": false, "reason": "Not enough stamina (%d/%d)" % [user.current_stamina, stamina_cost]}
+
+	# Check weapon requirement — weapon skills need the matching weapon equipped
+	var perk_skill = skill_data.get("skill", "")
+	if not unit_has_required_weapon(user, perk_skill):
+		var required = get_required_weapon_types(perk_skill)
+		return {"success": false, "reason": "Requires %s weapon equipped" % "/".join(required)}
+
+	var effect_type = combat_data.get("effect", "")
+	var targeting = combat_data.get("targeting", "self")
+
+	# Resolve the skill effect
+	var result: Dictionary = {"success": true, "effects": []}
+
+	result = _dispatch_skill_effect(user, effect_type, combat_data, target_pos)
 
 	if result.get("success", false):
 		# Play sound based on effect type
@@ -8086,6 +8430,18 @@ func _resolve_debuff_enemies_aoe(user: Node, combat_data: Dictionary, _target_po
 			_apply_status_effect(enemy, se.get("status", ""), se.get("duration", 2), 0, user)
 			effects.append({"type": "status", "target": enemy, "status": se.get("status", "")})
 
+		# And stat penalties, which this resolver could not do while its buff
+		# twin (_resolve_buff_allies_all) always could — so a skill that wanted
+		# "-10% to everything nearby" had nothing to say it with.
+		for debuff in combat_data.get("debuffs", []):
+			var stat: String = str(debuff.get("stat", ""))
+			if stat == "":
+				continue
+			_apply_stat_modifier(enemy, stat, int(debuff.get("value", 0)),
+				int(debuff.get("duration", 2)))
+			effects.append({"type": "debuff", "target": enemy, "stat": stat,
+				"value": debuff.get("value", 0)})
+
 	combat_log.emit("%s uses an intimidating action on nearby enemies!" % user.unit_name)
 	return {"success": true, "effects": effects}
 
@@ -8096,8 +8452,15 @@ func _resolve_buff_allies_all(user: Node, combat_data: Dictionary) -> Dictionary
 	var statuses = combat_data.get("statuses", [])
 	var effects: Array = []
 
+	# A radius, when the skill names one. This resolver buffed the whole team
+	# whatever the skill said, so Improvised Masterpiece's "within 3 tiles"
+	# was decoration — and a bard three rooms away was inspiring.
+	var radius: int = int(combat_data.get("radius", 0))
 	for ally in get_team_units(user.team if "team" in user else 0):
 		if not ally.is_alive():
+			continue
+		if radius > 0 and "grid_position" in ally \
+				and _grid_distance(user.grid_position, ally.grid_position) > radius:
 			continue
 		for buff in buffs:
 			var stat = buff.get("stat", "")
