@@ -46,8 +46,27 @@ TEMPLATE = os.path.join(ROOT, "assets", "tiles", "terrain_atlas_template.png")
 GRID = os.path.join(ROOT, "assets", "tiles", "terrain_atlas_grid.png")
 GUIDE = os.path.join(ROOT, "assets", "tiles", "terrain_atlas_guide.png")
 
+PREVIEW_DIR = os.path.join(ROOT, "assets", "tiles", "preview")
+
 RENDERER = os.path.join(ROOT, "scripts", "overworld", "map_renderer.gd")
 TERRAIN_JSON = os.path.join(ROOT, "resources", "data", "terrain.json")
+MAP_CONFIGS = os.path.join(ROOT, "resources", "data", "map_configs")
+
+# Candidate realm backdrops, keyed "realm/zone". Tiles are drawn with
+# transparent areas so this colour permeates everything — so a tile cannot be
+# judged on its own, only over one of these. These are proposals to argue with,
+# not settled art direction; `preview --backdrop "#RRGGBB"` tries any other.
+BACKDROPS = {
+    "hell/cold_hell":               ["#101A2B", "#1E2C44", "#0A1016", "#2B2F3E"],
+    "hell/fire_hell":               ["#2E1008", "#451A0A", "#1A0B08", "#3A2418"],
+    "hungry_ghost/fetid_swamps":    ["#16211A", "#1E2B1C", "#0E1512", "#232A1E"],
+    "hungry_ghost/charnel_grounds": ["#2A1B2E", "#3A2440", "#150E18", "#2E2230"],
+    "hungry_ghost/dry_graveyards":  ["#2A2418", "#3A3222", "#181410", "#2E2A24"],
+    "animal/forest":                ["#0F1C14", "#16281A", "#0A120C", "#1C2A1E"],
+    "animal/meadow":                ["#1B2416", "#26331C", "#101608", "#2A3020"],
+    "animal/ocean":                 ["#071C2E", "#0C2A42", "#04101C", "#123044"],
+}
+DEFAULT_BACKDROPS = ["#101A2B", "#2E1008", "#16211A", "#0F1C14"]
 
 
 # ── Terrain vocabulary ───────────────────────────────────────────────────────
@@ -487,11 +506,8 @@ def cmd_split(args):
     os.makedirs(TILE_DIR, exist_ok=True)
     for terrain in terrains:
         for v in range(VARIANTS):
-            cell = Canvas(CELL, CELL)
-            for y in range(CELL):
-                for x in range(CELL):
-                    cell.set(x, y, atlas.get(v * CELL + x, terrain["id"] * CELL + y))
-            cell.save(os.path.join(TILE_DIR, tile_filename(terrain, v)))
+            _cell_from(atlas, terrain["id"], v).save(
+                os.path.join(TILE_DIR, tile_filename(terrain, v)))
     print("wrote %d files into %s"
           % (len(terrains) * VARIANTS, os.path.relpath(TILE_DIR, ROOT)))
 
@@ -504,29 +520,47 @@ def cmd_check(args):
     _assert_atlas_shape(atlas, terrains, src)
     print("size ok: %d columns x %d rows of %dx%d cells"
           % (VARIANTS, len(terrains), CELL, CELL))
+    print("\nper cell: percent of the cell that is opaque enough to hide the backdrop")
+    print("(a dash means nothing drawn there yet)\n")
 
-    bad = []
+    thin = []
     for terrain in terrains:
         marks = []
         for v in range(VARIANTS):
-            cell = Canvas(CELL, CELL)
-            for y in range(CELL):
-                for x in range(CELL):
-                    cell.set(x, y, atlas.get(v * CELL + x, terrain["id"] * CELL + y))
+            cell = _cell_from(atlas, terrain["id"], v)
             if _is_blank(cell):
-                marks.append(".")
-            else:
-                marks.append("#")
-                holes = _transparent_pixels(cell)
-                if holes:
-                    bad.append("%s row %d col %d has %d transparent pixels — a "
-                               "drawn tile must be fully opaque"
-                               % (terrain["name"], terrain["id"], v, holes))
+                marks.append("  - ")
+                continue
+            cov = _coverage(cell)
+            marks.append("%3d%%" % round(cov * 100))
+            # The three hard walls have to read as walls. Everything else is
+            # free to be as ghostly as it likes.
+            if v == 0 and terrain["speed"] < 0 and cov < 0.60:
+                thin.append((terrain["name"], cov))
         print("  %02d %-10s %s" % (terrain["id"], terrain["name"], " ".join(marks)))
 
-    for b in bad:
-        print("WARN:", b)
+    for name, cov in thin:
+        print("\nnote: %s is impassable but its column 0 tile is only %d%% opaque."
+              % (name, round(cov * 100)))
+        print("      A player must never mistake it for walkable ground — worth")
+        print("      previewing it against the realm backdrop before committing.")
+
+    print()
     _report_missing_required(atlas, terrains)
+
+
+def _cell_from(atlas, row, col):
+    cell = Canvas(CELL, CELL)
+    for y in range(CELL):
+        for x in range(CELL):
+            cell.set(x, y, atlas.get(col * CELL + x, row * CELL + y))
+    return cell
+
+
+def _coverage(cell):
+    """Fraction of the cell that is fully opaque, counting partial alpha partly."""
+    total = sum(cell.px[i] for i in range(3, len(cell.px), 4))
+    return total / (255.0 * CELL * CELL)
 
 
 def _assert_atlas_shape(atlas, terrains, src):
@@ -543,23 +577,195 @@ def _is_blank(cell):
     return all(cell.px[i] == 0 for i in range(3, len(cell.px), 4))
 
 
-def _transparent_pixels(cell):
-    return sum(1 for i in range(3, len(cell.px), 4) if cell.px[i] < 255)
-
-
 def _report_missing_required(atlas, terrains):
     missing = []
     for terrain in terrains:
-        cell = Canvas(CELL, CELL)
-        for y in range(CELL):
-            for x in range(CELL):
-                cell.set(x, y, atlas.get(x, terrain["id"] * CELL + y))
-        if _is_blank(cell):
+        if _is_blank(_cell_from(atlas, terrain["id"], 0)):
             missing.append(terrain["name"])
     if missing:
         print("column 0 still empty for: %s" % ", ".join(missing))
     else:
         print("every terrain has its required column 0 tile")
+
+
+# ── Preview ──────────────────────────────────────────────────────────────────
+
+def load_zone(realm, zone_id):
+    """A zone's terrain weights, straight from the map config the game ships."""
+    path = os.path.join(MAP_CONFIGS, realm + ".json")
+    if not os.path.exists(path):
+        have = sorted(f[:-5] for f in os.listdir(MAP_CONFIGS) if f.endswith(".json"))
+        sys.exit("no map config for realm %r. Have: %s" % (realm, ", ".join(have)))
+    with open(path, encoding="utf-8") as fh:
+        config = json.load(fh)
+    zones = [z for z in config["zones"] if z.get("terrain_weights")]
+    if zone_id:
+        for z in zones:
+            if z.get("id") == zone_id:
+                return z
+        sys.exit("no zone %r in %s. Have: %s"
+                 % (zone_id, realm, ", ".join(z.get("id", "?") for z in zones)))
+    return zones[0]
+
+
+def fake_map(zone, w, h, seed):
+    """Reproduce what the generator actually produces for this zone.
+
+    Weighted random fill, then three passes of majority-of-nine smoothing with
+    a bias toward keeping the current cell — the same as `_generate_zone_terrain`
+    and `_smooth_cell` in scripts/map_gen/map_generator.gd. A preview built on
+    uniform noise would lie about how the tiles read, because the real map comes
+    out in blobs, not static.
+    """
+    import random
+    rng = random.Random(seed)
+    table = []
+    for tid, weight in zone["terrain_weights"].items():
+        table.extend([int(tid)] * int(weight))
+    grid = [rng.choice(table) for _ in range(w * h)]
+
+    for _ in range(3):
+        nxt = list(grid)
+        for y in range(h):
+            for x in range(w):
+                counts = {}
+                current = grid[y * w + x]
+                counts[current] = 1                 # bias toward keeping current
+                for dy in (-1, 0, 1):
+                    for dx in (-1, 0, 1):
+                        if dx == 0 and dy == 0:
+                            continue
+                        nx, ny = x + dx, y + dy
+                        if 0 <= nx < w and 0 <= ny < h:
+                            t = grid[ny * w + nx]
+                            counts[t] = counts.get(t, 0) + 1
+                best, best_count = current, 0
+                for t, c in counts.items():         # ties go to the first seen
+                    if c > best_count:
+                        best, best_count = t, c
+                nxt[y * w + x] = best
+        grid = nxt
+    return grid
+
+
+def load_cells(terrains):
+    """Every drawn variant per terrain, falling back to the flat placeholder."""
+    cells = {}
+    for terrain in terrains:
+        drawn = []
+        for v in range(VARIANTS):
+            path = os.path.join(TILE_DIR, tile_filename(terrain, v))
+            if os.path.exists(path):
+                cell = read_png(path)
+                if (cell.w, cell.h) == (CELL, CELL) and not _is_blank(cell):
+                    drawn.append(cell)
+        if not drawn:
+            flat = Canvas(CELL, CELL)
+            flat.rect(0, 0, CELL, CELL, terrain["color"] + (255,))
+            drawn.append(flat)
+        cells[terrain["id"]] = drawn
+    return cells
+
+
+def parse_hex(text_value):
+    value = text_value.strip().lstrip("#")
+    if len(value) != 6:
+        sys.exit("backdrop %r should look like #1A2B3C" % text_value)
+    try:
+        return tuple(int(value[i:i + 2], 16) for i in (0, 2, 4))
+    except ValueError:
+        sys.exit("backdrop %r is not hex" % text_value)
+
+
+def render_panel(grid, w, h, cells, backdrop, scale):
+    """Composite the tiles over the backdrop — straight alpha, same as Godot."""
+    panel = Canvas(w * CELL * scale, h * CELL * scale, backdrop + (255,))
+    for ty in range(h):
+        for tx in range(w):
+            tid = grid[ty * w + tx]
+            variants = cells[tid]
+            # Deterministic per square, the way the renderer will pick: the same
+            # square always draws the same variant, so nothing shimmers.
+            cell = variants[(tx * 73856093 ^ ty * 19349663) % len(variants)]
+            for y in range(CELL):
+                for x in range(CELL):
+                    r, g, b, a = cell.get(x, y)
+                    if a == 0:
+                        continue
+                    if a < 255:
+                        br, bg, bb = backdrop
+                        r = (r * a + br * (255 - a)) // 255
+                        g = (g * a + bg * (255 - a)) // 255
+                        b = (b * a + bb * (255 - a)) // 255
+                    px = (tx * CELL + x) * scale
+                    py = (ty * CELL + y) * scale
+                    panel.rect(px, py, scale, scale, (r, g, b, 255))
+    return panel
+
+
+def cmd_preview(args):
+    terrains = load_terrains()
+    cells = load_cells(terrains)
+
+    if args.terrain:
+        by_key = {t["key"]: t for t in terrains}
+        if args.terrain not in by_key:
+            sys.exit("no terrain %r. Have: %s"
+                     % (args.terrain, ", ".join(sorted(by_key))))
+        # The repeat test: one terrain, nothing else, so a tile that visibly
+        # repeats has nowhere to hide.
+        tid = by_key[args.terrain]["id"]
+        w = h = 6
+        grid = [tid] * (w * h)
+        title = "%s  (repeat test)" % args.terrain.upper()
+        stem = "repeat_" + args.terrain
+    else:
+        zone = load_zone(args.realm, args.zone)
+        w, h = args.width, args.height
+        grid = fake_map(zone, w, h, args.seed)
+        title = "%s / %s" % (args.realm.upper(), zone.get("id", "").upper())
+        stem = "%s_%s" % (args.realm, zone.get("id", "zone"))
+
+    if args.backdrop:
+        swatches = [args.backdrop]
+    elif args.terrain:
+        swatches = DEFAULT_BACKDROPS
+    else:
+        key = "%s/%s" % (args.realm, args.zone or load_zone(args.realm, None).get("id"))
+        swatches = BACKDROPS.get(key, DEFAULT_BACKDROPS)
+
+    scale = args.scale
+    panels = [(hexcode, render_panel(grid, w, h, cells, parse_hex(hexcode), scale))
+              for hexcode in swatches]
+
+    pad, head, label = 12, 34, 22
+    cols = 1 if len(panels) == 1 else 2
+    rows = (len(panels) + cols - 1) // cols
+    pw, ph = panels[0][1].w, panels[0][1].h
+    sheet = Canvas(pad + cols * (pw + pad), head + rows * (ph + label + pad),
+                   (18, 17, 20, 255))
+    text(sheet, pad, 10, title, (232, 228, 220, 255), 2)
+
+    for i, (hexcode, panel) in enumerate(panels):
+        x = pad + (i % cols) * (pw + pad)
+        y = head + (i // cols) * (ph + label + pad)
+        text(sheet, x, y + 4, hexcode.upper(), (150, 145, 140, 255), 2)
+        sheet.blit(panel, x, y + label)
+
+    os.makedirs(PREVIEW_DIR, exist_ok=True)
+    out = os.path.join(PREVIEW_DIR, stem + ".png")
+    sheet.save(out)
+    print("wrote %s  (%dx%d)" % (os.path.relpath(out, ROOT), sheet.w, sheet.h))
+
+    undrawn = [t["name"] for t in terrains
+               if len(cells[t["id"]]) == 1 and _is_flat(cells[t["id"]][0])]
+    if undrawn:
+        print("still flat placeholder colour: %s" % ", ".join(undrawn))
+
+
+def _is_flat(cell):
+    first = cell.get(0, 0)
+    return all(cell.get(x, y) == first for y in range(CELL) for x in range(CELL))
 
 
 def main():
@@ -589,6 +795,18 @@ def main():
     p = sub.add_parser("check", help="verify size and report which cells are drawn")
     p.add_argument("--atlas", help="atlas to read")
     p.set_defaults(func=cmd_check)
+
+    p = sub.add_parser("preview",
+                       help="composite the tiles over candidate realm backdrops")
+    p.add_argument("--realm", default="hell", help="hell, hungry_ghost, animal")
+    p.add_argument("--zone", help="zone id within the realm (default: its first)")
+    p.add_argument("--terrain", help="preview one terrain tiled 6x6 instead of a map")
+    p.add_argument("--backdrop", help="a single backdrop, e.g. \"#1A2B3C\"")
+    p.add_argument("--width", type=int, default=20, help="map width in tiles")
+    p.add_argument("--height", type=int, default=13, help="map height in tiles")
+    p.add_argument("--scale", type=int, default=2, help="pixel scale (default 2)")
+    p.add_argument("--seed", type=int, default=3, help="layout seed")
+    p.set_defaults(func=cmd_preview)
 
     args = parser.parse_args()
     args.func(args)

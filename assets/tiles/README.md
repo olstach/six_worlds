@@ -51,8 +51,11 @@ python3 tools/tile_atlas.py split     # cut it back into terrain/ if you switch
 
 ## The rules that matter
 
-1. **Fill the cell.** Fully opaque, edge to edge. Nothing shows through from
-   behind, and nothing may overhang the edge — it gets cut off.
+1. **Occupy the cell, edge to edge — but not necessarily opaquely.** Each
+   realm has a coloured backdrop behind the map, and the transparent areas you
+   leave are what lets it through. Nothing may overhang the edge; it gets cut
+   off. Nothing should stop short of the edge in a hard rectangle either, or
+   the map grows a visible lattice.
 2. **No directional features.** A road tile is *a square made of road surface*,
    not "a road running north–south". That's what lets any arrangement of them
    form a connected road with no corner or junction pieces.
@@ -60,7 +63,27 @@ python3 tools/tile_atlas.py split     # cut it back into terrain/ if you switch
    centre, because markers sit there. Test each tile in a 3×3 block; if your eye
    catches a repeating shape, move it to a variant.
 4. **Any tile must work next to any other.** No baked lighting direction that
-   assumes a neighbour.
+   assumes a neighbour. Keep opacity roughly even along an edge — four tiles
+   meet at every corner, and mismatched edges make corner dots.
+5. **Keep the hard walls solid.** Mountains, Water and Lava must never read as
+   walkable. Everything else can be as ghostly as you like.
+
+## Seeing it over the backdrop
+
+A partly transparent tile cannot be judged on its own — it depends entirely on
+what's behind it.
+
+```
+python3 tools/tile_atlas.py preview --realm hell --zone cold_hell
+python3 tools/tile_atlas.py preview --terrain water --scale 3     # repeat test
+python3 tools/tile_atlas.py preview --realm animal --backdrop "#1B2416"
+```
+
+This lays out a map using the **real** zone terrain weights and the generator's
+own smoothing, composites your actual tiles over four candidate backdrops, and
+writes it to `assets/tiles/preview/`. Undrawn terrains fall back to their flat
+placeholder colour, so it works from the very first tile. Candidate colours per
+zone live in `BACKDROPS` in the script — argue with them.
 
 ## Other commands
 

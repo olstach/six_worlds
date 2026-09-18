@@ -170,12 +170,13 @@ code.
 ## 5. The golden rule
 
 > **Every tile must look correct with any other tile on any of its four sides,
-> and must fill its cell edge to edge.**
+> and must occupy its cell edge to edge — though not necessarily opaquely.**
 
 This is what lets us skip autotiling entirely. In practice:
 
-- **No transparency inside a drawn cell.** Nothing shows through from behind;
-  there is no background layer.
+- **Transparency is intended** — see section 5a. Each realm has a coloured
+  backdrop behind the tiles, and the gaps you leave are what lets it through.
+  What still holds is the *edge* discipline below.
 - **Nothing crosses the cell boundary.** No branch, shadow, or rock overhanging
   the edge. A tree crown that spills 3px past the edge will be cut off.
 - **No directional features.** A road tile must not be "a road running
@@ -193,6 +194,58 @@ This is what lets us skip autotiling entirely. In practice:
   move it to a variant.
 
 ---
+
+### 5a. The realm backdrop
+
+Tiles are **not** opaque. Each realm gets a coloured backdrop behind the whole
+map, and the transparent areas of every tile let it through, so one colour
+permeates everything and the ground reads as dreamlike rather than solid. It is
+also the hook for animating the backdrop later — a slow drift or shimmer under
+static tiles costs almost nothing and makes the whole map feel fluid.
+
+This replaces the per-realm colour grade proposed earlier in section 8. It is
+the better mechanism: a grade multiplies the art and dulls it, whereas a
+backdrop showing through *keeps* whatever opacity you painted at full strength
+and tints only the gaps. It also means a single tile set genuinely serves all
+six realms.
+
+Consequences worth holding in mind while drawing:
+
+- **A tile cannot be judged on its own.** How it reads depends entirely on what
+  is behind it. Use `tools/tile_atlas.py preview` constantly — it composites
+  your actual tiles over candidate backdrops on a map laid out with the real
+  zone weights.
+- **Opacity is a design tool, not a constant.** Ground the player walks on can
+  be ghostly. The three hard walls — Mountains, Water, Lava — should stay
+  substantially opaque, because a wall that takes on the backdrop colour stops
+  reading as a wall. `check` flags an impassable tile under 60% coverage; that
+  is a prompt to look, not a rule.
+- **Dark backdrops raise contrast between light and dark terrains and
+  compress it among the dark ones.** Snow over a near-black backdrop stays
+  bright and separates cleanly; forest, swamp and ruins over the same backdrop
+  converge toward each other. If two terrains must not be confused (Snow vs
+  Ice, Forest vs Swamp), separate them by *texture and silhouette*, which
+  survives any backdrop, rather than by value.
+- **The grid lines go.** A faint black line per square, seen through partly
+  transparent tiles, reads as a hard lattice over a dreamy surface. That settles
+  open question 5 — they're dropped.
+
+Candidate backdrops per zone live in `BACKDROPS` in `tools/tile_atlas.py`.
+They're proposals to argue with; `preview --backdrop "#RRGGBB"` tries anything.
+
+### 5b. What still has to hold
+
+Transparency does not relax the adjacency rules — if anything it tightens them,
+because the backdrop is continuous underneath and any seam in your art now
+shows against a smooth field:
+
+- **Nothing crosses the cell boundary**, and nothing may *stop short* of it in
+  a way that draws a visible square outline. Fading toward the edge is fine;
+  a hard rectangular border of transparency is not — it will tile into a grid.
+- **No directional features**, exactly as before.
+- **Corners are the risk.** Four different tiles meet at every corner. Keep
+  opacity roughly consistent along an edge, or the map grows a faint dot
+  pattern at the corners.
 
 ## 6. What the art has to communicate
 
@@ -218,7 +271,8 @@ legend:
 Two more constraints from how the map is drawn:
 
 - **Fog of war.** Unvisited squares get a 70%-opacity near-black wash over
-  them. Tiles should still be *identifiable* when that dark — which means
+  them — over the backdrop as well as the tile, so fogged ground goes uniformly
+  dark. Tiles should still be *identifiable* when that dark, which means
   distinguishing terrains by texture and shape, not by hue alone.
 - **Markers sit on the centre.** The party circle, creature circles and object
   markers occupy roughly the middle 50–70% of a square and have their name
@@ -278,13 +332,9 @@ tiles per terrain) and covers 90% of the visual gain. Not now.
 cycle. Structurally that's just more columns on the sheet plus a timer in the
 renderer. Worth doing, after the static set exists.
 
-**Per-realm variants.** Hell's plains and the Animal realm's meadow currently
-draw from the same tile. Rather than you drawing 14 tiles × 3 realms, my
-recommendation is **one neutral set from you, plus a per-realm colour grade in
-code** — a warm ash tint for fire Hell, a blue-grey for cold Hell, a sickly
-green for the Hungry Ghost realm, saturated naturalism for the Animal realm.
-Cheap, consistent, and reversible. Draw the set neutral and mid-saturation so
-it takes a grade well.
+**Per-realm variants.** ~~A per-realm colour grade over one neutral set.~~
+Superseded by the backdrop in section 5a, which achieves the same thing more
+directly and without dulling the art. One tile set serves every realm.
 
 **Phase 2 — object and creature icons.** Once terrain is done, the next set is
 the markers currently drawn as coloured shapes. The icon vocabulary is already
