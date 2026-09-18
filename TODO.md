@@ -147,11 +147,31 @@ Each of these is an hour or less and touches one system.
   `weapon_off` now, through a new `ItemSystem.is_weapon_type()` that reads
   `weapon_bases` so a shield does not qualify.
 
+  **And then two more bugs in `sever_part` itself**, found on a second pass and
+  fixed the same day. Weapons do not live in `equipment.weapon_main`; they live
+  in `equipment.weapon_set_N.main`, and `get_equipped_item()` resolves the slot
+  through `active_weapon_set`. So:
+
+  - `unequip_item(character, "weapon_main")` cleared **only the active set**.
+    Lose your right arm while on set 1, swap to set 2, and you are wielding the
+    weapon in a hand that is gone.
+  - The fallback for a failed unequip wrote `equipment["weapon_main"] = ""` —
+    a flat key nothing reads. `unequip_item` returns false when the pack is
+    full, so on a full inventory the "force-clear" cleared nothing at all and
+    the weapon simply stayed equipped. The comment beside it said it was
+    force-clearing so the item would not be stuck in limbo; it was the thing
+    putting it there.
+
+  `ItemSystem.clear_weapon_slot_all_sets()` handles both now: it empties the
+  slot in every weapon set and returns each weapon to the pack, or lets it be
+  lost with the limb when there is no room — which is the right answer, and the
+  one the old comment intended.
+
   **Still open, and a design question rather than a bug:** a four-armed species
-  can never wield more than two weapons, because weapon slots do not scale with
-  arms. Four attacks with one sword is the current answer. Whether extra arms
-  should have their own slots — and what that does to damage — wants deciding
-  before anyone builds it.
+  can never wield more than two weapons at once, because weapon slots are a
+  swappable pair rather than one per arm. Four attacks with one weapon is the
+  current answer. Whether extra arms should have their own slots — and what
+  that does to damage — wants deciding before anyone builds it.
 - [ ] **`extra_arm_results` isn't shown in the combat UI** — the multi-arm chain
   writes per-arm hit/damage into the result dict and the combat log prints it,
   but the unit frames don't (no "Arm 2: 12 dmg" popup).

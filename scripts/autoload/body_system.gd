@@ -423,16 +423,27 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 					# Force-clear the slot anyway so the item isn't stuck in limbo.
 					if not ItemSystem.unequip_item(character, slot):
 						character.get("equipment", {})[slot] = ""
-				# Arms also unequip their corresponding weapon slot.
-				# Convention: arm_r = main hand (weapon_main), arm_l = off-hand (weapon_off).
+				# Arms also unequip their corresponding weapon slot, in BOTH
+				# weapon sets.
+				#
+				# Convention: arm_r = main hand (weapon_main), arm_l = off-hand
+				# (weapon_off). Extra arms (arm_l2/arm_r2) hold no weapon —
+				# weapon slots do not scale with arms — so they clear only
+				# their equip_slot above, which is correct.
+				#
+				# This used to call unequip_item() and, on failure, write
+				# `equipment["weapon_main"] = ""`. Both halves were wrong.
+				# unequip_item resolves weapon slots through active_weapon_set,
+				# so the other set kept its weapon and swapping sets re-armed a
+				# hand that was gone; and the flat key it force-wrote is not
+				# where weapons live (equipment.weapon_set_N.main is), so the
+				# force-clear cleared nothing and left a dead key behind.
 				if part.get("category") == "arm" and ItemSystem:
 					match pid:
 						"arm_r":
-							if not ItemSystem.unequip_item(character, "weapon_main"):
-								character.get("equipment", {})["weapon_main"] = ""
+							ItemSystem.clear_weapon_slot_all_sets(character, "weapon_main")
 						"arm_l":
-							if not ItemSystem.unequip_item(character, "weapon_off"):
-								character.get("equipment", {})["weapon_off"] = ""
+							ItemSystem.clear_weapon_slot_all_sets(character, "weapon_off")
 				break
 
 	# Losing a limb is permanent enough to become part of who they are.

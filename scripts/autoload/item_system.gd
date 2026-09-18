@@ -393,6 +393,35 @@ func _set_equipped_item(character: Dictionary, slot: String, item_id: String) ->
 		equipment[slot] = item_id
 
 
+## Empty a weapon slot in EVERY weapon set, not just the active one.
+##
+## `unequip_item()` resolves weapon_main and weapon_off through
+## `active_weapon_set`, so clearing the hand a character has just lost leaves
+## the other set's weapon sitting in it — swap sets and they are holding a
+## sword in a hand that is gone. BodySystem.sever_part() is the caller that
+## needs this; nothing else should normally want it.
+##
+## If the pack is full the item is lost with the limb. That is deliberate:
+## better than staying equipped to a hand that no longer exists, which is what
+## the previous force-clear achieved, having written a flat "weapon_main" key
+## that `get_equipped_item()` never reads.
+func clear_weapon_slot_all_sets(character: Dictionary, slot: String) -> void:
+	if slot != "weapon_main" and slot != "weapon_off":
+		return
+	var key: String = "main" if slot == "weapon_main" else "off"
+	var equipment: Dictionary = character.get("equipment", {})
+	for set_num in [1, 2]:
+		var weapon_set: Dictionary = equipment.get("weapon_set_%d" % set_num, {})
+		var item_id: String = str(weapon_set.get(key, ""))
+		if item_id == "":
+			continue
+		weapon_set[key] = ""
+		if _inventory.size() < max_inventory_size:
+			add_to_inventory(item_id, 1)
+	if CharacterSystem:
+		CharacterSystem.update_derived_stats(character)
+
+
 ## Swap weapon sets (1 <-> 2)
 func swap_weapon_set(character: Dictionary) -> void:
 	var current_set = character.get("active_weapon_set", 1)
