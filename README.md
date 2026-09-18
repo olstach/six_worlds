@@ -76,6 +76,7 @@ scripts/ui/  scripts/overworld/
 resources/data/      all content as JSON
 docs/review/         content prose, round-trips to JSON (see below)
 docs/superpowers/specs/   design docs for work not yet built
+assets/tiles/         terrain tile art + templates (see its README)
 docs/MAP_TILES_ART_BRIEF.md  spec for drawing the overworld map tiles
 tools/               validators, verifiers, data authoring scripts
 ```

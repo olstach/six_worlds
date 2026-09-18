@@ -7,6 +7,12 @@ arranged, and exactly which tiles to draw in which order. Companion to
 
 ---
 
+> **The template is generated and waiting in `assets/tiles/`.** Cell size is
+> settled at **24×24**. Read `assets/tiles/terrain_atlas_guide.png` for the
+> labelled row-by-row reference, then paint the named blanks in
+> `assets/tiles/terrain/`. `assets/tiles/README.md` is the two-minute version
+> of this document.
+
 ## 0. The one-paragraph answer
 
 Draw **one PNG**. It is a grid of equal-sized cells, no gaps. Each **row** is
@@ -83,7 +89,8 @@ a translucent yellow path trail, and a hover outline.
 
 ## 3. Cell size — and one thing I need to fix in code
 
-**Recommended: draw at 24×24 pixels per cell, displayed at 2×.**
+**Decided: 24×24 pixels per cell, displayed at 2×.** Every generated template
+and blank is already this size.
 
 The game's grid is 48 world-pixels per square, in both the overworld and the
 tactical battle grid (they deliberately match). A 24×24 drawing scaled up 2× is
@@ -94,12 +101,14 @@ free, whereas shrinking art you've already drawn is destructive.
 
 | Option | You draw | On-screen scale | Verdict |
 |---|---|---|---|
-| **24×24** | 576 px per tile | 2× | **Recommended.** Classic, crisp, fastest to iterate |
+| **24×24** | 576 px per tile | 2× | **Chosen.** Classic, crisp, fastest to iterate |
 | 16×16 | 256 px per tile | 3× | Fastest of all; may read too coarse against the ornate UI |
 | 48×48 | 2304 px per tile | 1× | Most detail, ~4× the work, and harder to keep tiles reading cleanly at a glance |
 
-Whichever you pick, tell me and I'll set the scale factor — it's one constant.
-Just don't mix sizes within a sheet.
+If it turns out to be the wrong call once you've drawn a few, it is one
+constant in `tools/tile_atlas.py` (`CELL`) plus a regenerate — but changing it
+after a full set is drawn means redrawing, so the time to object is now. Don't
+mix sizes within a sheet.
 
 > **A problem on my side, not yours.** The overworld camera is currently fixed
 > at zoom 1.5 (`scenes/overworld/overworld.tscn`), and the project has no
@@ -295,32 +304,42 @@ floor/water/difficult/wall/pit variants. Also later.
 
 ## 9. Delivering the files
 
-- Put them in **`assets/tiles/`** (create it — the repo currently has no art
-  assets at all beyond the app icon).
-- Name the terrain sheet **`terrain_atlas.png`**.
-- Keep your layered working files out of the repo, or in `assets/tiles/src/` if
-  you want them versioned — either is fine, just don't let a 200MB layered file
-  into git.
-- If you'd rather hand over **one PNG per tile** while experimenting, that's
-  genuinely easier to iterate on — name them `plains_0.png`, `plains_1.png`,
-  `road_0.png` … and I'll assemble the atlas with a script. Say the word and
-  I'll write that packer so you never have to align a grid by hand.
+All of this is generated — run `python3 tools/tile_atlas.py init` if anything
+is missing, and see `assets/tiles/README.md`.
 
-Once the files land I will: set nearest-neighbour filtering and an integer
+| File | What it is |
+|---|---|
+| `assets/tiles/terrain_atlas_guide.png` | Labelled reference sheet: row → terrain, speed, filename, and what the tile must communicate |
+| `assets/tiles/terrain/` | 56 correctly sized, correctly named blanks — one per cell. **Paint here** |
+| `assets/tiles/terrain_atlas_template.png` | The same grid as one 96×336 sheet, for painting into directly |
+| `assets/tiles/terrain_atlas_grid.png` | Transparent 1px grid overlay for a top layer while painting the template |
+| `assets/tiles/terrain_atlas.png` | The assembled atlas. Generated; don't hand-edit |
+
+The per-file route is the one to use: each blank is already the right size and
+already named for its slot, so there is no grid to align and no way to land a
+tile in the wrong row. `tools/tile_atlas.py pack` assembles them and reports
+what is still empty; `check` verifies an atlas you painted as one sheet;
+`split` converts between the two. It is pure standard library — nothing to
+install, on any machine.
+
+Variant `a` of each terrain ships pre-filled with the flat placeholder colour
+the game paints today, so a half-finished set still packs into a working
+atlas. Variants `b`–`d` start empty, because empty is exactly how the renderer
+is told to fall back to `a`.
+
+Once real tiles land I will: set nearest-neighbour filtering and an integer
 camera zoom, replace the `draw_rect` terrain pass in `map_renderer.gd` with
 atlas blits, add deterministic per-square variant selection, delete the
 placeholder ✕/dots/centre-line overlays, and run `tools/verify_all.sh`.
 
----
-
 ## 10. Open decisions — your call
 
-1. **Cell size:** 24×24 (recommended), 16×16, or 48×48?
-2. **Variants:** how many columns are you willing to draw? 1 works, 4 is the
+1. ~~**Cell size**~~ — settled at 24×24; the templates are generated.
+2. ~~**Delivery shape**~~ — both work; `tools/tile_atlas.py` converts between
+   per-tile files and a single atlas in either direction.
+3. **Variants:** how many columns will you actually draw? 1 works, 4 is the
    sweet spot, more than 4 is diminishing returns given terrain clumps are only
-   2–7 squares.
-3. **Delivery shape:** single atlas PNG, or one PNG per tile plus a packer
-   script from me?
+   2–7 squares. Say the word and I'll change `VARIANTS` and regenerate.
 4. **Per-realm look:** one neutral set + code colour grade (recommended), or do
    you want to hand-paint per-realm variants eventually?
 5. **Grid lines:** the map currently draws a faint black line around every
