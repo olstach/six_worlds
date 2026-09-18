@@ -259,6 +259,16 @@ the prose around it:
 
 # Part 3 — Small fills
 
+- [ ] **Racial resistances: 47 births, all empty.** Not prose exactly, but it
+      is birth characterisation and only you can say what a skeleton, a rolang
+      or a naga shrugs off. The wiring is finished as of 2026-09-18 — the
+      numbers reach player characters, companions and enemies alike — and
+      `validate_data.py` checks every key against `damage_types.json`, so a typo
+      fails the build instead of silently resisting nothing. The vocabulary:
+      `physical` (or `slashing`/`crushing`/`piercing`), `fire`, `ice`,
+      `lightning`, `space`, `white`, `black`, `poison`, plus `bleed`, `disease`
+      and `ranged`. Values are percentages; above 100 heals for the excess.
+
 - [ ] **Three background descriptions are placeholders I wrote.** `beggar`
       (yidag), `sorcerer` and `courtier` (skeleton_copper) were named by those
       births and defined nowhere, so wiring `typical_backgrounds` made them

@@ -203,34 +203,45 @@ Each of these is an hour or less and touches one system.
   weapons alone. It resolves through ItemSystem now.
 
   **Two things still open:**
-  - [ ] **No race is four-armed.** `body_plan_species` is declared by exactly
-        five births — three avian, one serpentine, one mantis — and none uses
-        `four_armed`, so the plan and everything above it is machinery waiting
-        for content. Asura and god births are the obvious candidates given the
-        iconography, and both realms are unbuilt. Until one exists this reaches
-        the game only through generated characters.
-  - [ ] **The equipment doll shows two weapon slots.**
-        `main_menu._setup_equipment_doll()` builds a fixed layout once, guarded
-        by `_doll_initialized`, so the extra hands need the doll to rebuild per
-        character and two more positioned slots. Deliberately not attempted
-        blind — it is layout work that wants the engine running. Generated
-        characters equip all four hands through `_find_slot_for_item` already;
-        it is manual equipping that cannot reach them.
+  - [ ] **No race is four-armed yet.** `body_plan_species` is declared by
+        exactly five births — three avian, one serpentine, one mantis. Asura and
+        deva births will be four-armed (Olaf, 2026-09-18) and both realms are
+        unbuilt, so that one field is all it will take. Everyone else gets extra
+        arms temporarily, from an event or a spell — see **Extra arms: who has
+        them, and arms that come and go** in Part II, which also carries the
+        rule that a spell-granted arm's weapon cannot be unequipped.
+  - [ ] **The equipment doll shows two weapon slots**, and must end up handling
+        a number of hands that changes during play. Written up in Part II under
+        **The equipment doll and a changing number of hands**. Generated
+        characters equip all four through `_find_slot_for_item` already; it is
+        manual equipping that cannot reach them.
 - [ ] **`extra_arm_results` isn't shown in the combat UI** — the multi-arm chain
   writes per-arm hit/damage into the result dict and the combat log prints it,
   but the unit frames don't (no "Arm 2: 12 dmg" popup).
 - [ ] **Combat-UI wound icons** — wounds render in the character sheet; unit
   frames need sprite work.
-- [ ] **No race defines any resistance at all.** All 47 carry
-  `"resistances": {}`, so `base_resistances` on a character is always empty and
-  the skeleton's 50% physical reduction this item used to cite does not exist.
-  Racial resistance is a designed-in field that was never filled.
+- [x] ~~**Enemies cannot inherit racial resistance**~~ — **wired 2026-09-18.**
+  `_build_enemy()` rolled a birth, called `apply_birth_modifiers` (which writes
+  the birth's resistances into `base_resistances`, exactly as a player character
+  does), and then built a fresh resistance dict from the archetype alone and
+  threw the birth's away. Racial resistance reached player characters and
+  companions and never reached an enemy. It seeds from the birth now, with the
+  archetype layered on top so an archetype can still say something its birth
+  does not.
 
-  The original concern still stands underneath it: `EnemySystem._build_enemy()`
-  copies only the archetype's own `resistances`, so if races are ever given
-  some, an archetype-defined skeleton still will not inherit them. Enemies now
-  roll a real birth and apply its modifiers, which makes the inconsistency
-  easier to fix and more obviously wrong to leave.
+  Removed with it: the dict was seeded with `air`, `water` and `earth`, which
+  have not been damage types since the 09-16 rework. No archetype declares them,
+  nothing reads them, and a missing key already answers 0 — so the seed bought
+  nothing and kept a retired vocabulary alive. The examine panel iterates
+  `DamageType.all()` rather than the unit's dict, so it never showed them.
+
+- [ ] **No race defines any resistance at all** — the content half, and it is
+  Olaf's. All 47 births carry `"resistances": {}`, so the skeleton's 50%
+  physical reduction this item used to cite still does not exist. The wiring
+  now goes all the way through for player, companion and enemy alike, and
+  validate_data.py already checks the keys against damage_types.json — a birth
+  written with `cold` or `water` fails the build rather than silently resisting
+  nothing. So this is filling in numbers, with a guard under it.
 - [ ] **Projectile sprites** — arrows/bolts/firebombs are a `Line2D` flash.
 - [ ] **Tooltips** — `item_tooltip.gd` covers items; status effects, terrain
   tiles and turn-order icons have none.
@@ -1892,6 +1903,81 @@ wire mask bonuses into Deity Yoga activation · define cross-lifetime persistenc
 Tasks: design roster (domains, offerings, interventions, vows) · shrine objects
 in `map_generator.gd` · DharmapalaSystem autoload · cross-lifetime persistence
 in KarmaSystem/reincarnation.
+
+## Extra arms: who has them, and arms that come and go
+
+*Recorded 2026-09-18. The four-weapon-slot machinery is built (§1); this is what
+it is for and what still has to be built around it.*
+
+**Permanent four-armed births: asura and deva.** Both realms are unbuilt, so
+nothing declares `body_plan_species: "four_armed"` yet. When those births are
+written, that one field is all it takes — slots, swing order, severing and
+auto-equip already follow from it.
+
+**Temporary arms, for everyone else.** Two routes, and they want the same
+machinery:
+
+1. **An event grants them** — a boon, a curse, a bargain. Permanent-ish for the
+   run, or until something takes them away.
+2. **A spell grants them for its duration.** *Arms of Light* is the worked
+   example: grow two more arms, each already holding a sword that deals space
+   damage, for the length of the spell.
+
+**The spell case has a hard requirement: those weapons are fixed.** The player
+must not be able to unequip a spell-made sword, or sell it, or swap it — the
+arms and what they hold are one effect and they end together.
+
+### What exists, and the three gaps
+
+`is_slot_locked(character, slot_id)` already answers "can this slot be
+equipped", and `equip_item()` already refuses a locked slot. Three things are
+missing:
+
+- [ ] **The lock is static.** `is_slot_locked` reads the body plan CONST —
+      `natural_weapon.locked`, or a part-level `locked` — so it can express "a
+      mantis cannot hold a sword in its blade-arm" but not "this arm is on loan
+      until the spell ends". Runtime body state already exists and is where
+      this belongs: `character.body_plan` carries `missing_parts` and
+      `prosthetics`, so it wants `granted_parts` and a locked-slot list beside
+      them, with `is_slot_locked` consulting both.
+- [ ] **`unequip_item()` never checks the lock at all.** Only equipping does.
+      So even once a slot is locked, the player could take the spell sword off
+      and keep it. This is a small fix and it is the one that makes the rule
+      real.
+- [ ] **The body plan is a const, so arms cannot be added at runtime.**
+      `get_body_plan_def()` returns `BODY_PLANS[species]` directly. Granting an
+      arm means either a per-character overlay on top of the plan (parts added,
+      parts removed) or swapping the character to a richer plan and back.
+      The overlay is the better shape: `missing_parts` is already exactly that
+      idea pointing the other way.
+
+### Loose ends worth deciding at the same time
+
+- **What happens to a granted arm's weapon when the spell ends** — vanish with
+  it, obviously, but the slot must be cleared without the weapon reaching the
+  pack. `clear_weapon_slot_all_sets()` returns items to inventory, so a
+  spell-made weapon needs a "destroy, do not return" path.
+- **Severing a granted arm.** `sever_part` writes to `missing_parts`, which is
+  keyed on part ids the plan defines; a granted part would need to exist in the
+  overlay for that to work at all.
+- **Wounds.** Granted arms are wound locations while they exist. Probably fine
+  to let them be, and the wound disappears with the arm.
+- **The equipment doll must handle a changing number of arms** — see below.
+
+## The equipment doll and a changing number of hands
+
+- [ ] `main_menu._setup_equipment_doll()` builds a fixed layout exactly once,
+      guarded by `_doll_initialized`, and hardcodes two weapon slots at fixed
+      positions. Four-armed births need four; spell-granted arms need the count
+      to change *during play*, which the one-shot guard cannot do at all.
+
+      So the doll wants rebuilding from `BodySystem.get_weapon_slots()` and
+      `get_equipment_slots()` rather than from a fixed list, and re-running when
+      the displayed character changes or their body does. A locked slot should
+      also read as locked — greyed, with the reason in the tooltip — rather than
+      looking like an empty slot the player is failing to fill.
+
+      Layout work, and it wants the engine in front of you.
 
 ## Masks and the face slot
 

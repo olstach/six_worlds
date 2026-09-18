@@ -754,12 +754,21 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
 	var bare_handed = randf() < no_equip_chance
 
-	# Build resistances dict (start with defaults, apply archetype overrides).
-	# Includes "black" as a damage type used by Black magic spells.
-	var resistances = {
-		"physical": 0, "space": 0, "air": 0,
-		"fire": 0, "water": 0, "earth": 0, "black": 0
-	}
+	# Resistances: what the birth is born with, then what the archetype makes of
+	# it. The archetype wins where both speak, so a skeleton archetype can still
+	# say something its birth does not.
+	#
+	# The birth half is new (2026-09-18). `apply_birth_modifiers` above already
+	# wrote the birth's resistances into `built.base_resistances` — the same
+	# call the player character makes — and this function then built a fresh
+	# dict from the archetype alone and threw that away. Racial resistance
+	# reached player characters and companions and never reached an enemy.
+	#
+	# The dict it built was also seeded with `air`, `water` and `earth`, which
+	# have not been damage types since the 09-16 resistance rework; no archetype
+	# declares them, nothing reads them, and a missing key already answers 0.
+	# Seeding zeros bought nothing and kept a retired vocabulary alive.
+	var resistances: Dictionary = built.get("base_resistances", {}).duplicate()
 	var arch_resists = archetype.get("resistances", {})
 	for key in arch_resists:
 		resistances[key] = arch_resists[key]
