@@ -23,6 +23,19 @@ var karma_scores: Dictionary = {
 # Karma thresholds for significant shifts
 const KARMA_THRESHOLD: int = 100
 
+## How often a birth that HAS backgrounds of its own gets one, rather than a
+## background anyone could have had.
+##
+## Without this the universal pool simply drowns the specific one: it carries 33
+## backgrounds and 169 weight against a typical birth's five and 24, so a red
+## devil came out devil-flavoured 12% of the time and a yidag — which had none
+## of its own at all — never. Births are supposed to read differently from each
+## other, and a background is most of how a character introduces itself.
+##
+## A birth with no backgrounds of its own is unaffected: it draws from the
+## universal pool as before.
+const BIRTH_SPECIFIC_BACKGROUND_CHANCE: float = 0.5
+
 # Cached background data from races.json (loaded on first use)
 var _background_cache: Dictionary = {}
 
@@ -99,40 +112,98 @@ func reincarnate() -> Dictionary:
 		"background": target_background
 	}
 
-## Select random background appropriate for birth, weighted by background data.
-## Loads from races.json — backgrounds with an empty available_races list are universal;
-## otherwise the birth must be in the whitelist.
-func select_random_background(birth: String) -> String:
-	if _background_cache.is_empty():
-		var file = FileAccess.open("res://resources/data/races.json", FileAccess.READ)
-		if file:
-			var json = JSON.new()
-			if json.parse(file.get_as_text()) == OK:
-				_background_cache = json.get_data().get("backgrounds", {})
-	# Build weighted pool of backgrounds available for this race
-	var pool: Array[String] = []
-	var weights: Array[float] = []
+
+## races.json's `backgrounds` block, read once and kept.
+func _load_background_cache() -> void:
+	if not _background_cache.is_empty():
+		return
+	var file = FileAccess.open("res://resources/data/races.json", FileAccess.READ)
+	if file:
+		var json = JSON.new()
+		if json.parse(file.get_as_text()) == OK:
+			_background_cache = json.get_data().get("backgrounds", {})
+
+
+## Every background this birth may be born into, split by whose it is.
+##
+## Two declarations decide it, and both count:
+##   - `available_races` on the BACKGROUND, naming the births that may take it.
+##     An empty list means anyone may.
+##   - `typical_backgrounds` on the BIRTH, naming the backgrounds it is known
+##     for. This is the field the review documents show and the one that reads
+##     as authorial intent; until 2026-09-18 no game script read it, so a birth
+##     could be "known for" a background the roll never offered it.
+##
+## A background the birth names is ITS background even when it is also
+## universal — the birth has claimed it, and that claim is the whole point of
+## the field. Returns {"specific": [...], "universal": [...]}, each an array of
+## {"id": String, "weight": float}.
+func get_background_pools(birth: String) -> Dictionary:
+	_load_background_cache()
+
+	var typical: Array = []
+	if CharacterSystem:
+		typical = CharacterSystem.get_birth_data(birth).get("typical_backgrounds", [])
+
+	var specific: Array[Dictionary] = []
+	var universal: Array[Dictionary] = []
 	for bg_id in _background_cache:
 		if bg_id.begins_with("_"):
 			continue
 		var bg: Dictionary = _background_cache[bg_id]
 		var allowed: Array = bg.get("available_races", [])
-		if allowed.is_empty() or birth in allowed:
-			pool.append(bg_id)
-			weights.append(float(bg.get("weight", 1)))
-	if pool.is_empty():
-		return "wanderer"
-	# Weighted random selection
-	var total_weight := 0.0
-	for w in weights:
-		total_weight += w
-	var roll := randf() * total_weight
-	var cumulative := 0.0
-	for i in range(pool.size()):
-		cumulative += weights[i]
+		var entry := {"id": bg_id, "weight": float(bg.get("weight", 1))}
+
+		if bg_id in typical or (not allowed.is_empty() and birth in allowed):
+			specific.append(entry)
+		elif allowed.is_empty():
+			universal.append(entry)
+		# else: whitelisted to other births and not named by this one — not offered.
+
+	return {"specific": specific, "universal": universal}
+
+
+## Weighted pick from one pool, or "" when it is empty.
+func _weighted_pick(pool: Array) -> String:
+	var total: float = 0.0
+	for entry in pool:
+		total += float(entry["weight"])
+	if total <= 0.0:
+		return ""
+
+	var roll: float = randf() * total
+	var cumulative: float = 0.0
+	for entry in pool:
+		cumulative += float(entry["weight"])
 		if roll < cumulative:
-			return pool[i]
-	return pool[0]
+			return String(entry["id"])
+	return String(pool[pool.size() - 1]["id"])
+
+
+## Select a random background appropriate for a birth, weighted by the
+## background's own `weight`.
+##
+## The roll is split rather than pooled: a birth with backgrounds of its own
+## takes one BIRTH_SPECIFIC_BACKGROUND_CHANCE of the time and a universal one
+## otherwise. Pooling the two and letting weight decide is what produced the
+## 12% above — the universal pool is five times the size and cannot help but
+## win. Splitting first makes the intended frequency a number someone chose.
+func select_random_background(birth: String) -> String:
+	var pools: Dictionary = get_background_pools(birth)
+	var specific: Array = pools["specific"]
+	var universal: Array = pools["universal"]
+
+	var picked := ""
+	if not specific.is_empty() and randf() < BIRTH_SPECIFIC_BACKGROUND_CHANCE:
+		picked = _weighted_pick(specific)
+	if picked == "":
+		picked = _weighted_pick(universal)
+	# A birth whose only backgrounds are its own still gets one, rather than
+	# falling through to the generic default because the universal roll lost.
+	if picked == "":
+		picked = _weighted_pick(specific)
+
+	return picked if picked != "" else "wanderer"
 
 ## Reduce karma scores partially (some patterns persist)
 func reset_karma_partially() -> void:

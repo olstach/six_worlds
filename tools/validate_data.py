@@ -429,6 +429,16 @@ for group in ("races", "backgrounds"):
         for birth in entry.get("available_races", []):
             if birth not in races:
                 err("background->birth", f"races.json:{key}: available_race '{birth}' unknown")
+        # The other direction. `typical_backgrounds` went unchecked for as long
+        # as no game script read it, and collected three ids that were never
+        # defined (beggar, sorcerer, courtier) — harmless only while the field
+        # was dead. KarmaSystem.get_background_pools() reads it now, so an
+        # unknown id here is a background a birth can never actually be born
+        # into.
+        for bid in entry.get("typical_backgrounds", []):
+            if bid not in backgrounds:
+                err("birth->background",
+                    f"races.json:{key}: typical_background '{bid}' unknown")
 
 
 # ── map configs ──────────────────────────────────────────────────────────────

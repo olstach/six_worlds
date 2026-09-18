@@ -1305,19 +1305,39 @@ one-line edit.
   | `animal_shyena_lord` | meadow / imp / frontline |
   | `animal_uluka_watch` | forest / devil / caster |
 
-- **Equipment should be generated like the XP pool.** Currently
-  `_generate_equipment` reads only `archetype.equipment_template.weapon.type`,
-  so what a character can actually do has no bearing on what it carries.
-  Wanted:
-  - a **total equipment value that scales with the character's XP**, the same
-    proportional way the XP budget itself does
-  - **types chosen from the dominant skillsets** — a ranged build carries a bow,
-    a Performance build carries an instrument, an armour build wears armour
-  - **two weapon sets** where the gold and the skills make it reasonable
-  - beyond the vital kit, **food and other resources**, and later everyday
-    objects carrying minor bonuses — the point being roundness, the same reason
-    XP now overflows into breadth. A character with rations, a spare knife and
-    a lucky stone reads as someone who lives somewhere.
+- [x] ~~**Equipment should be generated like the XP pool.**~~ — **mostly built
+  already, and finished 2026-09-18.** The claim below (that `_generate_equipment`
+  reads only `archetype.equipment_template.weapon.type`) had stopped being true:
+  `_weapon_types_for_skills` picks the weapon off the best trained weapon skill,
+  `_tool_for_character` puts a trade's tool in the hand when the trade outweighs
+  the weapon, `_generate_skill_consumables` and `_generate_everyday_items` fill
+  the pack from the skills, a second weapon set appears when a second weapon
+  skill is genuinely trained, and leftover budget buys a talisman.
+
+  **Armour was the one slot still reading only the archetype**, so a character
+  that came out of the XP spread with armor 5 could be sent in bare because its
+  template said "none". `_armor_category_for()` now takes the heavier of the
+  skill's category (light 1+, medium 3+, heavy 6+) and the template's — the
+  template is a floor rather than an authority, so a temple guard's "heavy"
+  survives a low armour roll while a caster's "none" does not survive the
+  character actually training to wear armour.
+
+  Not done, and not invented: **attributes still play no part in armour.**
+  Gating heavy armour on Strength would be a rule the player's own character
+  does not obey, so it wants deciding for both or neither.
+
+  The original list, marked up against what is actually built:
+  - [x] a **total equipment value that scales with the character's XP** —
+    `equipment_budget_for_xp()`
+  - [x] **types chosen from the dominant skillsets** — weapon, tool, armour and
+    consumables all read the skills now
+  - [x] **two weapon sets** where the gold and the skills make it reasonable —
+    a spare at xp ≥ 600 with a second weapon skill at 3+
+  - [x] beyond the vital kit, **food and other resources** —
+    `_generate_everyday_items`
+  - [ ] **a Performance build carries an instrument** — the one part still
+    missing, and not for want of wiring: no instrument exists as an item. See
+    the separate item below.
 
 - **Instruments, and skill-linked equipment generally.** The game has ritual
   implements (damaru, kangling, conch, drilbu) but all are `type: focus` for
@@ -1346,41 +1366,50 @@ one-line edit.
   use — top weapon skill picks the weapon, and a high Performance or Ritual
   should put an instrument or implement in their hands.
 
-- **Background assignment — the premise was wrong, and the real finding is
-  worse.** *(Rewritten 2026-09-18.)* This asked for a pass over every birth's
-  `typical_backgrounds` list, on the grounds that only 3 of 94 backgrounds were
-  universal and mriga had been left out of the broadly-available ones.
+- [x] ~~**Background assignment wants a pass across all births**~~ — **the
+  premise was wrong, and the fix shipped 2026-09-18.**
 
-  **`typical_backgrounds` is read by no game script.** The only consumer is
-  `tools/export_review_docs.py`. Character creation calls
-  `KarmaSystem.select_random_background()`, which iterates the *backgrounds*
-  table and reads `available_races`, treating an empty list as universal — so
-  the field that decides what a birth can be is on the other side of the
-  relation, and the field this item proposed editing is documentation.
+  The item asked for a pass over every birth's `typical_backgrounds`. That
+  field was read by no game script: character creation called
+  `KarmaSystem.select_random_background()`, which iterated the *backgrounds*
+  table and read `available_races`, treating an empty list as universal. So the
+  field that reads as authorial intent was documentation, and the one that
+  decided anything was on the other side of the relation. Across the 47 births
+  the two disagreed 1,525 times, and three ids the births named — `beggar`
+  (yidag), `sorcerer` and `courtier` (skeleton_copper) — were not defined
+  anywhere, harmless only because nothing read them.
 
-  The live numbers: **120 backgrounds, 33 of them universal**, so every birth
-  already draws from at least 33 while its `typical_backgrounds` lists three to
-  five. Across the 47 births the two disagree **1,525 times** (offered but not
-  listed) against 16 the other way. Mriga was never excluded from anything.
+  **Both declarations count now.** `get_background_pools()` splits what a birth
+  may be born into: *its own* (named by `typical_backgrounds`, or whitelisting
+  it through `available_races`) and *universal* (an empty `available_races` and
+  unclaimed). A background the birth names is its own even when it is also
+  universal — the claim is the point of the field.
 
-  Three of the listed names — `beggar` (yidag), `sorcerer` and `courtier`
-  (skeleton_copper) — **are not defined in the backgrounds table at all**.
-  Harmless at runtime precisely because nothing reads the field, and invisible
-  in the review documents because the exporter filters unknown ids. validate_data.py
-  checks `companion.background` and `background.available_race` but not this
-  direction, which is why they survived.
+  **And the roll is split, not pooled.** Weight alone could not fix this: the
+  universal pool is 33 backgrounds and 169 weight against a typical birth's
+  five and 24, so a red devil came out devil-flavoured 12% of the time and a
+  yidag, which had none of its own, never. `BIRTH_SPECIFIC_BACKGROUND_CHANCE`
+  (0.5) decides the split first and weight decides within the pool, which moves
+  every birth in a built realm to ~50% and makes the frequency a number someone
+  chose. A birth with none of its own is unaffected.
 
-  So the open question is not "reassign backgrounds" but **what
-  `typical_backgrounds` is for**:
-  - *Wire it* — make selection prefer a birth's typical list and fall back to
-    the universal pool, which makes births read distinctly and gives the field
-    teeth. Then the three undefined ids become real bugs and want fixing first.
-  - *Drop it* — delete the field, let `available_races` be the single statement,
-    and regenerate the review docs from that instead.
+  The three undefined backgrounds are written rather than deleted — **their
+  descriptions are placeholders and want Olaf's voice** (in `WRITING.md`).
+  `validate_data.py` now checks `typical_backgrounds` against the backgrounds
+  table; it only ever checked the other direction, which is how three unknown
+  ids survived.
 
-  Either way `validate_data.py` should check the direction it does not check
-  today. Not a content pass until this is decided — editing the lists now is
-  writing into a field the game ignores.
+  Still open, and deliberately not changed:
+  - **A new game hardcodes its character.** `save_manager.gd:184` calls
+    `create_player_character("Karma Dorje", "human", "wanderer")` — a fixed
+    birth and background, bypassing both rolls, in a realm with no content and
+    on a birth whose `reincarnation_weight` is 0 so reincarnation can never
+    produce it. That may well be deliberate (you were human, you died, you are
+    in hell), which is why it was left alone. If it is not, it is a two-line
+    change to roll it like every other character.
+  - **Four births still have no backgrounds of their own** — `gandharva`,
+    `apsara`, `planetary_deity` and `trader`, all in unbuilt realms. They fall
+    back to the universal pool safely.
 
 - **Spell learning should cost XP.** `CharacterSystem.learn_spell` currently has
   no cost and no eligibility gate at all; it appends to `known_spells`. Making

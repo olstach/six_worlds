@@ -3351,6 +3351,65 @@
 	  ],
 	  "weight": 5
 	},
+	"beggar": {
+	  "name": "Beggar",
+	  "description": "PLACEHOLDER (mechanics final, prose wants Olaf): A life spent asking. You learned to read a face for the moment before refusal, and to be owed nothing by anyone.",
+	  "attribute_modifiers": {
+		"awareness": 2,
+		"charm": 1,
+		"constitution": -1,
+		"strength": -1
+	  },
+	  "starting_skills": {
+		"persuasion": 1,
+		"guile": 1
+	  },
+	  "starting_equipment": {
+		"items": [
+		  "cloth_robe"
+		],
+		"random_bonus": [],
+		"bonus_chance": 0.0
+	  },
+	  "available_races": [
+		"yidag"
+	  ],
+	  "weight": 4
+	},
+	"sorcerer": {
+	  "name": "Sorcerer",
+	  "description": "PLACEHOLDER (mechanics final, prose wants Olaf): Trained in the formal schools rather than the hedgerow ones, which shows in the handwriting and in what refuses to obey you.",
+	  "attribute_modifiers": {
+		"focus": 2,
+		"constitution": -1
+	  },
+	  "starting_skills": {
+		"sorcery": 2,
+		"learning": 1
+	  },
+	  "available_races": [
+		"skeleton_copper"
+	  ],
+	  "weight": 3
+	},
+	"courtier": {
+	  "name": "Courtier",
+	  "description": "PLACEHOLDER (mechanics final, prose wants Olaf): You survived a court, which is a harder skill than it sounds and transfers poorly to everything else.",
+	  "attribute_modifiers": {
+		"charm": 2,
+		"awareness": 1,
+		"strength": -1
+	  },
+	  "starting_skills": {
+		"persuasion": 1,
+		"guile": 1,
+		"leadership": 1
+	  },
+	  "available_races": [
+		"skeleton_copper"
+	  ],
+	  "weight": 3
+	},
 	"maneater": {
 	  "name": "Maneater",
 	  "description": "They tell bedtime stories to their children about her, unable to see her dark silhouette lurking behind the window.",

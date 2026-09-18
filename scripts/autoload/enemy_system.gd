@@ -274,6 +274,45 @@ const SKILL_TO_KIT: Dictionary = {
 }
 
 
+## Armour weight ranked, so two categories can be compared.
+const ARMOR_WEIGHT_ORDER: Array[String] = ["none", "light", "medium", "heavy"]
+
+## How much armour the `armor` skill itself earns, before the archetype is
+## consulted. Someone who trained to wear it is wearing it.
+const ARMOR_SKILL_TIERS: Array[Dictionary] = [
+	{"level": 6, "category": "heavy"},
+	{"level": 3, "category": "medium"},
+	{"level": 1, "category": "light"},
+]
+
+
+## What this character goes into the fight wearing.
+##
+## The archetype's `armor_type` was the only input until 2026-09-18, so a
+## character that came out of the XP spread with armor 5 could still be sent in
+## bare because its template said "none" — the same gap `_weapon_types_for_skills`
+## closed for weapons, left open one slot over.
+##
+## The template is a FLOOR rather than an authority, which is where this differs
+## from weapons. A temple guard's "heavy" is a statement about the guard and
+## should survive a low armour roll; a caster's "none" should not survive the
+## character actually training to wear armour. So: take whichever of the two is
+## heavier.
+func _armor_category_for(skills: Dictionary, template_category: String) -> String:
+	var from_skill := "none"
+	var level: int = int(skills.get("armor", 0))
+	for tier in ARMOR_SKILL_TIERS:
+		if level >= int(tier["level"]):
+			from_skill = String(tier["category"])
+			break
+
+	var template_rank: int = ARMOR_WEIGHT_ORDER.find(template_category)
+	var skill_rank: int = ARMOR_WEIGHT_ORDER.find(from_skill)
+	if template_rank < 0:
+		return from_skill
+	return template_category if template_rank >= skill_rank else from_skill
+
+
 ## The weapon types this character has actually trained for, best skill first.
 ## An archetype's template is the fallback, not the authority: a build that came
 ## out with ranged 8 should be holding a bow whatever its template says.
@@ -817,7 +856,8 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	# item goes into inventory so it can be looted on death.
 	# Armour spends what the weapon left. A character whose budget ran out on a
 	# good blade goes into the fight in fewer pieces, which is how kit works.
-	var armor_category: String = equipment.get("armor_type", "none")
+	var armor_category: String = _armor_category_for(
+		skills, String(equipment.get("armor_type", "none")))
 	for slot_entry in ARMOR_LOADOUTS.get(armor_category, []):
 		if kit_budget <= 0:
 			break

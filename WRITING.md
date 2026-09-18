@@ -152,19 +152,25 @@ Worth doing skill by skill. The heaviest first:
 Hell is the first world a player sees and the thinnest one they will see.
 Six births against the animal realm's eighteen.
 
-- [ ] **Birth-specific backgrounds for the six devils — there are none.**
-      Not one background in the game is exclusive to red, blue, yellow, green,
-      black or white devil. Each has between three and six non-universal
-      backgrounds available and no birth of its own, against the animal realm's
-      **56** birth-exclusive backgrounds across eighteen births. Hungry ghost
-      has five.
+- [ ] **Backgrounds that tell the six devils apart.** Hell has **six**
+      non-generic backgrounds in total — `berserker`, `executioner`,
+      `infernal_scribe`, `raider`, `soul_jailer`, `torturer` — and all six
+      devils draw from nearly the same set. Red gets berserker, green gets
+      berserker, white gets neither executioner nor raider, and otherwise they
+      are interchangeable. The animal realm has **74** across eighteen births;
+      hungry ghost has 15 across fourteen.
 
-      Read this off `available_races` on the background, which is the field
-      character creation actually uses — **not** off `typical_backgrounds` on
-      the birth, which no game script reads (see Part 4). The two disagree, and
-      the documentation field is the more flattering of the two: it credits the
-      devils with `berserker`, `soul_jailer` and `diplomat` as their own, and
-      the game does not.
+      This got sharper on 2026-09-18, not softer. Birth-specific backgrounds
+      used to come up 12% of the time and now come up about half, so whatever a
+      devil's own list says is what devils will actually be. Six shared entries
+      is thin at 12% and conspicuous at 50%.
+
+      What it wants is a handful each that only that devil could have been —
+      red is wrath and the finest warriors, white is the diplomat, blue keeps
+      the souls. Mechanically it is one entry per background in `races.json`
+      with `available_races` naming the birth; the work is deciding what six
+      kinds of devil *do* with themselves.
+
 - [ ] **The six unwritten event chains**, from the original list:
       soul caravan ambush · devil deserter · contraband deal · corrupted simple ·
       chained pilgrim · rival party.
@@ -252,6 +258,16 @@ the prose around it:
 
 # Part 3 — Small fills
 
+- [ ] **Three background descriptions are placeholders I wrote.** `beggar`
+      (yidag), `sorcerer` and `courtier` (skeleton_copper) were named by those
+      births and defined nowhere, so wiring `typical_backgrounds` made them
+      real. I gave them mechanics — attributes, skills, a robe for the beggar —
+      and a holding line of description each, marked `PLACEHOLDER (mechanics
+      final, prose wants Olaf)` in `races.json`. The mechanics are settled; only
+      the description wants replacing. They matter more than their number
+      suggests: `beggar` is the first background yidag has ever had of its own,
+      and it will now come up about half the time a yidag is born.
+
 - [ ] **Eight race descriptions still say `TODO: Fill in description`** —
       `nomad`, `mountain_folk`, `trader`, `tsen`, `rudra`, `gandharva`,
       `apsara`, `planetary_deity`. All eight belong to unbuilt realms, so this
@@ -286,19 +302,13 @@ Checked against the data and found already done, or not writing at all.
   `marrow_chill` and `burn` for hell, `bone_fever`, `brain_fever`. Done and
   never ticked off.
 
-- **"Background assignment wants a pass across all births."** The premise does
-  not hold. The pass would edit `typical_backgrounds` on each birth — **which
-  no game script reads.** Character creation calls
-  `KarmaSystem.select_random_background()`, which reads `available_races` on
-  the *background* and treats an empty list as universal. There are **33
-  universal backgrounds**, so every birth already draws from at least 33 while
-  its `typical_backgrounds` lists three to five. Across all 47 births the two
-  disagree **1,525 times**. Mriga was never actually excluded from anything.
-
-  `typical_backgrounds` is real content — it is what `ANIMAL_RACES.md` shows
-  you, and it reads as authorial intent — but it is documentation, not data.
-  Deciding whether to wire it or drop it is a `TODO.md` question, not a writing
-  one, and it is recorded there now.
+- **"Background assignment wants a pass across all births."** The premise did
+  not hold — the pass would have edited `typical_backgrounds`, which no game
+  script read. **Fixed in code on 2026-09-18 instead:** both declarations now
+  decide what a birth can be born into, and the roll favours a birth's own
+  backgrounds rather than letting the 33 universal ones drown them. Every birth
+  in a built realm went from ~12% birth-specific to ~50%, and yidag from 0%.
+  Not a writing task — but it created one, in 3.1 below.
 
 ---
 
