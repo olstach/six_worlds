@@ -508,11 +508,23 @@ func get_perk_data(perk_id: String) -> Dictionary:
 #     ]
 #   }
 #
-# 164 perks are instead wired by id directly in combat code, because their
-# effects are reactive or too specific to describe in data. Those must NOT also
-# carry an `effects` array or the perk would fire twice; tools/wire_passive_
-# perks.py refuses to write one for any perk id it finds referenced in
-# scripts/.
+# 139 passive perks are instead wired by id directly in combat code, because
+# their effects are reactive or too specific to describe in data. Those must NOT
+# also carry an `effects` array or the perk would fire twice; tools/wire_passive_
+# perks.py refuses to write one for any perk id it finds referenced in scripts/
+# outside a comment.
+#
+# Triggers CombatManager fires (2026-09-18): on_hit, on_crit, on_kill,
+# dodge_success, combat_start, turn_start, take_damage, ally_damaged. Only the
+# first three carry a target, so only they can answer a condition about one.
+# validate_data.py reads the fired set out of the call sites, so this list
+# cannot drift without the check noticing.
+#
+# Conditions come in two families. Self-conditions ("wielding_sword",
+# "wearing_heavy_armor", "first_attack_turn", "on_terrain_type:forest" …) can be
+# answered anywhere, including from a stat getter. Target conditions
+# ("from_behind", "target_bleeding", "target_debuffed") need to know who is
+# being attacked and therefore only work on an on_trigger effect.
 #
 # Where each effect type is consumed:
 #

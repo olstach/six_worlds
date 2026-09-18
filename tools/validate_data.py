@@ -578,6 +578,48 @@ for _s in load("resources/data/statuses.json")["statuses"]:
         _status_names.add(str(_s["name"]))
 check_vocabulary("status effect", _status_effects)
 
+# Passive-perk triggers and conditions, as USED BY perks.json.
+#
+# tools/wire_passive_perks.py validates the tranche it is about to write, and
+# nothing validated what was already in the file — so a hand-edited effect
+# naming a trigger nobody fires, or a condition nobody evaluates, would sit
+# there doing nothing. Same check as everything else in this section, pointed
+# at the perk vocabulary.
+_perk_triggers = set()
+_perk_conditions = set()
+for _section in ("skill_perks", "cross_perks"):
+    for _pid, _perk in perks_data.get(_section, {}).items():
+        if _pid.startswith("_") or not isinstance(_perk, dict):
+            continue
+        for _eff in _perk.get("effects", []):
+            if _eff.get("type") == "on_trigger" and _eff.get("trigger"):
+                _perk_triggers.add(str(_eff["trigger"]))
+            for _c in _eff.get("conditions", []):
+                _perk_conditions.add(str(_c))
+
+# A trigger is real when CombatManager fires it by name. Read the fired set out
+# of the call sites rather than restating it: the unit comes first in the call,
+# so a bare substring pattern would answer the wrong question.
+_fired_triggers = set(re.findall(
+    r'_fire_perk_triggers\(\s*[^,()]+,\s*"([^"]+)"', _gd_source))
+for _trigger in sorted(_perk_triggers - _fired_triggers):
+    err("data->code",
+        f"perk trigger '{_trigger}' is used in perks.json but CombatManager never fires it")
+
+# A condition is real when _perk_condition_met() has a case for it. Arguments
+# after a colon are checked against terrain.json instead of against code.
+_terrain_keys = {k for k in load("resources/data/terrain.json").get("terrain", {})
+                 if not k.startswith("_")}
+_plain_conditions = set()
+for _c in _perk_conditions:
+    _base, _, _arg = _c.partition(":")
+    if _arg:
+        if _arg not in _terrain_keys:
+            err("data->code", f"perk condition '{_c}' names no terrain in terrain.json")
+    _plain_conditions.add(_base)
+check_vocabulary("perk condition", _plain_conditions, ['"%s"'])
+
+
 # ── Spell damage and saves ───────────────────────────────────────────────────
 #
 # Two failures that leave no trace at runtime. A `damage` value the resolver

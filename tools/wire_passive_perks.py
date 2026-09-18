@@ -46,18 +46,49 @@ RESISTANCE_TYPES = {
 
 # Triggers CombatManager._fire_perk_triggers() is actually called with.
 # Wiring an effect to a trigger nothing fires is silent death, same as the rest.
-LIVE_TRIGGERS = {"on_hit", "on_crit", "on_kill", "dodge_success"}
+#
+# `parry_success` is deliberately absent. The taxonomy asks for it, but there is
+# no parry roll in this game to succeed at: `parry` and `improved_parry` are
+# armour bonuses read off accuracy, and a miss is just a miss. Adding the
+# trigger would create exactly the dead vocabulary this file exists to prevent.
+LIVE_TRIGGERS = {
+    "on_hit", "on_crit", "on_kill", "dodge_success",
+    "combat_start", "turn_start", "take_damage", "ally_damaged",
+}
+
+# Triggers that carry no attacker, so a payload aimed at one cannot resolve.
+# CombatManager errors rather than quietly retargeting the owner; this refuses
+# to write the data in the first place.
+TRIGGERS_WITHOUT_ATTACKER = {"combat_start", "turn_start", "take_damage", "ally_damaged"}
 
 # Payload types _apply_trigger_effect() knows.
 LIVE_PAYLOADS = {"buff", "status", "heal", "restore_stamina"}
 
-# Conditions CombatUnit._perk_condition_met() answers.
-LIVE_CONDITIONS = {
+# Conditions CombatUnit._perk_condition_met() answers about the unit itself.
+# These work anywhere, including on a stat_bonus read from a stat getter.
+SELF_CONDITIONS = {
     "wielding_sword", "wielding_axe", "wielding_mace", "wielding_spear",
     "wielding_dagger", "wielding_staff", "wielding_ranged", "unarmed",
     "not_flanked", "did_not_move", "moved_this_turn", "from_stealth",
     "below_half_hp", "above_half_hp",
+    "wearing_heavy_armor", "unarmored_or_light",
+    "first_attack_combat", "first_attack_turn",
 }
+
+# Conditions about somebody else. A stat getter has no idea who is being
+# attacked, so these can only be answered on the on_trigger path, and only on a
+# trigger that carries a target. Allowing one on a stat_bonus would produce a
+# passive that errors every time a stat is read.
+TARGET_CONDITIONS = {"from_behind", "target_bleeding", "target_debuffed"}
+
+# Triggers whose context names a target, so TARGET_CONDITIONS can be answered.
+TRIGGERS_WITH_TARGET = {"on_hit", "on_crit", "on_kill"}
+
+# Conditions taking an argument after a colon, e.g. "on_terrain_type:forest".
+# The value is checked against the vocabulary named here.
+PARAMETERISED_CONDITIONS = {"on_terrain_type": "terrain"}
+
+LIVE_CONDITIONS = SELF_CONDITIONS | TARGET_CONDITIONS
 
 
 def _gdscript_string_array(const_name):
@@ -117,6 +148,15 @@ PASSIVE_EFFECTS = {
     ],
 }
 PASSIVE_EFFECTS = {k: v for k, v in PASSIVE_EFFECTS.items() if v is not None}
+
+
+TERRAIN = ROOT / "resources" / "data" / "terrain.json"
+
+
+def _terrain_keys():
+    """Terrain names, read rather than restated — same rule as the stat lists."""
+    data = json.loads(TERRAIN.read_text(encoding="utf-8"))
+    return {k for k in data.get("terrain", {}) if not k.startswith("_")}
 
 
 def load(path):
@@ -197,9 +237,30 @@ def validate(data, hardcoded):
 
         for effect in effects:
             kind = effect.get("type", "")
+            trigger = effect.get("trigger", "") if kind == "on_trigger" else ""
             for condition in effect.get("conditions", []):
+                base, _, argument = str(condition).partition(":")
+                if base in PARAMETERISED_CONDITIONS:
+                    if not argument:
+                        errors.append(
+                            f"{pid}: condition '{base}' needs an argument, "
+                            f"e.g. '{base}:forest'")
+                    elif argument not in _terrain_keys():
+                        errors.append(
+                            f"{pid}: '{condition}' names no terrain in terrain.json")
+                    continue
                 if condition not in LIVE_CONDITIONS:
                     errors.append(f"{pid}: condition '{condition}' is never evaluated")
+                elif condition in TARGET_CONDITIONS:
+                    # Only answerable where combat knows who is involved.
+                    if kind != "on_trigger":
+                        errors.append(
+                            f"{pid}: condition '{condition}' asks about a target, so it "
+                            f"only works on an on_trigger effect, not on a {kind}")
+                    elif trigger not in TRIGGERS_WITH_TARGET:
+                        errors.append(
+                            f"{pid}: condition '{condition}' needs a target, and the "
+                            f"'{trigger}' trigger does not carry one")
 
             if kind == "stat_bonus":
                 if effect["stat"] not in DERIVED_STATS:
@@ -225,6 +286,15 @@ def validate(data, hardcoded):
                 payload = effect.get("effect", {})
                 if payload.get("type") not in LIVE_PAYLOADS:
                     errors.append(f"{pid}: payload type '{payload.get('type')}' has no handler")
+                aim = payload.get("target", "self")
+                if aim == "attacker" and effect["trigger"] in TRIGGERS_WITHOUT_ATTACKER:
+                    errors.append(
+                        f"{pid}: payload aims at 'attacker', which the "
+                        f"'{effect['trigger']}' trigger does not provide")
+                if aim == "victim" and effect["trigger"] not in TRIGGERS_WITH_TARGET:
+                    errors.append(
+                        f"{pid}: payload aims at 'victim', which the "
+                        f"'{effect['trigger']}' trigger does not provide")
                 if payload.get("type") == "buff" and payload.get("stat") not in MODIFIABLE_STATS:
                     errors.append(f"{pid}: trigger buffs '{payload.get('stat')}', never read back")
             else:

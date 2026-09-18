@@ -378,6 +378,12 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 
 ## Apply perks that trigger once at the very start of combat.
 func _apply_combat_start_perks() -> void:
+	# The data-driven half first, so both entry points get it from one place.
+	for unit in all_units:
+		unit.attacks_this_combat = 0
+		unit.attacks_this_turn = 0
+		_fire_perk_triggers(unit, "combat_start")
+
 	for unit in all_units:
 		var char_data = unit.character_data if "character_data" in unit else {}
 		# Rousing Display (Performance 1): allies within 3 tiles gain +5 Initiative for round 1
@@ -996,6 +1002,13 @@ func _finalize_combat_start() -> void:
 
 	combat_started.emit()
 
+	# Apply combat-start perk effects (auras, first-round buffs).
+	#
+	# This call was missing until 2026-09-18, so every fight entered through
+	# deployment — which is most of them — skipped combat-start perks entirely.
+	# Rousing Display and its siblings fired only in the non-deployment path.
+	_apply_combat_start_perks()
+
 	# Start first turn
 	_start_current_turn()
 
@@ -1273,6 +1286,7 @@ func _start_current_turn() -> void:
 
 	# Process passive perk turn-start effects
 	_process_turn_start_perks(unit)
+	_fire_perk_triggers(unit, "turn_start")
 
 	turn_started.emit(unit)
 
@@ -1885,6 +1899,8 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			result.merge(dev, true)
 
 	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
+	attacker.attacks_this_turn += 1
+	attacker.attacks_this_combat += 1
 	if attacker.has_method("get_equipped_weapon"):
 		if attacker.get_equipped_weapon().get("type", "") == "dagger":
 			attacker.dagger_attacks_this_turn += 1
@@ -2613,6 +2629,21 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 		var max_hp = unit.max_hp
 		if max_hp > 0 and float(damage) / float(max_hp) >= 0.15:
 			_interrupt_mantras(unit, "%s's concentration breaks from the heavy blow!" % unit.unit_name)
+
+	# Perk triggers for damage that actually landed. Fired last so the unit's
+	# hp, statuses and shields are settled before a perk reads them.
+	#
+	# apply_damage() takes no attacker — 61 call sites and most of them are not
+	# an attack at all (a DoT tick, a hazard, an aura payload) — so neither
+	# trigger carries one. A payload aiming at "attacker" therefore errors
+	# rather than quietly hitting its owner; retaliation belongs on a status,
+	# which does know who struck.
+	if damage > 0:
+		if unit.is_alive():
+			_fire_perk_triggers(unit, "take_damage", {"damage": damage, "damage_type": damage_type})
+		for ally in _living_allies_of(unit):
+			_fire_perk_triggers(ally, "ally_damaged",
+				{"ally": unit, "damage": damage, "damage_type": damage_type})
 
 
 ## Start bleed-out state for a unit
@@ -6358,6 +6389,19 @@ func _get_allies_in_range(source: Node, radius: int) -> Array[Node]:
 
 
 ## Get all alive enemy units within range of source (different team)
+## Everyone still standing on the same side as this unit, excluding it.
+func _living_allies_of(source: Node) -> Array[Node]:
+	var result: Array[Node] = []
+	if source == null or not "team" in source:
+		return result
+	for u in all_units:
+		if u == source or u.is_dead:
+			continue
+		if u.team == source.team:
+			result.append(u)
+	return result
+
+
 func _get_enemies_in_range(source: Node, radius: int) -> Array[Node]:
 	var result: Array[Node] = []
 	for u in all_units:
@@ -9453,6 +9497,18 @@ func _fire_perk_triggers(unit: Node, trigger: String, context: Dictionary = {}) 
 			continue
 		if effect.get("trigger", "") != trigger:
 			continue
+		# Conditions were silently ignored here until 2026-09-18: only `chance`
+		# was checked, so an on_trigger effect carrying "conditions" fired
+		# regardless of them. No shipped perk used one yet, which is the only
+		# reason it was a trap rather than a bug — and the authoring pass on the
+		# remaining passives would have walked straight into it. The trigger
+		# path is also the ONLY place a target-dependent condition can be
+		# answered, because it is the only one that knows who is involved.
+		if not effect.get("conditions", []).is_empty():
+			if not unit.has_method("_all_perk_conditions_met"):
+				continue
+			if not unit._all_perk_conditions_met(effect.get("conditions", []), context):
+				continue
 		var chance: float = float(effect.get("chance", 100))
 		if chance < 100.0 and randf() * 100.0 > chance:
 			continue
@@ -9463,10 +9519,17 @@ func _fire_perk_triggers(unit: Node, trigger: String, context: Dictionary = {}) 
 func _apply_trigger_effect(unit: Node, perk_id: String, payload: Dictionary,
 		context: Dictionary) -> void:
 	var target: Node = unit
-	if payload.get("target", "self") == "attacker" and context.has("attacker"):
-		target = context["attacker"]
-	elif payload.get("target", "self") == "victim" and context.has("target"):
-		target = context["target"]
+	var wants: String = payload.get("target", "self")
+	if wants == "attacker" or wants == "victim":
+		# Aimed at somebody else. If the trigger that fired does not carry them,
+		# falling through to `unit` would silently point the effect at its owner
+		# — a retaliation that buffs the person who was just hit. Say so instead.
+		var key: String = "attacker" if wants == "attacker" else "target"
+		if not context.has(key):
+			push_error("CombatManager: perk '%s' aims at '%s', which this trigger does not provide"
+				% [perk_id, wants])
+			return
+		target = context[key]
 	if target == null or not target.is_alive():
 		return
 
@@ -10056,6 +10119,7 @@ func _process_turn_start_perks(unit: Node) -> void:
 	unit.moved_this_turn = false
 	unit.momentum_stacks = 0
 	unit.unarmed_hit_stacks = 0
+	unit.attacks_this_turn = 0
 	unit.dagger_attacks_this_turn = 0
 	unit.ranged_attacks_this_turn = 0
 	unit.knife_storm_proc_this_turn = false

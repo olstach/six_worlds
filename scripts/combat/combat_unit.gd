@@ -42,6 +42,8 @@ var corpse_destroyed: bool = false
 var moved_this_turn: bool = false  # Set when unit moves; cleared at turn start (used by open_the_gate perk)
 var momentum_stacks: int = 0       # Consecutive axe hits; cleared on miss or turn start (momentum perk)
 var unarmed_hit_stacks: int = 0    # Consecutive unarmed hits; cleared on miss or turn start (keep_hitting perk)
+var attacks_this_turn: int = 0     # Any attack; cleared at turn start (first_attack_turn condition)
+var attacks_this_combat: int = 0   # Any attack, whole fight (first_attack_combat condition)
 var stationary_stacks: int = 0     # Turns without moving; incremented/reset at turn start (tidal_patience perk)
 var damaru_charges: int = 0        # Spells cast while holding Damaru; at 3 → 40% mana discount on next spell, then reset
 var chod_spellpower_bonus: int = 0 # Accumulated Chöd Offering spellpower; stacks until end of combat
@@ -999,18 +1001,69 @@ func _get_conditional_perk_bonus(stat: String) -> int:
 	return total
 
 
-func _all_perk_conditions_met(conditions: Array) -> bool:
+## Chest weight at or above this counts as heavy armour. Generated `armor`
+## chest pieces land between 9 and 20 depending on material; a `robe` lands
+## between 1 and 3, so the two never meet. Nothing else in the game carries a
+## light/medium/heavy class for a player, so this is the distinction rather
+## than a new vocabulary invented to sit beside it.
+const HEAVY_ARMOR_WEIGHT: int = 8
+
+## Conditions that ask about somebody else and so need a target in context.
+## They can only be answered where combat knows who is being attacked, which
+## means the on_trigger path. `tools/wire_passive_perks.py` refuses to write
+## one onto a stat_bonus, so reaching the error below means a real bug rather
+## than mis-authored data.
+const TARGET_CONDITIONS: Array[String] = [
+	"from_behind", "target_bleeding", "target_debuffed",
+]
+
+
+func _all_perk_conditions_met(conditions: Array, context: Dictionary = {}) -> bool:
 	for condition in conditions:
-		if not _perk_condition_met(str(condition)):
+		if not _perk_condition_met(str(condition), context):
 			return false
 	return true
 
 
-func _perk_condition_met(condition: String) -> bool:
-	match condition:
+## True when this unit's chest piece is heavy. An empty chest is not heavy.
+func _wearing_heavy_armor() -> bool:
+	if ItemSystem == null or character_data.is_empty():
+		return false
+	var chest_id: String = ItemSystem.get_equipped_item(character_data, "chest")
+	if chest_id == "":
+		return false
+	return int(ItemSystem.get_item(chest_id).get("weight", 0)) >= HEAVY_ARMOR_WEIGHT
+
+
+func _perk_condition_met(condition: String, context: Dictionary = {}) -> bool:
+	# A condition may carry an argument after a colon, e.g. "on_terrain_type:forest".
+	var argument := ""
+	var cond_name := condition
+	var colon := condition.find(":")
+	if colon != -1:
+		cond_name = condition.substr(0, colon)
+		argument = condition.substr(colon + 1)
+
+	# Conditions about somebody else, answered first because they all need the
+	# same thing and fail the same way without it.
+	if cond_name in TARGET_CONDITIONS:
+		var target = context.get("target", null)
+		if target == null or not is_instance_valid(target):
+			push_error("CombatUnit: condition '%s' needs a target and got none" % cond_name)
+			return false
+		match cond_name:
+			"from_behind":
+				# Behind THEM, not behind us: the tile opposite their facing.
+				return target.grid_position - target.facing == grid_position
+			"target_bleeding":
+				return target.has_status("Bleeding")
+			_:
+				return _has_any_debuff(target)
+
+	match cond_name:
 		"wielding_sword", "wielding_axe", "wielding_mace", "wielding_spear", \
 		"wielding_dagger", "wielding_staff":
-			return get_equipped_weapon().get("type", "") == condition.trim_prefix("wielding_")
+			return get_equipped_weapon().get("type", "") == cond_name.trim_prefix("wielding_")
 		"wielding_ranged":
 			return is_ranged_weapon()
 		"unarmed":
@@ -1027,9 +1080,47 @@ func _perk_condition_met(condition: String) -> bool:
 			return current_hp * 2 < max_hp
 		"above_half_hp":
 			return current_hp * 2 >= max_hp
+		"wearing_heavy_armor":
+			return _wearing_heavy_armor()
+		"unarmored_or_light":
+			return not _wearing_heavy_armor()
+		"first_attack_combat":
+			return attacks_this_combat == 0
+		"first_attack_turn":
+			return attacks_this_turn == 0
+		"on_terrain_type":
+			if argument == "":
+				push_error("CombatUnit: 'on_terrain_type' needs a terrain, e.g. 'on_terrain_type:forest'")
+				return false
+			var want: Dictionary = Ground.by_key(argument)
+			if want.is_empty():
+				push_error("CombatUnit: 'on_terrain_type:%s' names no terrain in terrain.json" % argument)
+				return false
+			return _ground_under_me() == int(want.get("id", -1))
 		_:
 			push_error("CombatUnit: unknown passive perk condition '%s'" % condition)
 			return false
+
+
+## The Ground id under this unit, or -1 when there is no grid to ask.
+## Compared by id rather than by name because terrain.json keys its entries by
+## name and stores the id inside them — the id is the contract, per Ground.
+func _ground_under_me() -> int:
+	if CombatManager == null or CombatManager.combat_grid == null:
+		return -1
+	return int(CombatManager.combat_grid.get_ground(grid_position))
+
+
+## Whether a unit carries any status statuses.json marks `"type": "debuff"`.
+func _has_any_debuff(target) -> bool:
+	if not "status_effects" in target:
+		return false
+	for effect in target.status_effects:
+		var def: Dictionary = CombatManager.get_status_definition(
+			String(effect.get("status", "")))
+		if def.get("type", "") == "debuff":
+			return true
+	return false
 
 
 ## True when an enemy stands directly behind this unit, relative to its facing.

@@ -73,6 +73,38 @@ Then, depending on appetite:
 
 ---
 
+## Mechanics, in the order they are worth doing (2026-09-18)
+
+Olaf is chipping away at the writing (`WRITING.md`) and wants mechanics
+meanwhile. Nearly every item below is already written up somewhere in this file;
+this is the ordering and the reason, which was not.
+
+1. **The perk engine's missing half** (§13) — *started 2026-09-18.* Bounded,
+   testable without a playthrough, and it converts a large chunk of the 324
+   description-only passives from blocked into data entry. Triggers and
+   conditions are done; **payloads are the real bottleneck** — see §13.
+2. **Mob behaviour as a system** (§11) — the largest gap in the game. The AI
+   knows nothing about auras, zones, terrain, height or repositioning, so every
+   one of them is a player-side advantage. Best done *after* a playthrough,
+   because the right rules are the ones the fights turn out to want.
+3. **Aura and zone UI** (§3) — a player standing in a healing field has no
+   indication of where it comes from or how far it reaches, and most auras are
+   not statuses so the status bar will not show them. Working systems, invisible.
+4. **The small self-contained ones** (§1) — `sever_part` ignoring `arm_l2`/
+   `arm_r2`, the `skeleton_king_duel` win condition wanting a re-check after the
+   combat refactors, `tactical_assessment` having no code, racial resistances
+   being empty on all 47 births, prosthetics.
+5. **Decisions that block work rather than work itself** (§11, §12) — whether
+   traps are a combat or an overworld feature, whether `attribute_caps` is
+   implemented or deleted, whether spell learning costs XP, what
+   `crafting_quality_pct` attaches to, and whether best-member party bonuses
+   want a diminishing tail.
+6. **YidamSystem** (Part II) — the big swing, and the design is complete.
+   `mantra_count` already accumulates and camp Mantra Recitation already feeds
+   it with nothing reading the result.
+
+---
+
 ## Approved designs not yet built
 
 - [x] **Forced movement and AoE damage falloff** — built 2026-09-12, two of the
@@ -1549,15 +1581,83 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
 - [ ] **Unbuilt effect types:** `aura`, `cost_reduction`, `damage_modifier`,
       `resource_regen`, `spell_modifier`, `summon_modifier`, `special`.
       `summon_modifier` has the most data waiting on it — several black, fire
-      and air perks buff summons and all of them are inert.
-- [ ] **More trigger points.** `_fire_perk_triggers` is only called for
-      `on_hit`, `on_crit`, `on_kill`, `dodge_success`. The taxonomy also wants
-      `combat_start`, `turn_start`, `take_damage`, `parry_success`,
-      `ally_damaged`.
-- [ ] **More conditions.** `_perk_condition_met` answers fourteen. Missing ones
-      the perk text asks for: `wearing_heavy_armor`, `unarmored_or_light`,
-      `first_attack_combat`, `first_attack_turn`, `from_behind`,
-      `target_bleeding`, `target_debuffed`, `on_terrain_type`.
+      and air perks buff summons and all of them are inert. `damage_modifier`
+      and `resource_regen` are the two the new triggers are waiting on, per the
+      note above. (`aura` is a half-truth: a perk can already declare
+      `aura: "<id>"` and AuraSystem resolves it — `immune_system` and
+      `avatar_of_the_storm` do. What is missing is `aura` as an entry in the
+      `effects` array.)
+- [x] ~~**More trigger points.**~~ — **done 2026-09-18.** Four added:
+      `combat_start`, `turn_start`, `take_damage`, `ally_damaged`. Eight fire
+      now, and `validate_data.py` reads the fired set straight out of the call
+      sites, so a perk naming a trigger nobody fires fails the build.
+
+      **`parry_success` was deliberately NOT added.** There is no parry roll in
+      this game to succeed at — `parry` and `improved_parry` are armour bonuses
+      computed off accuracy, and a miss is just a miss. Adding it would have
+      created exactly the dead vocabulary this section exists to prevent. If
+      parrying should become an event, that is a combat design change first.
+
+- [x] ~~**More conditions.**~~ — **done 2026-09-18**, and they split into two
+      families, which is the part worth remembering:
+      - **Self-conditions** work anywhere, including from a stat getter:
+        `wearing_heavy_armor`, `unarmored_or_light` (the chest piece's weight
+        against a threshold of 8 — generated `armor` lands 9–20 and a `robe`
+        1–3, so the two never meet), `first_attack_combat`, `first_attack_turn`.
+      - **Target conditions** — `from_behind`, `target_bleeding`,
+        `target_debuffed` — need to know who is being attacked. A stat getter
+        does not, so they only work on an `on_trigger` effect, and only on
+        `on_hit`/`on_crit`/`on_kill`, which are the triggers that carry a
+        target. The tool refuses to write one anywhere else.
+      - **`on_terrain_type` takes an argument**, `on_terrain_type:forest`, which
+        is the first parameterised condition. Checked against terrain.json by
+        both the tool and the validator.
+
+- [ ] **Payloads are the actual bottleneck, not triggers.** Having added the
+      moments, the honest finding is that they unblock less than expected. A
+      trigger payload can be one of four things — `buff`, `status`, `heal`,
+      `restore_stamina` — aimed at one of three targets — `self`, `attacker`,
+      `victim`. Going through the description-only perks that name one of the
+      new moments, almost none can be expressed:
+
+      - `preventive_care`, `hurry_betrays_distraction`, `field_commander` all
+        want **allies** as a target, which no payload can name.
+      - `damage_control` ("reduce it by a flat amount equal to 10% of max HP")
+        wants `damage_modifier`, and wants to run *inside* `apply_damage`
+        rather than after it.
+      - `shoulder_to_shoulder` wants to redistribute damage across allies —
+        both of the above at once.
+      - `slippery` wants an escape-from-restraint mechanic that does not exist.
+
+      So the next increment is **payload targeting (`allies`, `allies_in_range`)
+      and the `damage_modifier` / `resource_regen` effect types**, not more
+      moments. Deliberately not authored ahead of its reader.
+
+## 13b. Two bugs found while wiring the triggers (2026-09-18)
+
+Both in the code the trigger work touched, neither related to it.
+
+- [x] **Combat-start perks never fired in a deployment battle.**
+      `_apply_combat_start_perks()` had exactly one call site, in
+      `start_combat()`. The deployment path — `start_combat_with_deployment()`
+      → `_finalize_combat_start()` — calculated turn order, emitted
+      `combat_started` and went straight to the first turn. So Rousing Display
+      and every other combat-start perk did nothing in any fight entered
+      through deployment, which is most of them. One missing call.
+
+- [x] **`conditions` on an `on_trigger` effect were silently ignored.**
+      `_fire_perk_triggers()` checked the trigger name and `chance` and applied
+      the payload; it never looked at `conditions`. No shipped perk carried one,
+      so it was a trap rather than a live bug — but `wire_passive_perks.py`
+      would happily have written one during the authoring pass, and the perk
+      would have fired unconditionally with nothing to show for it.
+
+      Fixed alongside: a payload aiming at `attacker` or `victim` on a trigger
+      that does not carry them used to fall through to the perk's owner, so a
+      retaliation would have buffed the person who was just hit. It errors now,
+      and the tool refuses to write the combination.
+
+---
 
 ## 14. Systems the perk text assumes and the game does not have
 
