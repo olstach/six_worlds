@@ -8,18 +8,25 @@ that terrain. See docs/MAP_TILES_ART_BRIEF.md for the full spec.
 Two ways to draw:
 
   A. One file per tile (recommended while learning). `init` writes a named,
-     correctly sized blank for every cell into assets/tiles/terrain/; paint
-     them, then `pack` assembles the atlas. You never align a grid by hand.
+     correctly sized blank for every cell into assets/tiles/terrain/<palette>/;
+     paint them, then `pack` assembles that palette's atlas. You never align a
+     grid by hand.
 
   B. One atlas file. `init` also writes the template and a grid overlay; paint
      directly into the template, then `check` verifies it.
 
+A palette is one full set of tiles, keyed by region id exactly as
+MapManager.get_region_at() returns it — so cold_hell and fire_hell can draw the
+same terrain differently. A palette carries only the tiles that differ;
+everything else falls through to `base`, and then to the flat placeholder.
+
 Commands:
   init     write the per-tile blanks, the atlas template, the grid overlay
            and the labelled guide sheet
-  pack     assets/tiles/terrain/*.png  ->  assets/tiles/terrain_atlas.png
-  split    assets/tiles/terrain_atlas.png  ->  assets/tiles/terrain/*.png
-  check    report cell size, grid alignment and which cells are drawn
+  pack     terrain/<palette>/*.png  ->  terrain_atlas_<palette>.png
+  split    terrain_atlas_<palette>.png  ->  terrain/<palette>/*.png
+  check    report cell size, grid alignment and coverage per cell
+  preview  composite the tiles over the realm backdrop
 
 Pure standard library: it reads and writes PNG itself, so there is nothing to
 install. Run from anywhere:  python3 tools/tile_atlas.py init
@@ -40,8 +47,8 @@ CELL = 24
 VARIANTS = 4          # columns; column 0 is required, 1-3 optional
 VARIANT_LETTERS = "abcd"
 
-TILE_DIR = os.path.join(ROOT, "assets", "tiles", "terrain")
-ATLAS = os.path.join(ROOT, "assets", "tiles", "terrain_atlas.png")
+PALETTE_ROOT = os.path.join(ROOT, "assets", "tiles", "terrain")
+BASE_PALETTE = "base"
 TEMPLATE = os.path.join(ROOT, "assets", "tiles", "terrain_atlas_template.png")
 GRID = os.path.join(ROOT, "assets", "tiles", "terrain_atlas_grid.png")
 GUIDE = os.path.join(ROOT, "assets", "tiles", "terrain_atlas_guide.png")
@@ -52,21 +59,16 @@ RENDERER = os.path.join(ROOT, "scripts", "overworld", "map_renderer.gd")
 TERRAIN_JSON = os.path.join(ROOT, "resources", "data", "terrain.json")
 MAP_CONFIGS = os.path.join(ROOT, "resources", "data", "map_configs")
 
-# Candidate realm backdrops, keyed "realm/zone". Tiles are drawn with
-# transparent areas so this colour permeates everything — so a tile cannot be
-# judged on its own, only over one of these. These are proposals to argue with,
-# not settled art direction; `preview --backdrop "#RRGGBB"` tries any other.
-BACKDROPS = {
-    "hell/cold_hell":               ["#101A2B", "#1E2C44", "#0A1016", "#2B2F3E"],
-    "hell/fire_hell":               ["#2E1008", "#451A0A", "#1A0B08", "#3A2418"],
-    "hungry_ghost/fetid_swamps":    ["#16211A", "#1E2B1C", "#0E1512", "#232A1E"],
-    "hungry_ghost/charnel_grounds": ["#2A1B2E", "#3A2440", "#150E18", "#2E2230"],
-    "hungry_ghost/dry_graveyards":  ["#2A2418", "#3A3222", "#181410", "#2E2A24"],
-    "animal/forest":                ["#0F1C14", "#16281A", "#0A120C", "#1C2A1E"],
-    "animal/meadow":                ["#1B2416", "#26331C", "#101608", "#2A3020"],
-    "animal/ocean":                 ["#071C2E", "#0C2A42", "#04101C", "#123044"],
+# One backdrop per realm, not per zone: the realm is the thing the player is
+# inside of, and holding one colour across it is what makes the realm feel like
+# a single place. Hell is black, later with waves and ripples moving through it.
+# Zones differ in their *tiles* instead — see PALETTES below.
+REALM_BACKDROPS = {
+    "hell":         ["#000000", "#05050A", "#0B0710", "#0A0A0F"],
+    "hungry_ghost": ["#0E1512", "#16211A", "#150E18", "#181410"],
+    "animal":       ["#07120C", "#0A120C", "#04101C", "#0F1C14"],
 }
-DEFAULT_BACKDROPS = ["#101A2B", "#2E1008", "#16211A", "#0F1C14"]
+FALLBACK_BACKDROPS = ["#000000", "#0E1512", "#07120C", "#101A2B"]
 
 
 # ── Terrain vocabulary ───────────────────────────────────────────────────────
@@ -114,6 +116,46 @@ def load_placeholder_colors():
     if not colors:
         sys.exit("TERRAIN_COLORS in %s parsed to nothing" % RENDERER)
     return colors
+
+
+# ── Palettes ─────────────────────────────────────────────────────────────────
+# A palette is one full set of tiles. The key is a region id, exactly as
+# MapManager.get_region_at() returns it ("cold_hell", "fire_hell", ...), so the
+# renderer needs no mapping layer: it asks which region a square is in and draws
+# from that palette, falling back to `base` and then to the flat placeholder.
+
+def palette_dir(name):
+    return os.path.join(PALETTE_ROOT, name)
+
+
+def atlas_path(name):
+    return os.path.join(ROOT, "assets", "tiles", "terrain_atlas_%s.png" % name)
+
+
+def known_palettes():
+    """Every region id the shipped map configs can produce, plus base."""
+    out = [BASE_PALETTE]
+    if os.path.isdir(MAP_CONFIGS):
+        for filename in sorted(os.listdir(MAP_CONFIGS)):
+            if not filename.endswith(".json"):
+                continue
+            with open(os.path.join(MAP_CONFIGS, filename), encoding="utf-8") as fh:
+                for zone in json.load(fh).get("zones", []):
+                    # mountain_wall dividers have no terrain mix of their own;
+                    # they fall back to base.
+                    if zone.get("terrain_weights") and zone.get("id"):
+                        out.append(zone["id"])
+    return out
+
+
+def existing_palettes():
+    if not os.path.isdir(PALETTE_ROOT):
+        return []
+    found = sorted(d for d in os.listdir(PALETTE_ROOT)
+                   if os.path.isdir(palette_dir(d)))
+    # base first, it is what everything else falls back to
+    return ([BASE_PALETTE] if BASE_PALETTE in found else []) + \
+           [d for d in found if d != BASE_PALETTE]
 
 
 # ── PNG out ──────────────────────────────────────────────────────────────────
@@ -330,31 +372,42 @@ def cmd_init(args):
     terrains = load_terrains()
     made = []
 
-    # One file per tile. Variant `a` starts as the flat placeholder colour, so
-    # a half-finished set still packs into a working atlas; variants b-d start
-    # empty, because an empty cell is how the renderer is told to fall back to
-    # variant `a`.
-    os.makedirs(TILE_DIR, exist_ok=True)
-    for terrain in terrains:
-        for v in range(VARIANTS):
-            path = os.path.join(TILE_DIR, tile_filename(terrain, v))
-            if os.path.exists(path) and not args.force:
-                continue
-            cell = Canvas(CELL, CELL)
-            if v == 0:
-                cell.rect(0, 0, CELL, CELL, terrain["color"] + (255,))
-            cell.save(path)
-            made.append(os.path.relpath(path, ROOT))
+    _migrate_flat_layout()
 
-    # The same thing as one sheet, for drawing straight into.
+    palettes = args.palette or [BASE_PALETTE]
+    if BASE_PALETTE not in palettes:
+        palettes = [BASE_PALETTE] + palettes
+    unknown = [p for p in palettes if p not in known_palettes()]
+    if unknown:
+        print("note: %s is not a region id in any map config. Region ids are: %s"
+              % (", ".join(unknown), ", ".join(sorted(set(known_palettes())))))
+        print("      A palette by that name will still be built, but nothing "
+              "will select it at runtime.\n")
+
+    for name in palettes:
+        target = palette_dir(name)
+        os.makedirs(target, exist_ok=True)
+        for terrain in terrains:
+            for v in range(VARIANTS):
+                path = os.path.join(target, tile_filename(terrain, v))
+                if os.path.exists(path) and not args.force:
+                    continue
+                cell = Canvas(CELL, CELL)
+                # Only `base` gets the flat placeholder pre-fill. An override
+                # palette starts fully empty, because a cell that is merely
+                # flat colour would silently hide the base tile underneath it.
+                if name == BASE_PALETTE and v == 0:
+                    cell.rect(0, 0, CELL, CELL, terrain["color"] + (255,))
+                cell.save(path)
+                made.append(os.path.relpath(path, ROOT))
+
+    # One sheet-shaped template and grid overlay, shared by every palette.
     atlas = Canvas(VARIANTS * CELL, len(terrains) * CELL)
     for terrain in terrains:
         atlas.rect(0, terrain["id"] * CELL, CELL, CELL, terrain["color"] + (255,))
     atlas.save(TEMPLATE)
     made.append(os.path.relpath(TEMPLATE, ROOT))
 
-    # A transparent 1px overlay to park on a top layer while drawing. It is not
-    # part of the atlas — the atlas itself has no gaps or separator lines.
     grid = Canvas(VARIANTS * CELL, len(terrains) * CELL)
     for c in range(VARIANTS + 1):
         x = min(c * CELL, grid.w - 1)
@@ -370,13 +423,44 @@ def cmd_init(args):
     _write_guide(terrains)
     made.append(os.path.relpath(GUIDE, ROOT))
 
-    for path in made:
-        print("wrote", path)
-    print("\n%d tiles to fill in: %d terrains x %d variants."
+    if args.verbose:
+        for path in made:
+            print("wrote", path)
+    else:
+        print("wrote %d files" % len(made))
+    print("\npalettes: %s" % ", ".join(existing_palettes()))
+    print("%d cells each: %d terrains x %d variants."
           % (len(terrains) * VARIANTS, len(terrains), VARIANTS))
-    print("Only the %d `_a` files are required; `_b`/`_c`/`_d` are optional "
-          "variants." % len(terrains))
-    print("When you have painted some, run:  python3 tools/tile_atlas.py pack")
+    print("A palette other than `base` only needs the tiles that differ; leave")
+    print("the rest empty and they fall through to base.")
+    print("\nWhen you have painted some, run:  python3 tools/tile_atlas.py pack")
+
+
+def _migrate_flat_layout():
+    """Move a pre-palette assets/tiles/terrain/*.png into terrain/base/.
+
+    The layout used to be one flat folder. Anything already painted there is
+    base art by definition, so it moves rather than being left orphaned.
+    """
+    if not os.path.isdir(PALETTE_ROOT):
+        return
+    loose = [f for f in os.listdir(PALETTE_ROOT)
+             if f.endswith(".png") and os.path.isfile(os.path.join(PALETTE_ROOT, f))]
+    if not loose:
+        return
+    target = palette_dir(BASE_PALETTE)
+    os.makedirs(target, exist_ok=True)
+    moved = 0
+    for filename in loose:
+        src = os.path.join(PALETTE_ROOT, filename)
+        dst = os.path.join(target, filename)
+        if os.path.exists(dst):
+            continue                      # already migrated; leave the newer one
+        os.rename(src, dst)
+        moved += 1
+    if moved:
+        print("moved %d tile(s) from terrain/ into terrain/%s/ — the layout now "
+              "has one folder per palette\n" % (moved, BASE_PALETTE))
 
 
 def _write_guide(terrains):
@@ -464,89 +548,107 @@ def _guide_note(terrain):
 
 def cmd_pack(args):
     terrains = load_terrains()
-    if not os.path.isdir(TILE_DIR):
-        sys.exit("no %s — run `init` first" % os.path.relpath(TILE_DIR, ROOT))
+    _migrate_flat_layout()
+    palettes = args.palette or existing_palettes()
+    if not palettes:
+        sys.exit("no palettes in %s — run `init` first"
+                 % os.path.relpath(PALETTE_ROOT, ROOT))
 
-    atlas = Canvas(VARIANTS * CELL, len(terrains) * CELL)
-    drawn = empty = 0
     problems = []
-    for terrain in terrains:
-        for v in range(VARIANTS):
-            path = os.path.join(TILE_DIR, tile_filename(terrain, v))
-            if not os.path.exists(path):
-                empty += 1
-                continue
-            cell = read_png(path)
-            if (cell.w, cell.h) != (CELL, CELL):
-                problems.append("%s is %dx%d, expected %dx%d"
-                                % (tile_filename(terrain, v), cell.w, cell.h, CELL, CELL))
-                continue
-            atlas.blit(cell, v * CELL, terrain["id"] * CELL)
-            if _is_blank(cell):
-                empty += 1
-            else:
-                drawn += 1
+    for name in palettes:
+        source = palette_dir(name)
+        if not os.path.isdir(source):
+            problems.append("no palette folder %s" % os.path.relpath(source, ROOT))
+            continue
+        atlas = Canvas(VARIANTS * CELL, len(terrains) * CELL)
+        drawn = 0
+        for terrain in terrains:
+            for v in range(VARIANTS):
+                path = os.path.join(source, tile_filename(terrain, v))
+                if not os.path.exists(path):
+                    continue
+                cell = read_png(path)
+                if (cell.w, cell.h) != (CELL, CELL):
+                    problems.append("%s/%s is %dx%d, expected %dx%d"
+                                    % (name, tile_filename(terrain, v),
+                                       cell.w, cell.h, CELL, CELL))
+                    continue
+                atlas.blit(cell, v * CELL, terrain["id"] * CELL)
+                if not _is_blank(cell):
+                    drawn += 1
+        if problems:
+            continue
+        atlas.save(atlas_path(name))
+        total = len(terrains) * VARIANTS
+        print("%-16s %s  %d/%d cells drawn"
+              % (name, os.path.relpath(atlas_path(name), ROOT), drawn, total))
 
     if problems:
-        for p in problems:
-            print("ERROR:", p)
+        for problem in problems:
+            print("ERROR:", problem)
         sys.exit(1)
 
-    atlas.save(ATLAS)
-    print("wrote %s  (%dx%d)" % (os.path.relpath(ATLAS, ROOT), atlas.w, atlas.h))
-    print("%d cells drawn, %d still empty" % (drawn, empty))
-    _report_missing_required(atlas, terrains)
+    base = atlas_path(BASE_PALETTE)
+    if os.path.exists(base):
+        _report_missing_required(read_png(base), terrains, BASE_PALETTE)
 
 
 def cmd_split(args):
     terrains = load_terrains()
-    src = args.atlas or ATLAS
+    name = args.palette or BASE_PALETTE
+    src = args.atlas or atlas_path(name)
+    if not os.path.exists(src):
+        sys.exit("no %s" % os.path.relpath(src, ROOT))
     atlas = read_png(src)
     _assert_atlas_shape(atlas, terrains, src)
-    os.makedirs(TILE_DIR, exist_ok=True)
+    target = palette_dir(name)
+    os.makedirs(target, exist_ok=True)
     for terrain in terrains:
         for v in range(VARIANTS):
             _cell_from(atlas, terrain["id"], v).save(
-                os.path.join(TILE_DIR, tile_filename(terrain, v)))
+                os.path.join(target, tile_filename(terrain, v)))
     print("wrote %d files into %s"
-          % (len(terrains) * VARIANTS, os.path.relpath(TILE_DIR, ROOT)))
+          % (len(terrains) * VARIANTS, os.path.relpath(target, ROOT)))
 
 
 def cmd_check(args):
     terrains = load_terrains()
-    src = args.atlas or (ATLAS if os.path.exists(ATLAS) else TEMPLATE)
-    atlas = read_png(src)
-    print("checking %s  (%dx%d)" % (os.path.relpath(src, ROOT), atlas.w, atlas.h))
-    _assert_atlas_shape(atlas, terrains, src)
-    print("size ok: %d columns x %d rows of %dx%d cells"
-          % (VARIANTS, len(terrains), CELL, CELL))
-    print("\nper cell: percent of the cell that is opaque enough to hide the backdrop")
-    print("(a dash means nothing drawn there yet)\n")
+    palettes = args.palette or existing_palettes() or [BASE_PALETTE]
+    print("per cell: percent of the cell that is opaque enough to hide the backdrop")
+    print("(a dash means nothing drawn there, so it falls through to base)\n")
 
     thin = []
-    for terrain in terrains:
-        marks = []
-        for v in range(VARIANTS):
-            cell = _cell_from(atlas, terrain["id"], v)
-            if _is_blank(cell):
-                marks.append("  - ")
-                continue
-            cov = _coverage(cell)
-            marks.append("%3d%%" % round(cov * 100))
-            # The three hard walls have to read as walls. Everything else is
-            # free to be as ghostly as it likes.
-            if v == 0 and terrain["speed"] < 0 and cov < 0.60:
-                thin.append((terrain["name"], cov))
-        print("  %02d %-10s %s" % (terrain["id"], terrain["name"], " ".join(marks)))
+    for name in palettes:
+        src = args.atlas or atlas_path(name)
+        if not os.path.exists(src):
+            print("%s: no atlas yet (run `pack`)\n" % name)
+            continue
+        atlas = read_png(src)
+        _assert_atlas_shape(atlas, terrains, src)
+        print("%s  (%s)" % (name, os.path.relpath(src, ROOT)))
+        for terrain in terrains:
+            marks = []
+            for v in range(VARIANTS):
+                cell = _cell_from(atlas, terrain["id"], v)
+                if _is_blank(cell):
+                    marks.append("  - ")
+                    continue
+                cov = _coverage(cell)
+                marks.append("%3d%%" % round(cov * 100))
+                # The three hard walls have to read as walls. Everything else
+                # is free to be as ghostly as it likes.
+                if v == 0 and terrain["speed"] < 0 and cov < 0.60:
+                    thin.append((name, terrain["name"], cov))
+            print("  %02d %-10s %s" % (terrain["id"], terrain["name"], " ".join(marks)))
+        if name == BASE_PALETTE:
+            _report_missing_required(atlas, terrains, name)
+        print()
 
-    for name, cov in thin:
-        print("\nnote: %s is impassable but its column 0 tile is only %d%% opaque."
-              % (name, round(cov * 100)))
+    for name, terrain_name, cov in thin:
+        print("note: %s/%s is impassable but its column 0 tile is only %d%% opaque."
+              % (name, terrain_name, round(cov * 100)))
         print("      A player must never mistake it for walkable ground — worth")
         print("      previewing it against the realm backdrop before committing.")
-
-    print()
-    _report_missing_required(atlas, terrains)
 
 
 def _cell_from(atlas, row, col):
@@ -577,36 +679,18 @@ def _is_blank(cell):
     return all(cell.px[i] == 0 for i in range(3, len(cell.px), 4))
 
 
-def _report_missing_required(atlas, terrains):
+def _report_missing_required(atlas, terrains, name):
     missing = []
     for terrain in terrains:
         if _is_blank(_cell_from(atlas, terrain["id"], 0)):
             missing.append(terrain["name"])
     if missing:
-        print("column 0 still empty for: %s" % ", ".join(missing))
+        print("  %s: column 0 still empty for %s" % (name, ", ".join(missing)))
     else:
-        print("every terrain has its required column 0 tile")
+        print("  %s: every terrain has its required column 0 tile" % name)
 
 
 # ── Preview ──────────────────────────────────────────────────────────────────
-
-def load_zone(realm, zone_id):
-    """A zone's terrain weights, straight from the map config the game ships."""
-    path = os.path.join(MAP_CONFIGS, realm + ".json")
-    if not os.path.exists(path):
-        have = sorted(f[:-5] for f in os.listdir(MAP_CONFIGS) if f.endswith(".json"))
-        sys.exit("no map config for realm %r. Have: %s" % (realm, ", ".join(have)))
-    with open(path, encoding="utf-8") as fh:
-        config = json.load(fh)
-    zones = [z for z in config["zones"] if z.get("terrain_weights")]
-    if zone_id:
-        for z in zones:
-            if z.get("id") == zone_id:
-                return z
-        sys.exit("no zone %r in %s. Have: %s"
-                 % (zone_id, realm, ", ".join(z.get("id", "?") for z in zones)))
-    return zones[0]
-
 
 def fake_map(zone, w, h, seed):
     """Reproduce what the generator actually produces for this zone.
@@ -648,23 +732,33 @@ def fake_map(zone, w, h, seed):
     return grid
 
 
-def load_cells(terrains):
-    """Every drawn variant per terrain, falling back to the flat placeholder."""
-    cells = {}
+def load_cells(terrains, palette):
+    """Drawn variants per terrain, resolving palette -> base -> flat colour.
+
+    The same fallback the renderer will use: a palette only carries the tiles
+    that differ, everything else falls through.
+    """
+    cells, sources = {}, {}
     for terrain in terrains:
-        drawn = []
-        for v in range(VARIANTS):
-            path = os.path.join(TILE_DIR, tile_filename(terrain, v))
-            if os.path.exists(path):
-                cell = read_png(path)
-                if (cell.w, cell.h) == (CELL, CELL) and not _is_blank(cell):
-                    drawn.append(cell)
-        if not drawn:
+        for name in ([palette, BASE_PALETTE] if palette != BASE_PALETTE
+                     else [BASE_PALETTE]):
+            drawn = []
+            for v in range(VARIANTS):
+                path = os.path.join(palette_dir(name), tile_filename(terrain, v))
+                if os.path.exists(path):
+                    cell = read_png(path)
+                    if (cell.w, cell.h) == (CELL, CELL) and not _is_blank(cell):
+                        drawn.append(cell)
+            if drawn:
+                cells[terrain["id"]] = drawn
+                sources[terrain["id"]] = name
+                break
+        if terrain["id"] not in cells:
             flat = Canvas(CELL, CELL)
             flat.rect(0, 0, CELL, CELL, terrain["color"] + (255,))
-            drawn.append(flat)
-        cells[terrain["id"]] = drawn
-    return cells
+            cells[terrain["id"]] = [flat]
+            sources[terrain["id"]] = "placeholder"
+    return cells, sources
 
 
 def parse_hex(text_value):
@@ -705,62 +799,88 @@ def render_panel(grid, w, h, cells, backdrop, scale):
 
 def cmd_preview(args):
     terrains = load_terrains()
-    cells = load_cells(terrains)
 
     if args.terrain:
         by_key = {t["key"]: t for t in terrains}
         if args.terrain not in by_key:
             sys.exit("no terrain %r. Have: %s"
                      % (args.terrain, ", ".join(sorted(by_key))))
-        # The repeat test: one terrain, nothing else, so a tile that visibly
-        # repeats has nowhere to hide.
         tid = by_key[args.terrain]["id"]
         w = h = 6
-        grid = [tid] * (w * h)
-        title = "%s  (repeat test)" % args.terrain.upper()
+        panels = []
+        # The repeat test: one terrain, nothing else, so a tile that visibly
+        # repeats has nowhere to hide. Shown across the palettes that carry it.
+        palettes = args.palette or existing_palettes() or [BASE_PALETTE]
+        backdrop = parse_hex(args.backdrop or _realm_backdrops(args.realm)[0])
+        for name in palettes:
+            cells, _ = load_cells(terrains, name)
+            panels.append((name, render_panel([tid] * (w * h), w, h, cells,
+                                              backdrop, args.scale)))
+        title = "%s  REPEAT TEST" % args.terrain.upper()
         stem = "repeat_" + args.terrain
+        subtitle = args.backdrop or _realm_backdrops(args.realm)[0]
     else:
-        zone = load_zone(args.realm, args.zone)
+        zones = realm_zones(args.realm)
+        if args.zone:
+            zones = [z for z in zones if z.get("id") == args.zone]
+            if not zones:
+                sys.exit("no zone %r in %s. Have: %s"
+                         % (args.zone, args.realm,
+                            ", ".join(z.get("id", "?") for z in realm_zones(args.realm))))
         w, h = args.width, args.height
-        grid = fake_map(zone, w, h, args.seed)
-        title = "%s / %s" % (args.realm.upper(), zone.get("id", "").upper())
-        stem = "%s_%s" % (args.realm, zone.get("id", "zone"))
+        # One backdrop for the whole realm — the realm is the thing the player
+        # is inside of. The zones differ in their tiles, not behind them.
+        backdrops = [args.backdrop] if args.backdrop else _realm_backdrops(args.realm)
+        backdrop = parse_hex(backdrops[0])
+        panels = []
+        for zone in zones:
+            cells, sources = load_cells(terrains, zone.get("id", BASE_PALETTE))
+            grid = fake_map(zone, w, h, args.seed)
+            label = zone.get("id", "?")
+            used = {sources[t] for t in set(grid)}
+            if used == {"placeholder"}:
+                label += "  (no tiles yet)"
+            elif "placeholder" in used:
+                label += "  (partly placeholder)"
+            panels.append((label, render_panel(grid, w, h, cells, backdrop,
+                                               args.scale)))
+        title = args.realm.upper()
+        stem = args.realm if not args.zone else "%s_%s" % (args.realm, args.zone)
+        subtitle = "backdrop %s" % backdrops[0].upper()
 
-    if args.backdrop:
-        swatches = [args.backdrop]
-    elif args.terrain:
-        swatches = DEFAULT_BACKDROPS
-    else:
-        key = "%s/%s" % (args.realm, args.zone or load_zone(args.realm, None).get("id"))
-        swatches = BACKDROPS.get(key, DEFAULT_BACKDROPS)
-
-    scale = args.scale
-    panels = [(hexcode, render_panel(grid, w, h, cells, parse_hex(hexcode), scale))
-              for hexcode in swatches]
-
-    pad, head, label = 12, 34, 22
+    pad, head, label_h = 12, 50, 22
     cols = 1 if len(panels) == 1 else 2
     rows = (len(panels) + cols - 1) // cols
     pw, ph = panels[0][1].w, panels[0][1].h
-    sheet = Canvas(pad + cols * (pw + pad), head + rows * (ph + label + pad),
-                   (18, 17, 20, 255))
+    sheet = Canvas(pad + cols * (pw + pad), head + rows * (ph + label_h + pad),
+                   (14, 13, 16, 255))
     text(sheet, pad, 10, title, (232, 228, 220, 255), 2)
+    text(sheet, pad, 30, subtitle, (150, 145, 140, 255), 1)
 
-    for i, (hexcode, panel) in enumerate(panels):
+    for i, (name, panel) in enumerate(panels):
         x = pad + (i % cols) * (pw + pad)
-        y = head + (i // cols) * (ph + label + pad)
-        text(sheet, x, y + 4, hexcode.upper(), (150, 145, 140, 255), 2)
-        sheet.blit(panel, x, y + label)
+        y = head + (i // cols) * (ph + label_h + pad)
+        text(sheet, x, y + 4, name.upper(), (200, 196, 190, 255), 2)
+        sheet.blit(panel, x, y + label_h)
 
     os.makedirs(PREVIEW_DIR, exist_ok=True)
     out = os.path.join(PREVIEW_DIR, stem + ".png")
     sheet.save(out)
     print("wrote %s  (%dx%d)" % (os.path.relpath(out, ROOT), sheet.w, sheet.h))
 
-    undrawn = [t["name"] for t in terrains
-               if len(cells[t["id"]]) == 1 and _is_flat(cells[t["id"]][0])]
-    if undrawn:
-        print("still flat placeholder colour: %s" % ", ".join(undrawn))
+
+def _realm_backdrops(realm):
+    return REALM_BACKDROPS.get(realm, FALLBACK_BACKDROPS)
+
+
+def realm_zones(realm):
+    """The zones of a realm that have a terrain mix of their own."""
+    path = os.path.join(MAP_CONFIGS, realm + ".json")
+    if not os.path.exists(path):
+        have = sorted(f[:-5] for f in os.listdir(MAP_CONFIGS) if f.endswith(".json"))
+        sys.exit("no map config for realm %r. Have: %s" % (realm, ", ".join(have)))
+    with open(path, encoding="utf-8") as fh:
+        return [z for z in json.load(fh)["zones"] if z.get("terrain_weights")]
 
 
 def _is_flat(cell):
@@ -781,27 +901,38 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("init", help="write blanks, template, grid overlay, guide")
+    p.add_argument("--palette", action="append", metavar="REGION",
+                   help="palette to create, repeatable (default: base). Use a "
+                        "region id such as cold_hell or fire_hell")
     p.add_argument("--force", action="store_true",
                    help="overwrite per-tile files that already exist")
+    p.add_argument("--verbose", action="store_true", help="list every file written")
     p.set_defaults(func=cmd_init)
 
-    p = sub.add_parser("pack", help="assemble the per-tile files into the atlas")
+    p = sub.add_parser("pack", help="assemble each palette's tiles into its atlas")
+    p.add_argument("--palette", action="append", metavar="REGION",
+                   help="limit to these palettes (default: all that exist)")
     p.set_defaults(func=cmd_pack)
 
     p = sub.add_parser("split", help="cut an atlas back into per-tile files")
-    p.add_argument("--atlas", help="atlas to read (default assets/tiles/terrain_atlas.png)")
+    p.add_argument("--palette", metavar="REGION", help="palette to write into")
+    p.add_argument("--atlas", help="atlas to read (default: that palette's)")
     p.set_defaults(func=cmd_split)
 
-    p = sub.add_parser("check", help="verify size and report which cells are drawn")
-    p.add_argument("--atlas", help="atlas to read")
+    p = sub.add_parser("check", help="verify size and report coverage per cell")
+    p.add_argument("--palette", action="append", metavar="REGION",
+                   help="limit to these palettes (default: all that exist)")
+    p.add_argument("--atlas", help="a specific atlas file to read instead")
     p.set_defaults(func=cmd_check)
 
     p = sub.add_parser("preview",
-                       help="composite the tiles over candidate realm backdrops")
+                       help="composite the tiles over the realm backdrop")
     p.add_argument("--realm", default="hell", help="hell, hungry_ghost, animal")
-    p.add_argument("--zone", help="zone id within the realm (default: its first)")
+    p.add_argument("--zone", help="one zone only (default: all zones of the realm)")
     p.add_argument("--terrain", help="preview one terrain tiled 6x6 instead of a map")
-    p.add_argument("--backdrop", help="a single backdrop, e.g. \"#1A2B3C\"")
+    p.add_argument("--palette", action="append", metavar="REGION",
+                   help="with --terrain, which palettes to show")
+    p.add_argument("--backdrop", help="override the realm backdrop, e.g. \"#1A2B3C\"")
     p.add_argument("--width", type=int, default=20, help="map width in tiles")
     p.add_argument("--height", type=int, default=13, help="map height in tiles")
     p.add_argument("--scale", type=int, default=2, help="pixel scale (default 2)")

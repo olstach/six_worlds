@@ -9,20 +9,39 @@ layout is what it is, and what each tile has to communicate — is
 | File | What it is |
 |---|---|
 | `terrain_atlas_guide.png` | **Read this first.** Labelled reference: which row is which terrain, its speed, its filename, and what the tile has to say |
-| `terrain/` | 56 blank 24×24 PNGs, one per cell, already named. **This is where to paint** |
+| `terrain/base/` | 56 blank 24×24 PNGs, already named. The fallback set |
+| `terrain/cold_hell/`, `terrain/fire_hell/` | Palette overrides — **only the tiles that differ** from base |
 | `terrain_atlas_template.png` | The same thing as one 96×336 sheet, if you'd rather paint into a single file |
 | `terrain_atlas_grid.png` | Transparent 1px grid, to park on a top layer while painting the template. Not part of the atlas |
-| `terrain_atlas.png` | The assembled result. **Generated — don't edit by hand**, it gets overwritten |
+| `terrain_atlas_<palette>.png` | The assembled result, one per palette. **Generated — don't edit by hand** |
+| `preview/` | Output of `preview`. Generated and git-ignored |
+
+## Palettes
+
+The same terrain looks different in different regions — cold hell icy, fire
+hell ember. So tiles live in one folder per **palette**, named after the region
+id the game already uses (`MapManager.get_region_at()` returns `cold_hell`,
+`fire_hell`, `fetid_swamps`, …):
+
+```
+terrain/base/           the fallback
+terrain/cold_hell/      only what differs
+terrain/fire_hell/      only what differs
+```
+
+A palette needs **only the tiles that differ**. Leave the rest empty; they fall
+through to `base`, then to the flat placeholder colour. Add another with
+`python3 tools/tile_atlas.py init --palette fetid_swamps`.
 
 ## Painting one file per tile (recommended)
 
-Open anything in `terrain/` and paint it. Each file is already the right size
-and already named for its slot, so there is no grid to align and no way to put
-a tile in the wrong row.
+Open anything in a palette folder and paint it. Each file is already the right
+size and already named for its slot, so there is no grid to align and no way to
+put a tile in the wrong row.
 
 ```
-terrain/00_plains_a.png      row 00, variant a
-terrain/00_plains_b.png      row 00, variant b
+terrain/cold_hell/00_plains_a.png      row 00, variant a
+terrain/cold_hell/00_plains_b.png      row 00, variant b
 ```
 
 Variant `a` is required and starts pre-filled with the flat colour the game
@@ -36,9 +55,32 @@ When you've painted some:
 python3 tools/tile_atlas.py pack
 ```
 
-That assembles `terrain_atlas.png` and tells you what's still empty. Run it as
-often as you like; painting four tiles and packing is a perfectly good first
+That assembles every palette's atlas and tells you what's still empty. Run it
+as often as you like; painting four tiles and packing is a perfectly good first
 pass.
+
+## What to draw first, for hell
+
+Measured over the real map configs including the generator's smoothing — which
+amplifies dominant terrains hard, so these are not the raw config weights:
+
+| | Share of hell |
+|---|--:|
+| **Plains** | 48% |
+| **Snow** | 15% |
+| **Desert** | 14% |
+| **Mountains** | 9% |
+| **Lava** | 7% |
+| *everything else combined* | *8%* |
+
+Cold hell is **plains + snow** (93% of the northern half). Fire hell is
+**plains + desert + lava** (90% of the southern half). Plains alone is half the
+realm and wants the most variants of any tile in the game.
+
+Hills and Forest are each under 2% of hell. **Road** is 0.5% by area but it is
+the carved path from the start through the mountain pass to the portal — the
+line the player actually walks — so it earns its place early despite the
+number.
 
 ## Painting the single sheet instead
 
@@ -74,22 +116,26 @@ A partly transparent tile cannot be judged on its own — it depends entirely on
 what's behind it.
 
 ```
-python3 tools/tile_atlas.py preview --realm hell --zone cold_hell
-python3 tools/tile_atlas.py preview --terrain water --scale 3     # repeat test
-python3 tools/tile_atlas.py preview --realm animal --backdrop "#1B2416"
+python3 tools/tile_atlas.py preview --realm hell              # both hells, side by side
+python3 tools/tile_atlas.py preview --terrain snow --scale 3  # repeat test
+python3 tools/tile_atlas.py preview --realm hell --backdrop "#0B0710"
 ```
 
-This lays out a map using the **real** zone terrain weights and the generator's
-own smoothing, composites your actual tiles over four candidate backdrops, and
-writes it to `assets/tiles/preview/`. Undrawn terrains fall back to their flat
-placeholder colour, so it works from the very first tile. Candidate colours per
-zone live in `BACKDROPS` in the script — argue with them.
+`--realm hell` renders **one panel per zone, each using its own palette, over
+the single realm backdrop** — so you see cold and fire side by side exactly as
+they'll differ in game. The layout is not noise: it reproduces the generator's
+weighted fill and three smoothing passes against the real zone weights.
+Undrawn terrains fall back to base, then to their flat placeholder colour, so
+it works from the very first tile. Realm backdrops live in `REALM_BACKDROPS` in
+the script — hell is `#000000`.
 
 ## Other commands
 
 ```
-python3 tools/tile_atlas.py init            # re-create missing blanks (won't overwrite your work)
-python3 tools/tile_atlas.py init --force    # reset everything back to blank
+python3 tools/tile_atlas.py init                        # re-create missing blanks (won't overwrite your work)
+python3 tools/tile_atlas.py init --palette fetid_swamps # add a palette
+python3 tools/tile_atlas.py check                       # coverage per cell, per palette
+python3 tools/tile_atlas.py init --force                # reset everything back to blank
 ```
 
 Pure standard library — nothing to install.

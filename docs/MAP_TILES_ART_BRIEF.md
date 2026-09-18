@@ -167,6 +167,35 @@ code.
 
 ---
 
+### 4a. Palettes — the same terrain, different in each region
+
+Cold hell is icy blues; fire hell is red embers. That is the same fourteen
+terrains drawn twice, so one sheet cannot hold it. The extra axis is a
+**palette**: a whole set of tiles in its own folder.
+
+```
+assets/tiles/terrain/base/          the fallback set
+assets/tiles/terrain/cold_hell/     only the tiles that differ
+assets/tiles/terrain/fire_hell/     only the tiles that differ
+```
+
+Each folder holds the same 56 filenames and packs to its own atlas
+(`terrain_atlas_cold_hell.png`, …). A palette needs **only the tiles that
+differ** — leave the rest empty and they fall through to `base`, and then to
+the flat placeholder colour. So a palette is an override set, not a duplicate.
+
+The folder name is a **region id**, exactly as `MapManager.get_region_at()`
+already returns it: `cold_hell`, `fire_hell`, `fetid_swamps`,
+`charnel_grounds`, `dry_graveyards`, `forest`, `meadow`, `ocean`. That is not
+a convention I invented for the art — the map already records which region
+every square belongs to, saves it, and reloads it, so the renderer can ask
+per square and pick the palette with no mapping layer and no new map data.
+Region rects don't overlap (`cols` separates the ones that share rows), so
+every square resolves to exactly one.
+
+`python3 tools/tile_atlas.py init --palette cold_hell --palette fire_hell`
+creates them; both already exist.
+
 ## 5. The golden rule
 
 > **Every tile must look correct with any other tile on any of its four sides,
@@ -199,9 +228,14 @@ This is what lets us skip autotiling entirely. In practice:
 
 Tiles are **not** opaque. Each realm gets a coloured backdrop behind the whole
 map, and the transparent areas of every tile let it through, so one colour
-permeates everything and the ground reads as dreamlike rather than solid. It is
-also the hook for animating the backdrop later — a slow drift or shimmer under
-static tiles costs almost nothing and makes the whole map feel fluid.
+permeates everything and the ground reads as dreamlike rather than solid.
+
+**One backdrop per realm, not per zone.** Hell is black. The realm is the thing
+the player is inside of, and holding one colour across the whole of it is what
+makes it feel like a single place; the two halves of hell differ in their
+*tiles* — icy blues north, red embers south — not behind them. Waves and
+ripples moving through that blackness come later: a canvas shader on the
+existing `Background` node, which changes nothing about the tiles.
 
 This replaces the per-realm colour grade proposed earlier in section 8. It is
 the better mechanism: a grade multiplies the art and dulls it, whereas a
@@ -220,6 +254,11 @@ Consequences worth holding in mind while drawing:
   substantially opaque, because a wall that takes on the backdrop colour stops
   reading as a wall. `check` flags an impassable tile under 60% coverage; that
   is a prompt to look, not a rule.
+- **Black is the strongest case of this.** Over pure black, anything you leave
+  transparent goes to black, so the opaque parts of a tile carry the entire
+  read. Ghostly works, but a tile that is 30% opaque over black is a 30%-lit
+  object floating in a void — which may be exactly the dream you want, or may
+  vanish. Preview before committing to a coverage level.
 - **Dark backdrops raise contrast between light and dark terrains and
   compress it among the dark ones.** Snow over a near-black backdrop stays
   bright and separates cleanly; forest, swamp and ruins over the same backdrop
@@ -230,8 +269,9 @@ Consequences worth holding in mind while drawing:
   transparent tiles, reads as a hard lattice over a dreamy surface. That settles
   open question 5 — they're dropped.
 
-Candidate backdrops per zone live in `BACKDROPS` in `tools/tile_atlas.py`.
-They're proposals to argue with; `preview --backdrop "#RRGGBB"` tries anything.
+Candidate backdrops per realm live in `REALM_BACKDROPS` in
+`tools/tile_atlas.py` — hell's is `#000000`. `preview --backdrop "#RRGGBB"`
+tries anything else.
 
 ### 5b. What still has to hold
 
@@ -284,42 +324,83 @@ Two more constraints from how the map is drawn:
 
 ## 7. Draw them in this order
 
-Terrain frequency, averaged over every zone in all three built realms:
+**This section was wrong in the first version of this brief and is now
+corrected.** It ranked terrains by the raw `terrain_weights` in the map
+configs. But the generator does not stop at those weights — it runs **three
+passes of cellular-automata smoothing** (`_smooth_cell` in
+`scripts/map_gen/map_generator.gd`), each cell becoming the majority of its
+nine-neighbourhood with a bias toward keeping itself. Smoothing is not
+neutral: it **amplifies whatever is already dominant and all but erases the
+minority terrains**. A terrain weighted 30 ends up near 50% of the ground; a
+terrain weighted 8 ends up under 2%.
 
-| Priority | Terrain | Share of map | Why |
-|---|---|---|---|
-| **Tier 1** | Plains, Road, Hills, Forest | ~59% combined | Over half of every screen. Ship these four and the map already looks like a game |
-| **Tier 2** | Mountains, Water, Ice, Swamp | ~23% | Mountains and Water are also the two hard walls, so they carry the most gameplay weight per tile |
-| **Tier 3** | Snow, Ruins, Lava, Desert, Sand, Bridge | ~18% | Regionally concentrated — Snow/Ice for cold Hell, Lava/Desert/Sand for fire Hell, Ruins for the Hungry Ghost graveyards |
+Measured by reproducing the generator's fill and smoothing over the real
+configs, six seeds each (spread under ±1%, so these are stable):
 
-A completely reasonable first delivery is **Tier 1, one variant each — four
-tiles.** I can wire those up, leave the other ten as flat colours, and you'll
-see your art in the running game the same day. That's a much better loop than
-drawing 56 tiles blind.
+### Naraka — Hell
 
-### Where each terrain shows up — worth knowing before you draw
+| Terrain | Share of the realm | Running |
+|---|--:|--:|
+| **Plains** | 48% | 48% |
+| **Snow** | 15% | 63% |
+| **Desert** | 14% | 77% |
+| **Mountains** | 9% | 86% |
+| **Lava** | 7% | 92% |
+| Sand | 2.1% | 94% |
+| Hills | 1.6% | 96% |
+| Ruins | 1.2% | 97% |
+| Water | 1.0% | 98% |
+| Forest | 0.8% | 99% |
+| Ice | 0.6% | 99.5% |
+| Road | 0.5% | 100% |
 
-| Realm | Zone | Dominant terrain |
-|---|---|---|
-| **Naraka (Hell)** | Cold hell, north | Plains 30%, **Snow 25%**, Water/Ice/Forest/Hills |
-| | Mountain wall divider | Solid Mountains |
-| | Fire hell, south | Plains 25%, **Desert 20%, Lava 15%**, Sand, Ruins |
-| **Pretaloka (Hungry Ghost)** | Fetid swamps | Forest 25%, Plains, **Hills 20%**, Water, Swamp |
-| | Charnel grounds | Plains 25%, Road 18%, Lava, **Ruins** |
-| | Dry graveyards | **Plains 35%, Road 20%**, Mountains, Hills, Ruins |
-| **Tiryakloka (Animal)** | Ancient forest | Road 38%, Plains 20%, Hills, Forest |
-| | Open meadow | Plains 38%, Forest, Road, Hills |
-| | Ocean depths | Mountains 30%, Swamp, Forest, Water |
+Split by half: **cold hell is Plains 59% + Snow 34%** — those two are 93% of
+the northern half. **Fire hell is Plains 50% + Desert 27% + Lava 13%** — 90% of
+the southern half. The divider between them is a solid band of Mountains, 9% of
+the whole map, and the only way through is a carved pass.
 
-> **Flagging a data oddity, not an art problem:** the Animal realm's weights
-> look wrong — its "ocean depths" zone is 30% mountains and only 10% water, and
-> its "ancient forest" zone is 38% road and 7% forest. That's a generation-data
-> bug to fix separately; don't design tiles around those numbers. Assume ocean
-> means water and forest means forest.
+So for hell the first five tiles are **Plains, Snow, Desert, Mountains, Lava**
+— 92% of everything the player sees. Plains wants the most variants of
+anything in the game; at 48% it is half the realm.
 
----
+Hills and Forest are under 2% of hell. They are worth drawing eventually,
+because a rare tile that looks wrong is still conspicuous, but they are not
+where the first hours go.
+
+**Road is a special case.** At 0.5% of area it looks negligible, but roads are
+not scattered — they are 1-tile-wide meandering paths carved from the start
+position through the mountain passes to the portal. It is the line the player's
+eye follows across the whole map and the route they actually walk. Draw it
+early despite the number. It is also the terrain that will most want the
+directional/connecting art in section 8, precisely because it is a thin line
+always bordered by something else.
+
+### Pretaloka — Hungry Ghost
+
+Plains 47%, Forest 15%, Road 12%, Hills 9%, Mountains 9% — five tiles for 92%.
+Note Road is 12% here, not 0.5%: this realm's configs weight it heavily.
+
+### Tiryakloka — Animal
+
+Plains 28%, Mountains 28%, Road 25%, Swamp 6%, Forest 4.5%.
+
+> **The Animal realm's data is wrong, now with numbers.** A realm of ocean
+> depths, ancient forest and open meadow comes out 28% mountains and 25% road,
+> with water at 1% and forest at 4.5%. Its "ocean depths" zone is weighted 30%
+> mountains and 10% water; its "ancient forest" zone is 38% road and 7% forest.
+> This is a generation-data bug, not an art problem — don't design tiles around
+> those numbers, and don't prioritise the Animal realm until it's fixed. Say
+> the word and I'll fix the weights.
 
 ## 8. Deliberately out of scope (and what it would cost later)
+
+**Directional roads, rivers and bridges.** Planned, not now. When we do them,
+they need a different axis from the variant columns: a tile chosen by which of
+its neighbours are the same terrain (a 4-bit or 8-bit connection index), which
+is its own sheet with a fixed cell order rather than more variants. The columns
+in the current layout cannot carry it, so it will be an added sheet, not a
+redesign — nothing drawn now is wasted. Road is the one that will want it most,
+being a 1-tile-wide line always bordered by something else.
 
 **Terrain transitions.** Right now grass meets water on a hard square edge.
 The cheap fix, if it bothers us once real art is in, is a second small sheet of
