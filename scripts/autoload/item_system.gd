@@ -355,19 +355,35 @@ func unequip_item(character: Dictionary, slot: String) -> bool:
 	return true
 
 
+## The weapon slots a character can have, and the key each one occupies inside a
+## weapon set.
+##
+## Two arms hold two weapons; four arms hold four. `weapon_main` and
+## `weapon_off` are the first pair, `weapon_main2` and `weapon_off2` the second,
+## and a weapon SET is a whole loadout of them — so a four-armed character
+## swapping sets swaps all four weapons at once. A set that predates the extra
+## keys simply lacks them and reads as empty.
+##
+## Note the naming, because it is a trap: `weapon_main2` is the second RIGHT
+## ARM, not weapon set 2. Sets are `equipment.weapon_set_1` and
+## `equipment.weapon_set_2`, and nothing outside this file should need to know.
+const WEAPON_SLOT_KEYS: Dictionary = {
+	"weapon_main": "main",
+	"weapon_off": "off",
+	"weapon_main2": "main2",
+	"weapon_off2": "off2",
+}
+
+
 ## Get the item ID equipped in a slot
 func get_equipped_item(character: Dictionary, slot: String) -> String:
 	var equipment = character.get("equipment", {})
 
 	# Handle weapon set slots
-	if slot == "weapon_main" or slot == "weapon_off":
+	if slot in WEAPON_SLOT_KEYS:
 		var active_set = character.get("active_weapon_set", 1)
-		var set_key = "weapon_set_%d" % active_set
-		var weapon_set = equipment.get(set_key, {})
-		if slot == "weapon_main":
-			return weapon_set.get("main", "")
-		else:
-			return weapon_set.get("off", "")
+		var weapon_set = equipment.get("weapon_set_%d" % active_set, {})
+		return weapon_set.get(WEAPON_SLOT_KEYS[slot], "")
 
 	return equipment.get(slot, "")
 
@@ -380,15 +396,12 @@ func _set_equipped_item(character: Dictionary, slot: String, item_id: String) ->
 	var equipment = character.equipment
 
 	# Handle weapon set slots
-	if slot == "weapon_main" or slot == "weapon_off":
+	if slot in WEAPON_SLOT_KEYS:
 		var active_set = character.get("active_weapon_set", 1)
 		var set_key = "weapon_set_%d" % active_set
 		if not set_key in equipment:
 			equipment[set_key] = {"main": "", "off": ""}
-		if slot == "weapon_main":
-			equipment[set_key]["main"] = item_id
-		else:
-			equipment[set_key]["off"] = item_id
+		equipment[set_key][WEAPON_SLOT_KEYS[slot]] = item_id
 	else:
 		equipment[slot] = item_id
 
@@ -406,9 +419,9 @@ func _set_equipped_item(character: Dictionary, slot: String, item_id: String) ->
 ## the previous force-clear achieved, having written a flat "weapon_main" key
 ## that `get_equipped_item()` never reads.
 func clear_weapon_slot_all_sets(character: Dictionary, slot: String) -> void:
-	if slot != "weapon_main" and slot != "weapon_off":
+	if not slot in WEAPON_SLOT_KEYS:
 		return
-	var key: String = "main" if slot == "weapon_main" else "off"
+	var key: String = WEAPON_SLOT_KEYS[slot]
 	var equipment: Dictionary = character.get("equipment", {})
 	for set_num in [1, 2]:
 		var weapon_set: Dictionary = equipment.get("weapon_set_%d" % set_num, {})

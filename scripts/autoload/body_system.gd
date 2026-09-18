@@ -231,6 +231,50 @@ func get_equipment_slots(character: Dictionary) -> Array[String]:
 	return slots
 
 
+## Which weapon slot each arm wields from.
+##
+## The right arm is the main hand and the left the off hand, which was already
+## the convention; the second pair extends it. Every arm in every body plan
+## today is named here; an arm that is not holds no weapon and fights with its
+## natural weapon, which is the safe answer for a plan added later.
+const ARM_WEAPON_SLOTS: Dictionary = {
+	"arm_r": "weapon_main",
+	"arm_l": "weapon_off",
+	"arm_r2": "weapon_main2",
+	"arm_l2": "weapon_off2",
+}
+
+
+## The weapon slot this arm wields from, or "" if it wields none.
+func weapon_slot_for_arm(part_id: String) -> String:
+	return str(ARM_WEAPON_SLOTS.get(part_id, ""))
+
+
+## Every weapon slot this character can actually use, in swing order, skipping
+## severed arms.
+##
+## The order is ARM_WEAPON_SLOTS' own — right, left, second right, second left —
+## rather than whatever order a body plan happens to list its arms in. The
+## four-armed plan lists arm_l first, which would otherwise have put the second
+## LEFT arm third and made the swing order read as an accident of the data.
+##
+## The multi-arm chain walks this, so a character who has lost their right arm
+## leads with the off hand rather than swinging a slot that is gone.
+func get_weapon_slots(character: Dictionary) -> Array[String]:
+	var plan := get_body_plan_def(character)
+	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
+	var present: Dictionary = {}
+	for part in plan.parts:
+		if part.get("category") == "arm" and not part.id in missing:
+			present[part.id] = true
+
+	var slots: Array[String] = []
+	for arm_id in ARM_WEAPON_SLOTS:
+		if present.has(arm_id):
+			slots.append(String(ARM_WEAPON_SLOTS[arm_id]))
+	return slots
+
+
 ## All arm equip slots for this character (used by _find_slot_for_item and UI).
 func get_arm_slots(character: Dictionary) -> Array[String]:
 	var plan := get_body_plan_def(character)
@@ -426,10 +470,10 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 				# Arms also unequip their corresponding weapon slot, in BOTH
 				# weapon sets.
 				#
-				# Convention: arm_r = main hand (weapon_main), arm_l = off-hand
-				# (weapon_off). Extra arms (arm_l2/arm_r2) hold no weapon —
-				# weapon slots do not scale with arms — so they clear only
-				# their equip_slot above, which is correct.
+				# Which slot an arm wields from lives in ARM_WEAPON_SLOTS, so
+				# a four-armed species loses the right weapon with the right
+				# arm. An arm that wields nothing (a wing) clears only its
+				# equip_slot above.
 				#
 				# This used to call unequip_item() and, on failure, write
 				# `equipment["weapon_main"] = ""`. Both halves were wrong.
@@ -439,11 +483,9 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 				# where weapons live (equipment.weapon_set_N.main is), so the
 				# force-clear cleared nothing and left a dead key behind.
 				if part.get("category") == "arm" and ItemSystem:
-					match pid:
-						"arm_r":
-							ItemSystem.clear_weapon_slot_all_sets(character, "weapon_main")
-						"arm_l":
-							ItemSystem.clear_weapon_slot_all_sets(character, "weapon_off")
+					var weapon_slot: String = weapon_slot_for_arm(pid)
+					if weapon_slot != "":
+						ItemSystem.clear_weapon_slot_all_sets(character, weapon_slot)
 				break
 
 	# Losing a limb is permanent enough to become part of who they are.

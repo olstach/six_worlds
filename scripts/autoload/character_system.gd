@@ -888,9 +888,22 @@ func _find_slot_for_item(character: Dictionary, item_id: String) -> String:
 	match item_type:
 		"sword", "dagger", "axe", "mace", "spear", "staff", \
 		"bow", "crossbow", "javelin", "thrown", "club":
-			return "weapon_main"
+			# First empty hand, in swing order. A four-armed character filling
+			# up takes weapon_main, then weapon_off, then the second pair;
+			# a two-armed one behaves exactly as before.
+			for weapon_slot in BodySystem.get_weapon_slots(character):
+				if ItemSystem.get_equipped_item(character, weapon_slot) == "":
+					return weapon_slot
+			# Every hand full. "" sends it to the pack, the way a second chest
+			# piece already goes there, rather than knocking a held weapon out.
+			return ""
 		"shield":
-			return "weapon_off"
+			# Shields go in an off hand, never a main one.
+			for weapon_slot in BodySystem.get_weapon_slots(character):
+				if weapon_slot.begins_with("weapon_off") \
+						and ItemSystem.get_equipped_item(character, weapon_slot) == "":
+					return weapon_slot
+			return ""
 		"armor", "robe":
 			return "chest" if eq.get("chest", "") == "" else ""
 		"helmet", "hat", "circlet":

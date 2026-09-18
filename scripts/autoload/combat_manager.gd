@@ -1522,7 +1522,27 @@ func _find_chain_redirect_target(attacker: Node) -> Node:
 	return best
 
 
-func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
+## One extra arm's swing.
+##
+## `arm_slot` is the weapon slot that arm wields from; "" means it holds
+## nothing and should punch. It is set on the unit for the length of this
+## function so that damage, damage type, crit, weapon traits and on-hit procs
+## all read THAT arm's weapon — they each fetch it off the unit themselves, and
+## threading a weapon argument through all of them would be a much larger and
+## more breakable change. Cleared on entry as well as exit: the field is
+## transient and a stale value would leave a unit swinging the wrong hand for
+## the rest of the fight.
+func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int,
+		chain_chance: float, arm_slot: String = "") -> Dictionary:
+	attacker.active_weapon_slot = arm_slot
+	var result: Dictionary = _execute_arm_chain_attack_inner(
+		attacker, defender, arm_number, chain_chance)
+	attacker.active_weapon_slot = ""
+	return result
+
+
+func _execute_arm_chain_attack_inner(attacker: Node, defender: Node, arm_number: int,
+		chain_chance: float) -> Dictionary:
 	var weapon_dmg_type: String = "crushing"
 	if attacker.has_method("get_weapon_damage_type"):
 		weapon_dmg_type = attacker.get_weapon_damage_type()
@@ -1932,11 +1952,13 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			# Only chain for dual-wielders, natural weapon species, or genuinely multi-armed characters
 			var should_chain: bool = (arm_count > 2)
 			if not should_chain:
-				var weapon_set: int = char_data.get("active_weapon_set", 1)
-				var off_slot: String = "weapon_off" if weapon_set == 1 else "weapon_off_2"
-				var equipment_dict: Dictionary = char_data.get("equipment", {})
-				var oh_id: String = equipment_dict.get(off_slot, "")
-				should_chain = (oh_id != "")
+				# This read `equipment["weapon_off"]` — and before that
+				# `equipment["weapon_off_2"]`, a key that has never existed.
+				# Weapons live in `equipment.weapon_set_N.off`, so a flat lookup
+				# always came back empty and NO dual-wielder ever chained: the
+				# second attack belonged to four-armed species and locked
+				# natural weapons alone. ItemSystem resolves the set.
+				should_chain = ItemSystem.get_equipped_item(char_data, "weapon_off") != ""
 			if not should_chain:
 				var primary_nw: Dictionary = BodySystem.get_natural_weapon(char_data, "hand_r")
 				should_chain = primary_nw.get("locked", false)
@@ -1949,8 +1971,13 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				var chain_target: Node = defender
 				# Iron Cortex: the second arm skips its roll entirely and always fires.
 				var iron_cortex: bool = PerkSystem.has_perk(char_data, "iron_cortex")
+				# Which weapon each arm swings, in swing order. A four-armed
+				# character wielding four weapons uses all four; an arm holding
+				# nothing punches with its natural weapon.
+				var weapon_slots: Array[String] = BodySystem.get_weapon_slots(char_data)
 				for arm_index in range(1, arm_count):
 					var arm_number: int = arm_index + 1
+					var arm_slot: String = weapon_slots[arm_index] if arm_index < weapon_slots.size() else ""
 					# iron_cortex: arms 1-2 always fire (arm_number 1 is always primary, arm_number 2 is guaranteed)
 					var guaranteed: bool = iron_cortex and arm_number == 2
 					var fire_chance: float = clampf(
@@ -1959,7 +1986,8 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 					)
 					if guaranteed or randf() * 100.0 <= fire_chance:
 						if chain_target != null and chain_target.is_alive():
-							var extra := _execute_arm_chain_attack(attacker, chain_target, arm_number, fire_chance)
+							var extra := _execute_arm_chain_attack(
+								attacker, chain_target, arm_number, fire_chance, arm_slot)
 							extra_arm_results.append(extra)
 							if not chain_target.is_alive():
 								if not has_coordinated:

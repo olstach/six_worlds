@@ -107,6 +107,18 @@ var deity_yoga_triggered: Dictionary = {}
 var summoner_id: int = 0
 var is_summon: bool = false
 
+## Which arm is mid-swing, as a weapon slot name. "" means the main hand.
+##
+## Set by the multi-arm chain for the length of one arm's attack and cleared
+## immediately after. It exists so that damage, damage type, crit, weapon
+## traits and on-hit procs all see THAT arm's weapon without a weapon argument
+## being threaded through a dozen functions that each read it off the unit.
+##
+## Transient by design and never saved. `_execute_arm_chain_attack` clears it on
+## entry as well as on exit, so a path that somehow skipped the clear cannot
+## leave a unit permanently swinging the wrong hand.
+var active_weapon_slot: String = ""
+
 # Jeweled Pagoda DY: set on caster; consumed on next _spawn_summoned_unit() call
 var next_summon_empowered: bool = false
 
@@ -699,8 +711,12 @@ func get_equipped_weapon() -> Dictionary:
 
 	# For player/party units, get from equipment via ItemSystem
 	if ItemSystem and character_data.has("equipment"):
-		var weapon_id = ItemSystem.get_equipped_item(character_data, "weapon_main")
-		if weapon_id == "":
+		# Whichever arm is swinging; the main hand unless the chain says otherwise.
+		var slot: String = active_weapon_slot if active_weapon_slot != "" else "weapon_main"
+		var weapon_id = ItemSystem.get_equipped_item(character_data, slot)
+		# Only the main hand falls back to the off hand — an extra arm holding
+		# nothing is holding nothing, and should punch rather than borrow.
+		if weapon_id == "" and slot == "weapon_main":
 			# Fall back to the off hand. Only weapon_main was read here, so a
 			# character who lost their main arm — sever_part clears the slot —
 			# or who simply equipped a dagger off-hand and nothing else fought

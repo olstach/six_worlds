@@ -19116,7 +19116,9 @@
       "category": "weapon",
       "slots": [
         "weapon_main",
-        "weapon_off"
+        "weapon_off",
+        "weapon_main2",
+        "weapon_off2"
       ],
       "ranged": false,
       "damage_type": "slashing"
@@ -19125,7 +19127,9 @@
       "category": "weapon",
       "slots": [
         "weapon_main",
-        "weapon_off"
+        "weapon_off",
+        "weapon_main2",
+        "weapon_off2"
       ],
       "ranged": false,
       "damage_type": "piercing"
@@ -19133,7 +19137,8 @@
     "axe": {
       "category": "weapon",
       "slots": [
-        "weapon_main"
+        "weapon_main",
+        "weapon_main2"
       ],
       "ranged": false,
       "damage_type": "slashing"
@@ -19141,7 +19146,8 @@
     "mace": {
       "category": "weapon",
       "slots": [
-        "weapon_main"
+        "weapon_main",
+        "weapon_main2"
       ],
       "ranged": false,
       "damage_type": "crushing"
@@ -19149,7 +19155,8 @@
     "spear": {
       "category": "weapon",
       "slots": [
-        "weapon_main"
+        "weapon_main",
+        "weapon_main2"
       ],
       "ranged": false,
       "damage_type": "piercing"
@@ -19157,7 +19164,8 @@
     "staff": {
       "category": "weapon",
       "slots": [
-        "weapon_main"
+        "weapon_main",
+        "weapon_main2"
       ],
       "ranged": false,
       "damage_type": "crushing"
@@ -19165,7 +19173,8 @@
     "bow": {
       "category": "weapon",
       "slots": [
-        "weapon_main"
+        "weapon_main",
+        "weapon_main2"
       ],
       "ranged": true,
       "skill": "ranged",
@@ -19174,7 +19183,8 @@
     "thrown": {
       "category": "weapon",
       "slots": [
-        "weapon_main"
+        "weapon_main",
+        "weapon_main2"
       ],
       "ranged": true,
       "skill": "ranged",
@@ -19183,7 +19193,8 @@
     "shield": {
       "category": "weapon",
       "slots": [
-        "weapon_off"
+        "weapon_off",
+        "weapon_off2"
       ],
       "ranged": false
     },
@@ -19347,7 +19358,8 @@
     "focus": {
       "category": "weapon",
       "slots": [
-        "weapon_main"
+        "weapon_main",
+        "weapon_main2"
       ],
       "ranged": false,
       "damage_type": "crushing"

@@ -167,11 +167,55 @@ Each of these is an hour or less and touches one system.
   lost with the limb when there is no room — which is the right answer, and the
   one the old comment intended.
 
-  **Still open, and a design question rather than a bug:** a four-armed species
-  can never wield more than two weapons at once, because weapon slots are a
-  swappable pair rather than one per arm. Four attacks with one weapon is the
-  current answer. Whether extra arms should have their own slots — and what
-  that does to damage — wants deciding before anyone builds it.
+  **Extra arms hold weapons now (2026-09-18).** That was the point of the body
+  plan and the note here previously said the opposite, which was my misreading.
+  Four slots: `weapon_main`, `weapon_off`, `weapon_main2`, `weapon_off2`, one
+  per arm, mapped in `BodySystem.ARM_WEAPON_SLOTS`. A weapon SET is a whole
+  loadout of them, so a four-armed character swapping sets swaps all four at
+  once, and a set written before the extra keys simply reads them as empty.
+
+  - `BodySystem.get_weapon_slots()` gives the swing order — right, left, second
+    right, second left — skipping severed arms, so losing the right arm makes
+    the off hand lead.
+  - The chain passes each arm's slot to `_execute_arm_chain_attack`, which sets
+    `CombatUnit.active_weapon_slot` for the length of that swing. Damage,
+    damage type, crit, weapon traits and on-hit procs each fetch the weapon off
+    the unit themselves, so one transient field reaches all of them; threading a
+    weapon argument through every one of those would have been much larger and
+    easier to get wrong. Cleared on entry and exit.
+  - An arm holding nothing punches with its natural weapon. Only the main hand
+    falls back to the off hand — an empty second arm does not borrow.
+  - Equipping fills the first free hand and sends the overflow to the pack
+    rather than knocking a held weapon out, which is what a second chest piece
+    already did.
+
+  **Damage does not explode.** Extra arms already swung at full damage with the
+  main weapon; what changes is WHICH weapon each swings, so the gain is the
+  other weapons' traits and damage types. The chain still self-limits:
+  `get_arm_attack_chance` is 50/25/10% at base finesse and stops at the first
+  failure, so four arms at Finesse 14 average about two swings, not four.
+
+  **And a third bug, the one this uncovered: no dual-wielder has ever chained.**
+  The `should_chain` check read `equipment["weapon_off"]` — a flat key — and
+  before that `equipment["weapon_off_2"]`, which has never existed at all.
+  Weapons live in `equipment.weapon_set_N.off`, so the lookup always came back
+  empty and the second attack belonged to four-armed species and locked natural
+  weapons alone. It resolves through ItemSystem now.
+
+  **Two things still open:**
+  - [ ] **No race is four-armed.** `body_plan_species` is declared by exactly
+        five births — three avian, one serpentine, one mantis — and none uses
+        `four_armed`, so the plan and everything above it is machinery waiting
+        for content. Asura and god births are the obvious candidates given the
+        iconography, and both realms are unbuilt. Until one exists this reaches
+        the game only through generated characters.
+  - [ ] **The equipment doll shows two weapon slots.**
+        `main_menu._setup_equipment_doll()` builds a fixed layout once, guarded
+        by `_doll_initialized`, so the extra hands need the doll to rebuild per
+        character and two more positioned slots. Deliberately not attempted
+        blind — it is layout work that wants the engine running. Generated
+        characters equip all four hands through `_find_slot_for_item` already;
+        it is manual equipping that cannot reach them.
 - [ ] **`extra_arm_results` isn't shown in the combat UI** — the multi-arm chain
   writes per-arm hit/damage into the result dict and the combat log prints it,
   but the unit frames don't (no "Arm 2: 12 dmg" popup).
