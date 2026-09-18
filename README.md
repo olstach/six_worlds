@@ -18,16 +18,21 @@ content, not machinery.
 |---|---|---|---|---|---|
 | Hell | ✓ cold/fire + divider | ✓ 45 archetypes | ✓ 79 | ✓ | ✓ 24 |
 | Hungry Ghost | ✓ 3 zones | ✓ 23 archetypes | ✓ 150 | ✓ | ✓ 23 |
-| Animal | ✓ ocean/forest/meadow | ✓ 34 archetypes | ✓ 86 | ✓ | ✓ 24 |
+| Animal | ✓ ocean/forest/meadow | ✓ 43 archetypes | ✓ 86 | ✓ | ✓ 52 |
 | Human / Asura / God | — | — | — | — | — |
 
 **Never played end to end.** Individual systems are verified; the full loop
 (reincarnate → explore → fight → die → reincarnate) has not been sat down with.
 Expect the first real playthrough to find things no check here catches.
 
-At a glance: 21 autoloads, 39 scripts, ~42k lines of GDScript, 604 perks,
-363 spells, 606 items, 348 events, 168 statuses, 121 traits, 99 companions,
-114 enemy archetypes, 91 shops.
+At a glance: 21 autoloads, 39 scripts, ~42k lines of GDScript, 605 perks,
+377 spells, 736 items, 348 events, 187 statuses, 118 traits, 99 companions,
+114 enemy archetypes, 91 shops, 120 backgrounds.
+
+These are counted from the data, last on 2026-09-18. They drift — `604 perks,
+363 spells, 606 items, 168 statuses, 121 traits` stood here while the real
+numbers were the ones above, and the animal realm's row said 34 archetypes and
+24 companions against a real 43 and 52.
 
 ---
 

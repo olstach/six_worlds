@@ -1,6 +1,6 @@
 # Six Worlds — TODO
 
-**Last updated:** 2026-09-12
+**Last updated:** 2026-09-18
 
 The open list. Organised as: **what to do next → what is still open → designs
 waiting to be built → what got done**. The full historical checklists (every
@@ -9,11 +9,12 @@ preserved in git at commit `73a948c`.
 
 `README.md` holds the current state of the project — realm coverage, content
 totals, how to run and verify it. It is not repeated here, because this file
-kept a second copy of those numbers and they drifted: as of today it still
-claimed 600 perks, 565 items, 103 traits and Godot 4.6 against a real 604, 606,
-121 and 4.7.2. One place for facts.
+kept a second copy of those numbers and they drifted. One place for facts — and
+the facts drift there too, so they are counted from the data rather than carried
+forward: the 2026-09-18 pass found five of nine wrong.
 
 Companion documents:
+- `WRITING.md` — everything that wants Olaf's voice, in one list
 - `PERKS.md` — perk trees per skill, hand-maintained
 - `CHARACTERS.md` — companion bios, hand-maintained
 - `docs/review/` — all realm prose; round-trips to JSON via
@@ -56,8 +57,19 @@ Then, depending on appetite:
 
 - [ ] **All recent prose is Claude's and wants Olaf's pass.** The three hungry
       ghost map-critical events (boss + both pass guardians), the 34 further HG
-      events, the 47 animal zone events, and the 24 animal companion bios.
-      Marked **NEW EVENT** / **NEW** in `docs/review/`.
+      events, the 47 animal zone events, and the animal companion bios — **52 of
+      them, not 24**; the birth-by-birth pass doubled the roster and this line
+      was not updated.
+
+      They are **not** currently marked **NEW EVENT** / **NEW** in
+      `docs/review/`: the markers need a base snapshot, none is configured, and
+      each document says so in its own header. The content batches also predate
+      this repository's visible history, so git cannot separate them either. Set
+      `REVIEW_BASE_SNAPSHOT` and re-export to turn them back on.
+
+      The whole writing list now lives in **`WRITING.md`**, compiled 2026-09-18
+      and checked against the data — including the three items that turned out
+      not to need writing at all.
 
 ---
 
@@ -611,14 +623,24 @@ the Earth/Black plant line — so the work went where the gaps were:
       - **`max_companions`** — done 2026-09-12 as `party_max_companions`. Two
         companions come free; Leadership adds one at 3, 6 and 9, topping out at
         a party of six.
-- [ ] **Needs a proc site, not a consumer** (4 keys): `stun_chance_pct` (maces
-      on-hit), `burning_damage_pct` (fire DoT), `status_effect_chance_pct`
-      (status application), `luck_pct`. Each is its own small integration.
-- [ ] **`effect_duration_pct` is a DUPLICATE, not a gap.** Enchantment's
-      duration bonus already works, computed straight from the skill level in
-      `_calculate_status_duration` (+1 turn per 2 levels). Wiring the table key
-      would double-count it. Decide which one is the truth and delete the other
-      — do not wire this.
+- [x] ~~**Needs a proc site, not a consumer** (4 keys)~~ — all four are wired
+      (confirmed 2026-09-18, this entry was never ticked). `stun_chance_pct` at
+      `combat_manager.gd:9845`, `burning_damage_pct` on the fire DoT tick at
+      `:5199`, `status_effect_chance_pct` in `effective_status_chance()` at
+      `:7377`. `luck_pct` is the interesting one: rather than becoming a number
+      of its own it feeds **crit chance and loot chance**, which is what Comedy's
+      luck was always describing.
+- [x] ~~**`effect_duration_pct` is a DUPLICATE, not a gap**~~ — settled. The
+      duplicate was deleted and the table is the truth: Enchantment's
+      contribution comes from `effect_duration_turns`, read in
+      `_calculate_status_duration`, and the parallel `_pct` key is gone. The
+      rule is no longer restated in code.
+
+**So one `base_bonuses` key is left without a consumer: `crafting_quality_pct`**,
+and for the reason already recorded — camp crafting has no quality concept to
+attach to. `tools/vocabulary_baseline.json` listed four until 2026-09-18; the
+other three had been wired on 09-16 and the baseline was never shrunk, which is
+the same drift in the file that exists to catch drift.
 - [ ] **Original design notes:** They behave
       like equipment bonuses — another additive source folded into `derived` —
       except the source is a different character's skill. No ordering problem
@@ -678,23 +700,37 @@ the Earth/Black plant line — so the work went where the gaps were:
 
 ## 7. Content that wants writing
 
-- [ ] **A prose pass on 81 events and 24 companion bios.** The animal realm's 47
+- [ ] **A prose pass on 81 events and 52 companion bios.** The animal realm's 47
   zone events, hungry ghost's 34 gap-fill events, the three HG boss/pass-guardian
-  events, and all 24 animal companion bios are Claude's prose, not yours. This is
-  the single biggest content item and only you can do it.
-- [ ] **53 events are grey-only** (of 347 with choices) — no blue or yellow
-  option at all. The stated target is ≥2 meaningful checks per event. The trait
-  sweep reduced this from 63 by giving some of them their first gated choice.
-- [ ] **500 of 600 perks have empty `flavor`.** Better in your voice than mine.
+  events, and all **52** animal companion bios (the count was 24 before the
+  birth-by-birth pass) are Claude's prose, not yours. This is the single biggest
+  content item and only you can do it. Broken out with the roster in
+  **`WRITING.md`**.
+- [x] ~~**53 events are grey-only**~~ — **a miscount of the task, not of the
+  events** (checked 2026-09-18). The 53 are real, but **52 of them are
+  storefronts**: teahouses, town shops, mercenary guilds, training camps,
+  peddlers and landmark temples, whose two grey choices are "browse wares"
+  (outcome `shop`) and "leave" (outcome `text`). That is correct for a
+  re-enterable location, and `docs/review/README.md` already says so about the
+  same set. The only genuine narrative event among them is `hg_sigh_of_relief`,
+  a deliberate one-beat toast — a cairn with a folded cloth, +15% HP and mana,
+  `touched_by_grace`. There is no ≥2-checks gap to close.
+- [ ] **500 of 605 perks have empty `flavor`.** Better in your voice than mine.
+  Counts per skill are in `WRITING.md`; the heaviest are the 36 cross-perks and
+  performance's 19.
 - [ ] **Quests: 3 total, all hell.** The board works and the validator now
   guarantees every step flag is settable, but hungry ghost and animal have none.
 - [ ] **Hell event chains still unwritten** from the original list: soul caravan
   ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim,
   rival party.
-- [ ] **Realm-specific wounds** — 5 base types exist (3 wounds, 2 diseases);
-  target ~8–10. Wanted: arrow wound, poisoned wound, spiritual corruption
-  (resists medicine, needs Ritual/Yoga), HG malnutrition, animal parasites,
-  hell frostbite/burns. Design notes in `EDIT_LATER.md`.
+- [x] ~~**Realm-specific wounds** — 5 base types exist; target ~8–10~~ —
+  **there are 17** (`WOUND_TYPES` in `wound_system.gd`), and they include every
+  one this item asked for: `barbed_wound` (the arrow wound), `poisoned_blood`
+  and `venom_shock`, `spiritual_corruption`, `marrow_chill` and `burn` for hell,
+  plus `bone_fever`, `brain_fever`, `death_rot`, `psychic_miasma` and
+  `rot_sickness`. Overshot the target and was never ticked off. What is still
+  open is a *balance* question, and it is already in §9: whether diseases should
+  share the physical wound table by `body_location`.
 - [ ] **Consumables and equipment are thin** in realm-specific flavour — 68
   legendary-rarity items exist, so the tier itself is covered.
 - [ ] **Astrological spells (Space)** — divination, eclipse/conjunction
@@ -779,11 +815,11 @@ timed terrain tiles), `create_images` / `smoke_and_mirrors` (illusion units),
 `the_lineage_continues` (companion spell-teaching), `black_market_contacts` /
 `fence` (black-market tier), `patron_of_the_arts` (renown).
 
-**Wound/body perks designed, not written:** `hardened` (Con 14+, 50% chance to
-negate an incoming crit wound), `undead_hunter` (Earth magic 3+, disease
-immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
-`escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
-1–2 always fire, 3+ still roll).
+~~**Wound/body perks designed, not written:**~~ **all four are built**
+(confirmed 2026-09-18; this entry was stale). `hardened` negates a crit wound at
+`combat_manager.gd:9510`, `undead_hunter` blocks the disease at `:9148`,
+`stubborn_body` adds its rest at `wound_system.gd:372`, and `iron_cortex`
+guarantees the second arm at `:1934`.
 
 ### Active perks without a resolver: none (was 26 — 2026-09-16/17)
 
@@ -1310,15 +1346,41 @@ one-line edit.
   use — top weapon skill picks the weapon, and a high Performance or Ritual
   should put an instrument or implement in their hands.
 
-- **Background assignment wants a pass across all births.** 94 backgrounds, but
-  only 3 are universal (`healer`, `reveler`, `wanderer`) and 55 are single-birth
-  — 58% of them. Average 4.8 births per background. Mriga was in none of the 22
-  broadly-available ones (`warrior` covers 18 births, `scholar` 14,
-  `merchant`/`guard`/`diplomat`/`noble`/`monk` 13) purely because it was created
-  after those lists were authored; ten were opened to it by hand. Every future
-  birth hits the same trap. After the animal-birth pass, go over all births and
-  reassign, add, or generalise backgrounds — and check gana first, which was
-  split at the same time as mriga.
+- **Background assignment — the premise was wrong, and the real finding is
+  worse.** *(Rewritten 2026-09-18.)* This asked for a pass over every birth's
+  `typical_backgrounds` list, on the grounds that only 3 of 94 backgrounds were
+  universal and mriga had been left out of the broadly-available ones.
+
+  **`typical_backgrounds` is read by no game script.** The only consumer is
+  `tools/export_review_docs.py`. Character creation calls
+  `KarmaSystem.select_random_background()`, which iterates the *backgrounds*
+  table and reads `available_races`, treating an empty list as universal — so
+  the field that decides what a birth can be is on the other side of the
+  relation, and the field this item proposed editing is documentation.
+
+  The live numbers: **120 backgrounds, 33 of them universal**, so every birth
+  already draws from at least 33 while its `typical_backgrounds` lists three to
+  five. Across the 47 births the two disagree **1,525 times** (offered but not
+  listed) against 16 the other way. Mriga was never excluded from anything.
+
+  Three of the listed names — `beggar` (yidag), `sorcerer` and `courtier`
+  (skeleton_copper) — **are not defined in the backgrounds table at all**.
+  Harmless at runtime precisely because nothing reads the field, and invisible
+  in the review documents because the exporter filters unknown ids. validate_data.py
+  checks `companion.background` and `background.available_race` but not this
+  direction, which is why they survived.
+
+  So the open question is not "reassign backgrounds" but **what
+  `typical_backgrounds` is for**:
+  - *Wire it* — make selection prefer a birth's typical list and fall back to
+    the universal pool, which makes births read distinctly and gives the field
+    teeth. Then the three undefined ids become real bugs and want fixing first.
+  - *Drop it* — delete the field, let `available_races` be the single statement,
+    and regenerate the review docs from that instead.
+
+  Either way `validate_data.py` should check the direction it does not check
+  today. Not a content pass until this is decided — editing the lists now is
+  writing into a field the game ignores.
 
 - **Spell learning should cost XP.** `CharacterSystem.learn_spell` currently has
   no cost and no eligibility gate at all; it appends to `known_spells`. Making
@@ -1395,10 +1457,30 @@ Spec: `docs/superpowers/specs/2026-08-31-enemy-xp-generation-design.md`
 
 ## 13. The passive perk backlog (2026-09-10)
 
-The engine is built and proven; the data is barely started. Of 470 passive
-perks: **168** are implemented by hand in `scripts/` (checked by id with
-`PerkSystem.has_perk()` at the moment they matter), **5** carry an `effects`
-array, **297** are still description-only.
+The engine is built and proven; the data is barely started. Of **471** passive
+perks (recounted 2026-09-18): **140** are implemented by hand in `scripts/`
+(checked by id with `PerkSystem.has_perk()` at the moment they matter), **7**
+more are implemented through data the engine resolves generically — 5 carrying
+an `effects` array, plus `immune_system` and `avatar_of_the_storm` through
+`aura`, and `sure_step` through `grants_movement_ability` — and **324** are
+still description-only.
+
+**That is 27 more than the 297 this entry used to claim, and the number never
+went the other way.** `tools/wire_passive_perks.py` computed it as
+`passive_total − hardcoded − wired`, where `hardcoded` was every perk id
+appearing in `scripts/` — **including 34 active and mantra perks that are not
+passives at all**, so they were subtracted from a total they were never in. The
+tool's own summary line was the source, so the figure was wrong in the tool and
+in this file at once. Fixed 2026-09-18: the script now counts passives against
+passives and credits data-driven implementations, and prints the split rather
+than one number.
+
+One perk the id-scan reports as implemented is not: **`soothing_presence`**
+(Yoga 2, "+10% success chance on rolls for non-violent solutions in dialogue")
+appears in `scripts/` only inside a doc comment in `aura_system.gd`, which
+happens to use the same string as its example. It is description-only, and it is
+a `non_combat` effect, so it is blocked on the consumer gap below rather than on
+authoring.
 
 **The rule everything rests on:** a hand-implemented perk must never *also*
 carry an `effects` array, or it fires twice. `tools/wire_passive_perks.py`
@@ -1411,8 +1493,12 @@ Improved Parry — the plan document's own worked example of a
 Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
 `resistance`, `on_trigger`.
 
-- [ ] **Author the remaining 297.** Mechanical, and the tooling refuses bad
-      data, but it is a long pass. Worth doing skill by skill.
+- [ ] **Author the remaining 324.** Mechanical, and the tooling refuses bad
+      data, but it is a long pass. Worth doing skill by skill. The heaviest are
+      the 30 cross-perks, then fire_magic (15), comedy (14), performance (14),
+      thievery (14), summoning (13) and alchemy (13); eleven skills have four or
+      fewer left. `python3 tools/wire_passive_perks.py` prints the split on
+      every run.
 - [ ] **`non_combat` effects are deliberately unbuilt.** ShopSystem and
       EventManager have no consumer for them. Authoring an effect before its
       reader exists is the exact failure this whole pass spent its time
@@ -1691,82 +1777,64 @@ Setting Sun (copper construct), Matriarch of All Longing (yidag).
 
 ---
 
-# Part III — Per-level skill bonuses with no consumer
+# Part III — Per-level skill bonuses: closed 2026-09-18
 
-Found 2026-07-27. Kept in full because it is the largest actionable gap.
+**This part is finished, and was finished long before anyone said so.**
 
-`perks.json` → `base_bonuses` gives every skill a per-level stat table, and
-`CharacterSystem.update_derived_stats()` applies **13 of the 40 stat keys**. The
-other 27 are read by nothing, so those skill levels grant their combat numbers
-and then silently grant nothing else. Levelling Trade to 10 currently confers no
-discount, Grace no movement, Logistics no travel or supply benefit.
+It was written on 2026-07-27 and read, until today, that
+`CharacterSystem.update_derived_stats()` applied **13 of 40** `base_bonuses`
+stat keys and the other 27 were dead — that Trade 10 conferred no discount,
+Grace no movement, Logistics no travel or supply benefit. It then listed all 27
+in a table, with a target system and a balance note for each.
 
-Applied today: `attack`, `damage`, `strength_weapon_damage`, `crit_chance`,
-`armor`, `armor_penetration`, `max_hp`, `damage_reduction_pct`, `spellpower`,
-`mana_cost`, `dodge`, `stamina`, `initiative`.
+None of that is true any more, and most of it stopped being true during the
+September wiring phases. §6 recorded the correction on 2026-09-16 — the real
+figure at that point was **4 of 39** unwired, not 27 of 40 — but Part III was
+left standing, so the file carried both numbers in two places for two days shy
+of a month, and the larger, older, more alarming one came first.
 
-**Not applied** (value at L1 / L5 / L10, all percentages):
+**The live state: one key of 39 has no consumer, `crafting_quality_pct`**, and
+it is blocked on design rather than wiring — camp crafting pulls from a fixed
+`CRAFT_TABLE` with no quality concept, so there is nothing for a quality
+percentage to modify. It is the single remaining entry under `base_bonuses stat`
+in `tools/vocabulary_baseline.json`.
 
-| Stat key | Granted by | L1 / L5 / L10 |
-|---|---|---|
-| `burning_damage` | fire_magic | 5.0 / 75.0 / 130.0 |
-| `buy_discount` | trade | 5.0 / 35.0 / 60.0 |
-| `charm_effectiveness` | persuasion | 5.0 / 75.0 / 130.0 |
-| `consumable_power` | alchemy | 10.0 / 75.0 / 130.0 |
-| `crafting_quality` | smithing | 10.0 / 75.0 / 130.0 |
-| `crafting_yield` | alchemy | 10.0 / 50.0 / 75.0 |
-| `effect_duration` | enchantment | 5.0 / 45.0 / 75.0 |
-| `healing_effectiveness_(party)` | medicine | 10.0 / 75.0 / 130.0 |
-| `loot_quality` | thievery | 5.0 / 45.0 / 75.0 |
-| `luck_modifier` | comedy | 5.0 / 25.0 / 50.0 |
-| `magic_damage_resistance` | yoga | 5.0 / 50.0 / 75.0 |
-| `max_companions` | leadership | 1.0 / 5.0 / 5.0 |
-| `mental_resistance` | yoga | 5.0 / 75.0 / 125.0 |
-| `morale_effects` | leadership / performance | 5.0 / 50.0 / 100.0 |
-| `movement_speed` | grace | 10.0 / 40.0 / 65.0 |
-| `party_skill_checks` | learning | 1.0 / 5.0 / 10.0 |
-| `party_xp_gain` | learning | 3.0 / 15.0 / 42.0 |
-| `poison/disease_resistance_(party)` | medicine | 10.0 / 50.0 / 75.0 |
-| `repair_efficiency` | smithing | 10.0 / 60.0 / 85.0 |
-| `sell_markup` | trade | 5.0 / 45.0 / 70.0 |
-| `social_roll_success` | performance | 5.0 / 50.0 / 75.0 |
-| `status_effect_chance` | ritual | 5.0 / 50.0 / 75.0 |
-| `summon_hp` | summoning | 10.0 / 60.0 / 85.0 |
-| `supply_duration_(party)` | logistics | 10.0 / 60.0 / 85.0 |
-| `trading_price` | persuasion | 5.0 / 25.0 / 50.0 |
-| `trap_detection` | thievery | 10.0 / 60.0 / 85.0 |
-| `travel_speed_(party)` | logistics | 5.0 / 35.0 / 60.0 |
+Everything the old table listed as dead now lands somewhere:
 
-Each needs a target system and a balance decision, which is why this is not a
-mechanical fix:
+- **Shops** — `buy_discount`, `sell_markup`, `trading_price` converged with the
+  hand-rolled discounts that disagreed with them (Phase 2, 09-12).
+- **Overworld** — `party_travel_speed_pct`, `party_supply_duration_pct`
+  (Phase 3, 09-12).
+- **XP and checks** — `party_xp_gain_pct`, `party_skill_check_bonus`
+  (Phase 3, 09-12).
+- **Social** — `charm_effectiveness_pct` and `social_roll_pct` turned out to be
+  one stat with two sources and became `party_social_roll_pct`; `morale_pct` was
+  deleted as a relic of the idea that became PsychologySystem.
+- **Party size** — `max_companions` became `party_max_companions`: two free,
+  Leadership adding one at 3, 6 and 9.
+- **Loot, crafting, traps** — `loot_quality_pct`, `crafting_yield_pct` and
+  `trap_detection_pct`, wired 09-16, each to a consumer that was already waiting
+  rather than one invented for it.
+- **Proc sites** — `stun_chance_pct`, `burning_damage_pct`,
+  `status_effect_chance_pct` all fire; `luck_pct` feeds crit chance and loot
+  chance instead of becoming a number of its own.
+- **`effect_duration_pct`** was a duplicate and was deleted, not wired. The
+  Enchantment table holds the numbers as `effect_duration_turns`.
 
-- **Shops** (`buy_discount`, `sell_markup`, `trading_price`) — fold into
-  `ShopSystem.get_price_modifier_summary()`. Trade 10 currently reads 60% off /
-  70% markup, which may be intended as a soft cap rather than literal.
-- **Overworld** (`travel_speed_(party)`, `supply_duration_(party)`) — party
-  speed and per-step food cost in `overworld.gd`.
-- **Loot** (`loot_quality`) — `CombatManager._get_modified_rarity_weights()`
-  already takes Luck; add the Thievery term.
-- **XP / checks** (`party_xp_gain`, `party_skill_checks`) —
-  `CompanionSystem.apply_party_xp()` and `EventManager._resolve_roll_dc()`.
-- **Combat** (`summon_hp`, `burning_damage`, `status_effect_chance`,
-  `effect_duration`, `mental_resistance`, `magic_damage_resistance`) — summon
-  spawn, DoT tick, status apply chance, status duration, resistance lookup.
-- **Camp / crafting** (`crafting_quality`, `crafting_yield`,
-  `repair_efficiency`, `consumable_power`) — the camp activity handlers.
-- **Party** (`max_companions`) — no party-size cap exists yet.
-- **Social** (`charm_effectiveness`, `social_roll_success`, `morale_effects`,
-  `luck_modifier`) — event roll resolution.
-- **Medicine, party-wide** (`healing_effectiveness_(party)`,
-  `poison/disease_resistance_(party)`) — rest healing and wound escalation.
+The two display-style key names this part asked to be tidied
+(`healing_effectiveness_(party)`, `poison/disease_resistance_(party)`) are
+snake_case now, and `perks.json`'s `base_bonuses._comment` carries the naming
+convention with validate_data.py enforcing it.
 
-Cheapest and most visible first: shops, overworld, loot.
-
-Two keys also use display-style names (`healing_effectiveness_(party)`,
-`poison/disease_resistance_(party)`) that should become plain snake_case when
-they are wired.
+**The lesson worth keeping**, since this file exists partly to record them: the
+bug class here was never the unwired keys. It was that the *record* of them
+outlived the fix by a month and stayed at the top of the largest heading in the
+document. The data→code check in `validate_data.py` now catches the underlying
+problem automatically; nothing catches a stale paragraph, so Part III is kept as
+a closed section rather than deleted.
 
 ---
+
 
 # Part IV — What got done
 

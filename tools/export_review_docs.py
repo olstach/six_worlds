@@ -110,14 +110,18 @@ def export_events(src, outfile, title):
     # marked rather than everything being marked new.
     mark_new = base is not None
 
-    new_events = [e for e in events if e not in base_events] if mark_new else []
+    # animal_events.json carries eight `_comment_*` keys whose values are
+    # strings, not events. The render loop below skips them; the header count
+    # did not, so the document announced 94 events above 86 sections.
+    real_events = [eid for eid, e in events.items() if isinstance(e, dict)]
+    new_events = [e for e in real_events if e not in base_events] if mark_new else []
     intro = (f"{len(new_events)} added since the base snapshot, marked **NEW EVENT**. "
              "Individual choices added to an older event are marked **NEW**."
              if mark_new else
              "No base snapshot is set, so nothing is marked as new — see the header of "
              "`export_review_docs.py` for how to turn the NEW markers back on.")
     lines = [f"# {title} — Events\n",
-             f"*{len(events)} events. {intro}*\n",
+             f"*{len(real_events)} events. {intro}*\n",
              "*Edit the prose between the anchors. Headings, ids and the mechanical "
              "lines under each choice are generated — edits there are lost.*\n",
              "---\n"]
@@ -189,7 +193,7 @@ def export_events(src, outfile, title):
         lines.append("\n---\n")
 
     write(outfile, "\n".join(lines))
-    return len(events), len(new_events)
+    return len(real_events), len(new_events)
 
 
 def export_animal_companions():

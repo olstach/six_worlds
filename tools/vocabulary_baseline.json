@@ -1,12 +1,9 @@
 {
   "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason.",
   "base_bonuses stat": {
-    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member \u2014 see PartyBonuses), a bare name is flat. Four remain, each blocked on design work rather than wiring: crafting_quality_pct and crafting_yield_pct wait on the equipment and crafting audit (non-consumable items gaining a quality, Smithing producing equipment); loot_quality_pct waits on the loot design (total value from the defeated party's XP, with Luck buying a chance at one better item instead of several common ones); trap_detection_pct waits on the traps design. All three are written up in TODO.",
+    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member \u2014 see PartyBonuses), a bare name is flat. One remains: crafting_quality_pct waits on the equipment and crafting audit \u2014 camp crafting pulls from a fixed CRAFT_TABLE with no quality concept, so there is nothing for it to modify. Written up in TODO. crafting_yield_pct, loot_quality_pct and trap_detection_pct were wired on 2026-09-16 and removed from this list on 09-18, which is a month of the list that catches drift having drifted.",
     "values": [
-      "crafting_quality_pct",
-      "crafting_yield_pct",
-      "loot_quality_pct",
-      "trap_detection_pct"
+      "crafting_quality_pct"
     ]
   },
   "status effect": {

@@ -13,7 +13,7 @@ Run:
 
 The load-bearing rule
 ---------------------
-164 perks are already implemented by hand in `scripts/`, checked by id with
+Around 140 passive perks are implemented by hand in `scripts/`, checked by id with
 `PerkSystem.has_perk()` at the moment they matter. Giving one of those an
 `effects` array would make it fire twice — once from its hand-written branch
 and once from the engine. So this script derives the hardcoded set by scanning
@@ -132,8 +132,39 @@ def all_perks(data):
     return out
 
 
+def _strip_comments(text):
+    """Drop GDScript comments, so a perk named only in prose is not counted.
+
+    `soothing_presence` is the case that motivated this: its id appears in
+    scripts/ exactly once, inside a doc comment in aura_system.gd that uses it
+    as an EXAMPLE of a status aura name. The perk itself (a dialogue bonus) is
+    unimplemented, but a plain substring scan called it hardcoded — which both
+    hid it from this backlog and would have refused to wire it.
+
+    Truncates each line at the first `#` outside a double-quoted string.
+    """
+    out = []
+    for line in text.splitlines():
+        in_string = False
+        cut = len(line)
+        i = 0
+        while i < len(line):
+            ch = line[i]
+            if ch == "\\" and in_string:
+                i += 2
+                continue
+            if ch == '"':
+                in_string = not in_string
+            elif ch == "#" and not in_string:
+                cut = i
+                break
+            i += 1
+        out.append(line[:cut])
+    return "\n".join(out)
+
+
 def hardcoded_perk_ids(perk_ids):
-    """Perk ids referenced by string literal anywhere in scripts/.
+    """Perk ids referenced by string literal in scripts/, comments excluded.
 
     These are implemented by hand and must never also carry `effects`.
     """
@@ -141,7 +172,9 @@ def hardcoded_perk_ids(perk_ids):
     for root, _, files in os.walk(SCRIPTS):
         for name in files:
             if name.endswith(".gd"):
-                source.append(pathlib.Path(root, name).read_text(encoding="utf-8"))
+                source.append(
+                    _strip_comments(pathlib.Path(root, name).read_text(encoding="utf-8"))
+                )
     blob = "\n".join(source)
     return {pid for pid in perk_ids if f'"{pid}"' in blob}
 
@@ -216,15 +249,29 @@ def main():
             print("  -", e, file=sys.stderr)
         return 1
 
-    passive_total = sum(
-        1 for p, v in perks.items()
+    # Count passives against passives. This used to subtract `hardcoded &
+    # set(perks)` — every perk id appearing in scripts/, actives and mantras
+    # included — from the PASSIVE total, so 34 perks that were never in the
+    # total were taken out of it and the description-only figure came out 27
+    # low. TODO.md quoted that number for a month.
+    passives = {
+        pid for pid, v in perks.items()
         if not v["description"].startswith("Active") and not v.get("is_mantra")
-    )
-    print(f"passive perks:            {passive_total}")
-    print(f"  hardcoded in scripts/:  {len(hardcoded & set(perks))}")
-    print(f"  wired to effects here:  {len(PASSIVE_EFFECTS)}")
-    print(f"  still description-only: "
-          f"{passive_total - len(hardcoded & set(perks)) - len(PASSIVE_EFFECTS)}")
+    }
+    # A perk can also be implemented without its id appearing in scripts/, by
+    # declaring data the engine resolves generically. Those are implemented as
+    # surely as a hand-written branch and must not be counted as unwritten.
+    by_data = {
+        pid for pid in passives
+        if perks[pid].get("effects")
+        or perks[pid].get("aura")
+        or perks[pid].get("grants_movement_ability")
+    }
+    by_id = (hardcoded & passives) - by_data
+    print(f"passive perks:            {len(passives)}")
+    print(f"  hardcoded in scripts/:  {len(by_id)}")
+    print(f"  implemented via data:   {len(by_data)}")
+    print(f"  still description-only: {len(passives - by_id - by_data)}")
 
     if not args.write:
         print("\ndry run — pass --write to apply")
