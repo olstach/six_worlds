@@ -303,7 +303,7 @@ func _on_begin_new_life() -> void:
 	var background = _reincarnation_result.get("background", "wanderer")
 
 	# Generate a name for the new character
-	var new_name = _generate_name(birth, realm)
+	var new_name = CharacterSystem.generate_character_name(birth, realm)
 
 	# Create the new character, preserving persistent progression
 	CharacterSystem.start_new_life(new_name, birth, background)
@@ -323,43 +323,3 @@ func _on_begin_new_life() -> void:
 
 	# Transition to overworld in the new realm (fade out first)
 	_fade_and_goto("res://scenes/overworld/overworld.tscn")
-
-
-## Generate a thematic name based on birth/realm
-## These are simple placeholders — can be expanded with name lists later
-func _generate_name(birth: String, realm: String) -> String:
-	var hell_names = ["Mara", "Yama", "Rahu", "Kali", "Rudra", "Agni", "Vetala"]
-	# Hungry ghost names draw from Tibetan preta lore and Sanskrit sources.
-	# Sub-races covered: yidag (pretas proper), rolang (reanimated corpses),
-	# skeleton variants, vetala (possession spirits), dralha (corrupted war-spirits),
-	# gyelpo (gyalpo demons), dré (obstacle spirits), shaza (flesh-eaters).
-	var ghost_names = [
-		# Tibetan-rooted — evoke craving, hollowness, wandering
-		"Nyönpa", "Khanag", "Drekpa", "Zhöchen", "Rolma", "Migme",
-		"Gongchen", "Dukpa", "Kyangbu", "Bayang", "Shangku", "Thamchen",
-		"Lungwa", "Trungkar", "Bardowa", "Dregchen", "Sogme", "Rimchen",
-		"Kyiduk", "Khyimdag", "Dokma", "Zangkar", "Phagchen", "Chöbar",
-		# Sanskrit-rooted — preta tradition
-		"Preta", "Vetali", "Pishacha", "Bhutika", "Apasmara", "Skandha",
-		"Jivaka", "Nirjhara", "Kshudha", "Trishna", "Abhava", "Pretaraja",
-		# Names evoking specific races
-		"Rolang", "Keting", "Gyelchen", "Drelwa",   # rolang / skeleton / gyelpo
-		"Tsenkar", "Dralkar", "Dralnak", "Tsensen", # dralha / tsen-adjacent
-		"Yidag", "Shazama", "Drema", "Nyönchen",    # yidag / shaza / dré
-	]
-	var animal_names = ["Naga", "Garuda", "Makara", "Simha", "Kinnara", "Vyala"]
-	var human_names = ["Tenzin", "Dorje", "Pema", "Karma", "Lobsang", "Drolma", "Sonam", "Jigme"]
-	var asura_names = ["Vemacitrin", "Rahu", "Svarbhanu", "Pahari", "Danava", "Daitya"]
-	var god_names = ["Deva", "Brahma", "Indra", "Surya", "Chandra", "Vayu", "Varuna"]
-
-	var name_pool: Array
-	match realm:
-		"hell": name_pool = hell_names
-		"hungry_ghost": name_pool = ghost_names
-		"animal": name_pool = animal_names
-		"human": name_pool = human_names
-		"asura": name_pool = asura_names
-		"god": name_pool = god_names
-		_: name_pool = human_names
-
-	return name_pool[randi() % name_pool.size()]

@@ -1549,3 +1549,102 @@ func load_save_data(data: Dictionary) -> void:
 		# Recalculate derived stats to pick up any formula changes
 		update_derived_stats(character)
 		party.append(character)
+
+
+# ── Character naming ─────────────────────────────────────────────────────────
+# Moved out of bardo_screen.gd on 2026-09-18: a UI script owned the only name
+# generator, so the new-game path could not reach it and hardcoded a name
+# instead. Both paths call generate_character_name() now.
+
+const HELL_NAMES: Array[String] = ["Mara", "Yama", "Rahu", "Kali", "Rudra", "Agni", "Vetala"]
+# Hungry ghost names draw from Tibetan preta lore and Sanskrit sources.
+# Sub-races covered: yidag (pretas proper), rolang (reanimated corpses),
+# skeleton variants, vetala (possession spirits), dralha (corrupted war-spirits),
+# gyelpo (gyalpo demons), dré (obstacle spirits), shaza (flesh-eaters).
+const GHOST_NAMES: Array[String] = [
+	# Tibetan-rooted — evoke craving, hollowness, wandering
+	"Nyönpa", "Khanag", "Drekpa", "Zhöchen", "Rolma", "Migme",
+	"Gongchen", "Dukpa", "Kyangbu", "Bayang", "Shangku", "Thamchen",
+	"Lungwa", "Trungkar", "Bardowa", "Dregchen", "Sogme", "Rimchen",
+	"Kyiduk", "Khyimdag", "Dokma", "Zangkar", "Phagchen", "Chöbar",
+	# Sanskrit-rooted — preta tradition
+	"Preta", "Vetali", "Pishacha", "Bhutika", "Apasmara", "Skandha",
+	"Jivaka", "Nirjhara", "Kshudha", "Trishna", "Abhava", "Pretaraja",
+	# Names evoking specific races
+	"Rolang", "Keting", "Gyelchen", "Drelwa",   # rolang / skeleton / gyelpo
+	"Tsenkar", "Dralkar", "Dralnak", "Tsensen", # dralha / tsen-adjacent
+	"Yidag", "Shazama", "Drema", "Nyönchen",    # yidag / shaza / dré
+]
+const ANIMAL_NAMES: Array[String] = ["Naga", "Garuda", "Makara", "Simha", "Kinnara", "Vyala"]
+const HUMAN_NAMES: Array[String] = ["Tenzin", "Dorje", "Pema", "Karma", "Lobsang", "Drolma", "Sonam", "Jigme"]
+const ASURA_NAMES: Array[String] = ["Vemacitrin", "Rahu", "Svarbhanu", "Pahari", "Danava", "Daitya"]
+const GOD_NAMES: Array[String] = ["Deva", "Brahma", "Indra", "Surya", "Chandra", "Vayu", "Varuna"]
+
+## Realm fallback pools, by realm id.
+const REALM_NAME_POOLS: Dictionary = {
+	"hell": HELL_NAMES,
+	"hungry_ghost": GHOST_NAMES,
+	"animal": ANIMAL_NAMES,
+	"human": HUMAN_NAMES,
+	"asura": ASURA_NAMES,
+	"god": GOD_NAMES,
+}
+
+const ANIMAL_NAMES_PATH: String = "res://resources/data/animal_realm_names.json"
+
+## birth id -> personal names that birth gives its children. Built once.
+var _birth_name_cache: Dictionary = {}
+
+
+## Read the per-birth personal names out of animal_realm_names.json.
+##
+## 389 names with meanings sat in that file, read by no script at all, while
+## the name generator picked from a six-word list for the whole animal realm —
+## so a naga and an uluka drew from the same handful. The file is organised
+## regions -> births -> personal_names[{name, meaning}]; only the name is
+## needed here, the meanings are for whoever is writing.
+func _load_birth_names() -> void:
+	if not _birth_name_cache.is_empty():
+		return
+	if not FileAccess.file_exists(ANIMAL_NAMES_PATH):
+		return
+	var file = FileAccess.open(ANIMAL_NAMES_PATH, FileAccess.READ)
+	if file == null:
+		return
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		push_warning("CharacterSystem: animal_realm_names.json parse error")
+		return
+
+	var regions: Dictionary = json.get_data().get("regions", {})
+	for region_id in regions:
+		var births: Dictionary = regions[region_id].get("births", {})
+		for birth_id in births:
+			if birth_id.begins_with("_"):
+				continue
+			var names: Array[String] = []
+			for entry in births[birth_id].get("personal_names", []):
+				var n: String = String(entry.get("name", "")) if entry is Dictionary \
+					else String(entry)
+				if n != "":
+					names.append(n)
+			if not names.is_empty():
+				_birth_name_cache[birth_id] = names
+
+
+## A name for a newly generated character.
+##
+## The birth's own names win where it has any — that is the whole point of
+## naming a rakshasa differently from an uluka. Realm pools are the fallback,
+## and cover every realm the per-birth file does not.
+func generate_character_name(birth: String, realm: String) -> String:
+	_load_birth_names()
+
+	var own: Array = _birth_name_cache.get(birth, [])
+	if not own.is_empty():
+		return String(own[randi() % own.size()])
+
+	var pool: Array = REALM_NAME_POOLS.get(realm, HUMAN_NAMES)
+	if pool.is_empty():
+		return "Nameless"
+	return String(pool[randi() % pool.size()])

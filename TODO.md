@@ -1217,9 +1217,15 @@ one-line edit.
   mid-game. Wants an L1 and an L5 when the spells are refreshed. The Sensate
   background and the rakshasa's fire affinity of 5 both point at this line.
 
-- **The naming lore is barely used by anything.** `animal_realm_names.json` is
-  read by no script and referenced by almost no content: 389 personal names with
-  meanings, plus per-birth place names that exist only in the file. The rakshasa
+- **The naming lore is half-wired now (2026-09-18).**
+  `animal_realm_names.json` had no reader at all; its **155 personal names** are
+  one now — `CharacterSystem.generate_character_name()` gives every animal-realm
+  birth its own names, where the generator previously drew a whole realm from a
+  six-word list, so a naga and an uluka were named off the same handful.
+
+  **Still unread: 128 place names and 88 parent wishes.** (The "389" this item
+  used to claim was the three categories added up loosely; the real total is
+  371.) The place names are the half that wants content rather than wiring. The rakshasa
   set alone has **The Long Hunger** (a stretch of poor territory between
   productive ones), **The Wrong Side** (anywhere they do not go, and there is
   always a reason), **The Ridge Where They Wait**, **The Mango Kill**, **The
@@ -1399,14 +1405,21 @@ one-line edit.
   table; it only ever checked the other direction, which is how three unknown
   ids survived.
 
-  Still open, and deliberately not changed:
-  - **A new game hardcodes its character.** `save_manager.gd:184` calls
-    `create_player_character("Karma Dorje", "human", "wanderer")` — a fixed
-    birth and background, bypassing both rolls, in a realm with no content and
-    on a birth whose `reincarnation_weight` is 0 so reincarnation can never
-    produce it. That may well be deliberate (you were human, you died, you are
-    in hell), which is why it was left alone. If it is not, it is a two-line
-    change to roll it like every other character.
+  - [x] ~~**A new game hardcodes its character**~~ — **fixed 2026-09-18**,
+    confirmed as a relic of an early build. `save_manager.gd` called
+    `create_player_character("Karma Dorje", "human", "wanderer")`: a fixed
+    birth and background bypassing both rolls, naming a birth from a realm with
+    no content whose `reincarnation_weight` is 0 — so the one character every
+    player was guaranteed to meet was the one birth reincarnation could never
+    produce. It now rolls birth, background and name off `GameState.current_world`
+    like every later life.
+
+    **This changes the opening of the game.** A new run starts as one of the six
+    devils rather than as a human, and about half the time with a
+    hell-flavoured background. Modelled over 20k new games the spread is wide —
+    the most common single character is a blue devil warrior at 2.5% — but the
+    first thing to check on a playthrough is whether hell reads right when the
+    player IS a devil. Several events were written assuming otherwise.
   - **Four births still have no backgrounds of their own** — `gandharva`,
     `apsara`, `planetary_deity` and `trader`, all in unbuilt realms. They fall
     back to the universal pool safely.

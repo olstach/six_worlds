@@ -207,10 +207,11 @@ The board works and the validator guarantees every step flag is settable.
 
 ## 2.5 The naming lore, used by nothing
 
-- [ ] **`animal_realm_names.json` is read by no script** and referenced by
-      almost no content: 389 personal names with meanings, plus per-birth place
-      names that exist only in the file. Fold them into the events pass — an
-      event set on **The Wrong Side** is already half-written by its own name.
+- [ ] **The place names are still read by nothing.** As of 2026-09-18 the
+      file's **155 personal names** are wired — every animal birth names its own
+      children now — but its **128 place names** and 88 parent wishes are still
+      referenced by almost no content. Fold them into the events pass: an event
+      set on **The Wrong Side** is already half-written by its own name.
 
   The rakshasa set alone: **The Long Hunger** (a stretch of poor territory
   between productive ones), **The Wrong Side** (anywhere they do not go, and

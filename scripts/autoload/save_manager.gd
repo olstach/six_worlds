@@ -178,10 +178,21 @@ func start_new_game(slot: int) -> void:
 	for world_key in GameState.WORLDS:
 		GameState.WORLDS[world_key].boss_defeated = false
 
-	# Reset party and create player character
+	# Reset party and create player character.
+	#
+	# This used to hardcode ("Karma Dorje", "human", "wanderer") — a relic of an
+	# early build. It bypassed both rolls, and named a birth from a realm with
+	# no content whose `reincarnation_weight` is 0, so the one character the
+	# player was guaranteed to meet was the one birth reincarnation could never
+	# produce. A new life is rolled the same way every later one is.
 	RelationshipSystem.reset()
 	CharacterSystem.party.clear()
-	CharacterSystem.create_player_character("Karma Dorje", "human", "wanderer")
+	var start_realm: String = GameState.current_world
+	var start_birth: String = CharacterSystem.roll_birth_for_realm(start_realm)
+	var start_background: String = KarmaSystem.select_random_background(start_birth)
+	CharacterSystem.create_player_character(
+		CharacterSystem.generate_character_name(start_birth, start_realm),
+		start_birth, start_background)
 
 	# Reset inventory and give starter items
 	ItemSystem.clear_inventory()
