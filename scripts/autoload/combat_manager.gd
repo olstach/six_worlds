@@ -9279,7 +9279,11 @@ func _unit_is_biological(unit: Node) -> bool:
 func _unit_is_unarmored(unit: Node) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
 	var equipment = char_data.get("equipment", {})
-	for slot in ["chest", "head", "hands", "legs"]:
+	# The slot list used to read ["chest", "head", "hands", "legs"]. "hands" is
+	# not a slot — BodySystem calls them hand_l and hand_r — and "feet" was
+	# missing outright, so gauntlets and boots were invisible here and a
+	# character in both counted as unarmored. Fixed 2026-09-18.
+	for slot in ["chest", "head", "hand_l", "hand_r", "legs", "feet"]:
 		var item_id = equipment.get(slot, "")
 		if item_id == "":
 			continue
