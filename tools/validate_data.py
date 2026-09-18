@@ -578,6 +578,38 @@ for _s in load("resources/data/statuses.json")["statuses"]:
         _status_names.add(str(_s["name"]))
 check_vocabulary("status effect", _status_effects)
 
+# Every material that can make armour must say whether it is light or heavy.
+# ItemSystem.armor_class_of() decides seven perks off this field, and a material
+# that omits it silently reads as light.
+_eq_tables = load("resources/data/equipment_tables.json")
+for _mat, _info in _eq_tables.get("materials", {}).items():
+    if _mat.startswith("_") or not isinstance(_info, dict):
+        continue
+    if float(_info.get("armor_mult", 0)) <= 0:
+        continue  # cannot be made into armour at all
+    _cls = _info.get("armor_class", "")
+    if _cls not in ("light", "heavy"):
+        err("material->armor_class",
+            f"equipment_tables.json:{_mat} can make armour but its armor_class "
+            f"is {_cls!r}, not 'light' or 'heavy'")
+
+
+# `grants_status` on a perk must name a real status, or the perk hands out
+# nothing at combat start and says so nowhere.
+for _section in ("skill_perks", "cross_perks"):
+    for _pid, _perk in perks_data.get(_section, {}).items():
+        if _pid.startswith("_") or not isinstance(_perk, dict):
+            continue
+        _granted = _perk.get("grants_status")
+        if _granted is None:
+            continue
+        _names = [_granted] if isinstance(_granted, str) else list(_granted)
+        for _n in _names:
+            if _n not in _status_names:
+                err("perk->status",
+                    f"perks.json:{_pid}: grants_status '{_n}' is not a status")
+
+
 # Passive-perk triggers and conditions, as USED BY perks.json.
 #
 # tools/wire_passive_perks.py validates the tranche it is about to write, and

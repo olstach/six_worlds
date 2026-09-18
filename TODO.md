@@ -1659,6 +1659,80 @@ Both in the code the trigger work touched, neither related to it.
 
 ---
 
+## 13c. Armour class, summon ownership, grants_status (2026-09-18)
+
+Three things that came out of asking what the trigger work was actually
+blocked on.
+
+- [x] **One armour classification, and heavy armour now costs something.**
+      There were two rules and they disagreed: `_unit_is_unarmored()` asked
+      whether every slot held clothing (of a slot list containing `"hands"`,
+      which is not a slot, and missing `feet`), while the new perk conditions
+      asked whether the chest piece weighed more than 8. Seven perks want this
+      question answered. `ItemSystem.armor_class_of()` is the one rule now —
+      `none` / `light` / `heavy`, chest deciding light from heavy, anything on
+      the body deciding armoured from unarmoured — and all three consumers read
+      it.
+
+      Heaviness comes from the material's new `armor_class` field rather than
+      from weight, because weight cannot separate the two: any threshold that
+      makes a leather chest piece light makes a full leather kit heavy.
+      validate_data.py fails on an armour-capable material that omits it.
+
+      **The downsides heavy armour was supposed to have:**
+      - The Strength requirement existed but keyed off material **tier**, which
+        is progression rather than weight — so a silk chest piece demanded
+        Strength 12 and a chitin one 14, both above bone's 10. It keys off
+        `armor_class` now (`10 + tier`, heavy only), so advancing up the light
+        line is not a Strength check.
+      - The **movement penalty did not exist at all**, though
+        `heavy_armor_training` has always promised to halve it and
+        `derived.movement` has read a `movement` stat off equipment all along.
+        Heavy `armor` and `greaves` carry `movement: -1` now.
+      - The dodge penalty was already real: `armor` −3, `greaves` −2.
+
+      Both numbers are first-pass. Movement is `finesse / 3`, so typically 3–5,
+      which makes −1 a fifth to a third of a character's movement — deliberately
+      noticeable, and the first thing to look at if heavy armour feels unwearable.
+
+- [x] **`is_summon` and `summoner_id` on every summoned unit.** `summoner_id`
+      already existed and `combat_arena.gd` was using `summoner_id != 0` as a
+      de-facto "is this a summon" test in two places. Raised undead and
+      necromantic conversions never set a summoner, so they were nobody's
+      summons — a perk or item buffing *your* summons would have missed them.
+      All five creation paths set both now, the arena reads the flag, and
+      `CombatManager.get_summons_of()` resolves the id. The Magnetism recruit
+      is deliberately not flagged: it is a conversion, not a summon.
+
+      Worth knowing for anything that reads "allies": party members, summons,
+      risen dead and decoys all carry the same `team`, so an allies list
+      includes decoys unless it checks `is_summon`.
+
+- [x] **`grants_status` on a perk.** A perk may declare
+      `"grants_status": "Name"` or a list; CombatManager applies them at combat
+      start with the 999 duration that means "this fight". Validated against
+      statuses.json.
+
+      The point is that most of the remaining passive backlog is status-shaped.
+      `retaliation`, `hp_shield`, `grants_resistance` and `damage_taken_pct`
+      (through an aura) all exist on statuses and none of them was reachable
+      from a perk, so the perk engine was being asked to grow a second payload
+      vocabulary saying the same things worse.
+
+      **No perk has been converted yet, and that is the honest state.** Going
+      through the candidates, none maps onto a status that already exists —
+      `damage_control` wants a flat reduction no status expresses,
+      `tower_shield` wants block-reflection, `armored_skin` is conditional on
+      armour class and a fight-long status cannot be conditional. So the next
+      step is **writing statuses**, which is data, rather than engine work.
+
+      Note the second route, which already worked and nobody had used: a perk
+      can declare `aura` directly (`immune_system`, `avatar_of_the_storm` do),
+      and an aura carries `damage_taken_pct` as a continuous payload. A
+      radius-0 aura is a self-buff. Worth trying before adding a status.
+
+---
+
 ## 14. Systems the perk text assumes and the game does not have
 
 **All three are built** (2026-09-12): forced movement, AoE damage falloff, and

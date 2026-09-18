@@ -145,6 +145,64 @@ func get_inventory_items_for_slot(slot_id: String) -> Array[Dictionary]:
 	return result
 
 
+## Garment types that are clothing rather than armour. A monk in a robe is
+## unarmoured, which three perks depend on and which is the right reading.
+const UNARMORED_TYPES: Array[String] = ["robe", "hat", "cloth", ""]
+
+## The slots armour can occupy. Accessories are not armour and never counted.
+const ARMOR_SLOTS: Array[String] = ["chest", "head", "hand_l", "hand_r", "legs", "feet"]
+
+
+## How heavily a character is armoured: "none", "light" or "heavy".
+##
+## One rule, in one place. Before 2026-09-18 there were two and they disagreed:
+## CombatManager._unit_is_unarmored() asked whether every slot held clothing
+## (and asked it of a slot list containing "hands", which is not a slot), while
+## the perk conditions asked whether the chest piece weighed more than 8. Seven
+## perks want this question answered and they were getting two answers.
+##
+## The chest decides light from heavy, because that is what "in heavy armour"
+## means; anything else on the body decides armoured from unarmoured. Heaviness
+## comes from the MATERIAL's `armor_class` rather than from weight, because
+## weight cannot separate the two — a leather chest piece and an iron one are
+## base weight 20 apart only by their multipliers, and any threshold that makes
+## leather light makes a full leather kit heavy.
+func armor_class_of(character: Dictionary) -> String:
+	if character.is_empty():
+		return "none"
+	var equipment: Dictionary = character.get("equipment", {})
+	var wearing_any := false
+	var chest_is_heavy := false
+
+	for slot in ARMOR_SLOTS:
+		var item_id: String = str(equipment.get(slot, ""))
+		if item_id == "":
+			continue
+		var item: Dictionary = get_item(item_id)
+		if item.get("type", "") in UNARMORED_TYPES:
+			continue
+		wearing_any = true
+		if slot == "chest" and _material_class_of(item) == "heavy":
+			chest_is_heavy = true
+
+	if not wearing_any:
+		return "none"
+	return "heavy" if chest_is_heavy else "light"
+
+
+## An item's material class, from equipment_tables.json. Hand-written items
+## carry no `generated` block, so they fall back to light rather than guessing.
+func _material_class_of(item: Dictionary) -> String:
+	var material: String = str(item.get("generated", {}).get("material",
+		item.get("material", "")))
+	if material == "":
+		return "light"
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	return str(_equipment_tables.get("materials", {}).get(material, {}).get(
+		"armor_class", "light"))
+
+
 ## Check if a character meets requirements to equip an item
 func can_equip(character: Dictionary, item_id: String) -> Dictionary:
 	var item = get_item(item_id)
@@ -1483,13 +1541,28 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 			trait_names.append(t.capitalize())
 		desc_parts.append("Traits: %s." % ", ".join(trait_names))
 
-	# Requirements
+	# Requirements, and the cost of wearing the thing.
+	#
+	# The comment above this used to say "heavy armor needs strength" while the
+	# number was `8 + tier * 2` — material TIER, which is progression, not
+	# weight. A silk chest piece therefore demanded Strength 12 and a chitin one
+	# 14, both more than bone's 10, which is backwards: silk is the lightest
+	# material in the game. Strength now gates HEAVINESS, and tier raises it
+	# from there, so advancing up the light line does not turn into a Strength
+	# check. Both numbers are first-pass and meant to be tuned.
 	var requirements: Dictionary = {}
 	var tier: int = mat_info.get("tier", 2)
-	# Heavy armor needs strength
-	if armor_type in ["armor", "gauntlets", "greaves", "helmet", "shield"]:
+	var armor_class: String = mat_info.get("armor_class", "light")
+	if armor_class == "heavy" and armor_type in ["armor", "gauntlets", "greaves", "helmet", "shield"]:
 		if base_armor >= 3:
-			requirements["strength"] = 8 + tier * 2
+			requirements["strength"] = 10 + tier
+
+	# The movement penalty `heavy_armor_training` has always promised to halve,
+	# and which did not exist: no armour base carried a `movement` stat, though
+	# `derived.movement` has read one off equipment all along. Only the body
+	# pieces, and only in a heavy material — a heavy helmet does not slow you.
+	if armor_class == "heavy" and armor_type in ["armor", "greaves"]:
+		final_stats["movement"] = int(final_stats.get("movement", 0)) - 1
 
 	var item_data: Dictionary = {
 		"name": item_name,

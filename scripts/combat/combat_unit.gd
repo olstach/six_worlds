@@ -92,7 +92,20 @@ var mantra_stat_bonuses: Dictionary = {}
 var deity_yoga_triggered: Dictionary = {}
 
 # Summon ownership: set to caster.get_instance_id() by _spawn_summoned_unit()
+## Who called this unit into being, as an instance id, and whether it was
+## called at all.
+##
+## `summoner_id` has been here for a while; `is_summon` was implied by
+## `summoner_id != 0` and read that way in two places, which is the usual
+## trouble — raised undead and necromantic conversions never set a summoner, so
+## they were nobody's summons and a perk buffing "your summons" would have
+## missed them. The flag is explicit now and every path that creates a unit out
+## of another unit sets both.
+##
+## Held as an id rather than a reference so a dead summoner cannot leave a
+## dangling Node behind. CombatManager.get_summons_of() resolves it.
 var summoner_id: int = 0
+var is_summon: bool = false
 
 # Jeweled Pagoda DY: set on caster; consumed on next _spawn_summoned_unit() call
 var next_summon_empowered: bool = false
@@ -1001,13 +1014,6 @@ func _get_conditional_perk_bonus(stat: String) -> int:
 	return total
 
 
-## Chest weight at or above this counts as heavy armour. Generated `armor`
-## chest pieces land between 9 and 20 depending on material; a `robe` lands
-## between 1 and 3, so the two never meet. Nothing else in the game carries a
-## light/medium/heavy class for a player, so this is the distinction rather
-## than a new vocabulary invented to sit beside it.
-const HEAVY_ARMOR_WEIGHT: int = 8
-
 ## Conditions that ask about somebody else and so need a target in context.
 ## They can only be answered where combat knows who is being attacked, which
 ## means the on_trigger path. `tools/wire_passive_perks.py` refuses to write
@@ -1025,14 +1031,12 @@ func _all_perk_conditions_met(conditions: Array, context: Dictionary = {}) -> bo
 	return true
 
 
-## True when this unit's chest piece is heavy. An empty chest is not heavy.
+## True when this unit is in heavy armour. One rule, in ItemSystem, shared with
+## CombatManager._unit_is_unarmored() — this used to be a second, different one.
 func _wearing_heavy_armor() -> bool:
 	if ItemSystem == null or character_data.is_empty():
 		return false
-	var chest_id: String = ItemSystem.get_equipped_item(character_data, "chest")
-	if chest_id == "":
-		return false
-	return int(ItemSystem.get_item(chest_id).get("weight", 0)) >= HEAVY_ARMOR_WEIGHT
+	return ItemSystem.armor_class_of(character_data) == "heavy"
 
 
 func _perk_condition_met(condition: String, context: Dictionary = {}) -> bool:

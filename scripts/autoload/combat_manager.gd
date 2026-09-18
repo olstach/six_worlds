@@ -382,6 +382,11 @@ func _apply_combat_start_perks() -> void:
 	for unit in all_units:
 		unit.attacks_this_combat = 0
 		unit.attacks_this_turn = 0
+		# Statuses a perk hands its owner for the fight. 999 is the established
+		# "lasts this combat" duration; see _calculate_status_duration.
+		if PerkSystem and "character_data" in unit:
+			for status_name in PerkSystem.get_granted_statuses(unit.character_data):
+				_apply_status_effect(unit, status_name, 999, 0, unit)
 		_fire_perk_triggers(unit, "combat_start")
 
 	for unit in all_units:
@@ -2772,6 +2777,8 @@ func _kill_unit(unit: Node) -> void:
 			var risen = CombatUnit.new()
 			risen.init_as_enemy(risen_def)
 			risen.team = killer.team
+			risen.summoner_id = killer.get_instance_id()
+			risen.is_summon = true
 
 			# Find a nearby unoccupied tile to place it
 			var spawn_pos = Vector2i(-1, -1)
@@ -2812,6 +2819,8 @@ func _kill_unit(unit: Node) -> void:
 			var nc_unit = CombatUnit.new()
 			nc_unit.init_as_enemy(nc_def)
 			nc_unit.team = killer.team
+			nc_unit.summoner_id = killer.get_instance_id()
+			nc_unit.is_summon = true
 
 			var nc_pos = Vector2i(-1, -1)
 			var nc_dead_pos = unit.grid_position
@@ -3729,6 +3738,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		decoy_unit.summoner_id = caster.get_instance_id()
 		decoy_unit.init_as_enemy(illusion_data)
 		decoy_unit.team = caster.team
+		decoy_unit.is_summon = true
 		# Find a valid spawn position
 		var spawn_pos = Vector2i(-1, -1)
 		if combat_grid != null and not combat_grid.is_occupied(target_pos) and combat_grid.is_valid_position(target_pos):
@@ -4424,6 +4434,7 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 	summon_unit.summoner_id = caster.get_instance_id()  # Track ownership for mantra effects
 	summon_unit.init_as_enemy(summon_data)
 	summon_unit.team = caster.team  # Summon fights on the caster's side
+	summon_unit.is_summon = true
 
 	# Auras the creature projects by its nature. Four summons — the singing
 	# birds, the guiding light, the apsara, the gandharva host — exist entirely
@@ -5708,6 +5719,7 @@ func _spawn_decoy(owner: Node, at: Vector2i, hp: int, duration: int) -> Node:
 	decoy.summoner_id = owner.get_instance_id()
 	decoy.init_as_enemy(decoy_data)
 	decoy.team = owner.team
+	decoy.is_summon = true
 	combat_grid.place_unit(decoy, at)
 	all_units.append(decoy)
 	turn_order.append(decoy)
@@ -9278,20 +9290,7 @@ func _unit_is_biological(unit: Node) -> bool:
 
 func _unit_is_unarmored(unit: Node) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
-	var equipment = char_data.get("equipment", {})
-	# The slot list used to read ["chest", "head", "hands", "legs"]. "hands" is
-	# not a slot — BodySystem calls them hand_l and hand_r — and "feet" was
-	# missing outright, so gauntlets and boots were invisible here and a
-	# character in both counted as unarmored. Fixed 2026-09-18.
-	for slot in ["chest", "head", "hand_l", "hand_r", "legs", "feet"]:
-		var item_id = equipment.get(slot, "")
-		if item_id == "":
-			continue
-		var item = ItemSystem.get_item(item_id)
-		var item_type = item.get("type", "")
-		if not item_type in ["robe", "hat", "cloth", ""]:
-			return false
-	return true
+	return ItemSystem.armor_class_of(char_data) == "none"
 
 
 ## Every standing bonus to `stat` that is computed fresh rather than stored:

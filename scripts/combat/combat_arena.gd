@@ -2697,7 +2697,7 @@ func _on_turn_started(unit: Node) -> void:
 		return
 
 	# Summoned units always act on AI, even when on the player's team
-	if unit.summoner_id != 0:
+	if unit.is_summon:
 		ai_timer.start(0.4)
 		return
 
@@ -2717,7 +2717,7 @@ func _on_ai_timer_timeout() -> void:
 		_do_cc_turn(unit, cc_behavior)
 		return
 
-	if unit.summoner_id != 0 or unit.team == CombatManager.Team.ENEMY:
+	if unit.is_summon or unit.team == CombatManager.Team.ENEMY:
 		_do_enemy_turn(unit)
 
 

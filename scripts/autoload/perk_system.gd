@@ -536,9 +536,44 @@ func get_perk_data(perk_id: String) -> Dictionary:
 #   on_trigger       CombatManager._fire_perk_triggers() at the matching moment
 #   non_combat       ShopSystem / EventManager / CampSystem
 #
+# Separately from `effects`, a perk may declare `grants_status` — see
+# get_granted_statuses() below. That is the preferred route for anything a
+# status already does, and most of the remaining backlog is that shape.
+#
 # An effect naming a stat outside CombatStats.DERIVED is rejected at load:
 # writing to a derived key nothing reads is the single most common way an
 # effect in this codebase has ended up doing nothing at all.
+
+
+## Statuses a character's perks hand them for the duration of a fight.
+##
+## The cheap half of the passive-perk problem. A perk whose effect is already
+## expressible as a status — damage taken, retaliation, a shield, a resistance,
+## an aura — should say so and let the status machinery run it, rather than the
+## perk engine growing a second payload vocabulary that says the same things
+## worse. `retaliation`, `damage_taken_pct`, `hp_shield` and `grants_resistance`
+## all exist on statuses already and none of them is reachable from a perk.
+##
+## Declared as `"grants_status": "Name"` or `"grants_status": ["A", "B"]`.
+## CombatManager applies them at combat start with the 999 duration that means
+## "this fight"; they are ordinary statuses from then on, which means they show
+## in the status bar and CAN be dispelled. Both are deliberate — a passive you
+## can see is better feedback than an invisible one, and a wrathful enemy
+## stripping your Armoured Skin is a fight worth having.
+func get_granted_statuses(character: Dictionary) -> Array[String]:
+	var out: Array[String] = []
+	for perk_id in get_owned_perk_ids(character):
+		var declared = get_perk_data(perk_id).get("grants_status", null)
+		if declared == null:
+			continue
+		if declared is String:
+			if not String(declared) in out:
+				out.append(String(declared))
+		elif declared is Array:
+			for entry in declared:
+				if not String(entry) in out:
+					out.append(String(entry))
+	return out
 
 
 ## Every passive effect a character's perks contribute.
