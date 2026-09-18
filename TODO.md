@@ -79,10 +79,11 @@ Olaf is chipping away at the writing (`WRITING.md`) and wants mechanics
 meanwhile. Nearly every item below is already written up somewhere in this file;
 this is the ordering and the reason, which was not.
 
-1. **The perk engine's missing half** (§13) — *started 2026-09-18.* Bounded,
-   testable without a playthrough, and it converts a large chunk of the 324
-   description-only passives from blocked into data entry. Triggers and
-   conditions are done; **payloads are the real bottleneck** — see §13.
+1. **The perk engine's missing half** (§13) — *engine work done 2026-09-18;
+   what is left is data.* Triggers, conditions, `grants_status`, the armour
+   classification and the summon flags are all in (§13, §13b, §13c). The
+   remaining blocker is that **most of the 324 want statuses that do not exist
+   yet** — writing those is the next move, and it is data rather than code.
 2. **Mob behaviour as a system** (§11) — the largest gap in the game. The AI
    knows nothing about auras, zones, terrain, height or repositioning, so every
    one of them is a player-side advantage. Best done *after* a playthrough,
@@ -130,9 +131,27 @@ Each of these is an hour or less and touches one system.
   `planetary_deity`. All belong to unbuilt realms, so this waits for those.
   (`bee` was the ninth and the only reachable one; it was deleted as a
   duplicate of `bhramara` on 2026-08-31.)
-- [ ] **`sever_part` doesn't handle `arm_l2`/`arm_r2`** — four-armed species have
-  equip slots `hand_l2`/`hand_r2` but no `weapon_main2`/`weapon_off2`, so
-  severing an extra arm doesn't drop its weapon.
+- [x] ~~**`sever_part` doesn't handle `arm_l2`/`arm_r2`**~~ — **the premise was
+  wrong, and there was a worse bug behind it** (2026-09-18).
+
+  `sever_part` clears `part.equip_slot` generically, so `hand_l2` and `hand_r2`
+  were already handled. And an extra arm has no weapon to drop: the game models
+  exactly two weapon slots, `weapon_main` and `weapon_off`, and the multi-arm
+  chain gives a four-armed creature four attacks with the SAME weapon. There is
+  no `weapon_main2` because nothing would ever go in it.
+
+  What was actually broken: **`get_equipped_weapon()` read `weapon_main` and
+  nothing else.** Sever an arm — which clears that slot — or simply equip a
+  dagger off-hand with nothing in the main hand, and the character fought with
+  their fists while holding a blade in the other hand. It falls back to
+  `weapon_off` now, through a new `ItemSystem.is_weapon_type()` that reads
+  `weapon_bases` so a shield does not qualify.
+
+  **Still open, and a design question rather than a bug:** a four-armed species
+  can never wield more than two weapons, because weapon slots do not scale with
+  arms. Four attacks with one sword is the current answer. Whether extra arms
+  should have their own slots — and what that does to damage — wants deciding
+  before anyone builds it.
 - [ ] **`extra_arm_results` isn't shown in the combat UI** — the multi-arm chain
   writes per-arm hit/damage into the result dict and the combat log prints it,
   but the unit frames don't (no "Arm 2: 12 dmg" popup).

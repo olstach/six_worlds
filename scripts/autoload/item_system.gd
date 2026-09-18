@@ -203,6 +203,18 @@ func _material_class_of(item: Dictionary) -> String:
 		"armor_class", "light"))
 
 
+## Is this item type something you attack with?
+##
+## Read off `weapon_bases` rather than restated, so adding a weapon type to the
+## table is enough. A shield lives in `armor_bases` and is correctly not one.
+func is_weapon_type(item_type: String) -> bool:
+	if item_type == "":
+		return false
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	return item_type in _equipment_tables.get("weapon_bases", {})
+
+
 ## Check if a character meets requirements to equip an item
 func can_equip(character: Dictionary, item_id: String) -> Dictionary:
 	var item = get_item(item_id)

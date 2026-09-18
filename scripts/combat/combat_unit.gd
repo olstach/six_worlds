@@ -700,6 +700,16 @@ func get_equipped_weapon() -> Dictionary:
 	# For player/party units, get from equipment via ItemSystem
 	if ItemSystem and character_data.has("equipment"):
 		var weapon_id = ItemSystem.get_equipped_item(character_data, "weapon_main")
+		if weapon_id == "":
+			# Fall back to the off hand. Only weapon_main was read here, so a
+			# character who lost their main arm — sever_part clears the slot —
+			# or who simply equipped a dagger off-hand and nothing else fought
+			# with their fists while holding a blade in the other hand.
+			# A shield is not a weapon; is_weapon_type() reads weapon_bases.
+			var off_id: String = ItemSystem.get_equipped_item(character_data, "weapon_off")
+			if off_id != "" and ItemSystem.is_weapon_type(
+					ItemSystem.get_item(off_id).get("type", "")):
+				weapon_id = off_id
 		if weapon_id != "":
 			return ItemSystem.get_item(weapon_id)
 
