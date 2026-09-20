@@ -81,6 +81,17 @@ var used_event_choices: Dictionary = {}
 # Format: { object_id: [spell_id, ...] }
 var guild_spell_lists: Dictionary = {}
 
+## Procedural shop racks, keyed by the map object hosting the shop.
+## {object_id: {"day": int, "slots": [[item_id, ...], ...]}}
+##
+## Without this a shop rolled a fresh rack on every `open_shop`, because
+## `get_shop` hands back a deep copy of the template — so walking out and back
+## in rerolled the weapons, and buying something never depleted anything. The
+## rack lives here for the same reason guild_spell_lists does: it has to
+## survive a save, and it belongs to the PLACE rather than to the shop
+## definition, which several map objects can share.
+var shop_stock: Dictionary = {}
+
 # Tracks which location events have been visited (for first-visit hooks).
 # Format: { "event_id": true, ... }
 var visited_locations: Dictionary = {}
@@ -687,6 +698,7 @@ func get_save_data() -> Dictionary:
 		"boss_defeated": boss_states,
 		"used_event_choices": used_event_choices.duplicate(true),
 		"guild_spell_lists": guild_spell_lists.duplicate(true),
+		"shop_stock": shop_stock.duplicate(true),
 		"visited_locations": visited_locations.duplicate(true),
 		"last_healing_location": last_healing_location.duplicate(true),
 		"flags": flags.duplicate(true),
@@ -709,6 +721,7 @@ func load_save_data(data: Dictionary) -> void:
 	alchemy_passive_enabled = data.get("alchemy_passive_enabled", true)
 	used_event_choices = data.get("used_event_choices", {})
 	guild_spell_lists = data.get("guild_spell_lists", {})
+	shop_stock = data.get("shop_stock", {})
 	visited_locations = data.get("visited_locations", {})
 	last_healing_location = data.get("last_healing_location", {})
 	flags = data.get("flags", {})

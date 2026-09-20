@@ -256,13 +256,23 @@ differs between kinds of vendor is only **how fast the stock comes back**.
 | **Trainer** | 3 lessons | never | steep — 1x, 2.5x, 5x |
 | **Caravan** | what it is carrying | never | medium |
 | **Town market**, staples | toward equilibrium | daily drift | gentle — `clamp(eq / stock, 0.5, 2.0)` |
-| **Smith's rack**, gear | one of each item | on revisit, after *n* days | selection rather than price |
+| **Smith's rack**, gear | one of each item | every 7 days | selection rather than price |
 
 The trainer feels unlike a shop because it sits at the extreme of that axis: a
 person is a finite, non-renewing stock of three. Nothing else about it is
 special, which is the point — the cap and the 1x/2.5x/5x steps are just a very
 short stock on a very steep curve, and the same two numbers describe a market
 that recovers overnight.
+
+**The smith's rack was the opposite of restocking.** `get_shop` hands back a
+deep copy of the template and `open_shop` rolled a fresh procedural rack into
+it, so walking out and back in rerolled the weapons and a purchase depleted
+nothing that survived the visit. The rack was infinite and free — and that
+quietly voids the material-selection design below, because a player who can
+reroll until the smith offers what they wanted is not shopping in a region,
+they are pulling a lever. Now fixed: the rack belongs to the map object, is
+saved, depletes when you buy, and tops back up to its slot count every seven
+days with unsold stock left where it is.
 
 **This is worth building once.** A `stock` and a `refresh` on a vendor record,
 and one price function that reads them, covers trainers, staples, caravan

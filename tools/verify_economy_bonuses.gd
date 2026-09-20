@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 25
+const EXPECTED_CHECKS: int = 29
 
 
 func _ready() -> void:
@@ -46,6 +46,12 @@ func _ready() -> void:
 	_check_a_trainer_stops_after_three_lessons()
 	_check_the_allowance_is_per_character_and_per_trainer()
 	_check_the_ledger_survives_a_save()
+
+	# The rack: a trader restocks on a cadence, not on a visit.
+	_check_a_rack_is_the_same_rack_on_the_next_visit()
+	_check_buying_takes_it_off_the_rack()
+	_check_the_rack_refills_after_a_week()
+	_check_a_racked_item_is_not_binned_on_close()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -644,4 +650,91 @@ func _check_the_ledger_survives_a_save() -> void:
 	var restored: Dictionary = CharacterSystem.get_save_data()["party"][0]
 	if int(restored.get("training_purchases", {}).get("save_probe", 0)) != 1:
 		_fail("the training ledger did not survive get_save_data")
+	_done()
+
+
+# ============================================================================
+# THE RACK
+#
+# `get_shop` hands back a deep copy of the template and `open_shop` rolled a
+# fresh procedural rack into it, so leaving and re-entering rerolled the
+# weapons and a purchase depleted nothing that outlived the visit. That makes
+# the rack infinite, and it makes regional material selection pointless —
+# you could reroll until the smith offered what you wanted.
+# ============================================================================
+
+## A shop standing on a map object, with one procedural weapon slot.
+func _open_rack_shop(object_id: String) -> void:
+	ShopSystem._current_shop = {
+		"id": "rack_probe",
+		"price_modifier": 1.0,
+		"_object_id": object_id,
+		"items": {},
+		"procedural_slots": [{"category": "weapon", "rarity": "common", "count": 2}]
+	}
+	ShopSystem._generate_procedural_stock()
+
+
+## Walking out and back in must show the same weapons, not new ones.
+func _check_a_rack_is_the_same_rack_on_the_next_visit() -> void:
+	GameState.shop_stock.clear()
+	_open_rack_shop("obj_same")
+	var first: Array = ShopSystem._current_shop["items"].keys()
+	first.sort()
+	_open_rack_shop("obj_same")
+	var second: Array = ShopSystem._current_shop["items"].keys()
+	second.sort()
+	if first.is_empty():
+		_fail("the rack generated nothing, so the check proves nothing")
+	elif first != second:
+		_fail("revisiting rerolled the rack: %s then %s" % [first, second])
+	_done()
+
+
+## And what was bought is gone when you come back.
+func _check_buying_takes_it_off_the_rack() -> void:
+	GameState.shop_stock.clear()
+	_open_rack_shop("obj_buy")
+	var sold: String = str(ShopSystem._current_shop["items"].keys()[0])
+	GameState.gold = 1000000
+	if not ShopSystem.buy_item(sold).get("success", false):
+		_fail("could not buy from the rack to test depletion")
+		_done()
+		return
+	_open_rack_shop("obj_buy")
+	if sold in ShopSystem._current_shop["items"]:
+		_fail("a sold item was back on the rack on the next visit")
+	_done()
+
+
+## After RESTOCK_DAYS the rack fills back up to its slot count — and the
+## unsold item is still hanging there rather than being swept away.
+func _check_the_rack_refills_after_a_week() -> void:
+	GameState.shop_stock.clear()
+	_open_rack_shop("obj_refill")
+	var kept: String = str(ShopSystem._current_shop["items"].keys()[1])
+	var sold: String = str(ShopSystem._current_shop["items"].keys()[0])
+	GameState.gold = 1000000
+	ShopSystem.buy_item(sold)
+
+	GameState.shop_stock["obj_refill"]["day"] = \
+		GameState.current_day - ShopSystem.RESTOCK_DAYS
+	_open_rack_shop("obj_refill")
+	var now: Dictionary = ShopSystem._current_shop["items"]
+	if now.size() != 2:
+		_fail("a restocked rack holds %d of its 2 slots" % now.size())
+	if not kept in now:
+		_fail("the restock swept away stock nobody had bought")
+	_done()
+
+
+## close_shop bins generated items nobody owns. Now that a rack outlives the
+## visit, binning one leaves the rack full of ids resolving to nothing.
+func _check_a_racked_item_is_not_binned_on_close() -> void:
+	GameState.shop_stock.clear()
+	_open_rack_shop("obj_close")
+	var racked: String = str(ShopSystem._current_shop["items"].keys()[0])
+	ShopSystem.close_shop()
+	if not ItemSystem.item_exists(racked):
+		_fail("closing the shop binned an item still on its rack")
 	_done()

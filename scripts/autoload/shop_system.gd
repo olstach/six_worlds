@@ -55,6 +55,19 @@ const SKILL_TRAINING_COSTS: Array[int] = [50, 150, 300, 500, 750, 1062, 1440, 19
 const TRAINING_PURCHASE_CAP: int = 3
 const TRAINING_PRICE_STEPS: Array[float] = [1.0, 2.5, 5.0]
 
+# A TRADER'S RACK REFILLS ON A CADENCE, NOT ON A VISIT. The rack used to be
+# rolled fresh inside every `open_shop` — `get_shop` returns a deep copy of the
+# template — so leaving and re-entering rerolled the weapons and a purchase
+# depleted nothing that outlived the visit. That makes the rack infinite and
+# makes regional material selection meaningless, because you can reroll until
+# the smith offers what you wanted.
+#
+# The rack now belongs to the map object and refills only when this many days
+# have passed. Unsold stock stays: a sword you could not afford last week is
+# still hanging there when you come back with the money, and a restock tops the
+# rack back up to its slot count rather than replacing it.
+const RESTOCK_DAYS: int = 7
+
 # Current active shop (set when entering a shop)
 var _current_shop: Dictionary = {}
 
@@ -443,6 +456,10 @@ func barter_buy_item(item_id: String, offered_items: Array, offered_gold: int = 
 			if stock[item_id] <= 0:
 				return {"success": false, "reason": "Out of stock"}
 			stock[item_id] -= 1
+			# `_current_shop` is a deep copy that dies with the visit, so the
+			# decrement above is only good for this session of the shop UI.
+			# The rack is what the next visit reads.
+			_remove_from_rack(item_id)
 
 	# Process the barter - remove offered items
 	for offered_id in offered_items:
@@ -763,8 +780,9 @@ func close_shop() -> void:
 	var items = _current_shop.get("items", {})
 	for item_id in items:
 		if ItemSystem.is_runtime_item(item_id):
-			# Only remove from runtime registry if it's not in the player's inventory
-			if ItemSystem.get_inventory_count(item_id) <= 0:
+			# Only bin it if the player does not own it AND no shop's rack is
+			# still displaying it — racks outlive the visit now.
+			if ItemSystem.get_inventory_count(item_id) <= 0 and not _is_on_a_rack(item_id):
 				ItemSystem.remove_runtime_item(item_id)
 	_current_shop = {}
 
@@ -811,31 +829,105 @@ func _generate_procedural_stock() -> void:
 	if slots.is_empty():
 		return
 
-	var items = _current_shop.get("items", {})
-	for slot in slots:
-		var category: String = slot.get("category", "")
-		var rarity: String = slot.get("rarity", "common")
-		var item_type: String = slot.get("type", "")
-		var count: int = slot.get("count", 1)
+	var items: Dictionary = _current_shop.get("items", {})
+	var object_id: String = str(_current_shop.get("_object_id", ""))
 
-		var current_realm = GameState.current_world if GameState else ""
-		for i in range(count):
-			var gen_id: String = ""
-			match category:
-				"weapon":
-					if slot.get("match_party_skill", false):
-						gen_id = ItemSystem.generate_weapon_for_party(rarity, "", "", current_realm)
-					else:
-						gen_id = ItemSystem.generate_weapon(item_type, rarity, "", "", current_realm)
-				"armor":
-					gen_id = ItemSystem.generate_armor(item_type, rarity, "", "", current_realm)
-				"talisman":
-					gen_id = ItemSystem.generate_talisman(rarity)
+	# An event shop with no map object behind it has nowhere to keep a rack, so
+	# it keeps the old roll-on-open behaviour. Those are one-off encounters
+	# rather than places you can walk back into.
+	if object_id.is_empty():
+		_roll_slots(slots, items, [])
+		_current_shop["items"] = items
+		return
 
-			if gen_id != "":
-				items[gen_id] = 1  # Procedural items are unique, qty 1
+	var rack: Dictionary = GameState.shop_stock.get(object_id, {})
+	var kept: Array = rack.get("slots", [])
+	var due: bool = rack.is_empty() \
+		or GameState.current_day - int(rack.get("day", 0)) >= RESTOCK_DAYS
+
+	if due:
+		GameState.shop_stock[object_id] = {
+			"day": GameState.current_day,
+			"slots": _roll_slots(slots, items, kept)
+		}
+	else:
+		# Between restocks the rack is exactly what it was, minus what was
+		# bought from it.
+		for slot_ids in kept:
+			for item_id in slot_ids:
+				if ItemSystem.item_exists(item_id):
+					items[item_id] = 1
 
 	_current_shop["items"] = items
+
+
+## Fill each slot back up to its count, keeping whatever is still on the rack,
+## and write the result into `items`. Returns the new per-slot id lists.
+func _roll_slots(slots: Array, items: Dictionary, kept: Array) -> Array:
+	var current_realm = GameState.current_world if GameState else ""
+	var out: Array = []
+
+	for i in range(slots.size()):
+		var slot: Dictionary = slots[i]
+		var count: int = int(slot.get("count", 1))
+		var surviving: Array = []
+
+		if i < kept.size():
+			for item_id in kept[i]:
+				if ItemSystem.item_exists(item_id):
+					surviving.append(item_id)
+		while surviving.size() > count:
+			surviving.pop_back()
+
+		for n in range(count - surviving.size()):
+			var gen_id: String = _roll_one_slot_item(slot, current_realm)
+			if gen_id != "":
+				surviving.append(gen_id)
+
+		for item_id in surviving:
+			items[item_id] = 1  # Procedural items are unique, qty 1
+		out.append(surviving)
+
+	return out
+
+
+## One procedural item for a slot, or "" if the category generates nothing.
+func _roll_one_slot_item(slot: Dictionary, current_realm: String) -> String:
+	var category: String = slot.get("category", "")
+	var rarity: String = slot.get("rarity", "common")
+	var item_type: String = slot.get("type", "")
+
+	match category:
+		"weapon":
+			if slot.get("match_party_skill", false):
+				return ItemSystem.generate_weapon_for_party(rarity, "", "", current_realm)
+			return ItemSystem.generate_weapon(item_type, rarity, "", "", current_realm)
+		"armor":
+			return ItemSystem.generate_armor(item_type, rarity, "", "", current_realm)
+		"talisman":
+			return ItemSystem.generate_talisman(rarity)
+	return ""
+
+
+## Take a sold item off the rack this shop is standing on, so it is still gone
+## when the player walks back in.
+func _remove_from_rack(item_id: String) -> void:
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	if object_id.is_empty() or not GameState.shop_stock.has(object_id):
+		return
+	for slot_ids in GameState.shop_stock[object_id].get("slots", []):
+		slot_ids.erase(item_id)
+
+
+## Whether any shop's rack is still holding this generated item. `close_shop`
+## asks before binning a runtime item: the rack outlives the visit now, and
+## deleting its definitions would leave it full of ids that resolve to nothing.
+func _is_on_a_rack(item_id: String) -> bool:
+	for object_id in GameState.shop_stock:
+		for slot_ids in GameState.shop_stock[object_id].get("slots", []):
+			if item_id in slot_ids:
+				return true
+	return false
 
 
 ## Resolve any random_generate template items in the shop inventory,
