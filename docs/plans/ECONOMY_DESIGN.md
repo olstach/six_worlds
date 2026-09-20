@@ -367,6 +367,196 @@ town's prices notice.
 
 ---
 
+## What a region declares
+
+*Added after review. Three things a region should say about itself that it
+cannot say today: where it ends, how many people live in it, and what it makes.*
+
+The vocabulary has three levels now, and the three questions land on different
+ones — which is most of the answer:
+
+| Level | What it is | Count |
+|---|---|---|
+| **Zone** (output as `regions`) | a band of rows/cols — `ocean`, `forest`, `meadow` | 3–5 per map |
+| **Subregion** | a lattice cell, grown from a biome, with a seed and a name | 6–9 per zone |
+| **Biome** | a *kind* of place, defined once, drawn on by any zone | 12 in `animal.json` |
+
+### Borders
+
+**A border is an edge, not a property of a region.** `"border": "mountains"` on
+a region cannot say which side it is on, and two neighbours can disagree about
+the thing between them. So a border is declared once, between two regions.
+
+The mechanism already exists and is shipping: `mountain_wall` zones.
+`coastal_wall` is rows 120–127 with 2–3 passes; `ridge` is cols 96–103 with 1–2.
+A band of impassable terrain with a declared number of gaps, and
+`_validate_connectivity` guarding the result. What it lacks is a *kind* — it can
+only ever be mountains, so the Coral Barrier is a mountain range that has been
+asked politely to read as coral.
+
+Generalise the zone type to `border`, and let the kind supply the fill, the
+thickness, and what the crossing is called:
+
+| `kind` | Fill | Crossing | Thickness | Note |
+|---|---|---|---|---|
+| `mountains` | mountains | pass | 6–10 | what exists today |
+| `reef` | water + sand | channel | 6–8 | the Coral Barrier, named honestly |
+| `chasm` | lava | bridge | 2–4 | hell's own |
+| `river` | water | ford / bridge | 1–3 | **needs new code** — a traced path, not a rect |
+| `wall` | ruins | gate | 1–2 | somebody *built* it |
+| `cliff` | mountains | stair | 2–3 | candidate for one-way |
+
+```jsonc
+{
+  "id": "coastal_wall",
+  "type": "border",
+  "kind": "reef",
+  "orientation": "horizontal",
+  "rows": [120, 127],
+  "display_name": "Coral Barrier",
+  "crossings": [2, 3],            // was pass_count
+  "crossing_width": 3,            // was pass_width
+  "crossing_range": [0.15, 0.85], // was pass_range
+  "toll": 0
+}
+```
+
+Everything but `river` is the existing band mechanism with a different fill, so
+the first phase is close to free: a rename, a defaults table, and the three
+map configs updated. **The river is the one that costs real work**, because it
+has to follow a subregion seam rather than sit in a row range — and it is also
+the one that makes a map look like a map rather than like a diagram.
+
+**The reason to do this beyond terrain.** A border is *trade friction*, and it
+solves a problem this design otherwise has: two adjacent regions only hold
+different prices if goods do not flow freely between them. Left alone, a price
+index equalises across neighbours and flattens into the single price it was
+built to replace. Permeability — crossings per unit of length, times any toll —
+is exactly the term that stops that. It also turns "the unreached places are
+where the interesting prices are" from an accident of the road roll into
+something the map declares.
+
+`wall` earns its place on lore alone. A wall implies a builder, a gate, a guard
+and a toll: a price differential with a face on it, and an obvious hook for
+both the karma system and a border-crossing event.
+
+**One rule to hold: a border may never fully seal.** `_validate_connectivity`
+checks only that the start can reach the portal, so a region could be walled off
+entirely and the check would still pass. That wants to become *every region
+reachable*, and it is one more check in `verify_map_regions`.
+
+### How many people live here
+
+Two declarations, because "how many" and "where" are different questions
+answered at different levels.
+
+**The zone says how many** — the quota from the settlement table above, made
+explicit rather than implied:
+
+```jsonc
+"settlements": { "town": [0, 1], "village": [1, 2], "hamlet": [2, 4] }
+```
+
+**The biome says where they may land**, with one number:
+
+```jsonc
+"habitability": 0.0   // open_water — nobody lives here
+"habitability": 0.6   // reef_flats — a fishing hamlet, at most
+"habitability": 1.4   // watering_holes — everybody does
+```
+
+`habitability: 0` is the load-bearing case. After the terrain fix in `09e6be8`
+the ocean zone is 73% water, so a placement rule that only checks passability
+puts hamlets on rafts. One field forbids it without a special case per realm,
+and the same field keeps villages off lava and out of the dust plains.
+
+**The big town should be authored, not rolled.** `"town": [0, 1]` per zone means
+a map can roll zero in every zone and have no town anywhere — a bad map that
+only turns up by playing it, which is precisely the class of bug this realm has
+been shipping. Each realm should declare one or two zones `"capital": true`,
+and the rest roll. The big town is the place you route *through*; it belongs
+with the portal and the boss as a fixed feature of the realm, not with the
+scenery.
+
+That is also where the best unclaimed idea in this memo pays off. If
+`guild_max_tier` and `training.max_skill_level` become properties of a town
+rather than a shop template, then the capital is the only place you can train
+past a certain tier — and the journey to it is content rather than transit.
+
+### What a region makes, and what it wants
+
+There is a real tension to settle here. This memo derives production from
+**terrain** — emergent, "map generation becomes the thing that lays out the
+economy". The alternative is to **declare** it per region. The answer is both,
+with terrain as the floor and the biome as the tilt:
+
+```jsonc
+"reef_flats": {
+  "name": "The Reef Flats",
+  "terrain_weights": { "5": 45, "12": 30, "0": 15, "3": 10 },
+  "produces": { "fish": 2, "salt": 1 },         // ADDED to the terrain sum
+  "wants":    { "grain": 1.5, "timber": 1.3 },  // demand multiplier
+  "special":  "naga_pearl",
+  "wealth":   1.1,
+  "habitability": 0.6
+}
+```
+
+**Keep terrain as the base, because it self-maintains.** If somebody rewrites a
+zone's weights the economy follows them, and that is exactly the failure
+`signature_terrain` was invented to catch after the animal realm generated a
+mountainous ocean for months without anyone noticing. A declared-only economy
+would have gone on paying for pearls from a reef that had become a mountain.
+
+**Add the declaration, because fourteen terrain types cannot carry eight
+goods.** Terrain has no way to say "salt flats", or that this particular reef
+grows pearls and that one does not. `produces` is a *bonus on top of* the
+terrain sum rather than a replacement, so the emergent layer keeps doing the
+work and the declaration only says what terrain cannot.
+
+Three specifics:
+
+- **`wants` is the half that is missing.** The goods chart above has a real
+  "Produced by" column and a hand-waving "Consumed by: everywhere inland" with
+  no number behind it. Demand is what actually sets a price, and a route exists
+  because somewhere *wants* the thing — so it should be data, at the same level
+  as production.
+- **`special` belongs on the biome, not the zone.** This memo assigns ash-iron
+  to "the fire hells", which is a zone. But the point of a biome library is that
+  a kind of place is defined once: pearls come from reefs, and reef is a biome.
+  Moving it down also buys per-run variation — a map that rolled three reef
+  subregions has cheap pearls this run, and that is a run worth telling someone
+  about.
+- **Wealth should be derived, with a declared floor.** `wealth` on the biome is
+  a multiplier — 0.5 for an icy desert, 1.3 for a river valley — and a
+  settlement's actual wealth is `biome wealth × tier × prosperity`, so
+  `investment` has something to raise and a town can become richer than its
+  ground. The floor is what stops a hamlet on an ore seam from outfitting a
+  party better than a capital.
+
+What wealth then buys is the concrete version of "better stuff in a wealthy
+city": **stock depth** (how much the market absorbs before its prices move),
+the **item tier ceiling** the shop will carry, the **training and guild caps**
+that already exist on shop templates, and **whether the place brokers specials
+at all** — a hamlet does not handle naga pearl.
+
+### Two cautions on the numbers
+
+**Multiplicative terms compound.** `wants` × `wealth` × `tier_multiplier` ×
+`scarcity` is four multipliers on one price. Each is individually reasonable and
+together they are how a 20× spread appears without anyone deciding on one. The
+`scarcity` clamp of [0.5, 2.0] above is not enough on its own: the *total* ratio
+between the cheapest and dearest market for a single good needs its own clamp,
+asserted in a verifier rather than reasoned about.
+
+**Wealth gating is progression gating.** If the wealthy town is also where
+training uncaps, then wealth decides where progression happens, and the route to
+the capital becomes the critical path. That is a defensible design — it gives
+the map a spine — but it collides with the headline finding at the top of this
+memo, and it should be chosen rather than discovered three systems later.
+
+---
+
 ## Guard rails I would build in from the first commit
 
 - **Stock depletion, always on.** The market answers back. This is the one that
@@ -380,6 +570,14 @@ town's prices notice.
 - **No arbitrage inside one settlement.** Buy and sell prices at one market
   must never cross, whatever the discounts stack to — this is the bug that
   ends economies, and it is one assertion in a verifier.
+- **A clamp on the total ratio, not just each term.** `wants`, `wealth`,
+  `tier_multiplier` and `scarcity` all multiply; four reasonable numbers make an
+  unreasonable one. Assert the cheapest-to-dearest ratio for a single good
+  directly, in the same verifier.
+- **No region fully sealed.** A border must always leave a crossing, and
+  `verify_map_regions` should check that every region is reachable — not just
+  that the start can reach the portal, which is all `_validate_connectivity`
+  asks today.
 
 ---
 
@@ -401,3 +599,13 @@ town's prices notice.
    realm that makes things, God as the one that sells what cannot be grown
    elsewhere. If so, this design should land before those maps are written
    rather than after.
+5. **Is the capital authored or rolled?** I argue above for authored — one or
+   two `"capital": true` zones per realm — because a rolled town count can come
+   up empty across a whole map. The cost is that every run of a realm has its
+   big town in the same place, which is less surprising and more learnable.
+   Which of those you want is a question about how much a realm should vary
+   between reincarnations.
+6. **Does wealth gate progression?** If training and guild caps become
+   properties of a town, the rich town is where progression happens and the
+   route to it is the critical path. That gives the map a spine and it
+   sharpens question 1 rather than answering it.
