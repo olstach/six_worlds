@@ -319,7 +319,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hell_lost_wanderer",
@@ -456,7 +457,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_mercy_ward",
@@ -482,7 +484,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_veterans_camp",
@@ -601,7 +604,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_town_magic",
@@ -611,7 +615,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_town_supplies",
@@ -621,7 +626,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "the_pit",
@@ -1311,7 +1317,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hell_burning_prisoner",
@@ -1392,7 +1399,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hell_burning_library",
@@ -1441,7 +1449,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "capital"
         },
         {
           "event_id": "hell_brimstone_lab",
@@ -1450,7 +1459,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_wardens_pit",
@@ -1484,7 +1494,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_veterans_camp",
@@ -1603,7 +1614,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_town_magic",
@@ -1613,7 +1625,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hell_town_supplies",
@@ -1623,7 +1636,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "the_pit",
@@ -1770,7 +1784,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         }
       ],
       "pickups": [

@@ -86,6 +86,20 @@ const SHOP_PURSE_BY_TYPE: Dictionary = {
 }
 const SHOP_PURSE_DEFAULT: int = 800
 
+# WHAT A PLACE WILL TEACH YOU. The cap used to be a property of the shop
+# template, so weapon_master taught to level 7 wherever it happened to land,
+# including a hillside. It is a property of the TOWN — which is what
+# `max_skill_level` always meant — and the template's own cap still applies on
+# top, so the effective ceiling is the lower of the two. A master in a village
+# is still limited by the village; a village teacher in the capital is still
+# only a village teacher.
+#
+# This is what makes the capital worth the journey, and it is the other half
+# of the answer to "trainers should appear rarely": rare because few places
+# are big enough, not because a die said so.
+const SETTLEMENT_SKILL_CAP: Dictionary = {1: 2, 2: 3, 3: 5}
+const CAPITAL_SKILL_CAP: int = 7
+
 # Current active shop (set when entering a shop)
 var _current_shop: Dictionary = {}
 
@@ -257,11 +271,31 @@ func get_attribute_training_cost(character: Dictionary, attribute: String) -> in
 	return int(base_cost * steps * shop_modifier * (1.0 - discount))
 
 
-## Return the skill cap this trainer enforces (defaults to SKILL_MAX_LEVEL)
+## How far a settlement will take you, whatever the teacher is capable of.
+## Returns SKILL_MAX_LEVEL where the shop is not standing in a settlement —
+## an event shop met on the road is not a place and is not capped by one.
+func get_settlement_skill_cap() -> int:
+	if _current_shop.is_empty() or not _current_shop.has("settlement_tier"):
+		return CharacterSystem.SKILL_MAX_LEVEL
+	if bool(_current_shop.get("settlement_capital", false)):
+		return CAPITAL_SKILL_CAP
+	return int(SETTLEMENT_SKILL_CAP.get(
+		int(_current_shop.get("settlement_tier", 1)), CharacterSystem.SKILL_MAX_LEVEL))
+
+
+## The name of the place this shop stands in, or "" on the open road.
+func get_settlement_name() -> String:
+	return str(_current_shop.get("settlement", ""))
+
+
+## Return the skill cap in force here: the lower of what the teacher can teach
+## and what the place will support.
 func get_trainer_skill_cap() -> int:
 	if _current_shop.is_empty():
 		return CharacterSystem.SKILL_MAX_LEVEL
-	return _current_shop.get("training", {}).get("max_skill_level", CharacterSystem.SKILL_MAX_LEVEL)
+	var taught: int = int(_current_shop.get("training", {}).get(
+		"max_skill_level", CharacterSystem.SKILL_MAX_LEVEL))
+	return mini(taught, get_settlement_skill_cap())
 
 
 ## Calculate cost to train a skill to next level
@@ -757,8 +791,10 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 		if not skills_offered.is_empty() and skill not in skills_offered:
 			return {"success": false, "reason": "Training not available here"}
 
-		# Enforce trainer cap if set
-		var cap = training.get("max_skill_level", CharacterSystem.SKILL_MAX_LEVEL)
+		# Enforce the cap in force here — the teacher's, or the town's, whichever
+		# is lower. Reading the template directly would let a master teach to 7
+		# in a hamlet.
+		var cap = get_trainer_skill_cap()
 		if current_level >= cap:
 			return {"success": false, "reason": "Trainer can't teach beyond level %d" % cap}
 

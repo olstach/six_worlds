@@ -224,7 +224,7 @@
       },
       "settlements": {
         "town": [
-          0,
+          1,
           1
         ],
         "village": [
@@ -540,7 +540,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_teahouse",
@@ -558,7 +559,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_training_camp",
@@ -673,7 +675,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_town_magic",
@@ -683,7 +686,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_town_supplies",
@@ -693,7 +697,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "naga_palace",
@@ -1228,7 +1233,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "animal_forest_teahouse",
@@ -1254,7 +1260,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_forest_training_camp",
@@ -1370,7 +1377,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_forest_town_magic",
@@ -1380,7 +1388,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_forest_town_supplies",
@@ -1390,7 +1399,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "naga_palace",
@@ -1904,7 +1914,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "animal_meadow_teahouse",
@@ -1922,7 +1933,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_meadow_training_camp",
@@ -2038,7 +2050,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_meadow_town_magic",
@@ -2048,7 +2061,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_meadow_town_supplies",
@@ -2058,7 +2072,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "naga_palace",

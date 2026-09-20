@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 35
+const EXPECTED_CHECKS: int = 38
 
 
 func _ready() -> void:
@@ -60,6 +60,11 @@ func _ready() -> void:
 	_check_barter_settles_in_goods_before_gold()
 	_check_a_shortfall_needs_confirming()
 	_check_a_new_life_keeps_nothing_of_the_old_world()
+
+	# The cap is a property of the town now, not of the shop template.
+	_check_a_village_caps_a_master()
+	_check_a_capital_teaches_further_than_a_town()
+	_check_a_roadside_shop_is_capped_only_by_its_own_skill()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -878,4 +883,57 @@ func _check_a_new_life_keeps_nothing_of_the_old_world() -> void:
 		_fail("a guild curriculum from the previous world survived reincarnation")
 	if GameState.gold != 100:
 		_fail("gold carried across a death: %d" % GameState.gold)
+	_done()
+
+
+# ============================================================================
+# WHERE YOU ARE DECIDES HOW FAR YOU GET
+# ============================================================================
+
+func _open_trainer_in(tier: int, capital: bool, taught: int) -> void:
+	ShopSystem._current_shop = {
+		"id": "cap_probe", "type": "skill_trainer", "price_modifier": 1.0,
+		"training": {"skills": ["swords"], "max_skill_level": taught}
+	}
+	if tier > 0:
+		ShopSystem._current_shop["settlement"] = "Probe"
+		ShopSystem._current_shop["settlement_tier"] = tier
+		ShopSystem._current_shop["settlement_capital"] = capital
+
+
+## weapon_master taught to 7 wherever it landed. A village is a village.
+func _check_a_village_caps_a_master() -> void:
+	_open_trainer_in(2, false, 7)
+	var capped: int = ShopSystem.get_trainer_skill_cap()
+	var expected: int = int(ShopSystem.SETTLEMENT_SKILL_CAP[2])
+	if capped != expected:
+		_fail("a master in a village teaches to %d, the village allows %d"
+			% [capped, expected])
+	_done()
+
+
+## And the journey to the capital has to buy something.
+func _check_a_capital_teaches_further_than_a_town() -> void:
+	_open_trainer_in(3, false, 10)
+	var town: int = ShopSystem.get_trainer_skill_cap()
+	_open_trainer_in(3, true, 10)
+	var capital: int = ShopSystem.get_trainer_skill_cap()
+	if capital <= town:
+		_fail("a capital teaches to %d against a town's %d" % [capital, town])
+	# The teacher is still the other half of the ceiling.
+	_open_trainer_in(3, true, 4)
+	if ShopSystem.get_trainer_skill_cap() != 4:
+		_fail("a limited teacher in the capital taught to %d, not 4"
+			% ShopSystem.get_trainer_skill_cap())
+	_done()
+
+
+## An event shop met on the road is not a place, so no place caps it.
+func _check_a_roadside_shop_is_capped_only_by_its_own_skill() -> void:
+	_open_trainer_in(0, false, 6)
+	if ShopSystem.get_trainer_skill_cap() != 6:
+		_fail("a roadside trainer capped at %d rather than its own 6"
+			% ShopSystem.get_trainer_skill_cap())
+	if ShopSystem.get_settlement_skill_cap() != CharacterSystem.SKILL_MAX_LEVEL:
+		_fail("a shop in no settlement reported a settlement cap")
 	_done()

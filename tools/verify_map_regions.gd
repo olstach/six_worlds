@@ -19,7 +19,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 21
+const EXPECTED_CHECKS: int = 24
 
 const T_ROAD := 1
 const T_FOREST := 2
@@ -60,6 +60,9 @@ func _ready() -> void:
 	_check_the_dry_graveyards_have_no_town()
 	_check_a_capital_zone_always_has_its_town()
 	_check_a_shop_stands_in_a_settlement()
+	_check_a_shop_is_big_enough_for_the_place_holding_it()
+	_check_a_hamlet_holds_no_shop()
+	_check_gating_has_not_starved_a_realm_of_commerce()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -737,4 +740,61 @@ func _check_a_shop_stands_in_a_settlement() -> void:
 		if shops > 0 and housed == 0:
 			_fail("%s placed %d shops and not one of them is in a settlement"
 				% [realm, shops])
+	_done()
+
+
+## Every shop template declares the smallest settlement that may hold it.
+func _gate_by_event(realm: String) -> Dictionary:
+	var gates: Dictionary = {}
+	for pool in _configs[realm].get("object_pools", {}).values():
+		for template in pool.get("events", []):
+			if str(template.get("tag", "")) == "shop":
+				gates[str(template.get("event_id", ""))] = \
+					str(template.get("min_settlement", "village"))
+	return gates
+
+
+func _shop_objects(realm: String) -> Array:
+	var out: Array = []
+	for obj in _maps[realm].get("objects", []):
+		if str(obj.get("icon", "")) == "shop":
+			out.append(obj)
+	return out
+
+
+## A spell guild on a hillside is what the gate exists to prevent.
+func _check_a_shop_is_big_enough_for_the_place_holding_it() -> void:
+	for realm in _maps:
+		var gates: Dictionary = _gate_by_event(realm)
+		for obj in _shop_objects(realm):
+			var gate: String = str(gates.get(str(obj.get("data", {}).get("event_id", "")), "village"))
+			var needed: int = int(MapGenerator.SETTLEMENT_GATES.get(gate, 2))
+			var rank: int = int(obj.get("data", {}).get("settlement_tier", 0))
+			if bool(obj.get("data", {}).get("settlement_capital", false)):
+				rank += 1
+			if rank < needed:
+				_fail("%s: a '%s' shop stands in a settlement of rank %d, needs %d"
+					% [realm, gate, rank, needed])
+	_done()
+
+
+## Hamlets are a place on the map and a stop on a road, not a high street.
+func _check_a_hamlet_holds_no_shop() -> void:
+	for realm in _maps:
+		for obj in _shop_objects(realm):
+			var data: Dictionary = obj.get("data", {})
+			if data.has("settlement_tier") and int(data["settlement_tier"]) <= 1 \
+					and not bool(data.get("settlement_capital", false)):
+				_fail("%s: a shop stands in a hamlet" % realm)
+	_done()
+
+
+## The gate can starve a map: if every template in a zone needs a town and no
+## town rolls, the zone holds no commerce. Per realm is the level that matters
+## — a shopless zone is fine, a shopless realm is not.
+func _check_gating_has_not_starved_a_realm_of_commerce() -> void:
+	for realm in _maps:
+		var shops: int = _shop_objects(realm).size()
+		if shops < 2:
+			_fail("%s placed %d shops across the whole realm" % [realm, shops])
 	_done()

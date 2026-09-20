@@ -52,6 +52,16 @@ var _settlements: Array[Dictionary] = []
 # biome is the Tomb Hills at 0.5, below the 0.8 a town wants. Without the
 # floor, a weighted draw still puts a town on the least bad ground in a bad
 # zone, which is how you end up with a capital in a boneyard.
+# WHAT A PLACE IS BIG ENOUGH TO HOLD. A shop template declares the smallest
+# settlement that can host it, and a settlement's rank is its tier plus one if
+# it is the realm's capital. Three rungs, because that is as many distinctions
+# as the player can feel: anywhere with a name, a proper town, and the one
+# city in the realm.
+#
+# Hamlets host nothing. A handful of huts is a place on the map and a stop on
+# a trade road, not a high street.
+const SETTLEMENT_GATES: Dictionary = {"village": 2, "town": 3, "capital": 4}
+
 const SETTLEMENT_TIERS: Array = [
 	{"key": "town", "tier": 3, "floor": 0.8, "spacing": 20, "fallback": [0, 1]},
 	{"key": "village", "tier": 2, "floor": 0.5, "spacing": 10, "fallback": [1, 2]},
@@ -977,28 +987,43 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 	var hosts: Array[Dictionary] = []
 	for settlement in _settlements:
 		if str(settlement.get("zone", "")) == zone_id \
-				and not bool(settlement.get("has_shop", false)):
+				and not bool(settlement.get("has_shop", false)) \
+				and _settlement_rank(settlement) >= SETTLEMENT_GATES["village"]:
 			hosts.append(settlement)
-	hosts.sort_custom(func(a, b): return int(a.get("tier", 0)) > int(b.get("tier", 0)))
+	hosts.sort_custom(func(a, b): return _settlement_rank(a) > _settlement_rank(b))
 
-	for i in range(guaranteed_shops):
-		if shop_events.is_empty():
+	# A shop needs somewhere to stand, and somewhere big enough. Walking the
+	# hosts rather than the shop count is what makes a spell guild a thing you
+	# find in a town and not on a hillside: the biggest place gets first pick
+	# of what it is allowed to hold.
+	var shops_placed: int = 0
+	for host in hosts:
+		if shops_placed >= guaranteed_shops or shop_events.is_empty():
 			break
-		var template = shop_events[randi() % shop_events.size()]
-		var pos := Vector2i(-1, -1)
-		if not hosts.is_empty():
-			var host: Dictionary = hosts.pop_front()
-			host["has_shop"] = true
-			pos = Vector2i(int(host.get("x", 0)), int(host.get("y", 0)))
-			# The settlement reserved this tile when it was placed; the shop
-			# standing in it is what that reservation was for.
-			_occupied.erase(pos)
-		else:
-			pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
-		if pos != Vector2i(-1, -1):
-			_place_event_object(zone_id, template, pos)
-			placed_positions.append(pos)
-			num_events -= 1  # Counts toward event budget
+		var rank: int = _settlement_rank(host)
+		var allowed: Array = []
+		for candidate in shop_events:
+			var gate: String = str(candidate.get("min_settlement", "village"))
+			if rank >= int(SETTLEMENT_GATES.get(gate, 2)):
+				allowed.append(candidate)
+		if allowed.is_empty():
+			continue
+
+		var template = allowed[randi() % allowed.size()]
+		var pos := Vector2i(int(host.get("x", 0)), int(host.get("y", 0)))
+		# The settlement reserved this tile when it was placed; the shop
+		# standing in it is what that reservation was for.
+		_occupied.erase(pos)
+		_place_event_object(zone_id, template, pos)
+		# So the shop knows what kind of place it is standing in: the trainer
+		# cap and the purse are properties of the town, not of the template.
+		_objects[-1]["data"]["settlement"] = str(host.get("name", ""))
+		_objects[-1]["data"]["settlement_tier"] = int(host.get("tier", 1))
+		_objects[-1]["data"]["settlement_capital"] = bool(host.get("capital", false))
+		host["has_shop"] = true
+		placed_positions.append(pos)
+		shops_placed += 1
+		num_events -= 1  # Counts toward event budget
 
 	# Place guaranteed rest stops (from pickups tagged "rest")
 	var rest_pickups: Array = []
@@ -1492,6 +1517,11 @@ func _place_one_settlement(zone_id: String, subs: Array[Dictionary], spec: Dicti
 	})
 	placed.append(pos)
 	_occupied[pos] = true
+
+
+## A settlement's standing: tier, plus one for the realm's capital.
+func _settlement_rank(settlement: Dictionary) -> int:
+	return int(settlement.get("tier", 1)) + (1 if bool(settlement.get("capital", false)) else 0)
 
 
 func _settlement_weight(sub: Dictionary) -> float:

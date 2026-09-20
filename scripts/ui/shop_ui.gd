@@ -71,6 +71,11 @@ func open_shop(shop_data: Dictionary) -> void:
 
 	# Update header
 	shop_name_label.text = shop_data.get("name", "Shop")
+	# The generator has been minting Tibetan compound names for settlements
+	# and nothing has ever shown one to the player.
+	var place: String = ShopSystem.get_settlement_name()
+	if place != "":
+		shop_name_label.text = "%s — %s" % [shop_data.get("name", "Shop"), place]
 	shop_desc_label.text = shop_data.get("description", "")
 	_update_gold_display()
 	_update_modifier_display()
@@ -98,8 +103,13 @@ func open_shop_by_id(shop_id: String, location_data: Dictionary = {}) -> bool:
 	if shop_data.is_empty():
 		return false
 	_location_data = location_data
-	# Pass object_id so ShopSystem can cache stable guild curricula
+	# Pass object_id so ShopSystem can cache stable guild curricula, and the
+	# settlement the generator stamped on the object: the training cap and the
+	# purse are properties of the place, not of the shop template.
 	shop_data["_object_id"] = location_data.get("_object_id", "")
+	for key in ["settlement", "settlement_tier", "settlement_capital"]:
+		if location_data.has(key):
+			shop_data[key] = location_data[key]
 	open_shop(shop_data)
 	return true
 

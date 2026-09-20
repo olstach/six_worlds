@@ -481,7 +481,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hg_will_o_wisp",
@@ -586,7 +587,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hg_teahouse_swamp",
@@ -604,7 +606,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_veterans_camp",
@@ -705,7 +708,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_town_magic",
@@ -715,7 +719,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_town_supplies",
@@ -725,7 +730,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "the_pit",
@@ -1286,7 +1292,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hg_dusty_library",
@@ -1383,7 +1390,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hg_teahouse_graveyard",
@@ -1401,7 +1409,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_veterans_camp",
@@ -1502,7 +1511,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_town_magic",
@@ -1512,7 +1522,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_town_supplies",
@@ -1522,7 +1533,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "the_pit",
@@ -2137,7 +2149,8 @@
           "blocking": false,
           "one_time": true,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hg_charnel_hermit",
@@ -2186,7 +2199,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "hg_teahouse_charnel",
@@ -2204,7 +2218,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_veterans_camp",
@@ -2296,7 +2311,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_town_magic",
@@ -2306,7 +2322,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "hg_town_supplies",
@@ -2316,7 +2333,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "the_pit",
