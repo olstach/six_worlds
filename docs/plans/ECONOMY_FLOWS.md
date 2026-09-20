@@ -244,6 +244,164 @@ or enemy difficulty.*
 
 ---
 
+## One rule, four refresh rates
+
+The trainer rework answers a question wider than trainers: **what is a price
+responding to?** The answer that makes the whole economy one system rather than
+four is that *every vendor holds stock, and price responds to stock*. What
+differs between kinds of vendor is only **how fast the stock comes back**.
+
+| Vendor | Stock | Refresh | Price curve |
+|---|---|---|---|
+| **Trainer** | 3 lessons | never | steep — 1x, 2.5x, 5x |
+| **Caravan** | what it is carrying | never | medium |
+| **Town market**, staples | toward equilibrium | daily drift | gentle — `clamp(eq / stock, 0.5, 2.0)` |
+| **Smith's rack**, gear | one of each item | on revisit, after *n* days | selection rather than price |
+
+The trainer feels unlike a shop because it sits at the extreme of that axis: a
+person is a finite, non-renewing stock of three. Nothing else about it is
+special, which is the point — the cap and the 1x/2.5x/5x steps are just a very
+short stock on a very steep curve, and the same two numbers describe a market
+that recovers overnight.
+
+**This is worth building once.** A `stock` and a `refresh` on a vendor record,
+and one price function that reads them, covers trainers, staples, caravan
+cargo and consumables. Writing four pricing systems that happen to resemble
+each other is how the buy and sell prices eventually cross.
+
+---
+
+## Gear, and the goods it is made of
+
+`ECONOMY_DESIGN.md` prices eight trade goods and says nothing about the 1,492
+items that already have a `value`. They are not a separate problem, because of
+something already in the data:
+
+**Trade goods are the raw form of materials.** `equipment_tables.json` carries
+42 materials, each with a `value_mult`, and `realm_material_weights` already
+makes availability depend on where you are — hell rolls bone / obsidian /
+bronze, the god realm rolls sky-iron and vajra. That is the coarse, per-realm
+version of exactly what a biome should do per region.
+
+| Trade good | Materials it becomes |
+|---|---|
+| **ore** | copper, bronze, iron, steel, silver, damascene, sky_iron |
+| **timber** | wood, sandalwood, rosewood, composite |
+| **hides** | leather, hide, scale, chitin |
+| **salvage** | bone, obsidian, devils_bone |
+| **herbs, fish, grain, salt** | consumables, not gear |
+
+So `produces: {"ore": 3}` on the Cinder Hills does **two jobs from one
+number**: it sets the price of ore, and it makes iron gear common and cheap
+there. No new biome data is required for the common case.
+
+### Two effects, and the second matters more
+
+- **Price** — one more term, the same clamp shape as the staples:
+  `× material_scarcity(region, material)`.
+- **Selection** — `realm_material_weights` tilted by the biome. A blacksmith in
+  the Cinder Hills racks iron and steel; one in the Deep Wood racks wood and
+  leather; one on the Reef Flats racks conch, coral and scale.
+
+Selection is the bigger change, because it decides what you *can* buy rather
+than what it costs. It is also nearly free: the weighted pick already exists in
+`_generate_procedural_stock`, and it already takes a realm.
+
+### The implementation constraint that will bite
+
+**An item's value is baked in at generation.** `final_value = base.value ×
+material.value_mult × quality.value_mult`, computed once in `item_system.gd`
+and stored on the item. The only local term today is `shop.price_modifier`,
+applied at the till.
+
+So regional pricing **must live in `get_buy_price` / `get_sell_price`, never in
+`final_value`** — otherwise an item mutates when carried across a border, which
+destroys the one behaviour the whole design is for: buying where a thing is
+cheap and selling where it is dear. The item's worth is intrinsic; the market's
+opinion of it is local. Those have to stay separate fields.
+
+### A number to be careful with
+
+`vajra` has `value_mult: 15.0` and the god realm weights it at 45. A vajra
+blade is already worth fifteen times its base. If a regional multiplier stacks
+on top unclamped, carrying one from the god realm to hell is an arbitrage that
+ends the economy in a single trip. The `[0.5, 2.0]` clamp is not decoration —
+it is what keeps the top of the material ladder from being a money printer, and
+it wants asserting in a verifier against the **highest** `value_mult` in the
+table rather than against a typical one.
+
+---
+
+## What a caravan does after it spawns
+
+The friendly NPCs already exist — every mob pool carries `attitude: 0` entries,
+and `_place_zone_mobs` already generates patrol routes for `mode == 1`. A
+caravan is therefore not a new spawn system; it is a patrol mob with cargo and
+a shop hook.
+
+**Its state:**
+
+```
+origin        the settlement it left, and whose prices it quotes
+cargo         {good: count} — a manifest, finite
+route         settlement ids along the road network
+disposition   how it feels about the party
+```
+
+**Its behaviour, in the order the party experiences it:**
+
+1. **Spawns at a settlement**, picks a destination, and takes the road.
+2. **Walks.** The road network is the schedule — a caravan that left the ore
+   town three days ago is somewhere on the road to the grain town, and a player
+   who has learned the roads can work out where.
+3. **On meeting, it is a shop quoting its origin's prices.** That is the whole
+   point of it: buying a distant market's cheap side without going there. Its
+   `price_modifier` is the origin's, not the local one.
+4. **Its cargo depletes and never refills.** Buy it out and it has nothing —
+   the non-refreshing row in the table above. This is what stops a caravan from
+   being an infinite arbitrage machine parked on a road.
+5. **On arrival it despawns.** The destination's prices move by the daily
+   drift, not by this caravan's delivery.
+6. **Rob it** and you get the cargo, a karma hit, and a flag. Traders in that
+   realm price you up, and some flee on sight rather than trade.
+
+**Step 5 is a deliberate cheap choice.** The expensive version has the caravan
+actually deposit its cargo into the destination's stock, so the network
+equalises through simulated trade rather than through drift. That is a better
+world model and it is not worth building until the drift is visibly boring —
+the player cannot tell the difference until they are watching two markets at
+once, which is a late-game behaviour that may never arrive.
+
+**Where they are is already answered.** `mob_bias: {"traveller": 2.5}` on the
+Old Roads is a caravan corridor; `{"traveller": 0.1}` on the Deep Swamp is why
+you do not meet merchants chest-deep in a bog. The field designed for NPC kind
+turns out to be the caravan density field too.
+
+---
+
+## The one new biome field
+
+Everything above needed exactly one thing the biome tables do not already
+carry, and even that is optional:
+
+```jsonc
+"reef_flats": {
+  "produces": { "fish": 2, "salt": 2 },
+  "materials": { "conch": 2.0, "coral": 1.8, "scale": 1.4, "iron": 0.4 }
+}
+```
+
+**Derive by default, declare to override** — the same rule `produces` already
+follows against terrain. The good-to-material table above derives a sensible
+tilt from `produces` for nearly every biome, so `materials` is only written
+where the derivation cannot know something: that a reef yields conch and coral,
+that the charnel grounds yield devils_bone, that the Frozen Wood has no metal
+at all whatever its hills suggest.
+
+Most biomes will leave it empty, which is the sign it is the right shape.
+
+---
+
 ## What to build, in order
 
 1. ~~**`GOLD_PER_XP` and the attribute price.**~~ **Built.** The rate is named,
@@ -257,6 +415,22 @@ or enemy difficulty.*
    decision above.
 4. **Investment**, as the first real sink, maturing on the day tick.
 5. **Drift and shocks** — layer 4.
+
+And from the sections above, slotted where they belong rather than as a second
+list:
+
+- **One stock-and-refresh vendor record** goes in with step 2, not after it.
+  The price function that reads it is the same one the staples need, and
+  retrofitting the trainer onto it later means touching pricing twice.
+- **Biome-tilted material selection** goes in with step 2 as well. It is the
+  cheapest large change in this document — `_generate_procedural_stock` already
+  does a weighted pick and already takes a realm, so tilting the weights by
+  subregion is a small edit that changes what every shop in the game racks.
+- **Regional gear pricing** goes in the till (`get_buy_price` / `get_sell_price`),
+  never in `final_value`, and wants the clamp verified against `vajra` at
+  `value_mult: 15.0` rather than a typical material.
+- **Caravans** come after step 3, because a caravan with no trade goods to
+  carry is just a peddler with extra steps.
 
 Steps 1 is independent of everything and could land today. Steps 2 onward want
 the biome economy fields settled first, since they are what the price index
