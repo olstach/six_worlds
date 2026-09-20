@@ -1,0 +1,382 @@
+<!--
+  WORKING SKELETON for a data review page. This is the page that was built for
+  the Six Worlds biome tables, kept whole because the plumbing is the part that
+  is fiddly to get right: the theme tokens, the default-vs-edit diffing, the db
+  round-trip and the clipboard export all work as they stand.
+
+  To reuse it, change these and leave the rest alone:
+
+    __DATA__     replaced at build time with the JSON your extraction script
+                 emits. Shape here: [{id, name, zones:[{id, name, note, rows,
+                 cols, biomes:[{...record...}]}]}] — two levels of grouping
+                 around a list of records. Flatten a level if you only need one.
+
+    TC           colour per part for the composition bar. Drop the bar entirely
+                 if the records have no part-of-a-whole field.
+
+    F_REPO       the fields that already exist in the source data.
+    F_PROP       the fields you are proposing. Two lists so the page can label
+                 them separately — that split is the point, not decoration.
+                 Each entry is [key, label, kind] where kind is
+                 "n" number, "t" text, "m" number with a meter beside it.
+
+    the meter scale in sync() — currently /1.5. Set it to the real maximum of
+    whatever the "m" fields measure, and tell the user what you assumed.
+
+  The db collection is "edits", one doc per record keyed `${group}__${id}`,
+  holding only changed fields plus identity. Read it back with ArtifactData
+  (action "list", collection "edits").
+-->
+<title>The Thirty-Two Biomes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#E3E0D5; --surface:#F1EEE4; --surface-2:#E9E5D8; --line:#C9C3B0; --line-soft:#D8D3C2;
+  --ink:#241F33; --ink-2:#4A4459; --ink-3:#6E687C;
+  --gold:#9C6E12; --gold-soft:#C79A3A; --red:#8B2226; --indigo:#3B3478; --jade:#39735E;
+  --wash:rgba(156,110,18,.10); --edit:#9C6E12;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#14111D; --surface:#1E1A2B; --surface-2:#252036; --line:#3A3350; --line-soft:#2E2842;
+  --ink:#E9E4D7; --ink-2:#BDB6C9; --ink-3:#8B84A0;
+  --gold:#D9B04C; --gold-soft:#B9902F; --red:#CC5F56; --indigo:#948DE0; --jade:#5FB093;
+  --wash:rgba(217,176,76,.10); --edit:#D9B04C;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --ground:#14111D; --surface:#1E1A2B; --surface-2:#252036; --line:#3A3350; --line-soft:#2E2842;
+  --ink:#E9E4D7; --ink-2:#BDB6C9; --ink-3:#8B84A0;
+  --gold:#D9B04C; --gold-soft:#B9902F; --red:#CC5F56; --indigo:#948DE0; --jade:#5FB093;
+  --wash:rgba(217,176,76,.10); --edit:#D9B04C;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:Spectral,Georgia,serif;font-size:15px;line-height:1.55;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:0 72px}
+h1,h2,h3{text-wrap:balance;margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* ── toolbar ─────────────────────────────── */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ground);
+  border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bar .spacer{flex:1 1 auto;min-width:0}
+button{font:inherit;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.04em;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:2px;
+  padding:6px 11px;cursor:pointer}
+button:hover{border-color:var(--gold);color:var(--gold)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button.ghost{background:none}
+.count{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3)}
+.count b{color:var(--gold);font-weight:600}
+
+/* ── masthead ────────────────────────────── */
+header.mast{padding-block:40px 30px;border-bottom:2px solid var(--ink);margin-bottom:6px}
+.eyebrow{font-family:Cinzel,serif;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--red)}
+h1{font-family:Cinzel,serif;font-size:clamp(28px,6vw,46px);font-weight:600;letter-spacing:.01em;margin:10px 0 14px}
+.lede{max-width:62ch;color:var(--ink-2);font-size:16px}
+.lede em{color:var(--ink);font-style:italic}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:20px;font-size:12.5px;color:var(--ink-3);
+  font-family:"IBM Plex Mono",monospace}
+.legend span{display:flex;align-items:center;gap:6px}
+.swatch{width:10px;height:10px;border-radius:1px;flex:none}
+
+/* ── realm / zone ────────────────────────── */
+.realm{margin-top:52px}
+.realm>h2{font-family:Cinzel,serif;font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--red);padding-bottom:7px;border-bottom:1px solid var(--red)}
+.zone{margin-top:30px}
+.zone-head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px}
+.zone-head h3{font-family:Cinzel,serif;font-size:21px;font-weight:600}
+.zone-head .rect{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3)}
+.zone-note{font-size:13.5px;color:var(--ink-2);font-style:italic;max-width:70ch;margin-bottom:14px}
+.zone-note.warn{color:var(--red);font-style:normal}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+
+/* ── biome card ──────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--line-soft);border-radius:3px;padding:14px 15px 15px;
+  display:flex;flex-direction:column;gap:11px}
+.card.dirty{border-color:var(--edit);box-shadow:inset 3px 0 0 var(--edit)}
+.card.cap{border-left:3px solid var(--gold)}
+.card.cap.dirty{box-shadow:none}
+.chead{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+.chead .nm{font-family:Cinzel,serif;font-size:16.5px;font-weight:600;flex:1 1 auto}
+.tag{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 6px;border-radius:2px;border:1px solid var(--line);color:var(--ink-3);white-space:nowrap}
+.tag.w{border-color:var(--gold);color:var(--gold)}
+.tag.cap{border-color:var(--gold);background:var(--wash);color:var(--gold)}
+.tag.sp{border-color:var(--red);color:var(--red)}
+.bid{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+
+/* terrain bar */
+.terr{display:flex;height:9px;border-radius:2px;overflow:hidden;border:1px solid var(--line-soft)}
+.terr i{display:block;height:100%}
+.terrlab{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);
+  display:flex;gap:9px;flex-wrap:wrap;margin-top:-4px}
+
+fieldset{border:0;padding:0;margin:0}
+legend{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);padding:0 0 5px}
+legend.prop{color:var(--gold)}
+.rows{display:flex;flex-direction:column;gap:5px}
+.row{display:grid;grid-template-columns:78px 1fr;gap:9px;align-items:center}
+.row>label{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+input{font:inherit;font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-variant-numeric:tabular-nums;
+  background:var(--surface-2);color:var(--ink);border:1px solid transparent;border-bottom:1px solid var(--line-soft);
+  border-radius:2px;padding:3px 6px;width:100%;min-width:0}
+input:hover{border-bottom-color:var(--ink-3)}
+input:focus{outline:none;border-color:var(--gold);background:var(--ground)}
+input.changed{border-bottom:2px solid var(--edit);color:var(--edit);font-weight:500}
+input.num{width:64px}
+.pair{display:flex;gap:9px;align-items:center}
+.meter{flex:1 1 auto;height:4px;background:var(--surface-2);border-radius:2px;overflow:hidden;min-width:40px}
+.meter i{display:block;height:100%;background:var(--jade)}
+.meter.dead i{background:var(--red)}
+.note{font-size:13px;font-style:italic;color:var(--ink-2);border-top:1px solid var(--line-soft);padding-top:9px}
+.dbnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);margin-top:14px}
+dialog{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:3px;
+  max-width:min(760px,92vw);padding:0}
+dialog::backdrop{background:rgba(10,8,16,.6)}
+.dlg{padding:16px}
+textarea{width:100%;height:52vh;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+  background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:2px;padding:9px;resize:vertical}
+@media (max-width:430px){.row{grid-template-columns:70px 1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+<div class="bar">
+  <span class="count" id="count">no changes yet</span>
+  <span class="spacer"></span>
+  <button type="button" id="btnJson">Copy JSON</button>
+  <button type="button" id="btnMd">Copy table</button>
+  <button type="button" class="ghost" id="btnReset">Reset all</button>
+</div>
+
+<header class="mast">
+  <div class="eyebrow">Six Worlds &middot; map configs &middot; PR #72</div>
+  <h1>The Thirty-Two Biomes</h1>
+  <p class="lede">Every biome across the three built realms. The <em>cluster</em>, <em>mob</em> and
+  <em>event</em> figures are in the repo now. Everything under <em>proposed</em> is a first pass and
+  none of it has a reader yet — which is exactly why it is worth arguing with before it becomes data.
+  Edit any field; changes are saved and I can read them back.</p>
+  <div class="legend">
+    <span><i class="swatch" style="background:var(--gold)"></i>proposed capital</span>
+    <span><i class="swatch" style="background:var(--red)"></i>special good</span>
+    <span><i class="swatch" style="background:var(--jade)"></i>habitability &middot; wealth</span>
+  </div>
+</header>
+
+<main id="main"></main>
+<p class="dbnote" id="dbnote"></p>
+</div>
+
+<dialog id="dlg"><form method="dialog" class="dlg">
+  <textarea id="dlgText" readonly spellcheck="false"></textarea>
+  <div style="display:flex;gap:9px;margin-top:10px;justify-content:flex-end">
+    <button type="button" id="dlgCopy">Copy to clipboard</button>
+    <button type="submit" class="ghost">Close</button>
+  </div>
+</form></dialog>
+
+<script>
+const DATA = __DATA__;
+
+const TC={plains:"#8a9a5b",road:"#a8956f",forest:"#2f5d3a",hills:"#7d6b4f",mountains:"#6b6b73",
+water:"#2d6a8f",swamp:"#4a5d3a",desert:"#c2a05a",snow:"#dfe6ee",lava:"#b3402a",bridge:"#9b7f5a",
+ice:"#9fc6d8",sand:"#d9c48a",ruins:"#8a7f74"};
+
+// editable fields: key -> [label, kind]  kind: n=number, t=text
+const F_REPO=[["clusterMin","cluster min","n"],["clusterMax","cluster max","n"],
+  ["mobWeight","mob weight","n"],["eventWeight","event wt","n"]];
+const F_PROP=[["produces","produces","t"],["wants","wants","t"],["wealth","wealth","m"],
+  ["hab","habitability","m"],["special","special","t"],["bias","mob_bias","t"]];
+const ALL=[...F_REPO,...F_PROP].map(f=>f[0]);
+
+let DB=null, edits={};           // key `${realm}__${id}` -> {field:value}
+const base={}, meta={};
+for(const r of DATA) for(const z of r.zones) for(const b of z.biomes){
+  base[r.id+"__"+b.id]=Object.fromEntries(ALL.map(k=>[k,b[k]]));
+  meta[r.id+"__"+b.id]={realm:r.id,zone:z.id,name:b.name,id:b.id};
+}
+const cur=(k,f)=>(edits[k]&&f in edits[k])?edits[k][f]:base[k][f];
+const isChanged=(k,f)=>String(cur(k,f))!==String(base[k][f]);
+const nChanged=()=>Object.keys(edits).reduce((n,k)=>n+Object.keys(edits[k]).filter(f=>isChanged(k,f)).length,0);
+
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;};
+
+function render(){
+  const main=document.getElementById("main");
+  main.textContent="";
+  for(const r of DATA){
+    const sec=el("section","realm"); sec.append(el("h2",null,r.name+" — "+r.zones.length+" zones"));
+    for(const z of r.zones){
+      const zs=el("div","zone");
+      const hd=el("div","zone-head");
+      hd.append(el("h3",null,z.name));
+      const rect="rows "+z.rows[0]+"–"+z.rows[1]+(z.cols?" · cols "+z.cols[0]+"–"+z.cols[1]:" · full width");
+      hd.append(el("span","rect",rect));
+      zs.append(hd);
+      zs.append(el("p","zone-note"+(z.note.includes("PROPOSED")?" warn":""),z.note));
+      const g=el("div","grid");
+      for(const b of z.biomes) g.append(card(r.id,b));
+      zs.append(g); sec.append(zs);
+    }
+    main.append(sec);
+  }
+  updCount();
+}
+
+function card(realm,b){
+  const k=realm+"__"+b.id;
+  const c=el("div","card"+(b.capital?" cap":"")); c.dataset.k=k;
+  const h=el("div","chead");
+  h.append(el("span","nm",b.name));
+  if(b.capital) h.append(el("span","tag cap","capital"));
+  h.append(el("span","tag w","pool "+b.poolWeight));
+  c.append(h);
+  c.append(el("div","bid",b.id));
+
+  const tot=b.terrain.reduce((s,t)=>s+t[1],0);
+  const bar=el("div","terr");
+  for(const [n,v] of b.terrain){const i=el("i");i.style.background=TC[n]||"#888";i.style.width=(v/tot*100)+"%";i.title=n+" "+v+"%";bar.append(i);}
+  c.append(bar);
+  c.append(el("div","terrlab",b.terrain.map(t=>t[0]+" "+t[1]).join("   ")));
+
+  c.append(fields(k,"in the repo now",F_REPO,false));
+  c.append(fields(k,"proposed",F_PROP,true));
+  if(b.note) c.append(el("p","note",b.note));
+  sync(c,k);
+  return c;
+}
+
+function fields(k,title,list,prop){
+  const fs=el("fieldset"); const lg=el("legend",prop?"prop":null,title); fs.append(lg);
+  const rows=el("div","rows");
+  for(const [f,label,kind] of list){
+    const row=el("div","row");
+    const lb=el("label",null,label); lb.setAttribute("for",k+"-"+f); row.append(lb);
+    const inp=document.createElement("input");
+    inp.id=k+"-"+f; inp.value=cur(k,f); inp.dataset.k=k; inp.dataset.f=f;
+    if(kind!=="t"){inp.type="number"; inp.step="0.1"; inp.className="num";}
+    inp.addEventListener("input",onEdit);
+    if(kind==="m"){
+      const p=el("div","pair"); p.append(inp);
+      const m=el("div","meter"); const fill=el("i"); m.append(fill); p.append(m);
+      inp.dataset.meter="1"; row.append(p);
+    } else row.append(inp);
+    rows.append(row);
+  }
+  fs.append(rows); return fs;
+}
+
+function sync(card,k){
+  card.classList.toggle("dirty",!!edits[k]&&Object.keys(edits[k]).some(f=>isChanged(k,f)));
+  for(const inp of card.querySelectorAll("input")){
+    const f=inp.dataset.f;
+    inp.classList.toggle("changed",isChanged(k,f));
+    if(inp.dataset.meter){
+      const m=inp.parentElement.querySelector(".meter"), v=parseFloat(inp.value)||0;
+      m.querySelector("i").style.width=Math.min(100,v/1.5*100)+"%";
+      m.classList.toggle("dead",v<=0.05);
+    }
+  }
+}
+
+function onEdit(e){
+  const {k,f}=e.target.dataset;
+  const raw=e.target.value, val=e.target.type==="number"?(raw===""?"":parseFloat(raw)):raw;
+  edits[k]=edits[k]||{};
+  if(String(val)===String(base[k][f])) delete edits[k][f]; else edits[k][f]=val;
+  if(!Object.keys(edits[k]).length) delete edits[k];
+  sync(e.target.closest(".card"),k);
+  updCount(); save(k);
+}
+
+function updCount(){
+  const n=nChanged(), c=document.getElementById("count");
+  c.textContent=""; 
+  if(!n){c.append("no changes yet");return;}
+  const b=el("b",null,String(n)); c.append(b); c.append(" field"+(n===1?"":"s")+" changed");
+}
+
+/* ── persistence ───────────────────────────────────────── */
+let timer={};
+function save(k){
+  if(!DB) return;
+  clearTimeout(timer[k]);
+  timer[k]=setTimeout(async()=>{
+    try{
+      if(edits[k]) await DB.doc("edits/"+k).set({...meta[k],...edits[k]});
+      else await DB.doc("edits/"+k).delete();
+    }catch(err){}
+  },500);
+}
+
+(async()=>{
+  const note=document.getElementById("dbnote");
+  let db=null;
+  try{ db=await claude.use("db"); }catch(e){}
+  if(!db){ note.textContent="Not saving — edits live in this tab only. Use Copy JSON before you close it."; return; }
+  DB=db;
+  try{
+    const snap=await db.collection("edits").get();
+    for(const d of (snap&&snap.docs)||[]){
+      const o=d.data()||{}; const id=d.id;
+      if(!base[id]) continue;
+      const e={}; for(const f of ALL) if(f in o && String(o[f])!==String(base[id][f])) e[f]=o[f];
+      if(Object.keys(e).length) edits[id]=e;
+    }
+  }catch(err){}
+  render();
+  note.textContent="Saved as you type. I can read these edits back and commit them to the PR.";
+})();
+
+render();
+
+/* ── export ────────────────────────────────────────────── */
+function payload(){
+  const out=[];
+  for(const r of DATA) for(const z of r.zones) for(const b of z.biomes){
+    const k=r.id+"__"+b.id, o={realm:r.id,zone:z.id,biome:b.id,name:b.name};
+    for(const f of ALL) o[f]=cur(k,f);
+    o._changed=Object.keys(edits[k]||{}).filter(f=>isChanged(k,f));
+    out.push(o);
+  }
+  return out;
+}
+function markdown(){
+  const L=["| Realm | Zone | Biome | Cluster | Mob | Event | Produces | Wants | Wealth | Hab. | Special | mob_bias |",
+           "|---|---|---|---|---|---|---|---|---|---|---|---|"];
+  for(const o of payload()) L.push("| "+[o.realm,o.zone,o.name,o.clusterMin+"–"+o.clusterMax,o.mobWeight,
+    o.eventWeight,o.produces||"—",o.wants||"—",o.wealth,o.hab,o.special||"—",o.bias||"—"].join(" | ")+" |");
+  return L.join("\n");
+}
+function show(text){
+  const d=document.getElementById("dlg");
+  document.getElementById("dlgText").value=text; d.showModal();
+}
+async function copy(text,btn){
+  const old=btn.textContent;
+  try{ await navigator.clipboard.writeText(text); btn.textContent="Copied"; }
+  catch(e){ show(text); return; }
+  setTimeout(()=>{btn.textContent=old;},1400);
+}
+document.getElementById("btnJson").addEventListener("click",e=>copy(JSON.stringify(payload(),null,2),e.target));
+document.getElementById("btnMd").addEventListener("click",e=>copy(markdown(),e.target));
+document.getElementById("dlgCopy").addEventListener("click",async e=>{
+  try{await navigator.clipboard.writeText(document.getElementById("dlgText").value);e.target.textContent="Copied";}catch(_){ 
+    const t=document.getElementById("dlgText"); t.removeAttribute("readonly"); t.select(); }
+});
+document.getElementById("btnReset").addEventListener("click",async()=>{
+  const keys=Object.keys(edits);
+  if(!keys.length) return;
+  edits={};
+  if(DB) for(const k of keys){ try{ await DB.doc("edits/"+k).delete(); }catch(_){} }
+  render();
+});
+</script>
