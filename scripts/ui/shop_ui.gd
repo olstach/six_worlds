@@ -27,7 +27,16 @@ const UNAFFORDABLE_COLOR = Color(0.8, 0.3, 0.3, 1)
 const ITEM_SLOT_SIZE = Vector2(180, 80)
 
 var current_shop: Dictionary = {}
-var selected_barter_items: Array = []
+## The barter basket. `selected_barter_items` was declared here and cleared on
+## close and never otherwise used — the class docstring has promised barter
+## since it was written. It is the "you offer" side now.
+var selected_barter_items: Array = []   # item ids the player is handing over
+var barter_wanted: Array = []           # item ids the player wants from the rack
+var barter_mode: bool = false
+var _barter_bar: PanelContainer = null
+var _barter_lines: VBoxContainer = null
+var _barter_confirm: Button = null
+var _barter_toggle: Button = null
 var _location_data: Dictionary = {}
 
 # Item tooltip
@@ -69,6 +78,9 @@ func open_shop(shop_data: Dictionary) -> void:
 	# Setup tabs based on shop type
 	_setup_tabs()
 
+	_ensure_barter_widgets()
+	_reset_barter()
+
 	# Populate content
 	_populate_items_tab()
 	_populate_spells_tab()
@@ -95,7 +107,7 @@ func open_shop_by_id(shop_id: String, location_data: Dictionary = {}) -> bool:
 func close_shop() -> void:
 	ShopSystem.close_shop()
 	current_shop = {}
-	selected_barter_items.clear()
+	_reset_barter()
 	visible = false
 	shop_closed.emit()
 
@@ -241,19 +253,22 @@ func _create_item_slot(item_id: String, quantity: int, is_shop_item: bool) -> vo
 	price_label.add_theme_color_override("font_color", AFFORDABLE_COLOR if can_afford else UNAFFORDABLE_COLOR)
 	info_hbox.add_child(price_label)
 
-	# Buy/Sell button
-	var button = Button.new()
-	button.text = "Buy" if is_shop_item else "Sell"
-	button.add_theme_font_size_override("font_size", 12)
-
-	if is_shop_item:
-		button.disabled = not can_afford
-		button.pressed.connect(func(): _on_buy_item_pressed(item_id))
+	# Buy/Sell button — or, in barter mode, the basket controls
+	if barter_mode:
+		vbox.add_child(_make_barter_controls(item_id, quantity, is_shop_item))
 	else:
-		button.disabled = not ShopSystem.can_sell_item_here(item_id)
-		button.pressed.connect(func(): _on_sell_item_pressed(item_id))
+		var button = Button.new()
+		button.text = "Buy" if is_shop_item else "Sell"
+		button.add_theme_font_size_override("font_size", 12)
 
-	vbox.add_child(button)
+		if is_shop_item:
+			button.disabled = not can_afford
+			button.pressed.connect(func(): _on_buy_item_pressed(item_id))
+		else:
+			button.disabled = not ShopSystem.can_sell_item_here(item_id)
+			button.pressed.connect(func(): _on_sell_item_pressed(item_id))
+
+		vbox.add_child(button)
 
 	# Connect hover for item tooltip
 	slot.mouse_entered.connect(_on_item_hover.bind(item_data, slot))
@@ -1110,6 +1125,7 @@ func _refresh_display() -> void:
 	_populate_companions_tab()
 	_populate_rest_tab()
 	_populate_inventory()
+	_update_barter_bar()
 
 
 func _on_item_hover(item: Dictionary, control: Control) -> void:
@@ -1130,3 +1146,210 @@ func _exit_tree() -> void:
 			tooltip_parent.queue_free()
 		else:
 			item_tooltip.queue_free()
+
+
+# ============================================
+# BARTER
+#
+# Goods against goods, with gold settling the difference. The point of it is
+# the shop purse: "sell the sword, buy the armour" is one exchange the shop
+# can afford even with an empty till, but as two transactions a poor shop
+# cannot do it at all. ShopSystem prices the basket; this draws it.
+# ============================================
+
+## The toggle in the footer and the basket bar above it. Built in code rather
+## than in the scene so the shop scene stays as it is.
+func _ensure_barter_widgets() -> void:
+	var footer: HBoxContainer = close_button.get_parent()
+	var column: VBoxContainer = footer.get_parent()
+
+	if _barter_toggle == null:
+		_barter_toggle = Button.new()
+		_barter_toggle.toggle_mode = true
+		_barter_toggle.text = "Barter"
+		_barter_toggle.add_theme_font_size_override("font_size", 12)
+		_barter_toggle.toggled.connect(_on_barter_toggled)
+		footer.add_child(_barter_toggle)
+		footer.move_child(_barter_toggle, 0)
+
+	if _barter_bar == null:
+		_barter_bar = PanelContainer.new()
+		var style := UIStyle.make_stylebox(Color(0.45, 0.38, 0.22), 2, 4, 0)
+		style.bg_color = Color(0.12, 0.10, 0.16, 0.95)
+		_barter_bar.add_theme_stylebox_override("panel", style)
+
+		var margin := MarginContainer.new()
+		for side in ["left", "right", "top", "bottom"]:
+			margin.add_theme_constant_override("margin_" + side, 8)
+		_barter_bar.add_child(margin)
+
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 14)
+		margin.add_child(row)
+
+		_barter_lines = VBoxContainer.new()
+		_barter_lines.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_barter_lines.add_theme_constant_override("separation", 2)
+		row.add_child(_barter_lines)
+
+		_barter_confirm = Button.new()
+		_barter_confirm.add_theme_font_size_override("font_size", 12)
+		_barter_confirm.pressed.connect(_on_barter_confirm)
+		row.add_child(_barter_confirm)
+
+		column.add_child(_barter_bar)
+		column.move_child(_barter_bar, footer.get_index())
+
+	# Only a shop that takes goods can trade in them.
+	_barter_toggle.visible = ShopSystem.shop_buys_items()
+
+
+func _reset_barter() -> void:
+	selected_barter_items.clear()
+	barter_wanted.clear()
+	barter_mode = false
+	if _barter_toggle:
+		_barter_toggle.set_pressed_no_signal(false)
+	if _barter_bar:
+		_barter_bar.visible = false
+
+
+func _on_barter_toggled(pressed: bool) -> void:
+	barter_mode = pressed
+	selected_barter_items.clear()
+	barter_wanted.clear()
+	_refresh_display()
+
+
+## The per-slot controls while bartering: add one, or step the count of one
+## already in the basket. Most gear is a single item, but supplies stack and
+## offering three of something should not mean three separate widgets.
+func _make_barter_controls(item_id: String, quantity: int, is_shop_item: bool) -> Control:
+	var basket: Array = barter_wanted if is_shop_item else selected_barter_items
+	var held: int = basket.count(item_id)
+
+	var box := HBoxContainer.new()
+	box.add_theme_constant_override("separation", 4)
+
+	if not is_shop_item and not ShopSystem.can_sell_item_here(item_id):
+		var refused := Label.new()
+		refused.text = "Won't take"
+		refused.add_theme_font_size_override("font_size", 12)
+		refused.add_theme_color_override("font_color", UNAFFORDABLE_COLOR)
+		box.add_child(refused)
+		return box
+
+	if held <= 0:
+		var add := Button.new()
+		add.text = "Want" if is_shop_item else "Offer"
+		add.add_theme_font_size_override("font_size", 12)
+		add.pressed.connect(func(): _barter_step(item_id, is_shop_item, 1))
+		box.add_child(add)
+		return box
+
+	var less := Button.new()
+	less.text = "−"
+	less.add_theme_font_size_override("font_size", 12)
+	less.pressed.connect(func(): _barter_step(item_id, is_shop_item, -1))
+	box.add_child(less)
+
+	var count := Label.new()
+	count.text = "in deal: %d" % held
+	count.add_theme_font_size_override("font_size", 12)
+	count.add_theme_color_override("font_color", GOLD_COLOR)
+	box.add_child(count)
+
+	var more := Button.new()
+	more.text = "+"
+	more.add_theme_font_size_override("font_size", 12)
+	more.disabled = quantity > 0 and held >= quantity
+	more.pressed.connect(func(): _barter_step(item_id, is_shop_item, 1))
+	box.add_child(more)
+
+	return box
+
+
+func _barter_step(item_id: String, is_shop_item: bool, delta: int) -> void:
+	var basket: Array = barter_wanted if is_shop_item else selected_barter_items
+	if delta > 0:
+		basket.append(item_id)
+	else:
+		basket.erase(item_id)  # erase() drops the first match, which is what we want
+	_refresh_display()
+
+
+func _barter_line(text: String, color: Color, size: int = 12) -> void:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", size)
+	label.add_theme_color_override("font_color", color)
+	_barter_lines.add_child(label)
+
+
+## Redraw the basket summary from ShopSystem's own pricing, so what the player
+## reads is what the transaction will do.
+func _update_barter_bar() -> void:
+	if _barter_bar == null:
+		return
+	_barter_bar.visible = barter_mode
+	if not barter_mode:
+		return
+
+	for child in _barter_lines.get_children():
+		child.queue_free()
+
+	if selected_barter_items.is_empty() and barter_wanted.is_empty():
+		_barter_line("Pick what you are offering and what you want.",
+			Color(0.65, 0.65, 0.65))
+		_barter_confirm.text = "Trade"
+		_barter_confirm.disabled = true
+		return
+
+	var deal: Dictionary = ShopSystem.evaluate_barter(selected_barter_items, barter_wanted)
+
+	_barter_line("You offer %d — worth %d gold" % [selected_barter_items.size(),
+		int(deal.get("give_value", 0))], Color(0.8, 0.8, 0.85))
+	_barter_line("You want %d — worth %d gold" % [barter_wanted.size(),
+		int(deal.get("take_value", 0))], Color(0.8, 0.8, 0.85))
+
+	if not deal.get("ok", false):
+		_barter_line(str(deal.get("reason", "No deal")), UNAFFORDABLE_COLOR, 13)
+		_barter_confirm.text = "Trade"
+		_barter_confirm.disabled = true
+		return
+
+	var to_player: int = int(deal.get("gold_to_player", 0))
+	var from_player: int = int(deal.get("gold_from_player", 0))
+	var shortfall: int = int(deal.get("shortfall", 0))
+
+	if from_player > 0:
+		_barter_line("You pay %d gold" % from_player, GOLD_COLOR, 13)
+	elif to_player > 0:
+		_barter_line("They pay you %d gold" % to_player, AFFORDABLE_COLOR, 13)
+	elif shortfall <= 0:
+		_barter_line("An even trade", AFFORDABLE_COLOR, 13)
+
+	_barter_confirm.disabled = false
+	if shortfall > 0:
+		# The whole reason barter exists: the deal is still worth taking, and
+		# the player decides that rather than discovering it afterwards.
+		_barter_line("They cannot find the rest — you will not get %d gold of change."
+			% shortfall, UNAFFORDABLE_COLOR, 13)
+		_barter_confirm.text = "Trade anyway"
+	else:
+		_barter_confirm.text = "Trade"
+
+
+func _on_barter_confirm() -> void:
+	# The bar has already shown any shortfall, so the click IS the player
+	# accepting it — there is no second modal to dismiss.
+	var result: Dictionary = ShopSystem.execute_barter(
+		selected_barter_items, barter_wanted, true)
+	if not result.get("success", false):
+		print("Barter failed: ", result.get("reason", "?"))
+		_refresh_display()
+		return
+
+	selected_barter_items.clear()
+	barter_wanted.clear()
+	_refresh_display()

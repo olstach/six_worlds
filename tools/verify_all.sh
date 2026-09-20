@@ -16,8 +16,13 @@
 #                   animal_events.json once loaded 0 of its 86 events while the
 #                   validator reported no issues at all.
 #
-# Usage:  tools/verify_all.sh          run everything
-#         tools/verify_all.sh --quick  skip the engine layers (parse/boot/scenes)
+# Usage:  tools/verify_all.sh                 run everything
+#         tools/verify_all.sh --quick         skip the engine layers (parse/boot/scenes)
+#         tools/verify_all.sh --only economy  layer 4 runs only verifiers whose
+#                                             name matches — for the loop after
+#                                             something fails, when re-running
+#                                             all twenty scenes at up to 180s
+#                                             each is most of a coffee break
 #
 # Exit code is non-zero if any layer fails, so it can gate a commit.
 
@@ -26,7 +31,19 @@ cd "$(dirname "$0")/.." || exit 2
 
 GODOT="${GODOT:-godot}"
 QUICK=0
-[ "${1:-}" = "--quick" ] && QUICK=1
+ONLY=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --quick) QUICK=1 ;;
+        --only)
+            shift
+            [ $# -gt 0 ] || { echo "--only needs a pattern" >&2; exit 2; }
+            ONLY="$1" ;;
+        --only=*) ONLY="${1#--only=}" ;;
+        *) echo "unknown argument: $1" >&2; exit 2 ;;
+    esac
+    shift
+done
 
 failed=0
 log() { printf '\n\033[1m── %s\033[0m\n' "$1"; }
@@ -104,9 +121,18 @@ fi
 rm -f /tmp/_vd.log
 
 if [ "$QUICK" -eq 0 ]; then
-    log "4. verifiers — run inside the engine, against live autoloads"
+    if [ -n "$ONLY" ]; then
+        log "4. verifiers — only those matching '$ONLY'"
+    else
+        log "4. verifiers — run inside the engine, against live autoloads"
+    fi
+    matched=0
     for scene in tools/verify_*.tscn; do
         name=$(basename "$scene" .tscn)
+        if [ -n "$ONLY" ] && [ "${name#*$ONLY}" = "$name" ]; then
+            continue
+        fi
+        matched=1
         out=$(timeout 180 "$GODOT" --headless "$scene" 2>&1)
         restore_tree
         if echo "$out" | grep -q "VERIFY OK"; then
@@ -116,6 +142,10 @@ if [ "$QUICK" -eq 0 ]; then
             echo "$out" | grep -E "FAIL|VERIFY" | head -12 | sed 's/^/        /'
         fi
     done
+    # A typo in --only silently running nothing would read as a clean pass.
+    if [ -n "$ONLY" ] && [ "$matched" -eq 0 ]; then
+        bad "no verifier matched '$ONLY'"
+    fi
 fi
 
 echo
