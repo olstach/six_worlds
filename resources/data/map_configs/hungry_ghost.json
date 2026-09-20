@@ -25,10 +25,177 @@
       "Smashanapura"
     ]
   },
+  "_comment_biomes": "Biomes are the WORLD's library, not a zone's: a kind of place, defined once and drawn on by any region that could hold it. A zone names the ones it may grow in `biome_pool` (id -> weight) and each of its subregions picks one. Every field here is read: terrain_weights fills the tiles, cluster_min/max decide how large its patches are (seeded as blobs, so a deep wood is one canopy and a reef is broken up), mob_weight and event_weight bias where danger and interest are placed within the zone, and name is what the player is told they are standing in.",
+  "biomes": {
+    "deep_swamp": {
+      "name": "The Deep Swamp",
+      "terrain_weights": {
+        "6": 55,
+        "5": 20,
+        "2": 15,
+        "0": 10
+      },
+      "cluster_min": 8,
+      "cluster_max": 16,
+      "mob_weight": 1.4,
+      "event_weight": 0.9
+    },
+    "drowned_wood": {
+      "name": "The Drowned Wood",
+      "terrain_weights": {
+        "2": 45,
+        "6": 25,
+        "5": 15,
+        "0": 15
+      },
+      "cluster_min": 7,
+      "cluster_max": 14,
+      "mob_weight": 1.3,
+      "event_weight": 1.1
+    },
+    "reed_flats": {
+      "name": "The Reed Flats",
+      "terrain_weights": {
+        "0": 40,
+        "6": 25,
+        "5": 20,
+        "3": 15
+      },
+      "cluster_min": 5,
+      "cluster_max": 10,
+      "mob_weight": 0.9,
+      "event_weight": 1.0
+    },
+    "sour_hills": {
+      "name": "The Sour Hills",
+      "terrain_weights": {
+        "3": 45,
+        "0": 25,
+        "2": 20,
+        "6": 10
+      },
+      "cluster_min": 5,
+      "cluster_max": 11,
+      "mob_weight": 1.1,
+      "event_weight": 1.0
+    },
+    "bone_fields": {
+      "name": "The Bone Fields",
+      "terrain_weights": {
+        "0": 45,
+        "13": 25,
+        "12": 20,
+        "3": 10
+      },
+      "cluster_min": 9,
+      "cluster_max": 18,
+      "mob_weight": 1.0,
+      "event_weight": 1.3
+    },
+    "pyres": {
+      "name": "The Pyres",
+      "terrain_weights": {
+        "9": 35,
+        "13": 25,
+        "0": 25,
+        "12": 15
+      },
+      "cluster_min": 4,
+      "cluster_max": 9,
+      "mob_weight": 1.4,
+      "event_weight": 1.2
+    },
+    "grave_hills": {
+      "name": "The Grave Hills",
+      "terrain_weights": {
+        "3": 45,
+        "13": 20,
+        "0": 25,
+        "4": 10
+      },
+      "cluster_min": 5,
+      "cluster_max": 11,
+      "mob_weight": 1.1,
+      "event_weight": 1.2
+    },
+    "old_roads": {
+      "name": "The Old Roads",
+      "terrain_weights": {
+        "0": 40,
+        "1": 30,
+        "13": 20,
+        "3": 10
+      },
+      "cluster_min": 6,
+      "cluster_max": 12,
+      "mob_weight": 0.7,
+      "event_weight": 1.5
+    },
+    "dust_plain": {
+      "name": "The Dust Plain",
+      "terrain_weights": {
+        "0": 55,
+        "12": 20,
+        "13": 15,
+        "3": 10
+      },
+      "cluster_min": 12,
+      "cluster_max": 22,
+      "mob_weight": 0.8,
+      "event_weight": 0.8
+    },
+    "tomb_hills": {
+      "name": "The Tomb Hills",
+      "terrain_weights": {
+        "3": 45,
+        "13": 25,
+        "0": 20,
+        "4": 10
+      },
+      "cluster_min": 5,
+      "cluster_max": 11,
+      "mob_weight": 1.1,
+      "event_weight": 1.3
+    },
+    "dry_wash": {
+      "name": "The Dry Wash",
+      "terrain_weights": {
+        "12": 40,
+        "7": 25,
+        "0": 25,
+        "5": 10
+      },
+      "cluster_min": 6,
+      "cluster_max": 12,
+      "mob_weight": 0.9,
+      "event_weight": 0.9
+    },
+    "mausolea": {
+      "name": "The Mausolea",
+      "terrain_weights": {
+        "13": 50,
+        "0": 30,
+        "3": 20
+      },
+      "cluster_min": 4,
+      "cluster_max": 9,
+      "mob_weight": 1.2,
+      "event_weight": 1.8
+    }
+  },
   "zones": [
     {
       "_comment": "Left third of the map, full height. Start zone.",
       "id": "fetid_swamps",
+      "biome_pool": {
+        "deep_swamp": 4,
+        "drowned_wood": 3,
+        "reed_flats": 2,
+        "sour_hills": 2
+      },
+      "signature_terrain": {
+        "6": 25
+      },
       "rows": [
         0,
         191
@@ -47,10 +214,7 @@
         "1": 4,
         "4": 3,
         "10": 3
-      },
-      "road_chance": 0.05,
-      "cluster_min": 3,
-      "cluster_max": 8
+      }
     },
     {
       "_comment": "Vertical wall separating swamp from the right half. Pass biased to lower area so the player must travel south before crossing.",
@@ -79,6 +243,15 @@
     {
       "_comment": "Top-right section. Final zone — reached by going UP through the horizontal wall from the graveyard.",
       "id": "charnel_grounds",
+      "biome_pool": {
+        "bone_fields": 3,
+        "pyres": 2,
+        "grave_hills": 2,
+        "old_roads": 2
+      },
+      "signature_terrain": {
+        "13": 15
+      },
       "rows": [
         0,
         95
@@ -97,10 +270,7 @@
         "12": 7,
         "8": 5,
         "2": 5
-      },
-      "road_chance": 0.04,
-      "cluster_min": 2,
-      "cluster_max": 6
+      }
     },
     {
       "_comment": "Horizontal wall within the right section. Pass biased to the right so the player must explore the graveyard before finding it.",
@@ -128,6 +298,16 @@
     {
       "_comment": "Bottom-right section. First zone entered after the vertical wall pass.",
       "id": "dry_graveyards",
+      "biome_pool": {
+        "dust_plain": 4,
+        "tomb_hills": 3,
+        "dry_wash": 2,
+        "mausolea": 2
+      },
+      "signature_terrain": {
+        "13": 12,
+        "0": 28
+      },
       "rows": [
         104,
         191
@@ -146,10 +326,7 @@
         "7": 5,
         "2": 3,
         "12": 2
-      },
-      "road_chance": 0.07,
-      "cluster_min": 2,
-      "cluster_max": 5
+      }
     }
   ],
   "fixed_landmarks": [

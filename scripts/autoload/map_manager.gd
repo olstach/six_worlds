@@ -144,6 +144,12 @@ var defeated_mobs: Array[String] = []     # IDs of mobs that won't respawn
 # Each region maps to a rect: {tiles_rect: [x, y, x2, y2]}
 var regions: Dictionary = {}  # region_id -> {tiles_rect: Array}
 
+## Subregions: the places inside a region. Each carries an id, its zone, the
+## biome it was generated from, a name, and the seed its tiles were grown from.
+## A zone used to be one statistical smear of terrain; these are what make it
+## somewhere — see docs/plans/ECONOMY_DESIGN.md.
+var subregions: Array[Dictionary] = []
+
 # Active movement abilities (set by buffs, spells, items)
 # When active, these allow traversal of normally impassable terrain
 var movement_abilities: Dictionary = {}  # ability_name -> bool
@@ -510,12 +516,17 @@ func _apply_map_data(data: Dictionary) -> void:
 	tiles.clear()
 	objects.clear()
 	regions.clear()
+	subregions.clear()
 	searched_tiles.clear()
 
 	# Load regions (if present)
 	var region_data = data.get("regions", {})
 	for region_id in region_data:
 		regions[region_id] = region_data[region_id]
+
+	# And the subregions inside them
+	for sub in data.get("subregions", []):
+		subregions.append(sub)
 
 	# Load terrain from flat array
 	var terrain_data = data.get("terrain", [])
@@ -1053,6 +1064,37 @@ func get_region_at(pos: Vector2i) -> String:
 			if pos.x >= rect[0] and pos.y >= rect[1] and pos.x <= rect[2] and pos.y <= rect[3]:
 				return region_id
 	return ""
+
+
+## The subregion a tile belongs to: the nearest seed, which is the same rule
+## the generator grew them by.
+##
+## Returns {} where a map has none — the three built realms have them, and a
+## map generated before this existed does not.
+func get_subregion_at(pos: Vector2i) -> Dictionary:
+	var best: Dictionary = {}
+	var best_dist: int = 1 << 30
+	var region: String = get_region_at(pos)
+	for sub in subregions:
+		# A subregion only owns tiles in its own zone, or the nearest seat
+		# across a mountain wall would claim them.
+		if region != "" and str(sub.get("zone", "")) != region:
+			continue
+		var seed_pos: Vector2i = sub.get("seed", Vector2i.ZERO)
+		var dx: int = seed_pos.x - pos.x
+		var dy: int = seed_pos.y - pos.y
+		var dist: int = dx * dx + dy * dy
+		if dist < best_dist:
+			best_dist = dist
+			best = sub
+	return best
+
+
+## What to call where the party is standing: "The Deep Swamp" rather than
+## "fetid_swamps".
+func get_subregion_name_at(pos: Vector2i) -> String:
+	var sub: Dictionary = get_subregion_at(pos)
+	return str(sub.get("name", ""))
 
 
 # ============================================
@@ -1596,6 +1638,9 @@ func _spawn_mob_from_data(mob_data: Dictionary) -> void:
 
 	# Tag mob with its region based on spawn position
 	mob["region"] = get_region_at(pos)
+	# And which place inside it, so an encounter can know it happened in the
+	# reef flats rather than merely in the ocean.
+	mob["subregion"] = str(get_subregion_at(pos).get("id", ""))
 
 	mobs.append(mob)
 
@@ -2100,6 +2145,7 @@ func get_save_data() -> Dictionary:
 		"objects": _serialize_objects(),
 		"mobs": _serialize_mobs(),
 		"regions": regions.duplicate(true),
+		"subregions": subregions.duplicate(true),
 		"movement_abilities": movement_abilities.duplicate(),
 		"searched_tiles": _serialize_positions(searched_tiles.keys()),
 		"visited_maps": visited_maps.duplicate(true)
