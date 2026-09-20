@@ -38,7 +38,8 @@
       "cluster_min": 14,
       "cluster_max": 24,
       "mob_weight": 1.2,
-      "event_weight": 0.6
+      "event_weight": 0.6,
+      "habitability": 0.0
     },
     "reef_flats": {
       "name": "The Reef Flats",
@@ -51,7 +52,8 @@
       "cluster_min": 3,
       "cluster_max": 7,
       "mob_weight": 1.0,
-      "event_weight": 1.2
+      "event_weight": 1.2,
+      "habitability": 0.6
     },
     "rocky_islets": {
       "name": "The Rocky Islets",
@@ -64,7 +66,8 @@
       "cluster_min": 3,
       "cluster_max": 7,
       "mob_weight": 1.1,
-      "event_weight": 1.3
+      "event_weight": 1.3,
+      "habitability": 0.5
     },
     "shallows": {
       "name": "The Shallows",
@@ -77,7 +80,8 @@
       "cluster_min": 5,
       "cluster_max": 11,
       "mob_weight": 0.8,
-      "event_weight": 1.1
+      "event_weight": 1.1,
+      "habitability": 1.1
     },
     "deep_wood": {
       "name": "The Deep Wood",
@@ -90,7 +94,8 @@
       "cluster_min": 10,
       "cluster_max": 20,
       "mob_weight": 1.5,
-      "event_weight": 1.0
+      "event_weight": 1.0,
+      "habitability": 0.4
     },
     "clearings": {
       "name": "The Clearings",
@@ -103,7 +108,8 @@
       "cluster_min": 4,
       "cluster_max": 9,
       "mob_weight": 0.7,
-      "event_weight": 1.4
+      "event_weight": 1.4,
+      "habitability": 1.3
     },
     "hill_wood": {
       "name": "The Hill Wood",
@@ -116,7 +122,8 @@
       "cluster_min": 6,
       "cluster_max": 13,
       "mob_weight": 1.1,
-      "event_weight": 1.1
+      "event_weight": 1.1,
+      "habitability": 0.7
     },
     "fen": {
       "name": "The Fen",
@@ -129,7 +136,8 @@
       "cluster_min": 7,
       "cluster_max": 14,
       "mob_weight": 1.2,
-      "event_weight": 0.9
+      "event_weight": 0.9,
+      "habitability": 0.3
     },
     "open_meadow": {
       "name": "The Open Meadow",
@@ -142,7 +150,8 @@
       "cluster_min": 12,
       "cluster_max": 22,
       "mob_weight": 0.8,
-      "event_weight": 1.0
+      "event_weight": 1.0,
+      "habitability": 1.2
     },
     "tall_grass": {
       "name": "The Tall Grass",
@@ -155,7 +164,8 @@
       "cluster_min": 8,
       "cluster_max": 16,
       "mob_weight": 1.0,
-      "event_weight": 1.1
+      "event_weight": 1.1,
+      "habitability": 0.9
     },
     "stone_meadow": {
       "name": "The Stone Meadow",
@@ -168,7 +178,8 @@
       "cluster_min": 5,
       "cluster_max": 11,
       "mob_weight": 1.1,
-      "event_weight": 1.2
+      "event_weight": 1.2,
+      "habitability": 0.7
     },
     "watering_holes": {
       "name": "The Watering Holes",
@@ -181,7 +192,8 @@
       "cluster_min": 4,
       "cluster_max": 9,
       "mob_weight": 1.3,
-      "event_weight": 1.5
+      "event_weight": 1.5,
+      "habitability": 1.4
     }
   },
   "zones": [
@@ -209,6 +221,20 @@
         "0": 12,
         "5": 10,
         "11": 5
+      },
+      "settlements": {
+        "town": [
+          1,
+          1
+        ],
+        "village": [
+          1,
+          2
+        ],
+        "hamlet": [
+          1,
+          3
+        ]
       }
     },
     {
@@ -259,6 +285,20 @@
         "2": 7,
         "6": 5,
         "4": 2
+      },
+      "settlements": {
+        "town": [
+          0,
+          1
+        ],
+        "village": [
+          1,
+          2
+        ],
+        "hamlet": [
+          2,
+          4
+        ]
       }
     },
     {
@@ -313,7 +353,22 @@
         "3": 12,
         "5": 3,
         "4": 1
-      }
+      },
+      "settlements": {
+        "town": [
+          0,
+          1
+        ],
+        "village": [
+          1,
+          2
+        ],
+        "hamlet": [
+          2,
+          4
+        ]
+      },
+      "capital": true
     }
   ],
   "fixed_landmarks": [
@@ -485,7 +540,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_teahouse",
@@ -503,7 +559,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_training_camp",
@@ -618,7 +675,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_town_magic",
@@ -628,7 +686,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_ocean_town_supplies",
@@ -638,7 +697,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "naga_palace",
@@ -1173,7 +1233,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "animal_forest_teahouse",
@@ -1199,7 +1260,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_forest_training_camp",
@@ -1315,7 +1377,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_forest_town_magic",
@@ -1325,7 +1388,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_forest_town_supplies",
@@ -1335,7 +1399,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "naga_palace",
@@ -1849,7 +1914,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 2,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "village"
         },
         {
           "event_id": "animal_meadow_teahouse",
@@ -1867,7 +1933,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_meadow_training_camp",
@@ -1983,7 +2050,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_meadow_town_magic",
@@ -1993,7 +2061,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "animal_meadow_town_supplies",
@@ -2003,7 +2072,8 @@
           "blocking": false,
           "one_time": false,
           "weight": 1,
-          "tag": "shop"
+          "tag": "shop",
+          "min_settlement": "town"
         },
         {
           "event_id": "naga_palace",

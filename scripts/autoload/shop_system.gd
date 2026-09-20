@@ -26,8 +26,79 @@ const CHARM_BASELINE: int = 10  # Charm value considered "neutral"
 const SPELL_BASE_COST: int = 50  # Level 1 = 50, Level 2 = 100, etc.
 
 # Training pricing
-const ATTRIBUTE_TRAINING_COST: int = 200  # Cost per attribute point
-const SKILL_TRAINING_COSTS: Array[int] = [50, 150, 300, 500, 750]  # Cost to reach each level
+#
+# THE EXCHANGE RATE THE SKILL TABLE ALWAYS IMPLIED. The old gold table
+# (50/150/300/500/750) sits against the XP table (5/10/18/28/42) at 10, 15,
+# 16.7, 17.9, 17.9 gold per XP — about 18 from level 2 up, with a deliberately
+# discounted first lesson. Nothing said so; the array was literals. Naming the
+# rate lets attribute training use it too.
+#
+# Attributes used to be a flat 200 while their XP cost rises as
+# (value - 9) * 3, so the effective rate ran from 66.7 gold/XP at attribute 10
+# down to 3.2 at attribute 30: dearest where the player had least and a
+# quarter-price bargain where they had most, which made pumping one attribute
+# to 25 the cheapest progression in the game. See docs/plans/ECONOMY_FLOWS.md.
+const GOLD_PER_XP: int = 18
+
+# Cost to reach each level, indexed by the level you are leaving.
+# Levels 1-5 are the original hand-tuned numbers; 6-10 are GOLD_PER_XP times
+# the XP cost, which is what the first five already almost exactly were.
+# The array stopped at 5 before, so `get_skill_training_cost` returned 0 above
+# it and `buy_skill_training` read that as "cannot train" — weapon_master
+# advertised max_skill_level 7 and silently stopped at 5.
+const SKILL_TRAINING_COSTS: Array[int] = [50, 150, 300, 500, 750, 1062, 1440, 1908, 2466, 3150]
+
+# A TRAINER IS AN OCCASION, NOT A SERVICE. One trainer teaches one character at
+# most three times, and each lesson after the first costs more. Scarcity rather
+# than price is what keeps gold from buying progression wholesale, so the
+# trainer stays a great chance once in a while instead of a vending machine.
+const TRAINING_PURCHASE_CAP: int = 3
+const TRAINING_PRICE_STEPS: Array[float] = [1.0, 2.5, 5.0]
+
+# A TRADER'S RACK REFILLS ON A CADENCE, NOT ON A VISIT. The rack used to be
+# rolled fresh inside every `open_shop` — `get_shop` returns a deep copy of the
+# template — so leaving and re-entering rerolled the weapons and a purchase
+# depleted nothing that outlived the visit. That makes the rack infinite and
+# makes regional material selection meaningless, because you can reroll until
+# the smith offers what you wanted.
+#
+# The rack now belongs to the map object and refills only when this many days
+# have passed. Unsold stock stays: a sword you could not afford last week is
+# still hanging there when you come back with the money, and a restock tops the
+# rack back up to its slot count rather than replacing it.
+const RESTOCK_DAYS: int = 7
+
+# WHAT A SHOP CAN PAY. A purse by venue, scaled by how well-off the place is.
+# A town brokers what a hamlet cannot afford to look at, which is what makes
+# WHERE you sell a decision rather than a formality.
+#
+# Wealth is read from `price_modifier` for now — the only per-place richness
+# signal that exists. When biome `wealth` and settlement tiers land it should
+# read those instead; this is the seam.
+const SHOP_PURSE_BY_TYPE: Dictionary = {
+	"town": 4000,
+	"caravan": 1500,          # nothing spawns one yet; the tier is reserved
+	"general": 1200, "mixed": 1200, "blacksmith": 1200,
+	"alchemist": 900, "fletcher": 900, "healer": 900,
+	"mercenary_guild": 700, "veteran_camp": 500, "teahouse": 400,
+	"yogini_circle": 400, "spell_guild": 600,
+	"spell_trainer": 300, "skill_trainer": 300, "domain_spell_trainer": 300
+}
+const SHOP_PURSE_DEFAULT: int = 800
+
+# WHAT A PLACE WILL TEACH YOU. The cap used to be a property of the shop
+# template, so weapon_master taught to level 7 wherever it happened to land,
+# including a hillside. It is a property of the TOWN — which is what
+# `max_skill_level` always meant — and the template's own cap still applies on
+# top, so the effective ceiling is the lower of the two. A master in a village
+# is still limited by the village; a village teacher in the capital is still
+# only a village teacher.
+#
+# This is what makes the capital worth the journey, and it is the other half
+# of the answer to "trainers should appear rarely": rare because few places
+# are big enough, not because a die said so.
+const SETTLEMENT_SKILL_CAP: Dictionary = {1: 2, 2: 3, 3: 5}
+const CAPITAL_SKILL_CAP: int = 7
 
 # Current active shop (set when entering a shop)
 var _current_shop: Dictionary = {}
@@ -69,6 +140,12 @@ func _load_shop_database() -> void:
 
 	_shop_database = data.get("shops", {})
 	_shop_types = data.get("shop_types", {})
+
+	# Shops are keyed by id in the JSON but carry no id field of their own, and
+	# `open_shop` only ever sees the value. The training ledger has to name the
+	# trainer it is counting, so stamp the key onto the definition here.
+	for shop_id in _shop_database:
+		_shop_database[shop_id]["id"] = shop_id
 
 
 ## Get a shop definition by ID
@@ -141,29 +218,96 @@ func get_spell_cost(spell_id: String) -> int:
 	return int(base_cost * shop_modifier * (1.0 - discount))
 
 
-## Calculate cost to train an attribute
-func get_attribute_training_cost() -> int:
+## How many lessons this character has already bought from the current trainer.
+## Attribute and skill lessons share one allowance: three from this trainer, of
+## whatever kind, and then they have taught you what they can.
+func get_training_purchase_count(character: Dictionary) -> int:
+	var shop_id: String = str(_current_shop.get("id", ""))
+	if shop_id.is_empty():
+		return 0
+	return int(character.get("training_purchases", {}).get(shop_id, 0))
+
+
+## What this character's next lesson here is multiplied by: 1x, then 2.5x, then
+## 5x. Past the cap it stays at the last step, which only matters for display —
+## `buy_*` refuses the purchase outright.
+func get_training_price_multiplier(character: Dictionary) -> float:
+	var bought: int = get_training_purchase_count(character)
+	if bought >= TRAINING_PRICE_STEPS.size():
+		return TRAINING_PRICE_STEPS[TRAINING_PRICE_STEPS.size() - 1]
+	return TRAINING_PRICE_STEPS[bought]
+
+
+## Lessons this character has left with the current trainer.
+func get_training_lessons_left(character: Dictionary) -> int:
+	return maxi(0, TRAINING_PURCHASE_CAP - get_training_purchase_count(character))
+
+
+## Record a lesson against the current trainer. Lives on the character rather
+## than in ShopSystem so it rides `get_save_data`'s deep copy for free, and so
+## two characters exhaust a trainer independently.
+func _record_training_purchase(character: Dictionary) -> void:
+	var shop_id: String = str(_current_shop.get("id", ""))
+	if shop_id.is_empty():
+		return
+	if not character.has("training_purchases"):
+		character["training_purchases"] = {}
+	var ledger: Dictionary = character["training_purchases"]
+	ledger[shop_id] = int(ledger.get(shop_id, 0)) + 1
+
+
+## Calculate cost to train an attribute.
+##
+## Priced off the same XP cost the character would otherwise pay, so a point is
+## dearer the higher the attribute already is — the flat price it replaces got
+## cheaper per XP the further you went.
+func get_attribute_training_cost(character: Dictionary, attribute: String) -> int:
+	var current_value: int = int(character.get("attributes", {}).get(attribute, 10))
+	var xp_cost: int = CharacterSystem.calculate_attribute_cost(current_value, 1)
+	var base_cost: float = float(xp_cost * GOLD_PER_XP)
+	var steps: float = get_training_price_multiplier(character)
 	var shop_modifier = _get_shop_price_modifier()
 	var discount = _get_total_discount()
-	return int(ATTRIBUTE_TRAINING_COST * shop_modifier * (1.0 - discount))
+	return int(base_cost * steps * shop_modifier * (1.0 - discount))
 
 
-## Return the skill cap this trainer enforces (defaults to SKILL_MAX_LEVEL)
+## How far a settlement will take you, whatever the teacher is capable of.
+## Returns SKILL_MAX_LEVEL where the shop is not standing in a settlement —
+## an event shop met on the road is not a place and is not capped by one.
+func get_settlement_skill_cap() -> int:
+	if _current_shop.is_empty() or not _current_shop.has("settlement_tier"):
+		return CharacterSystem.SKILL_MAX_LEVEL
+	if bool(_current_shop.get("settlement_capital", false)):
+		return CAPITAL_SKILL_CAP
+	return int(SETTLEMENT_SKILL_CAP.get(
+		int(_current_shop.get("settlement_tier", 1)), CharacterSystem.SKILL_MAX_LEVEL))
+
+
+## The name of the place this shop stands in, or "" on the open road.
+func get_settlement_name() -> String:
+	return str(_current_shop.get("settlement", ""))
+
+
+## Return the skill cap in force here: the lower of what the teacher can teach
+## and what the place will support.
 func get_trainer_skill_cap() -> int:
 	if _current_shop.is_empty():
 		return CharacterSystem.SKILL_MAX_LEVEL
-	return _current_shop.get("training", {}).get("max_skill_level", CharacterSystem.SKILL_MAX_LEVEL)
+	var taught: int = int(_current_shop.get("training", {}).get(
+		"max_skill_level", CharacterSystem.SKILL_MAX_LEVEL))
+	return mini(taught, get_settlement_skill_cap())
 
 
 ## Calculate cost to train a skill to next level
-func get_skill_training_cost(current_level: int) -> int:
+func get_skill_training_cost(current_level: int, character: Dictionary) -> int:
 	if current_level < 0 or current_level >= SKILL_TRAINING_COSTS.size():
 		return 0  # Max level or invalid
 
 	var base_cost = SKILL_TRAINING_COSTS[current_level]
+	var steps: float = get_training_price_multiplier(character)
 	var shop_modifier = _get_shop_price_modifier()
 	var discount = _get_total_discount()
-	return int(base_cost * shop_modifier * (1.0 - discount))
+	return int(base_cost * steps * shop_modifier * (1.0 - discount))
 
 
 ## Get best Trade skill level from party
@@ -364,6 +508,10 @@ func barter_buy_item(item_id: String, offered_items: Array, offered_gold: int = 
 			if stock[item_id] <= 0:
 				return {"success": false, "reason": "Out of stock"}
 			stock[item_id] -= 1
+			# `_current_shop` is a deep copy that dies with the visit, so the
+			# decrement above is only good for this session of the shop UI.
+			# The rack is what the next visit reads.
+			_remove_from_rack(item_id)
 
 	# Process the barter - remove offered items
 	for offered_id in offered_items:
@@ -495,6 +643,7 @@ func buy_item(item_id: String) -> Dictionary:
 				"supply_gained": supply_amount, "supply_type": supply_type}
 
 	ItemSystem.add_to_inventory(item_id)
+	_adjust_shop_purse(price)
 	item_purchased.emit(item_id, price)
 
 	return {"success": true, "item_name": item.get("name", item_id), "price": price}
@@ -517,13 +666,22 @@ func sell_item(item_id: String) -> Dictionary:
 
 	var price = get_sell_price(item_id)
 
+	# A shop pays what it has. Selling a good sword to a teahouse means taking
+	# what the teahouse can find, and the caller is told the shortfall so it
+	# can say so before the player commits.
+	var purse: int = get_shop_purse()
+	var paid: int = mini(price, purse)
+	var shortfall: int = price - paid
+
 	# Process sale
 	ItemSystem.remove_from_inventory(item_id)
-	GameState.add_gold(price)
-	item_sold.emit(item_id, price)
+	GameState.add_gold(paid)
+	_adjust_shop_purse(-paid)
+	item_sold.emit(item_id, paid)
 
 	var item = ItemSystem.get_item(item_id)
-	return {"success": true, "item_name": item.get("name", item_id), "price": price}
+	return {"success": true, "item_name": item.get("name", item_id),
+		"price": paid, "asking_price": price, "shortfall": shortfall}
 
 
 # ============================================
@@ -594,7 +752,11 @@ func buy_attribute_training(character: Dictionary, attribute: String) -> Diction
 		if not attrs_offered.is_empty() and attribute not in attrs_offered:
 			return {"success": false, "reason": "Training not available here"}
 
-	var price = get_attribute_training_cost()
+	if get_training_purchase_count(character) >= TRAINING_PURCHASE_CAP:
+		return {"success": false, "reason": "This trainer has taught %s all they can"
+			% character.get("name", "this character")}
+
+	var price = get_attribute_training_cost(character, attribute)
 
 	if not GameState.can_afford(price):
 		return {"success": false, "reason": "Not enough gold"}
@@ -602,6 +764,8 @@ func buy_attribute_training(character: Dictionary, attribute: String) -> Diction
 	# Process purchase
 	if not GameState.spend_gold(price):
 		return {"success": false, "reason": "Transaction failed"}
+
+	_record_training_purchase(character)
 
 	# Directly increase attribute (bypasses XP cost)
 	character.attributes[attribute] += 1
@@ -627,12 +791,18 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 		if not skills_offered.is_empty() and skill not in skills_offered:
 			return {"success": false, "reason": "Training not available here"}
 
-		# Enforce trainer cap if set
-		var cap = training.get("max_skill_level", CharacterSystem.SKILL_MAX_LEVEL)
+		# Enforce the cap in force here — the teacher's, or the town's, whichever
+		# is lower. Reading the template directly would let a master teach to 7
+		# in a hamlet.
+		var cap = get_trainer_skill_cap()
 		if current_level >= cap:
 			return {"success": false, "reason": "Trainer can't teach beyond level %d" % cap}
 
-	var price = get_skill_training_cost(current_level)
+	if get_training_purchase_count(character) >= TRAINING_PURCHASE_CAP:
+		return {"success": false, "reason": "This trainer has taught %s all they can"
+			% character.get("name", "this character")}
+
+	var price = get_skill_training_cost(current_level, character)
 
 	if price == 0:
 		return {"success": false, "reason": "Cannot train this skill"}
@@ -643,6 +813,8 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 	# Process purchase
 	if not GameState.spend_gold(price):
 		return {"success": false, "reason": "Transaction failed"}
+
+	_record_training_purchase(character)
 
 	# Directly increase skill (bypasses XP cost)
 	CharacterSystem.set_skill_level(character, skill, current_level + 1)
@@ -672,8 +844,9 @@ func close_shop() -> void:
 	var items = _current_shop.get("items", {})
 	for item_id in items:
 		if ItemSystem.is_runtime_item(item_id):
-			# Only remove from runtime registry if it's not in the player's inventory
-			if ItemSystem.get_inventory_count(item_id) <= 0:
+			# Only bin it if the player does not own it AND no shop's rack is
+			# still displaying it — racks outlive the visit now.
+			if ItemSystem.get_inventory_count(item_id) <= 0 and not _is_on_a_rack(item_id):
 				ItemSystem.remove_runtime_item(item_id)
 	_current_shop = {}
 
@@ -720,31 +893,141 @@ func _generate_procedural_stock() -> void:
 	if slots.is_empty():
 		return
 
-	var items = _current_shop.get("items", {})
-	for slot in slots:
-		var category: String = slot.get("category", "")
-		var rarity: String = slot.get("rarity", "common")
-		var item_type: String = slot.get("type", "")
-		var count: int = slot.get("count", 1)
+	var items: Dictionary = _current_shop.get("items", {})
+	var object_id: String = str(_current_shop.get("_object_id", ""))
 
-		var current_realm = GameState.current_world if GameState else ""
-		for i in range(count):
-			var gen_id: String = ""
-			match category:
-				"weapon":
-					if slot.get("match_party_skill", false):
-						gen_id = ItemSystem.generate_weapon_for_party(rarity, "", "", current_realm)
-					else:
-						gen_id = ItemSystem.generate_weapon(item_type, rarity, "", "", current_realm)
-				"armor":
-					gen_id = ItemSystem.generate_armor(item_type, rarity, "", "", current_realm)
-				"talisman":
-					gen_id = ItemSystem.generate_talisman(rarity)
+	# An event shop with no map object behind it has nowhere to keep a rack, so
+	# it keeps the old roll-on-open behaviour. Those are one-off encounters
+	# rather than places you can walk back into.
+	if object_id.is_empty():
+		_roll_slots(slots, items, [])
+		_current_shop["items"] = items
+		return
 
-			if gen_id != "":
-				items[gen_id] = 1  # Procedural items are unique, qty 1
+	var rack: Dictionary = GameState.shop_stock.get(object_id, {})
+	var kept: Array = rack.get("slots", [])
+	var due: bool = rack.is_empty() \
+		or GameState.current_day - int(rack.get("day", 0)) >= RESTOCK_DAYS
+
+	if due:
+		GameState.shop_stock[object_id] = {
+			"day": GameState.current_day,
+			"slots": _roll_slots(slots, items, kept)
+		}
+	else:
+		# Between restocks the rack is exactly what it was, minus what was
+		# bought from it.
+		for slot_ids in kept:
+			for item_id in slot_ids:
+				if ItemSystem.item_exists(item_id):
+					items[item_id] = 1
 
 	_current_shop["items"] = items
+
+
+## Fill each slot back up to its count, keeping whatever is still on the rack,
+## and write the result into `items`. Returns the new per-slot id lists.
+func _roll_slots(slots: Array, items: Dictionary, kept: Array) -> Array:
+	var current_realm = GameState.current_world if GameState else ""
+	var out: Array = []
+
+	for i in range(slots.size()):
+		var slot: Dictionary = slots[i]
+		var count: int = int(slot.get("count", 1))
+		var surviving: Array = []
+
+		if i < kept.size():
+			for item_id in kept[i]:
+				if ItemSystem.item_exists(item_id):
+					surviving.append(item_id)
+		while surviving.size() > count:
+			surviving.pop_back()
+
+		for n in range(count - surviving.size()):
+			var gen_id: String = _roll_one_slot_item(slot, current_realm)
+			if gen_id != "":
+				surviving.append(gen_id)
+
+		for item_id in surviving:
+			items[item_id] = 1  # Procedural items are unique, qty 1
+		out.append(surviving)
+
+	return out
+
+
+## One procedural item for a slot, or "" if the category generates nothing.
+func _roll_one_slot_item(slot: Dictionary, current_realm: String) -> String:
+	var category: String = slot.get("category", "")
+	var rarity: String = slot.get("rarity", "common")
+	var item_type: String = slot.get("type", "")
+
+	match category:
+		"weapon":
+			if slot.get("match_party_skill", false):
+				return ItemSystem.generate_weapon_for_party(rarity, "", "", current_realm)
+			return ItemSystem.generate_weapon(item_type, rarity, "", "", current_realm)
+		"armor":
+			return ItemSystem.generate_armor(item_type, rarity, "", "", current_realm)
+		"talisman":
+			return ItemSystem.generate_talisman(rarity)
+	return ""
+
+
+## Take a sold item off the rack this shop is standing on, so it is still gone
+## when the player walks back in.
+func _remove_from_rack(item_id: String) -> void:
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	if object_id.is_empty() or not GameState.shop_stock.has(object_id):
+		return
+	for slot_ids in GameState.shop_stock[object_id].get("slots", []):
+		slot_ids.erase(item_id)
+
+
+## What this shop starts a stocking period with.
+func _purse_capacity() -> int:
+	var shop_type: String = str(_current_shop.get("type", ""))
+	var base: int = int(SHOP_PURSE_BY_TYPE.get(shop_type, SHOP_PURSE_DEFAULT))
+	# price_modifier runs 0.9 to 1.5 and is the closest thing to a wealth
+	# signal the data has today.
+	return maxi(1, int(base * float(_current_shop.get("price_modifier", 1.0))))
+
+
+## Gold this shop can hand over right now. Refills on the rack's cadence, so a
+## place you cleaned out last week can pay again — the same stock-and-refresh
+## rule, applied to money.
+func get_shop_purse() -> int:
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	if object_id.is_empty():
+		return _purse_capacity()  # a one-off encounter has no ledger to keep
+	var purse: Dictionary = GameState.shop_purses.get(object_id, {})
+	if purse.is_empty() \
+			or GameState.current_day - int(purse.get("day", 0)) >= RESTOCK_DAYS:
+		purse = {"gold": _purse_capacity(), "day": GameState.current_day}
+		GameState.shop_purses[object_id] = purse
+	return int(purse.get("gold", 0))
+
+
+## Move gold into or out of the shop's purse. Selling drains it; buying from
+## the shop puts money back, so a place you sold to can buy from you again
+## once you have spent some of what it paid you.
+func _adjust_shop_purse(delta: int) -> void:
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	if object_id.is_empty():
+		return
+	get_shop_purse()  # ensures the entry exists and is fresh
+	var purse: Dictionary = GameState.shop_purses[object_id]
+	purse["gold"] = maxi(0, int(purse.get("gold", 0)) + delta)
+
+
+## Whether any shop's rack is still holding this generated item. `close_shop`
+## asks before binning a runtime item: the rack outlives the visit now, and
+## deleting its definitions would leave it full of ids that resolve to nothing.
+func _is_on_a_rack(item_id: String) -> bool:
+	for object_id in GameState.shop_stock:
+		for slot_ids in GameState.shop_stock[object_id].get("slots", []):
+			if item_id in slot_ids:
+				return true
+	return false
 
 
 ## Resolve any random_generate template items in the shop inventory,
@@ -913,3 +1196,96 @@ func _get_guild_spell_candidates(school: String, level: int, excluded: Array) ->
 			candidates.append(spell_id)
 
 	return candidates
+
+
+# ============================================
+# BARTER
+#
+# Goods for goods, with gold settling the difference — and when the shop
+# cannot cover the difference, the player may still take the deal and eat the
+# change. That last part is the whole reason barter exists: a purse makes
+# "sell the sword, buy the armour" impossible at a poor shop when it is really
+# one exchange the shop can afford, because it never needs the cash at all.
+# ============================================
+
+## Price a proposed exchange without committing to it. The UI shows this while
+## the basket is being built.
+##
+## give: item ids the player hands over. take: item ids they want.
+## Returns gold_to_player / gold_from_player (one is always 0), and shortfall —
+## the change the shop cannot make, which the player forfeits if they accept.
+func evaluate_barter(give: Array, take: Array) -> Dictionary:
+	var give_value: int = 0
+	for item_id in give:
+		if not can_sell_item_here(item_id):
+			return {"ok": false, "reason": "Shop won't buy %s"
+				% ItemSystem.get_item(item_id).get("name", item_id)}
+		give_value += get_sell_price(item_id)
+
+	var take_value: int = 0
+	for item_id in take:
+		take_value += get_buy_price(item_id)
+
+	var balance: int = give_value - take_value
+	var result: Dictionary = {
+		"ok": true, "give_value": give_value, "take_value": take_value,
+		"balance": balance, "gold_to_player": 0, "gold_from_player": 0,
+		"shortfall": 0
+	}
+
+	if balance >= 0:
+		# The shop owes change, and can only pay what is in the till.
+		var payable: int = mini(balance, get_shop_purse())
+		result["gold_to_player"] = payable
+		result["shortfall"] = balance - payable
+	else:
+		var owed: int = -balance
+		result["gold_from_player"] = owed
+		if not GameState.can_afford(owed):
+			result["ok"] = false
+			result["reason"] = "You are %d gold short" % (owed - GameState.gold)
+
+	return result
+
+
+## Carry out an exchange priced by `evaluate_barter`. `accept_shortfall` is the
+## player answering "you will not get 17 gold of change" — without it a deal
+## the shop cannot fully pay for is refused rather than silently shorting them.
+func execute_barter(give: Array, take: Array, accept_shortfall: bool = false) -> Dictionary:
+	var deal: Dictionary = evaluate_barter(give, take)
+	if not deal.get("ok", false):
+		return {"success": false, "reason": deal.get("reason", "No deal")}
+
+	for item_id in give:
+		if ItemSystem.get_inventory_count(item_id) <= 0:
+			return {"success": false, "reason": "You do not have %s"
+				% ItemSystem.get_item(item_id).get("name", item_id)}
+
+	var stock: Dictionary = _current_shop.get("items", {})
+	for item_id in take:
+		if item_id in stock and stock[item_id] <= 0:
+			return {"success": false, "reason": "Out of stock"}
+
+	if int(deal["shortfall"]) > 0 and not accept_shortfall:
+		return {"success": false, "reason": "shortfall_unconfirmed",
+			"shortfall": deal["shortfall"], "deal": deal}
+
+	for item_id in give:
+		ItemSystem.remove_from_inventory(item_id)
+	for item_id in take:
+		if item_id in stock:
+			stock[item_id] -= 1
+		_remove_from_rack(item_id)
+		ItemSystem.add_to_inventory(item_id)
+
+	var to_player: int = int(deal["gold_to_player"])
+	var from_player: int = int(deal["gold_from_player"])
+	if to_player > 0:
+		GameState.add_gold(to_player)
+		_adjust_shop_purse(-to_player)
+	if from_player > 0:
+		GameState.spend_gold(from_player)
+		_adjust_shop_purse(from_player)
+
+	deal["success"] = true
+	return deal

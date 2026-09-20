@@ -19,7 +19,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 15
+const EXPECTED_CHECKS: int = 24
 
 const T_ROAD := 1
 const T_FOREST := 2
@@ -52,6 +52,17 @@ func _ready() -> void:
 	_check_a_swamp_has_swamp_in_it()
 	_check_nowhere_is_paved_by_accident()
 	_check_the_map_manager_can_say_where_you_are()
+
+	# Settlements: the map has places now, not only ground.
+	_check_every_realm_is_settled()
+	_check_nobody_lives_on_impassable_ground()
+	_check_a_settlement_respects_its_biomes_habitability()
+	_check_the_dry_graveyards_have_no_town()
+	_check_a_capital_zone_always_has_its_town()
+	_check_a_shop_stands_in_a_settlement()
+	_check_a_shop_is_big_enough_for_the_place_holding_it()
+	_check_a_hamlet_holds_no_shop()
+	_check_gating_has_not_starved_a_realm_of_commerce()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -596,3 +607,194 @@ func _nearest_sub(subs: Array, at: Vector2i, zone: String) -> Dictionary:
 			best_dist = dist
 			best = sub
 	return best
+
+
+# ============================================================================
+# SETTLEMENTS
+#
+# The zone says how many, the biome's `habitability` says where they may go,
+# and a per-tier floor keeps a town off ground that could not hold one. The
+# failure mode these guard is silence: a placement rule that quietly finds
+# nowhere produces an empty map rather than an error.
+# ============================================================================
+
+func _settlements_of(realm: String) -> Array:
+	return _maps[realm].get("settlements", [])
+
+
+## Every realm should end up with places in it. The count is loose on purpose
+## — the quotas are ranges — but zero is always wrong.
+func _check_every_realm_is_settled() -> void:
+	for realm in _maps:
+		var found: Array = _settlements_of(realm)
+		if found.size() < 3:
+			_fail("%s generated %d settlements" % [realm, found.size()])
+	_done()
+
+
+## A settlement on lava or open water is the bug `habitability: 0.0` exists to
+## prevent, and it would only ever be noticed by walking into one.
+func _check_nobody_lives_on_impassable_ground() -> void:
+	for realm in _maps:
+		var terrain: Array = _maps[realm].get("terrain", [])
+		var width: int = int(_maps[realm].get("width", 1))
+		for settlement in _settlements_of(realm):
+			var idx: int = int(settlement.get("y", 0)) * width + int(settlement.get("x", 0))
+			if idx < 0 or idx >= terrain.size():
+				_fail("%s: %s sits off the map" % [realm, settlement.get("name", "?")])
+				continue
+			var ground: int = int(terrain[idx])
+			if ground in MapGenerator.IMPASSABLE:
+				_fail("%s: %s stands on impassable terrain %d"
+					% [realm, settlement.get("name", "?"), ground])
+	_done()
+
+
+## The tier floors: a town wants 0.8, a village 0.5, a hamlet 0.15. Without
+## them a weighted draw still puts a capital on the least bad ground in a bad
+## zone.
+func _check_a_settlement_respects_its_biomes_habitability() -> void:
+	var floors: Dictionary = {}
+	for spec in MapGenerator.SETTLEMENT_TIERS:
+		floors[int(spec["tier"])] = float(spec["floor"])
+
+	for realm in _maps:
+		var biomes: Dictionary = _configs[realm].get("biomes", {})
+		for settlement in _settlements_of(realm):
+			var biome_id: String = str(settlement.get("biome", ""))
+			var hab: float = float(biomes.get(biome_id, {}).get("habitability", 1.0))
+			var floor_hab: float = float(floors.get(int(settlement.get("tier", 1)), 0.0))
+			if hab < floor_hab:
+				_fail("%s: %s (%s) sits in %s at habitability %.2f, floor is %.2f"
+					% [realm, settlement.get("name", "?"),
+						settlement.get("tier_name", "?"), biome_id, hab, floor_hab])
+	_done()
+
+
+## "Nobody lives here" is a statement the config makes. The zone declares
+## town [0, 0] and its best biome is below the town floor, so both routes
+## agree — this check is what stops a later habitability edit from quietly
+## founding a city in a boneyard.
+func _check_the_dry_graveyards_have_no_town() -> void:
+	for settlement in _settlements_of("hungry_ghost"):
+		if str(settlement.get("zone", "")) == "dry_graveyards" \
+				and int(settlement.get("tier", 0)) >= 3:
+			_fail("a town appeared in the dry graveyards: %s"
+				% settlement.get("name", "?"))
+	_done()
+
+
+## A capital is authored, not rolled: a zone that declares one always has it,
+## and it stands on the best ground in that zone.
+func _check_a_capital_zone_always_has_its_town() -> void:
+	for realm in _maps:
+		for zone in _configs[realm].get("zones", []):
+			if not bool(zone.get("capital", false)):
+				continue
+			var zone_id: String = str(zone.get("id", ""))
+			var capital: Dictionary = {}
+			for settlement in _settlements_of(realm):
+				if str(settlement.get("zone", "")) == zone_id \
+						and bool(settlement.get("capital", false)):
+					capital = settlement
+					break
+			if capital.is_empty():
+				_fail("%s declares zone '%s' a capital and no capital was placed"
+					% [realm, zone_id])
+				continue
+
+			# It should hold the most habitable biome the zone can grow.
+			var biomes: Dictionary = _configs[realm].get("biomes", {})
+			var best: float = -1.0
+			for biome_id in zone.get("biome_pool", {}):
+				best = maxf(best, float(biomes.get(biome_id, {}).get("habitability", 1.0)))
+			var mine: float = float(biomes.get(str(capital.get("biome", "")), {})
+				.get("habitability", 1.0))
+			if mine < best - 0.001:
+				_fail("%s: the capital of '%s' sits at habitability %.2f, best is %.2f"
+					% [realm, zone_id, mine, best])
+	_done()
+
+
+## Shops used to scatter anywhere passable, which is why the map had
+## encounters and not places. Where a zone has settlements, its shops should
+## be standing in them.
+func _check_a_shop_stands_in_a_settlement() -> void:
+	for realm in _maps:
+		var homes: Dictionary = {}
+		for settlement in _settlements_of(realm):
+			homes["%d,%d" % [int(settlement.get("x", 0)), int(settlement.get("y", 0))]] = true
+		if homes.is_empty():
+			continue
+		var shops: int = 0
+		var housed: int = 0
+		for obj in _maps[realm].get("objects", []):
+			# The placed object carries no shop_id — that lives in the event
+			# it opens — so the icon the shop template sets is what marks one
+			# on the map. Keying on shop_id here finds nothing and passes.
+			if str(obj.get("icon", "")) != "shop":
+				continue
+			shops += 1
+			if homes.has("%d,%d" % [int(obj.get("x", 0)), int(obj.get("y", 0))]):
+				housed += 1
+		if shops > 0 and housed == 0:
+			_fail("%s placed %d shops and not one of them is in a settlement"
+				% [realm, shops])
+	_done()
+
+
+## Every shop template declares the smallest settlement that may hold it.
+func _gate_by_event(realm: String) -> Dictionary:
+	var gates: Dictionary = {}
+	for pool in _configs[realm].get("object_pools", {}).values():
+		for template in pool.get("events", []):
+			if str(template.get("tag", "")) == "shop":
+				gates[str(template.get("event_id", ""))] = \
+					str(template.get("min_settlement", "village"))
+	return gates
+
+
+func _shop_objects(realm: String) -> Array:
+	var out: Array = []
+	for obj in _maps[realm].get("objects", []):
+		if str(obj.get("icon", "")) == "shop":
+			out.append(obj)
+	return out
+
+
+## A spell guild on a hillside is what the gate exists to prevent.
+func _check_a_shop_is_big_enough_for_the_place_holding_it() -> void:
+	for realm in _maps:
+		var gates: Dictionary = _gate_by_event(realm)
+		for obj in _shop_objects(realm):
+			var gate: String = str(gates.get(str(obj.get("data", {}).get("event_id", "")), "village"))
+			var needed: int = int(MapGenerator.SETTLEMENT_GATES.get(gate, 2))
+			var rank: int = int(obj.get("data", {}).get("settlement_tier", 0))
+			if bool(obj.get("data", {}).get("settlement_capital", false)):
+				rank += 1
+			if rank < needed:
+				_fail("%s: a '%s' shop stands in a settlement of rank %d, needs %d"
+					% [realm, gate, rank, needed])
+	_done()
+
+
+## Hamlets are a place on the map and a stop on a road, not a high street.
+func _check_a_hamlet_holds_no_shop() -> void:
+	for realm in _maps:
+		for obj in _shop_objects(realm):
+			var data: Dictionary = obj.get("data", {})
+			if data.has("settlement_tier") and int(data["settlement_tier"]) <= 1 \
+					and not bool(data.get("settlement_capital", false)):
+				_fail("%s: a shop stands in a hamlet" % realm)
+	_done()
+
+
+## The gate can starve a map: if every template in a zone needs a town and no
+## town rolls, the zone holds no commerce. Per realm is the level that matters
+## — a shopless zone is fine, a shopless realm is not.
+func _check_gating_has_not_starved_a_realm_of_commerce() -> void:
+	for realm in _maps:
+		var shops: int = _shop_objects(realm).size()
+		if shops < 2:
+			_fail("%s placed %d shops across the whole realm" % [realm, shops])
+	_done()

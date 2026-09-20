@@ -150,6 +150,12 @@ var regions: Dictionary = {}  # region_id -> {tiles_rect: Array}
 ## somewhere — see docs/plans/ECONOMY_DESIGN.md.
 var subregions: Array[Dictionary] = []
 
+## The places inside those places: settlements, each with a name, a tier
+## (3 town / 2 village / 1 hamlet), the subregion it stands in, and whether it
+## is the realm's authored capital. The shop layer reads these; the trade
+## layer will.
+var settlements: Array[Dictionary] = []
+
 # Active movement abilities (set by buffs, spells, items)
 # When active, these allow traversal of normally impassable terrain
 var movement_abilities: Dictionary = {}  # ability_name -> bool
@@ -517,6 +523,7 @@ func _apply_map_data(data: Dictionary) -> void:
 	objects.clear()
 	regions.clear()
 	subregions.clear()
+	settlements.clear()
 	searched_tiles.clear()
 
 	# Load regions (if present)
@@ -527,6 +534,8 @@ func _apply_map_data(data: Dictionary) -> void:
 	# And the subregions inside them
 	for sub in data.get("subregions", []):
 		subregions.append(sub)
+	for settlement in data.get("settlements", []):
+		settlements.append(settlement)
 
 	# Load terrain from flat array
 	var terrain_data = data.get("terrain", [])
@@ -1071,6 +1080,43 @@ func get_region_at(pos: Vector2i) -> String:
 ##
 ## Returns {} where a map has none — the three built realms have them, and a
 ## map generated before this existed does not.
+## The settlement standing on this exact tile, or {} for open country.
+func get_settlement_at(pos: Vector2i) -> Dictionary:
+	for settlement in settlements:
+		if int(settlement.get("x", -1)) == pos.x and int(settlement.get("y", -1)) == pos.y:
+			return settlement
+	return {}
+
+
+## The nearest settlement, optionally of at least `min_tier` (3 town, 2
+## village, 1 hamlet). Returns {} when the map has none that qualify — which
+## is the honest answer in the dry graveyards, where the config declares no
+## town at all.
+func get_nearest_settlement(pos: Vector2i, min_tier: int = 1) -> Dictionary:
+	var best: Dictionary = {}
+	var best_dist: int = 1 << 30
+	for settlement in settlements:
+		if int(settlement.get("tier", 0)) < min_tier:
+			continue
+		var dx: int = int(settlement.get("x", 0)) - pos.x
+		var dy: int = int(settlement.get("y", 0)) - pos.y
+		var dist: int = dx * dx + dy * dy
+		if dist < best_dist:
+			best_dist = dist
+			best = settlement
+	return best
+
+
+## Every settlement in one zone, biggest first.
+func get_settlements_in(zone_id: String) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	for settlement in settlements:
+		if str(settlement.get("zone", "")) == zone_id:
+			out.append(settlement)
+	out.sort_custom(func(a, b): return int(a.get("tier", 0)) > int(b.get("tier", 0)))
+	return out
+
+
 func get_subregion_at(pos: Vector2i) -> Dictionary:
 	var best: Dictionary = {}
 	var best_dist: int = 1 << 30
@@ -2146,6 +2192,7 @@ func get_save_data() -> Dictionary:
 		"mobs": _serialize_mobs(),
 		"regions": regions.duplicate(true),
 		"subregions": subregions.duplicate(true),
+		"settlements": settlements.duplicate(true),
 		"movement_abilities": movement_abilities.duplicate(),
 		"searched_tiles": _serialize_positions(searched_tiles.keys()),
 		"visited_maps": visited_maps.duplicate(true)
@@ -2178,6 +2225,13 @@ func load_save_data(data: Dictionary) -> void:
 		"objects": data.get("objects", []),
 		"mobs": data.get("mobs", []),
 		"regions": data.get("regions", {}),
+		# Subregions were written by get_save_data and never passed back here,
+		# so every load silently dropped them — the biome a tile belongs to,
+		# its name, and the mob and event weighting all reverted to nothing.
+		# Not visible as a crash: the lookups just return {} and callers fall
+		# back to their defaults.
+		"subregions": data.get("subregions", []),
+		"settlements": data.get("settlements", []),
 		# Use saved party position as start so _apply_map_data sets it
 		"start_position": data.get("party_position", {"x": 1, "y": 1})
 	}
