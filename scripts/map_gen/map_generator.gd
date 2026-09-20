@@ -43,6 +43,20 @@ var _portal_pos: Vector2i = Vector2i.ZERO
 var _objects: Array[Dictionary] = []
 var _mobs: Array[Dictionary] = []
 var _regions: Dictionary = {}
+var _settlements: Array[Dictionary] = []
+
+# WHERE PEOPLE LIVE. The zone says how many; the biome says where they may go.
+#
+# A minimum habitability per tier is what makes "the dry graveyards have no
+# town" fall out of the numbers rather than needing a special case — its best
+# biome is the Tomb Hills at 0.5, below the 0.8 a town wants. Without the
+# floor, a weighted draw still puts a town on the least bad ground in a bad
+# zone, which is how you end up with a capital in a boneyard.
+const SETTLEMENT_TIERS: Array = [
+	{"key": "town", "tier": 3, "floor": 0.8, "spacing": 20, "fallback": [0, 1]},
+	{"key": "village", "tier": 2, "floor": 0.5, "spacing": 10, "fallback": [1, 2]},
+	{"key": "hamlet", "tier": 1, "floor": 0.15, "spacing": 6, "fallback": [2, 4]},
+]
 var _obj_counter: int = 0  # For unique IDs
 var _location_name_pools: Dictionary = {}  # category -> Array[String] (shuffled, consumed as placed)
 
@@ -93,6 +107,7 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 	_mobs.clear()
 	_regions.clear()
 	_subregion_records.clear()
+	_settlements.clear()
 	_biome_library = config.get("biomes", {})
 	_obj_counter = 0
 	_location_name_pools.clear()
@@ -123,6 +138,12 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 
 	# Step 4: Validate connectivity — ensure start can reach portal
 	_validate_connectivity()
+
+	# Step 4b: Settle the map. After the roads, so a settlement can sit on one,
+	# and before the object pools, so scattered scenery cannot take the ground
+	# a town wanted.
+	for zone in zones:
+		_place_settlements(zone)
 
 	# Step 5: Place objects from pools
 	for zone in zones:
@@ -156,6 +177,7 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 		# noticed while only one map was ever generated per run.
 		"regions": _regions.duplicate(true),
 		"subregions": _subregion_records.duplicate(true),
+		"settlements": _settlements.duplicate(true),
 		"terrain": _terrain.duplicate(),
 		"objects": _objects.duplicate(true),
 		"mobs": _mobs.duplicate(true)
@@ -376,6 +398,7 @@ func _cut_subregions(zone: Dictionary, row_start: int, row_end: int,
 				"cluster_max": int(biome.get("cluster_max", 9)),
 				"mob_weight": float(biome.get("mob_weight", 1.0)),
 				"event_weight": float(biome.get("event_weight", 1.0)),
+				"habitability": float(biome.get("habitability", 1.0)),
 			})
 			index += 1
 	_record_subregions(out)
@@ -946,11 +969,32 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 	for e in event_pool:
 		if e.get("tag", "") == "shop":
 			shop_events.append(e)
+	# A SHOP BELONGS IN A SETTLEMENT. Before this the generator scattered one
+	# or two shops per zone anywhere passable, which is why the map had
+	# encounters rather than places. Biggest settlement first, so the town
+	# gets the shop and the hamlets go without — which is what makes a town
+	# worth walking to.
+	var hosts: Array[Dictionary] = []
+	for settlement in _settlements:
+		if str(settlement.get("zone", "")) == zone_id \
+				and not bool(settlement.get("has_shop", false)):
+			hosts.append(settlement)
+	hosts.sort_custom(func(a, b): return int(a.get("tier", 0)) > int(b.get("tier", 0)))
+
 	for i in range(guaranteed_shops):
 		if shop_events.is_empty():
 			break
 		var template = shop_events[randi() % shop_events.size()]
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
+		var pos := Vector2i(-1, -1)
+		if not hosts.is_empty():
+			var host: Dictionary = hosts.pop_front()
+			host["has_shop"] = true
+			pos = Vector2i(int(host.get("x", 0)), int(host.get("y", 0)))
+			# The settlement reserved this tile when it was placed; the shop
+			# standing in it is what that reservation was for.
+			_occupied.erase(pos)
+		else:
+			pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
 		if pos != Vector2i(-1, -1):
 			_place_event_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -1353,6 +1397,137 @@ func _find_walkable_near(center: Vector2i, min_dist: int, max_dist: int,
 # ============================================
 
 ## Build region entry for the output regions dict
+## Settle one zone: roll the quota, then find each settlement a subregion it
+## could plausibly stand in.
+func _place_settlements(zone: Dictionary) -> void:
+	if zone.get("type", "") == "mountain_wall":
+		return
+	var zone_id: String = str(zone.get("id", ""))
+
+	var here: Array[Dictionary] = []
+	for sub in _subregion_records:
+		if str(sub.get("zone", "")) == zone_id:
+			here.append(sub)
+	if here.is_empty():
+		return
+
+	var quota: Dictionary = zone.get("settlements", {})
+	var is_capital: bool = bool(zone.get("capital", false))
+	var placed: Array[Vector2i] = []
+
+	for spec in SETTLEMENT_TIERS:
+		var key: String = str(spec["key"])
+		var span: Array = quota.get(key, spec["fallback"])
+		var count: int = randi_range(int(span[0]), int(span[1]))
+
+		# A realm's capital is authored, not rolled. `town: [0, 1]` in every
+		# zone means a map can come up with no town anywhere, which is a bad
+		# map you only discover by playing it.
+		if key == "town" and is_capital:
+			count = maxi(count, 1)
+
+		for i in range(count):
+			var authored: bool = key == "town" and is_capital and i == 0
+			_place_one_settlement(zone_id, here, spec, placed, authored)
+
+
+## One settlement. `authored` takes the best ground in the zone rather than
+## drawing for it — that is what makes a capital a fixed feature of the realm.
+func _place_one_settlement(zone_id: String, subs: Array[Dictionary], spec: Dictionary,
+		placed: Array[Vector2i], authored: bool) -> void:
+	var floor_hab: float = float(spec["floor"])
+	var eligible: Array[Dictionary] = []
+	for sub in subs:
+		if float(sub.get("habitability", 1.0)) >= floor_hab:
+			eligible.append(sub)
+	if eligible.is_empty():
+		return  # Nowhere in this zone is fit for a settlement of this size.
+
+	var chosen: Dictionary = {}
+	if authored:
+		for sub in eligible:
+			if chosen.is_empty() \
+					or float(sub.get("habitability", 1.0)) > float(chosen.get("habitability", 1.0)):
+				chosen = sub
+	else:
+		# Weighted by habitability AND area: a big hostile subregion and a
+		# small pleasant one can hold about the same number of people.
+		var total: float = 0.0
+		for sub in eligible:
+			total += _settlement_weight(sub)
+		if total <= 0.0:
+			return
+		var roll: float = randf() * total
+		for sub in eligible:
+			roll -= _settlement_weight(sub)
+			if roll <= 0.0:
+				chosen = sub
+				break
+		if chosen.is_empty():
+			chosen = eligible[eligible.size() - 1]
+
+	var pos: Vector2i = _settlement_tile(chosen, int(spec["spacing"]), placed)
+	if pos == Vector2i(-1, -1):
+		return
+
+	_obj_counter += 1
+	var settlement_name: String = ""
+	if _location_name_pools.has("town") and not _location_name_pools["town"].is_empty():
+		settlement_name = str(_location_name_pools["town"].pop_back())
+	else:
+		settlement_name = str(chosen.get("name", "Settlement"))
+
+	_settlements.append({
+		"id": "%s_settlement_%d" % [zone_id, _obj_counter],
+		"name": settlement_name,
+		"tier": int(spec["tier"]),
+		"tier_name": str(spec["key"]),
+		"zone": zone_id,
+		"subregion": str(chosen.get("id", "")),
+		"biome": str(chosen.get("biome", "")),
+		"x": pos.x,
+		"y": pos.y,
+		"capital": authored,
+		"has_shop": false,
+	})
+	placed.append(pos)
+	_occupied[pos] = true
+
+
+func _settlement_weight(sub: Dictionary) -> float:
+	var rect: Array = sub.get("rect", [])
+	var area: float = 1.0
+	if rect.size() == 4:
+		area = maxf(1.0, float((int(rect[2]) - int(rect[0]) + 1)
+			* (int(rect[3]) - int(rect[1]) + 1)))
+	return maxf(0.0, float(sub.get("habitability", 1.0))) * area
+
+
+## Ground inside a subregion for a settlement to stand on. Tries the seed
+## first, since that is the middle of the place, then anywhere in its cell.
+func _settlement_tile(sub: Dictionary, spacing: int, placed: Array[Vector2i]) -> Vector2i:
+	var rect: Array = sub.get("rect", [])
+	for attempt in range(80):
+		var pos: Vector2i = sub.get("seed", Vector2i.ZERO)
+		if attempt > 0 and rect.size() == 4:
+			pos = Vector2i(randi_range(int(rect[0]), int(rect[2])),
+				randi_range(int(rect[1]), int(rect[3])))
+		if pos.x < 1 or pos.y < 1 or pos.x >= _width - 1 or pos.y >= _height - 1:
+			continue
+		if _get_terrain(pos.x, pos.y) in IMPASSABLE:
+			continue
+		if pos in _occupied:
+			continue
+		var clear: bool = true
+		for other in placed:
+			if _manhattan_dist(pos, other) < spacing:
+				clear = false
+				break
+		if clear:
+			return pos
+	return Vector2i(-1, -1)
+
+
 func _build_region(zone: Dictionary) -> void:
 	var zone_id = zone.get("id", "")
 	var rows = zone.get("rows", [0, _height - 1])
