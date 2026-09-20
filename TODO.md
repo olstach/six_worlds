@@ -843,12 +843,21 @@ already gates on a perk (`perk_req`, added 2026-09-16):
       of the invested amount after several in-game days." Needs a store of
       outstanding investments (settlement, amount, due day) and a day-boundary
       hook to mature them. TimeSystem already advances days and the lunar
-      calendar already listens to it, so the hook exists; what does not is
-      anywhere to keep a debt. Smallest honest version: `GameState.investments`
-      as an array, matured on the day tick, paid into gold with a toast. The
-      interesting question is what happens when the settlement is in a realm
-      the party has left — which the two-way portals make a real case rather
-      than a hypothetical.
+      calendar already listens to it, so the hook exists.
+
+      *Updated 2026-09-20 — this is now the cheapest of the economy items.*
+      **Settlements are entities**, with ids, names, tiers and positions, so
+      there is something to invest *in*; `GameState.shop_purses` is the
+      pattern to copy for `GameState.investments`, down to being keyed by map
+      object and reset by `reset_for_new_life`.
+
+      And the abandoned-realm question is answered, though not the way the
+      economy memo assumed. Portals are two-way, so an investment left in a
+      realm you have travelled out of matures and is collectable — but
+      **death regenerates the world**, so anything outstanding when you die
+      dies with you. That is a feature rather than a loss: an investment is a
+      bet that you will live long enough to collect, which is the most
+      Buddhist thing in the economy.
 - [ ] **`supply_and_demand`** (Trade 5) — "Check available trade goods between
       known settlements. Buying low and selling high grants triple the normal
       gold difference." Needs a trade-goods model: per-settlement prices that
@@ -858,6 +867,16 @@ already gates on a perk (`perk_req`, added 2026-09-16):
       a caravan game inside the travel game. Worth doing only if travel is
       meant to carry that weight; otherwise the perk should be rewritten to
       something Trade can already do.
+
+      *Updated 2026-09-20.* Still blocked, but on less: settlements exist,
+      shops have purses that differ by place, and `docs/plans/ECONOMY_FLOWS.md`
+      settles what the perk should do. Olaf's ruling is that the spread stays
+      **invisible** by default — no cheap/dear marker, the player notices or
+      does not — which makes this perk better rather than worse, because being
+      *told* the spread is worth a great deal when the baseline is unaided.
+      What is still missing is the one thing it is named for: goods with a
+      price somewhere else. That is trade_goods.json and the regional price
+      index, layers 2 and 3 of the economy design.
 
 ## 11. Things to ponder
 
