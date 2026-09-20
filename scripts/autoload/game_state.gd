@@ -92,6 +92,14 @@ var guild_spell_lists: Dictionary = {}
 ## definition, which several map objects can share.
 var shop_stock: Dictionary = {}
 
+## What each shop can actually pay, keyed by the same map object as the rack.
+## {object_id: {"gold": int, "day": int}}
+##
+## A shop used to have infinite gold, so a hamlet could buy forty bales of
+## anything at full price and the design's "a hamlet is a bad place to sell"
+## was a sentence rather than a rule. A purse is the rule.
+var shop_purses: Dictionary = {}
+
 # Tracks which location events have been visited (for first-visit hooks).
 # Format: { "event_id": true, ... }
 var visited_locations: Dictionary = {}
@@ -233,13 +241,50 @@ func player_died() -> void:
 	current_run_number += 1
 	# KarmaSystem will handle reincarnation logic
 
+## Everything that belongs to ONE LIFE IN ONE WORLD.
+##
+## Reincarnation regenerates the world entirely — the zones, regions and biomes
+## keep their general structure but the specifics are rolled again — so none of
+## this carries. What survives a death is meta-progression: which realms you
+## can be reborn into, the run counter, and on the character itself the
+## affinities and persistent_upgrades CharacterSystem copies across.
+##
+## Keeping ONE list is the point. `guild_spell_lists` and `shop_stock` are
+## keyed by MAP OBJECT ids, and a regenerated map never issues those ids again,
+## so forgetting one here is not a visible bug — it is an unbounded leak of
+## racks belonging to worlds that no longer exist. Before this existed,
+## `start_new_run` reset five things and the new-game path reset fifteen, and
+## the two had already drifted apart.
+func reset_for_new_life() -> void:
+	gold = 100
+	food = 50
+	herbs = 20
+	scrap = 15
+	reagents = 10
+	hours_elapsed = 0
+	visited_locations = {}
+	used_event_choices = {}
+	guild_spell_lists = {}
+	shop_stock = {}
+	shop_purses = {}
+	active_map_buffs = []
+	active_quests = []
+	overworld_log = []
+	# Transient hand-offs between the overworld and combat.
+	pending_combat_mob = {}
+	pending_event_outcome = {}
+	pending_event_object = {}
+	combat_terrain_context = {}
+	last_defeated_mob_id = ""
+	returning_from_combat = false
+	is_party_wiped = false
+
+
 ## Start new run after reincarnation
 func start_new_run(spawn_world: String) -> void:
 	is_alive = true
 	current_world = spawn_world
-	food = 50
-	visited_locations = {}
-	hours_elapsed = 0
+	reset_for_new_life()
 
 ## Get info about current world
 func get_current_world_info() -> Dictionary:
@@ -699,6 +744,7 @@ func get_save_data() -> Dictionary:
 		"used_event_choices": used_event_choices.duplicate(true),
 		"guild_spell_lists": guild_spell_lists.duplicate(true),
 		"shop_stock": shop_stock.duplicate(true),
+		"shop_purses": shop_purses.duplicate(true),
 		"visited_locations": visited_locations.duplicate(true),
 		"last_healing_location": last_healing_location.duplicate(true),
 		"flags": flags.duplicate(true),
@@ -722,6 +768,7 @@ func load_save_data(data: Dictionary) -> void:
 	used_event_choices = data.get("used_event_choices", {})
 	guild_spell_lists = data.get("guild_spell_lists", {})
 	shop_stock = data.get("shop_stock", {})
+	shop_purses = data.get("shop_purses", {})
 	visited_locations = data.get("visited_locations", {})
 	last_healing_location = data.get("last_healing_location", {})
 	flags = data.get("flags", {})

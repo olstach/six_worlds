@@ -412,6 +412,90 @@ Most biomes will leave it empty, which is the sign it is the right shape.
 
 ---
 
+## Four decisions, 2026-09-20
+
+### Death regenerates the world
+
+> The whole world should be regenerated on player character death, with only
+> the karmic tendencies influencing the new character and sometimes, rarely,
+> some specific effect that lasts for the next lifetime. The specific map
+> should be regenerated each time — the zones, regions and biomes are there to
+> keep a general structure, but the specifics should change randomly.
+
+This settles what gold is: **a life's resource, not a ratchet.** A trade
+fortune buys gear and training in the life that earned it and goes in the
+ground with the body, which removes the compounding worry from every layer
+below — trade cannot snowball across runs because there is no across.
+
+It also turned up a defect. `start_new_run` reset five things; the new-game
+path reset fifteen; and the two had drifted. Gold, supplies other than food,
+seen events, map buffs and both shop caches all survived a death. The caches
+matter most: `shop_stock` and `guild_spell_lists` are keyed by **map object
+id**, and a regenerated map never issues those ids again — so it was not a
+visible bug but an unbounded leak of racks belonging to worlds that no longer
+exist. Both paths now call one `reset_for_new_life`, so a new variable cannot
+be reset in one and forgotten in the other.
+
+What survives is unchanged and correct: `unlocked_worlds`, the run counter,
+and on the character the `affinities` and `persistent_upgrades` that
+`CharacterSystem` already copies across. **That last field is where the "rare
+specific effect" belongs** — it exists, it persists, and nothing writes to it
+yet.
+
+### A shop pays what it has, and barter is the way round it
+
+> Shops should not have infinite gold, the amount based on the wealth of the
+> region and the specific venue (town > caravan > settlement). Also, barter
+> should be possible.
+
+A purse per shop, seeded by venue type and refilled on the rack's cadence —
+the same stock-and-refresh rule, applied to money. A town holds 4,000; a
+teahouse 400. Selling drains it, buying from the shop puts money back.
+
+Wealth reads `price_modifier` for now, the only per-place richness signal that
+exists. When biome `wealth` and settlement tiers land, it reads those instead.
+That is the seam, and it is one function.
+
+**Barter is what stops the purse being a wall.** "Sell the sword, buy the
+armour" is one exchange that needs no cash at all, but a purse makes it
+impossible at a poor shop if it has to happen as two transactions. So goods
+settle against goods first and gold only covers the difference. Where the shop
+cannot cover it, the player is told what they will lose — *you will not get 17
+gold of change* — and may take the deal anyway. Refused silently by default;
+`accept_shortfall` is the player answering.
+
+### Supply and demand stays invisible
+
+> They should just work in the background so the player sees when arriving in
+> a city "oh, fish is really cheap here, but incense is very expensive,
+> interesting, maybe it would pay to return to the spice town from before".
+
+**No indicator, no dear/fair/cheap marker.** The earlier suggestion to add one
+is withdrawn. The discovery *is* the content, and a badge saying CHEAP does
+the noticing for the player, which is the one thing they should be doing
+themselves.
+
+Two consequences worth holding to:
+
+- **The numbers have to carry it alone**, so the spread must be wide enough to
+  notice unaided. A 10% difference is invisible without a marker; the
+  `[0.5, 2.0]` scarcity clamp gives up to fourfold, which is plainly visible
+  in a price list.
+- **`supply_and_demand` (Trade 5) becomes more valuable, not less.** The
+  baseline is that you notice and remember; the perk is that you are *told* —
+  the spread across settlements you have visited, without the bookkeeping.
+  That is a much better perk when the default is genuinely unaided.
+
+### Shocks are not an economy feature
+
+Recorded in `TODO.md` §11 rather than here. A market shock is one instance of
+something the game lacks entirely — the world changing without the player
+touching it — and the same hook serves territory, factions and karma. Building
+it as a price mechanic now would mean rewriting it the first time a mob group
+should take a road while you are two zones away.
+
+---
+
 ## What to build, in order
 
 1. ~~**`GOLD_PER_XP` and the attribute price.**~~ **Built.** The rate is named,

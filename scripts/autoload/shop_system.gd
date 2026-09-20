@@ -68,6 +68,24 @@ const TRAINING_PRICE_STEPS: Array[float] = [1.0, 2.5, 5.0]
 # rack back up to its slot count rather than replacing it.
 const RESTOCK_DAYS: int = 7
 
+# WHAT A SHOP CAN PAY. A purse by venue, scaled by how well-off the place is.
+# A town brokers what a hamlet cannot afford to look at, which is what makes
+# WHERE you sell a decision rather than a formality.
+#
+# Wealth is read from `price_modifier` for now — the only per-place richness
+# signal that exists. When biome `wealth` and settlement tiers land it should
+# read those instead; this is the seam.
+const SHOP_PURSE_BY_TYPE: Dictionary = {
+	"town": 4000,
+	"caravan": 1500,          # nothing spawns one yet; the tier is reserved
+	"general": 1200, "mixed": 1200, "blacksmith": 1200,
+	"alchemist": 900, "fletcher": 900, "healer": 900,
+	"mercenary_guild": 700, "veteran_camp": 500, "teahouse": 400,
+	"yogini_circle": 400, "spell_guild": 600,
+	"spell_trainer": 300, "skill_trainer": 300, "domain_spell_trainer": 300
+}
+const SHOP_PURSE_DEFAULT: int = 800
+
 # Current active shop (set when entering a shop)
 var _current_shop: Dictionary = {}
 
@@ -591,6 +609,7 @@ func buy_item(item_id: String) -> Dictionary:
 				"supply_gained": supply_amount, "supply_type": supply_type}
 
 	ItemSystem.add_to_inventory(item_id)
+	_adjust_shop_purse(price)
 	item_purchased.emit(item_id, price)
 
 	return {"success": true, "item_name": item.get("name", item_id), "price": price}
@@ -613,13 +632,22 @@ func sell_item(item_id: String) -> Dictionary:
 
 	var price = get_sell_price(item_id)
 
+	# A shop pays what it has. Selling a good sword to a teahouse means taking
+	# what the teahouse can find, and the caller is told the shortfall so it
+	# can say so before the player commits.
+	var purse: int = get_shop_purse()
+	var paid: int = mini(price, purse)
+	var shortfall: int = price - paid
+
 	# Process sale
 	ItemSystem.remove_from_inventory(item_id)
-	GameState.add_gold(price)
-	item_sold.emit(item_id, price)
+	GameState.add_gold(paid)
+	_adjust_shop_purse(-paid)
+	item_sold.emit(item_id, paid)
 
 	var item = ItemSystem.get_item(item_id)
-	return {"success": true, "item_name": item.get("name", item_id), "price": price}
+	return {"success": true, "item_name": item.get("name", item_id),
+		"price": paid, "asking_price": price, "shortfall": shortfall}
 
 
 # ============================================
@@ -919,6 +947,42 @@ func _remove_from_rack(item_id: String) -> void:
 		slot_ids.erase(item_id)
 
 
+## What this shop starts a stocking period with.
+func _purse_capacity() -> int:
+	var shop_type: String = str(_current_shop.get("type", ""))
+	var base: int = int(SHOP_PURSE_BY_TYPE.get(shop_type, SHOP_PURSE_DEFAULT))
+	# price_modifier runs 0.9 to 1.5 and is the closest thing to a wealth
+	# signal the data has today.
+	return maxi(1, int(base * float(_current_shop.get("price_modifier", 1.0))))
+
+
+## Gold this shop can hand over right now. Refills on the rack's cadence, so a
+## place you cleaned out last week can pay again — the same stock-and-refresh
+## rule, applied to money.
+func get_shop_purse() -> int:
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	if object_id.is_empty():
+		return _purse_capacity()  # a one-off encounter has no ledger to keep
+	var purse: Dictionary = GameState.shop_purses.get(object_id, {})
+	if purse.is_empty() \
+			or GameState.current_day - int(purse.get("day", 0)) >= RESTOCK_DAYS:
+		purse = {"gold": _purse_capacity(), "day": GameState.current_day}
+		GameState.shop_purses[object_id] = purse
+	return int(purse.get("gold", 0))
+
+
+## Move gold into or out of the shop's purse. Selling drains it; buying from
+## the shop puts money back, so a place you sold to can buy from you again
+## once you have spent some of what it paid you.
+func _adjust_shop_purse(delta: int) -> void:
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	if object_id.is_empty():
+		return
+	get_shop_purse()  # ensures the entry exists and is fresh
+	var purse: Dictionary = GameState.shop_purses[object_id]
+	purse["gold"] = maxi(0, int(purse.get("gold", 0)) + delta)
+
+
 ## Whether any shop's rack is still holding this generated item. `close_shop`
 ## asks before binning a runtime item: the rack outlives the visit now, and
 ## deleting its definitions would leave it full of ids that resolve to nothing.
@@ -1096,3 +1160,96 @@ func _get_guild_spell_candidates(school: String, level: int, excluded: Array) ->
 			candidates.append(spell_id)
 
 	return candidates
+
+
+# ============================================
+# BARTER
+#
+# Goods for goods, with gold settling the difference — and when the shop
+# cannot cover the difference, the player may still take the deal and eat the
+# change. That last part is the whole reason barter exists: a purse makes
+# "sell the sword, buy the armour" impossible at a poor shop when it is really
+# one exchange the shop can afford, because it never needs the cash at all.
+# ============================================
+
+## Price a proposed exchange without committing to it. The UI shows this while
+## the basket is being built.
+##
+## give: item ids the player hands over. take: item ids they want.
+## Returns gold_to_player / gold_from_player (one is always 0), and shortfall —
+## the change the shop cannot make, which the player forfeits if they accept.
+func evaluate_barter(give: Array, take: Array) -> Dictionary:
+	var give_value: int = 0
+	for item_id in give:
+		if not can_sell_item_here(item_id):
+			return {"ok": false, "reason": "Shop won't buy %s"
+				% ItemSystem.get_item(item_id).get("name", item_id)}
+		give_value += get_sell_price(item_id)
+
+	var take_value: int = 0
+	for item_id in take:
+		take_value += get_buy_price(item_id)
+
+	var balance: int = give_value - take_value
+	var result: Dictionary = {
+		"ok": true, "give_value": give_value, "take_value": take_value,
+		"balance": balance, "gold_to_player": 0, "gold_from_player": 0,
+		"shortfall": 0
+	}
+
+	if balance >= 0:
+		# The shop owes change, and can only pay what is in the till.
+		var payable: int = mini(balance, get_shop_purse())
+		result["gold_to_player"] = payable
+		result["shortfall"] = balance - payable
+	else:
+		var owed: int = -balance
+		result["gold_from_player"] = owed
+		if not GameState.can_afford(owed):
+			result["ok"] = false
+			result["reason"] = "You are %d gold short" % (owed - GameState.gold)
+
+	return result
+
+
+## Carry out an exchange priced by `evaluate_barter`. `accept_shortfall` is the
+## player answering "you will not get 17 gold of change" — without it a deal
+## the shop cannot fully pay for is refused rather than silently shorting them.
+func execute_barter(give: Array, take: Array, accept_shortfall: bool = false) -> Dictionary:
+	var deal: Dictionary = evaluate_barter(give, take)
+	if not deal.get("ok", false):
+		return {"success": false, "reason": deal.get("reason", "No deal")}
+
+	for item_id in give:
+		if ItemSystem.get_inventory_count(item_id) <= 0:
+			return {"success": false, "reason": "You do not have %s"
+				% ItemSystem.get_item(item_id).get("name", item_id)}
+
+	var stock: Dictionary = _current_shop.get("items", {})
+	for item_id in take:
+		if item_id in stock and stock[item_id] <= 0:
+			return {"success": false, "reason": "Out of stock"}
+
+	if int(deal["shortfall"]) > 0 and not accept_shortfall:
+		return {"success": false, "reason": "shortfall_unconfirmed",
+			"shortfall": deal["shortfall"], "deal": deal}
+
+	for item_id in give:
+		ItemSystem.remove_from_inventory(item_id)
+	for item_id in take:
+		if item_id in stock:
+			stock[item_id] -= 1
+		_remove_from_rack(item_id)
+		ItemSystem.add_to_inventory(item_id)
+
+	var to_player: int = int(deal["gold_to_player"])
+	var from_player: int = int(deal["gold_from_player"])
+	if to_player > 0:
+		GameState.add_gold(to_player)
+		_adjust_shop_purse(-to_player)
+	if from_player > 0:
+		GameState.spend_gold(from_player)
+		_adjust_shop_purse(from_player)
+
+	deal["success"] = true
+	return deal

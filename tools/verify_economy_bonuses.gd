@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 29
+const EXPECTED_CHECKS: int = 35
 
 
 func _ready() -> void:
@@ -52,6 +52,14 @@ func _ready() -> void:
 	_check_buying_takes_it_off_the_rack()
 	_check_the_rack_refills_after_a_week()
 	_check_a_racked_item_is_not_binned_on_close()
+
+	# The purse, barter, and what a death takes with it.
+	_check_a_shop_pays_only_what_it_has()
+	_check_a_town_outbids_a_teahouse()
+	_check_buying_puts_money_back_in_the_till()
+	_check_barter_settles_in_goods_before_gold()
+	_check_a_shortfall_needs_confirming()
+	_check_a_new_life_keeps_nothing_of_the_old_world()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -737,4 +745,137 @@ func _check_a_racked_item_is_not_binned_on_close() -> void:
 	ShopSystem.close_shop()
 	if not ItemSystem.item_exists(racked):
 		_fail("closing the shop binned an item still on its rack")
+	_done()
+
+
+# ============================================================================
+# THE PURSE, BARTER, AND REINCARNATION
+# ============================================================================
+
+func _open_purse_shop(object_id: String, shop_type: String) -> void:
+	ShopSystem._current_shop = {
+		"id": "purse_probe", "type": shop_type, "price_modifier": 1.0,
+		"_object_id": object_id, "items": {}, "buys_items": true
+	}
+
+
+## A shop hands over what is in the till and no more, and says what it could
+## not cover rather than quietly paying full price.
+func _check_a_shop_pays_only_what_it_has() -> void:
+	GameState.shop_purses.clear()
+	_open_purse_shop("obj_poor", "teahouse")
+	var item_id: String = ItemSystem.generate_weapon("", "rare", "", "", "animal")
+	if item_id == "":
+		_fail("could not generate an item to sell")
+		_done()
+		return
+	ItemSystem.add_to_inventory(item_id)
+	GameState.shop_purses["obj_poor"] = {"gold": 10, "day": GameState.current_day}
+	var asking: int = ShopSystem.get_sell_price(item_id)
+	var before: int = GameState.gold
+	var r: Dictionary = ShopSystem.sell_item(item_id)
+	if int(r.get("price", 0)) != 10:
+		_fail("a till holding 10 paid %d" % int(r.get("price", 0)))
+	if GameState.gold - before != 10:
+		_fail("the player received %d from a till of 10" % (GameState.gold - before))
+	if int(r.get("shortfall", -1)) != asking - 10:
+		_fail("shortfall reported %d, expected %d" % [int(r.get("shortfall", -1)), asking - 10])
+	if ShopSystem.get_shop_purse() != 0:
+		_fail("the till still holds %d after paying out" % ShopSystem.get_shop_purse())
+	_done()
+
+
+## Where you sell should matter: a town brokers what a teahouse cannot.
+func _check_a_town_outbids_a_teahouse() -> void:
+	GameState.shop_purses.clear()
+	_open_purse_shop("obj_town", "town")
+	var rich: int = ShopSystem.get_shop_purse()
+	_open_purse_shop("obj_tea", "teahouse")
+	var poor: int = ShopSystem.get_shop_purse()
+	if rich <= poor:
+		_fail("a town's till holds %d against a teahouse's %d" % [rich, poor])
+	_done()
+
+
+## Spending at a shop refills its till, so selling then buying back works.
+func _check_buying_puts_money_back_in_the_till() -> void:
+	GameState.shop_purses.clear()
+	_open_purse_shop("obj_till", "general")
+	var item_id: String = ItemSystem.generate_weapon("", "common", "", "", "animal")
+	ShopSystem._current_shop["items"] = {item_id: 1}
+	GameState.shop_purses["obj_till"] = {"gold": 0, "day": GameState.current_day}
+	GameState.gold = 1000000
+	var price: int = ShopSystem.get_buy_price(item_id)
+	ShopSystem.buy_item(item_id)
+	if ShopSystem.get_shop_purse() != price:
+		_fail("buying for %d left %d in the till" % [price, ShopSystem.get_shop_purse()])
+	_done()
+
+
+## Goods against goods first: an even swap needs no gold from either side, so
+## a shop with an empty till can still make the trade.
+func _check_barter_settles_in_goods_before_gold() -> void:
+	GameState.shop_purses.clear()
+	_open_purse_shop("obj_swap", "general")
+	var mine: String = ItemSystem.generate_weapon("", "common", "", "", "animal")
+	var theirs: String = ItemSystem.generate_weapon("", "common", "", "", "animal")
+	ItemSystem.add_to_inventory(mine)
+	ShopSystem._current_shop["items"] = {theirs: 1}
+	GameState.shop_purses["obj_swap"] = {"gold": 0, "day": GameState.current_day}
+
+	var deal: Dictionary = ShopSystem.evaluate_barter([mine], [theirs])
+	if not deal.get("ok", false):
+		_fail("an even-ish swap was refused: %s" % deal.get("reason", ""))
+		_done()
+		return
+	var give_v: int = int(deal["give_value"])
+	var take_v: int = int(deal["take_value"])
+	if give_v <= 0 or take_v <= 0:
+		_fail("barter priced a side at zero (%d for %d)" % [give_v, take_v])
+	if int(deal["balance"]) != give_v - take_v:
+		_fail("balance %d does not match %d - %d" % [int(deal["balance"]), give_v, take_v])
+	_done()
+
+
+## The shop cannot make change, so the player is asked before losing it.
+func _check_a_shortfall_needs_confirming() -> void:
+	GameState.shop_purses.clear()
+	_open_purse_shop("obj_change", "general")
+	var mine: String = ItemSystem.generate_weapon("", "rare", "", "", "animal")
+	ItemSystem.add_to_inventory(mine)
+	ShopSystem._current_shop["items"] = {}
+	GameState.shop_purses["obj_change"] = {"gold": 5, "day": GameState.current_day}
+
+	var blocked: Dictionary = ShopSystem.execute_barter([mine], [], false)
+	if blocked.get("success", false):
+		_fail("a deal the shop could not pay for went through unconfirmed")
+	if str(blocked.get("reason", "")) != "shortfall_unconfirmed":
+		_fail("refusal reason was '%s'" % str(blocked.get("reason", "")))
+	if ItemSystem.get_inventory_count(mine) <= 0:
+		_fail("the item was taken despite the deal being refused")
+
+	var taken: Dictionary = ShopSystem.execute_barter([mine], [], true)
+	if not taken.get("success", false):
+		_fail("the confirmed deal was still refused")
+	elif int(taken.get("shortfall", 0)) <= 0:
+		_fail("the confirmed deal reported no shortfall")
+	_done()
+
+
+## A death regenerates the world, so nothing keyed to the old map survives —
+## racks and purses above all, since their ids are never issued again.
+func _check_a_new_life_keeps_nothing_of_the_old_world() -> void:
+	GameState.shop_stock["ghost_rack"] = {"day": 0, "slots": [["x"]]}
+	GameState.shop_purses["ghost_purse"] = {"gold": 99, "day": 0}
+	GameState.guild_spell_lists["ghost_guild"] = ["spell"]
+	GameState.gold = 99999
+	GameState.start_new_run("hungry_ghost")
+	if not GameState.shop_stock.is_empty():
+		_fail("a rack from the previous world survived reincarnation")
+	if not GameState.shop_purses.is_empty():
+		_fail("a purse from the previous world survived reincarnation")
+	if not GameState.guild_spell_lists.is_empty():
+		_fail("a guild curriculum from the previous world survived reincarnation")
+	if GameState.gold != 100:
+		_fail("gold carried across a death: %d" % GameState.gold)
 	_done()

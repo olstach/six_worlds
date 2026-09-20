@@ -861,6 +861,50 @@ already gates on a perk (`perk_req`, added 2026-09-16):
 
 ## 11. Things to ponder
 
+### External events — the world moving without you
+
+*2026-09-20, out of the economy design.* The trade design wants "shocks": a
+caravan arrives and grain is cheap for a week, a mine floods and ore doubles,
+a siege closes a road. The interesting realisation is that shocks are not an
+economy feature — they are the economy's instance of something the game does
+not have at all: **things that happen in the world without the player
+touching them.**
+
+Worth having as a system rather than as a price mechanic, because the same
+hook serves far more than trade:
+
+- **Economic** — a market glut or shortage, a trade route closing, a
+  settlement's prosperity rising or falling.
+- **Territorial** — a mob group takes a road, a shrine is desecrated, a
+  region becomes more dangerous while you were elsewhere.
+- **Social** — a faction's attitude shifts, a trainer dies, a settlement you
+  invested in is sacked.
+- **Karmic** — the realm reacting to what you have been doing, which is the
+  one that could not come from anywhere else.
+
+What makes it a *system* rather than a list is that it fires on the day tick,
+picks from a weighted table filtered by what exists in the world right now,
+and leaves a **trace the player can find** — a rumour from a traveller, a
+changed price, a road that is not where it was. A shock nobody can perceive
+is a random number generator with extra steps.
+
+Open questions worth sitting with before building:
+
+- **How does the player learn?** Travellers are the obvious channel (the
+  design already makes them the rumour layer), but a shock in a realm you have
+  left needs a different one, or it should simply not fire there.
+- **Does it fire while you are in combat or in a menu?** Day-tick timing means
+  it can land at an odd moment.
+- **Can the player cause one?** Robbing a caravan should move the ore town's
+  prices — which makes this the other half of the reputation idea rather than
+  a separate feature.
+- **Frequency.** Rare enough to be an event, common enough that a long run
+  sees several. Once every few in-game weeks is a guess.
+
+Design first, and after the trade layer exists — a shock needs something to
+shock. Noted here so it does not get built as a price-only mechanic and then
+need rewriting when territory and factions want the same hook.
+
 ### Marking the ground a battle was fought on
 
 Cheap, and it has more in it than it looks. When combat ends, flag the

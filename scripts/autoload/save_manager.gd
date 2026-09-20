@@ -150,24 +150,16 @@ func start_new_game(slot: int) -> void:
 	current_slot = slot
 	_play_time = 0.0
 
-	# Reset GameState
+	# Reset GameState. The per-life state is one list, shared with
+	# reincarnation, so a new var cannot be reset here and forgotten there.
+	GameState.reset_for_new_life()
+	# And on top of it, the meta-progression a death would have kept.
 	GameState.current_world = "hell"
 	GameState.unlocked_worlds = ["hell"]
 	GameState.is_alive = true
 	GameState.current_run_number = 1
-	GameState.gold = 100
-	GameState.food = 50
-	GameState.herbs = 20
-	GameState.scrap = 15
-	GameState.reagents = 10
-	GameState.active_map_buffs = []
-	GameState.used_event_choices = {}
-	GameState.guild_spell_lists = {}
 	GameState.flags = {}
-	GameState.active_quests = []
 	GameState.completed_quest_ids = []
-	GameState.overworld_log = []
-	GameState.is_party_wiped = false
 	GameState.returning_from_combat = false
 	GameState.last_defeated_mob_id = ""
 	GameState.pending_combat_mob = {}
