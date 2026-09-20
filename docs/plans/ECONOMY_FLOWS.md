@@ -14,6 +14,10 @@ Olaf answered the first open question.*
 > appear rarely, so the player gets this great chance once in a while. It
 > should not break the overall balance. Giving a random boost to a specific
 > playthrough is fine — that is fun for the player.
+>
+> Every such attribute and skill advancement is capped at three points max,
+> with each subsequent purchase from the same shop for the same character
+> costing x, 2.5x, 5x.
 
 That is a sharper answer than the three options the design offered, because it
 does not pick between them: it keeps gold buying progression (option 1's
@@ -70,7 +74,36 @@ attributes.
 Worse, it makes specialising strictly correct: pump one attribute to 25 and
 every further point is the cheapest progression in the game.
 
-### The fix is one constant
+### A trainer is an occasion, not a service
+
+The cap is what actually delivers "a great chance once in a while", and it does
+something the price alone cannot: it makes the trainer a **finite encounter**.
+Three lessons from this teacher for this character, at 1x, 2.5x and 5x, and
+then they have taught you what they can.
+
+Two consequences worth naming:
+
+- **It ends the grind before it starts.** Without a cap, a rich party parks at
+  the best trainer and buys until the gold runs out, which is exactly the
+  progression press the whole question was about. With one, the ceiling is
+  structural — the most gold can ever buy at one trainer is three points, and
+  the third costs five times the first.
+- **It makes finding a *second* trainer matter.** Once a teacher is exhausted,
+  the next one is worth travelling for, which is the behaviour the settlement
+  and road layers exist to reward.
+
+**The allowance is shared between attributes and skills.** All twelve shops
+that teach attributes also teach skills, so this is the common case, not an
+edge case: three lessons *total* from one trainer, of whichever kind. A
+separate three-and-three would double every trainer's output and make the dual
+shops strictly better in a way nothing in the design asks for. If the intent
+was per-kind, it is one line — the ledger key gains the training type.
+
+**It is per character.** One party member exhausting a teacher leaves the
+others their own three, which is what makes a good trainer worth bringing the
+whole party to.
+
+### The rate is one constant
 
 ```gdscript
 const GOLD_PER_XP: int = 18
@@ -213,10 +246,11 @@ or enemy difficulty.*
 
 ## What to build, in order
 
-1. **`GOLD_PER_XP` and the attribute price.** One constant, one call site.
-   Fixes the inverted rate, makes trainers expensive as asked, and needs no
-   other system. Extend `SKILL_TRAINING_COSTS` to level 10 in the same commit
-   so the three lying shops stop lying.
+1. ~~**`GOLD_PER_XP` and the attribute price.**~~ **Built.** The rate is named,
+   attributes are priced off their own XP cost, `SKILL_TRAINING_COSTS` reaches
+   level 10 so the three lying shops stop lying, and the three-lesson cap with
+   its 1x / 2.5x / 5x escalation is enforced and saved per character per
+   trainer. Seven checks in `verify_economy_bonuses`.
 2. **Settlements as entities** — layer 1, the keystone. Now also the thing that
    makes trainer rarity structural.
 3. **Trade goods and the price index** — layers 2 and 3, unblocked by the

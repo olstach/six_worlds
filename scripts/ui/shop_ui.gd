@@ -468,14 +468,17 @@ func _populate_training_tab() -> void:
 		attr_header.add_theme_color_override("font_color", GOLD_COLOR)
 		training_container.add_child(attr_header)
 
-		var attr_price = ShopSystem.get_attribute_training_cost()
+		# No single price to show any more: an attribute point is priced off the
+		# character's current value, and off how many lessons they have already
+		# bought here. Each button carries its own number.
 		var price_label = Label.new()
-		price_label.text = "Cost: %d gold per point" % attr_price
+		price_label.text = "Priced per character. %d lessons each, then this trainer is done." \
+			% ShopSystem.TRAINING_PURCHASE_CAP
 		price_label.add_theme_font_size_override("font_size", 12)
 		training_container.add_child(price_label)
 
 		for attr in attributes:
-			_create_training_option("attribute", attr, attr_price)
+			_create_training_option("attribute", attr)
 
 		training_container.add_child(HSeparator.new())
 
@@ -491,7 +494,7 @@ func _populate_training_tab() -> void:
 			_create_skill_training_option(skill)
 
 
-func _create_training_option(training_type: String, target: String, price: int) -> void:
+func _create_training_option(training_type: String, target: String) -> void:
 	var party = CharacterSystem.get_party()
 	if party.is_empty():
 		return
@@ -508,13 +511,21 @@ func _create_training_option(training_type: String, target: String, price: int) 
 	for character in party:
 		var char_name = character.get("name", "?")
 		var current_val = character.get("attributes", {}).get(target, 10)
-		var can_afford = GameState.can_afford(price)
+		var lessons_left: int = ShopSystem.get_training_lessons_left(character)
 
 		var btn = Button.new()
-		btn.text = "%s (%d)" % [char_name, current_val]
 		btn.add_theme_font_size_override("font_size", 11)
-		btn.disabled = not can_afford
-		btn.pressed.connect(func(): _on_train_attribute_pressed(character, target))
+
+		if lessons_left <= 0:
+			btn.text = "%s (%d) — taught out" % [char_name, current_val]
+			btn.disabled = true
+			btn.add_theme_color_override("font_disabled_color", Color(0.6, 0.6, 0.4))
+		else:
+			var price: int = ShopSystem.get_attribute_training_cost(character, target)
+			btn.text = "%s (%d) — %dg" % [char_name, current_val, price]
+			btn.disabled = not GameState.can_afford(price)
+			btn.pressed.connect(func(): _on_train_attribute_pressed(character, target))
+
 		hbox.add_child(btn)
 
 
@@ -545,8 +556,12 @@ func _create_skill_training_option(skill: String) -> void:
 			btn.text = "%s (Lv.%d) - Capped" % [char_name, current_level]
 			btn.disabled = true
 			btn.add_theme_color_override("font_disabled_color", Color(0.6, 0.6, 0.4))
+		elif ShopSystem.get_training_lessons_left(character) <= 0:
+			btn.text = "%s (Lv.%d) - taught out" % [char_name, current_level]
+			btn.disabled = true
+			btn.add_theme_color_override("font_disabled_color", Color(0.6, 0.6, 0.4))
 		else:
-			var price = ShopSystem.get_skill_training_cost(current_level)
+			var price = ShopSystem.get_skill_training_cost(current_level, character)
 			var can_afford = GameState.can_afford(price) and price > 0
 			btn.text = "%s (Lv.%d) - %dg" % [char_name, current_level, price]
 			btn.disabled = not can_afford
@@ -592,8 +607,12 @@ func _populate_veteran_training(selected_skills: Array, claimed: Array) -> void:
 					btn.text = "%s (Lv.%d) — Capped" % [character.get("name", "?"), current_level]
 					btn.disabled = true
 					btn.add_theme_color_override("font_disabled_color", Color(0.6, 0.6, 0.4))
+				elif ShopSystem.get_training_lessons_left(character) <= 0:
+					btn.text = "%s (Lv.%d) — taught out" % [character.get("name", "?"), current_level]
+					btn.disabled = true
+					btn.add_theme_color_override("font_disabled_color", Color(0.6, 0.6, 0.4))
 				else:
-					var price: int = ShopSystem.get_skill_training_cost(current_level)
+					var price: int = ShopSystem.get_skill_training_cost(current_level, character)
 					var can_afford: bool = GameState.can_afford(price) and price > 0
 					btn.text = "%s (Lv.%d) — %dg" % [character.get("name", "?"), current_level, price]
 					btn.disabled = not can_afford
@@ -605,7 +624,7 @@ func _populate_veteran_training(selected_skills: Array, claimed: Array) -> void:
 
 func _on_veteran_train_pressed(slot_index: int, character: Dictionary, skill: String) -> void:
 	var current_level: int = character.get("skills", {}).get(skill, 0)
-	var price: int = ShopSystem.get_skill_training_cost(current_level)
+	var price: int = ShopSystem.get_skill_training_cost(current_level, character)
 	if not GameState.can_afford(price):
 		return
 

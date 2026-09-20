@@ -26,8 +26,34 @@ const CHARM_BASELINE: int = 10  # Charm value considered "neutral"
 const SPELL_BASE_COST: int = 50  # Level 1 = 50, Level 2 = 100, etc.
 
 # Training pricing
-const ATTRIBUTE_TRAINING_COST: int = 200  # Cost per attribute point
-const SKILL_TRAINING_COSTS: Array[int] = [50, 150, 300, 500, 750]  # Cost to reach each level
+#
+# THE EXCHANGE RATE THE SKILL TABLE ALWAYS IMPLIED. The old gold table
+# (50/150/300/500/750) sits against the XP table (5/10/18/28/42) at 10, 15,
+# 16.7, 17.9, 17.9 gold per XP — about 18 from level 2 up, with a deliberately
+# discounted first lesson. Nothing said so; the array was literals. Naming the
+# rate lets attribute training use it too.
+#
+# Attributes used to be a flat 200 while their XP cost rises as
+# (value - 9) * 3, so the effective rate ran from 66.7 gold/XP at attribute 10
+# down to 3.2 at attribute 30: dearest where the player had least and a
+# quarter-price bargain where they had most, which made pumping one attribute
+# to 25 the cheapest progression in the game. See docs/plans/ECONOMY_FLOWS.md.
+const GOLD_PER_XP: int = 18
+
+# Cost to reach each level, indexed by the level you are leaving.
+# Levels 1-5 are the original hand-tuned numbers; 6-10 are GOLD_PER_XP times
+# the XP cost, which is what the first five already almost exactly were.
+# The array stopped at 5 before, so `get_skill_training_cost` returned 0 above
+# it and `buy_skill_training` read that as "cannot train" — weapon_master
+# advertised max_skill_level 7 and silently stopped at 5.
+const SKILL_TRAINING_COSTS: Array[int] = [50, 150, 300, 500, 750, 1062, 1440, 1908, 2466, 3150]
+
+# A TRAINER IS AN OCCASION, NOT A SERVICE. One trainer teaches one character at
+# most three times, and each lesson after the first costs more. Scarcity rather
+# than price is what keeps gold from buying progression wholesale, so the
+# trainer stays a great chance once in a while instead of a vending machine.
+const TRAINING_PURCHASE_CAP: int = 3
+const TRAINING_PRICE_STEPS: Array[float] = [1.0, 2.5, 5.0]
 
 # Current active shop (set when entering a shop)
 var _current_shop: Dictionary = {}
@@ -69,6 +95,12 @@ func _load_shop_database() -> void:
 
 	_shop_database = data.get("shops", {})
 	_shop_types = data.get("shop_types", {})
+
+	# Shops are keyed by id in the JSON but carry no id field of their own, and
+	# `open_shop` only ever sees the value. The training ledger has to name the
+	# trainer it is counting, so stamp the key onto the definition here.
+	for shop_id in _shop_database:
+		_shop_database[shop_id]["id"] = shop_id
 
 
 ## Get a shop definition by ID
@@ -141,11 +173,57 @@ func get_spell_cost(spell_id: String) -> int:
 	return int(base_cost * shop_modifier * (1.0 - discount))
 
 
-## Calculate cost to train an attribute
-func get_attribute_training_cost() -> int:
+## How many lessons this character has already bought from the current trainer.
+## Attribute and skill lessons share one allowance: three from this trainer, of
+## whatever kind, and then they have taught you what they can.
+func get_training_purchase_count(character: Dictionary) -> int:
+	var shop_id: String = str(_current_shop.get("id", ""))
+	if shop_id.is_empty():
+		return 0
+	return int(character.get("training_purchases", {}).get(shop_id, 0))
+
+
+## What this character's next lesson here is multiplied by: 1x, then 2.5x, then
+## 5x. Past the cap it stays at the last step, which only matters for display —
+## `buy_*` refuses the purchase outright.
+func get_training_price_multiplier(character: Dictionary) -> float:
+	var bought: int = get_training_purchase_count(character)
+	if bought >= TRAINING_PRICE_STEPS.size():
+		return TRAINING_PRICE_STEPS[TRAINING_PRICE_STEPS.size() - 1]
+	return TRAINING_PRICE_STEPS[bought]
+
+
+## Lessons this character has left with the current trainer.
+func get_training_lessons_left(character: Dictionary) -> int:
+	return maxi(0, TRAINING_PURCHASE_CAP - get_training_purchase_count(character))
+
+
+## Record a lesson against the current trainer. Lives on the character rather
+## than in ShopSystem so it rides `get_save_data`'s deep copy for free, and so
+## two characters exhaust a trainer independently.
+func _record_training_purchase(character: Dictionary) -> void:
+	var shop_id: String = str(_current_shop.get("id", ""))
+	if shop_id.is_empty():
+		return
+	if not character.has("training_purchases"):
+		character["training_purchases"] = {}
+	var ledger: Dictionary = character["training_purchases"]
+	ledger[shop_id] = int(ledger.get(shop_id, 0)) + 1
+
+
+## Calculate cost to train an attribute.
+##
+## Priced off the same XP cost the character would otherwise pay, so a point is
+## dearer the higher the attribute already is — the flat price it replaces got
+## cheaper per XP the further you went.
+func get_attribute_training_cost(character: Dictionary, attribute: String) -> int:
+	var current_value: int = int(character.get("attributes", {}).get(attribute, 10))
+	var xp_cost: int = CharacterSystem.calculate_attribute_cost(current_value, 1)
+	var base_cost: float = float(xp_cost * GOLD_PER_XP)
+	var steps: float = get_training_price_multiplier(character)
 	var shop_modifier = _get_shop_price_modifier()
 	var discount = _get_total_discount()
-	return int(ATTRIBUTE_TRAINING_COST * shop_modifier * (1.0 - discount))
+	return int(base_cost * steps * shop_modifier * (1.0 - discount))
 
 
 ## Return the skill cap this trainer enforces (defaults to SKILL_MAX_LEVEL)
@@ -156,14 +234,15 @@ func get_trainer_skill_cap() -> int:
 
 
 ## Calculate cost to train a skill to next level
-func get_skill_training_cost(current_level: int) -> int:
+func get_skill_training_cost(current_level: int, character: Dictionary) -> int:
 	if current_level < 0 or current_level >= SKILL_TRAINING_COSTS.size():
 		return 0  # Max level or invalid
 
 	var base_cost = SKILL_TRAINING_COSTS[current_level]
+	var steps: float = get_training_price_multiplier(character)
 	var shop_modifier = _get_shop_price_modifier()
 	var discount = _get_total_discount()
-	return int(base_cost * shop_modifier * (1.0 - discount))
+	return int(base_cost * steps * shop_modifier * (1.0 - discount))
 
 
 ## Get best Trade skill level from party
@@ -594,7 +673,11 @@ func buy_attribute_training(character: Dictionary, attribute: String) -> Diction
 		if not attrs_offered.is_empty() and attribute not in attrs_offered:
 			return {"success": false, "reason": "Training not available here"}
 
-	var price = get_attribute_training_cost()
+	if get_training_purchase_count(character) >= TRAINING_PURCHASE_CAP:
+		return {"success": false, "reason": "This trainer has taught %s all they can"
+			% character.get("name", "this character")}
+
+	var price = get_attribute_training_cost(character, attribute)
 
 	if not GameState.can_afford(price):
 		return {"success": false, "reason": "Not enough gold"}
@@ -602,6 +685,8 @@ func buy_attribute_training(character: Dictionary, attribute: String) -> Diction
 	# Process purchase
 	if not GameState.spend_gold(price):
 		return {"success": false, "reason": "Transaction failed"}
+
+	_record_training_purchase(character)
 
 	# Directly increase attribute (bypasses XP cost)
 	character.attributes[attribute] += 1
@@ -632,7 +717,11 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 		if current_level >= cap:
 			return {"success": false, "reason": "Trainer can't teach beyond level %d" % cap}
 
-	var price = get_skill_training_cost(current_level)
+	if get_training_purchase_count(character) >= TRAINING_PURCHASE_CAP:
+		return {"success": false, "reason": "This trainer has taught %s all they can"
+			% character.get("name", "this character")}
+
+	var price = get_skill_training_cost(current_level, character)
 
 	if price == 0:
 		return {"success": false, "reason": "Cannot train this skill"}
@@ -643,6 +732,8 @@ func buy_skill_training(character: Dictionary, skill: String) -> Dictionary:
 	# Process purchase
 	if not GameState.spend_gold(price):
 		return {"success": false, "reason": "Transaction failed"}
+
+	_record_training_purchase(character)
 
 	# Directly increase skill (bypasses XP cost)
 	CharacterSystem.set_skill_level(character, skill, current_level + 1)

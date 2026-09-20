@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 18
+const EXPECTED_CHECKS: int = 25
 
 
 func _ready() -> void:
@@ -37,6 +37,15 @@ func _ready() -> void:
 	_check_a_lesson_teaches_something_castable()
 	_check_reinforcing_improves_one_instance()
 	_check_a_sermon_stacks_twice_and_no_more()
+
+	# Training prices: the exchange rate, the escalation and the cap.
+	_check_skill_prices_track_the_exchange_rate()
+	_check_the_skill_table_reaches_every_trainer_cap()
+	_check_an_attribute_costs_more_the_higher_it_is()
+	_check_lessons_escalate_one_then_two_and_a_half_then_five()
+	_check_a_trainer_stops_after_three_lessons()
+	_check_the_allowance_is_per_character_and_per_trainer()
+	_check_the_ledger_survives_a_save()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -484,4 +493,155 @@ func _check_a_sermon_stacks_twice_and_no_more() -> void:
 	if int(GameState.flags.get("sermon_skill_bonus", 0)) != 0:
 		_fail("the sermon's skill bonus was not spent by the next check")
 	GameState.active_map_buffs.clear()
+	_done()
+
+
+# ============================================================================
+# TRAINING PRICES
+#
+# Gold bought progression at a rate that fell as the character grew: attributes
+# were a flat 200 against an XP cost of (value - 9) * 3, so the trainer was
+# 66.7 gold/XP at attribute 10 and 3.2 at attribute 30. These checks pin the
+# rate, the escalation and the cap so a later tuning pass cannot quietly undo
+# any of the three. See docs/plans/ECONOMY_FLOWS.md.
+# ============================================================================
+
+## A shop with no price modifier and no discount, so a price is the bare
+## calculation. Returns the character the caller should train.
+func _lone_trainee(shop_id: String) -> Dictionary:
+	_party([{}])
+	ShopSystem._current_shop = {"id": shop_id, "price_modifier": 1.0}
+	return CharacterSystem.party[0]
+
+
+## The gold table and the XP table are the same table. The hand-tuned first
+## five levels are a discount that converges on the rate (10, 15, 16.7, 17.9,
+## 17.9 gold/XP); levels 6-10 were derived from it and should sit on it exactly.
+## Asserting both halves separately is the honest version — a single tolerance
+## wide enough for level 1 would not catch anything.
+func _check_skill_prices_track_the_exchange_rate() -> void:
+	var c: Dictionary = _lone_trainee("rate_probe")
+	var rate := float(ShopSystem.GOLD_PER_XP)
+
+	# Levels 1-5: at or below the rate, and never getting cheaper per XP.
+	var previous := 0.0
+	for level in range(0, 5):
+		var xp: int = CharacterSystem.SKILL_COSTS[level + 1]
+		var actual: float = float(ShopSystem.get_skill_training_cost(level, c)) / float(xp)
+		if actual > rate + 0.5:
+			_fail("skill ->%d prices at %.1f gold/XP, above the %d rate"
+				% [level + 1, actual, ShopSystem.GOLD_PER_XP])
+		if actual < previous - 0.01:
+			_fail("skill ->%d prices at %.1f gold/XP, cheaper than ->%d at %.1f"
+				% [level + 1, actual, level, previous])
+		previous = actual
+
+	# Levels 6-10: derived from the rate, so exact.
+	for level in range(5, CharacterSystem.SKILL_MAX_LEVEL):
+		var xp2: int = CharacterSystem.SKILL_COSTS[level + 1]
+		var expected: int = xp2 * ShopSystem.GOLD_PER_XP
+		var gold: int = ShopSystem.get_skill_training_cost(level, c)
+		if gold != expected:
+			_fail("skill ->%d costs %d, the rate says %d" % [level + 1, gold, expected])
+	_done()
+
+
+## weapon_master advertises max_skill_level 7 and the price table stopped at 5,
+## so get_skill_training_cost returned 0 and the purchase refused. Every cap a
+## shop advertises must be reachable.
+func _check_the_skill_table_reaches_every_trainer_cap() -> void:
+	var c: Dictionary = _lone_trainee("cap_probe")
+	var worst: int = 0
+	for shop_id in ShopSystem.get_shop_ids():
+		var training: Dictionary = ShopSystem.get_shop(shop_id).get("training", {})
+		if training.get("skills", []).is_empty():
+			continue
+		worst = maxi(worst, int(training.get("max_skill_level",
+			CharacterSystem.SKILL_MAX_LEVEL)))
+	# Priced by the level being left, so reaching level N reads index N-1.
+	if ShopSystem.get_skill_training_cost(worst - 1, c) <= 0:
+		_fail("a trainer advertises max_skill_level %d but level %d has no price"
+			% [worst, worst])
+	_done()
+
+
+## The point of the rewrite: a point of Strength costs more at 20 than at 10,
+## because that is what it costs in XP.
+func _check_an_attribute_costs_more_the_higher_it_is() -> void:
+	var c: Dictionary = _lone_trainee("attr_probe")
+	c["attributes"]["strength"] = 10
+	var cheap: int = ShopSystem.get_attribute_training_cost(c, "strength")
+	c["attributes"]["strength"] = 20
+	var dear: int = ShopSystem.get_attribute_training_cost(c, "strength")
+	if dear <= cheap:
+		_fail("strength at 20 costs %d, at 10 costs %d — should be dearer" % [dear, cheap])
+	var xp: int = CharacterSystem.calculate_attribute_cost(20, 1)
+	var expected: int = xp * ShopSystem.GOLD_PER_XP
+	if dear != expected:
+		_fail("strength at 20 costs %d, the XP cost at the rate is %d" % [dear, expected])
+	_done()
+
+
+## Each lesson from one trainer costs more than the last: 1x, 2.5x, 5x.
+func _check_lessons_escalate_one_then_two_and_a_half_then_five() -> void:
+	var c: Dictionary = _lone_trainee("steps_probe")
+	var first: int = ShopSystem.get_skill_training_cost(2, c)
+	ShopSystem._record_training_purchase(c)
+	var second: int = ShopSystem.get_skill_training_cost(2, c)
+	ShopSystem._record_training_purchase(c)
+	var third: int = ShopSystem.get_skill_training_cost(2, c)
+	if second != int(float(first) * 2.5):
+		_fail("second lesson costs %d, expected %d" % [second, int(float(first) * 2.5)])
+	if third != first * 5:
+		_fail("third lesson costs %d, expected %d" % [third, first * 5])
+	_done()
+
+
+## Three lessons and the trainer is done, whatever kind they were: the
+## allowance is shared, so two skills and an attribute exhaust it.
+func _check_a_trainer_stops_after_three_lessons() -> void:
+	var c: Dictionary = _lone_trainee("cap_three")
+	ShopSystem._current_shop["training"] = {
+		"skills": ["swords"], "attributes": ["strength"], "max_skill_level": 10
+	}
+	GameState.gold = 1000000
+	var bought: int = 0
+	for attempt in range(5):
+		var r: Dictionary = ShopSystem.buy_skill_training(c, "swords")
+		if r.get("success", false):
+			bought += 1
+	if bought != ShopSystem.TRAINING_PURCHASE_CAP:
+		_fail("trainer sold %d lessons, cap is %d" % [bought, ShopSystem.TRAINING_PURCHASE_CAP])
+	# And the shared allowance means the attribute is refused too.
+	if ShopSystem.buy_attribute_training(c, "strength").get("success", false):
+		_fail("an exhausted trainer still sold an attribute point")
+	_done()
+
+
+## One character using up a trainer must not use it up for the rest of the
+## party, and a second trainer must start fresh.
+func _check_the_allowance_is_per_character_and_per_trainer() -> void:
+	_party([{}, {}])
+	ShopSystem._current_shop = {"id": "shop_a", "price_modifier": 1.0}
+	var first: Dictionary = CharacterSystem.party[0]
+	var second: Dictionary = CharacterSystem.party[1]
+	for i in range(ShopSystem.TRAINING_PURCHASE_CAP):
+		ShopSystem._record_training_purchase(first)
+	if ShopSystem.get_training_lessons_left(first) != 0:
+		_fail("the exhausted character still has lessons left here")
+	if ShopSystem.get_training_lessons_left(second) != ShopSystem.TRAINING_PURCHASE_CAP:
+		_fail("one character's lessons were charged to another")
+	ShopSystem._current_shop = {"id": "shop_b", "price_modifier": 1.0}
+	if ShopSystem.get_training_lessons_left(first) != ShopSystem.TRAINING_PURCHASE_CAP:
+		_fail("a different trainer inherited the first trainer's ledger")
+	_done()
+
+
+## The ledger is worthless if reloading refills every trainer in the world.
+func _check_the_ledger_survives_a_save() -> void:
+	var c: Dictionary = _lone_trainee("save_probe")
+	ShopSystem._record_training_purchase(c)
+	var restored: Dictionary = CharacterSystem.get_save_data()["party"][0]
+	if int(restored.get("training_purchases", {}).get("save_probe", 0)) != 1:
+		_fail("the training ledger did not survive get_save_data")
 	_done()

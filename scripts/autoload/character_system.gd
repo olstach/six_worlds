@@ -226,6 +226,13 @@ const BASE_CHARACTER: Dictionary = {
 		"prosthetics": {},     # {part_id: item_id} for attached prosthetics
 	},
 
+	# Lessons already bought from each trainer, {shop_id: count}. A trainer
+	# teaches one character at most ShopSystem.TRAINING_PURCHASE_CAP times and
+	# charges more each time, so the ledger has to be per character and has to
+	# survive a save — it rides get_save_data's deep copy like everything else
+	# on the character. Old saves without the field read as empty.
+	"training_purchases": {},
+
 	# Persistent progression data
 	"affinities": [],  # Skills that have reached max level in previous lives
 	"persistent_upgrades": []  # Rare upgrades that survive reincarnation
