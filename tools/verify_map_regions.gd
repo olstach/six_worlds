@@ -19,7 +19,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 12
+const EXPECTED_CHECKS: int = 15
 
 const T_ROAD := 1
 const T_FOREST := 2
@@ -44,6 +44,9 @@ func _ready() -> void:
 	_check_every_zone_looks_like_what_it_declares()
 	_check_every_zone_contains_its_signature()
 	_check_a_biome_blends_rather_than_fills()
+	_check_every_pool_names_a_biome_the_world_defines()
+	_check_a_biome_decides_how_large_its_patches_are()
+	_check_a_biome_draws_its_share_of_danger()
 	_check_a_subregion_is_not_a_ribbon()
 	_check_an_ocean_has_water_in_it()
 	_check_a_swamp_has_swamp_in_it()
@@ -69,6 +72,22 @@ func _fail(msg: String) -> void:
 
 func _done() -> void:
 	checks_run += 1
+
+
+## A zone's palette, resolved against the world's biome library — the shape the
+## configs use now: the library defines a kind of place once and each zone names
+## the ones it may grow.
+func _palette(realm: String, zone: Dictionary) -> Array:
+	var out: Array = []
+	var library: Dictionary = _configs[realm].get("biomes", {})
+	for biome_id in zone.get("biome_pool", {}):
+		var definition: Dictionary = library.get(biome_id, {})
+		if definition.is_empty():
+			continue
+		var entry: Dictionary = definition.duplicate(true)
+		entry["id"] = str(biome_id)
+		out.append(entry)
+	return out
 
 
 func _load_config(path: String) -> Dictionary:
@@ -106,7 +125,7 @@ func _subs_of(realm: String, zone_id: String) -> Array:
 func _check_every_zone_with_biomes_is_cut_up() -> void:
 	for realm in _configs:
 		for zone in _configs[realm].get("zones", []):
-			var biomes: Array = zone.get("biomes", [])
+			var biomes: Array = _palette(realm, zone)
 			if biomes.is_empty():
 				continue
 			var subs: Array = _subs_of(realm, str(zone.get("id", "")))
@@ -131,7 +150,7 @@ func _check_every_biome_in_a_palette_appears() -> void:
 			var data: Dictionary = MapGenerator.generate_from_config(
 				"res://resources/data/map_configs/%s.json" % realm, seed_value)
 			for zone in _configs[realm].get("zones", []):
-				var palette: Array = zone.get("biomes", [])
+				var palette: Array = _palette(realm, zone)
 				if palette.is_empty():
 					continue
 				var present: Dictionary = {}
@@ -163,7 +182,7 @@ func _check_a_subregion_names_a_biome_its_zone_declares() -> void:
 		var palettes: Dictionary = {}
 		for zone in _configs[realm].get("zones", []):
 			var ids: Dictionary = {}
-			for biome in zone.get("biomes", []):
+			for biome in _palette(realm, zone):
 				ids[str(biome.get("id", ""))] = true
 			palettes[str(zone.get("id", ""))] = ids
 		for sub in _maps[realm].get("subregions", []):
@@ -183,7 +202,7 @@ func _check_a_subregion_names_a_biome_its_zone_declares() -> void:
 func _check_the_lattice_follows_the_zone_shape() -> void:
 	for realm in _configs:
 		for zone in _configs[realm].get("zones", []):
-			if (zone.get("biomes", []) as Array).is_empty():
+			if _palette(realm, zone).is_empty():
 				continue
 			var rows: Array = zone.get("rows", [0, 0])
 			var cols: Array = zone.get("cols", [])
@@ -299,7 +318,7 @@ func _check_every_zone_looks_like_what_it_declares() -> void:
 		var width: int = int(_configs[realm].get("width", 192))
 		var terrain: Array = _maps[realm].get("terrain", [])
 		for zone in _configs[realm].get("zones", []):
-			var palette: Array = zone.get("biomes", [])
+			var palette: Array = _palette(realm, zone)
 			if palette.is_empty():
 				continue
 			var leads: Dictionary = {}
@@ -408,7 +427,7 @@ func _check_every_zone_contains_its_signature() -> void:
 func _check_a_biome_blends_rather_than_fills() -> void:
 	for realm in _configs:
 		for zone in _configs[realm].get("zones", []):
-			for biome in zone.get("biomes", []):
+			for biome in _palette(realm, zone):
 				var weights: Dictionary = biome.get("terrain_weights", {})
 				if weights.size() < 2:
 					_fail("%s/%s: biome '%s' is made of one terrain"
@@ -424,3 +443,156 @@ func _check_a_biome_blends_rather_than_fills() -> void:
 						% [realm, str(zone.get("id", "")), str(biome.get("id", "")),
 							int(float(top) / float(total) * 100.0)] + "block")
 	_done()
+
+
+## Biomes are the WORLD's library now: defined once, drawn on by any region that
+## could hold one. A pool naming something the library does not define is a
+## subregion that generates from a fallback and reads as nowhere.
+func _check_every_pool_names_a_biome_the_world_defines() -> void:
+	for realm in _configs:
+		var library: Dictionary = _configs[realm].get("biomes", {})
+		if library.is_empty():
+			_fail("%s has no biome library" % realm)
+			continue
+		var used: Dictionary = {}
+		for zone in _configs[realm].get("zones", []):
+			for biome_id in zone.get("biome_pool", {}):
+				used[str(biome_id)] = true
+				if not library.has(biome_id):
+					_fail("%s/%s draws on biome '%s', which the world does not "
+						% [realm, str(zone.get("id", "")), str(biome_id)] + "define")
+				if int(zone["biome_pool"][biome_id]) < 1:
+					_fail("%s/%s gives biome '%s' weight %s, so it never comes up"
+						% [realm, str(zone.get("id", "")), str(biome_id),
+							str(zone["biome_pool"][biome_id])])
+		# A library entry no zone draws on is a place that cannot happen.
+		for biome_id in library:
+			if not used.has(str(biome_id)):
+				_fail("%s defines biome '%s' and no zone can grow it"
+					% [realm, str(biome_id)])
+	_done()
+
+
+## `cluster_min`/`cluster_max` were declared in every map config and read by
+## NOTHING until the fill was rewritten to seed patches. They are what makes a
+## deep wood one canopy and a reef broken up, so a biome that declares large
+## patches must produce measurably larger ones.
+func _check_a_biome_decides_how_large_its_patches_are() -> void:
+	var data: Dictionary = MapGenerator.generate_from_config(
+		"res://resources/data/map_configs/animal.json", 771)
+	var terrain: Array = data.get("terrain", [])
+	var width: int = 192
+
+	var coarse := 0.0     # average patch size under a large-cluster biome
+	var coarse_n := 0
+	var fine := 0.0       # and under a small-cluster one
+	var fine_n := 0
+	for sub in data.get("subregions", []):
+		var biome: String = str(sub.get("biome", ""))
+		if not biome in ["open_water", "deep_wood", "reef_flats", "rocky_islets"]:
+			continue
+		var run: float = _average_run_at(terrain, width, sub.get("seed", Vector2i.ZERO))
+		if biome in ["open_water", "deep_wood"]:
+			coarse += run
+			coarse_n += 1
+		else:
+			fine += run
+			fine_n += 1
+	if coarse_n == 0 or fine_n == 0:
+		_fail("could not sample both a coarse and a fine biome")
+	elif coarse / float(coarse_n) <= fine / float(fine_n):
+		_fail("large-cluster biomes average %.1f tiles to a run and "
+			% (coarse / float(coarse_n))
+			+ "small-cluster ones %.1f — cluster_min/max are not being read"
+			% (fine / float(fine_n)))
+	_done()
+
+
+## The average length of same-terrain runs through a subregion's middle: a crude
+## but honest measure of how chunky the ground is.
+func _average_run_at(terrain: Array, width: int, seed_pos: Vector2i) -> float:
+	var runs: Array[int] = []
+	for dy in range(-4, 5):
+		var y: int = seed_pos.y + dy
+		var last := -1
+		var run := 0
+		for dx in range(-10, 11):
+			var index: int = y * width + seed_pos.x + dx
+			if index < 0 or index >= terrain.size():
+				continue
+			var t: int = int(terrain[index])
+			if t == last:
+				run += 1
+			else:
+				if run > 0:
+					runs.append(run)
+				last = t
+				run = 1
+		if run > 0:
+			runs.append(run)
+	if runs.is_empty():
+		return 0.0
+	var total := 0
+	for r in runs:
+		total += r
+	return float(total) / float(runs.size())
+
+
+## `mob_weight` and `event_weight` are the reason to give a biome variables
+## beyond its terrain: a deep wood should draw more danger than a clearing, and
+## a mausoleum more interest than a dust plain.
+##
+## Measured where it matters — the tiles mobs were actually placed on, resolved
+## to their subregion by the same nearest-seed rule the generator grew them by.
+## An earlier version of this check compared the numbers in the records instead
+## and passed happily while the bias did nothing.
+func _check_a_biome_draws_its_share_of_danger() -> void:
+	# Several seeds: one map's placements are few enough to swing either way.
+	var appetite_where_placed := 0.0
+	var placed := 0
+	var appetite_everywhere := 0.0
+	var subs_seen := 0
+
+	for seed_value in [5, 88, 404]:
+		var data: Dictionary = MapGenerator.generate_from_config(
+			"res://resources/data/map_configs/animal.json", seed_value)
+		var subs: Array = data.get("subregions", [])
+		for sub in subs:
+			appetite_everywhere += float(sub.get("mob_weight", 1.0))
+			subs_seen += 1
+		for mob in data.get("mobs", []):
+			var at := Vector2i(int(mob.get("x", 0)), int(mob.get("y", 0)))
+			var owner: Dictionary = _nearest_sub(subs, at, str(mob.get("region", "")))
+			if owner.is_empty():
+				continue
+			appetite_where_placed += float(owner.get("mob_weight", 1.0))
+			placed += 1
+
+	if placed == 0 or subs_seen == 0:
+		_fail("no mobs or no subregions to compare")
+		_done()
+		return
+	var got: float = appetite_where_placed / float(placed)
+	var baseline: float = appetite_everywhere / float(subs_seen)
+	if got <= baseline:
+		_fail("mobs landed in places averaging %.3f appetite where the map "
+			% got + "averages %.3f — mob_weight is not biasing placement"
+			% baseline)
+	_done()
+
+
+## The subregion nearest `at`, within its own zone where one is named.
+func _nearest_sub(subs: Array, at: Vector2i, zone: String) -> Dictionary:
+	var best: Dictionary = {}
+	var best_dist: int = 1 << 30
+	for sub in subs:
+		if zone != "" and str(sub.get("zone", "")) != zone:
+			continue
+		var seed_pos: Vector2i = sub.get("seed", Vector2i.ZERO)
+		var dx: int = seed_pos.x - at.x
+		var dy: int = seed_pos.y - at.y
+		var dist: int = dx * dx + dy * dy
+		if dist < best_dist:
+			best_dist = dist
+			best = sub
+	return best

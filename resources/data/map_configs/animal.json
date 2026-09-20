@@ -25,18 +25,182 @@
       "Gajayul"
     ]
   },
+  "_comment_biomes": "Biomes are the WORLD's library, not a zone's: a kind of place, defined once and drawn on by any region that could hold it. A zone names the ones it may grow in `biome_pool` (id -> weight) and each of its subregions picks one. Every field here is read: terrain_weights fills the tiles, cluster_min/max decide how large its patches are (seeded as blobs, so a deep wood is one canopy and a reef is broken up), mob_weight and event_weight bias where danger and interest are placed within the zone, and name is what the player is told they are standing in.",
+  "biomes": {
+    "open_water": {
+      "name": "The Open Water",
+      "terrain_weights": {
+        "5": 70,
+        "12": 15,
+        "0": 10,
+        "4": 5
+      },
+      "cluster_min": 14,
+      "cluster_max": 24,
+      "mob_weight": 1.2,
+      "event_weight": 0.6
+    },
+    "reef_flats": {
+      "name": "The Reef Flats",
+      "terrain_weights": {
+        "5": 45,
+        "12": 30,
+        "0": 15,
+        "3": 10
+      },
+      "cluster_min": 3,
+      "cluster_max": 7,
+      "mob_weight": 1.0,
+      "event_weight": 1.2
+    },
+    "rocky_islets": {
+      "name": "The Rocky Islets",
+      "terrain_weights": {
+        "4": 35,
+        "5": 35,
+        "3": 20,
+        "12": 10
+      },
+      "cluster_min": 3,
+      "cluster_max": 7,
+      "mob_weight": 1.1,
+      "event_weight": 1.3
+    },
+    "shallows": {
+      "name": "The Shallows",
+      "terrain_weights": {
+        "12": 40,
+        "5": 35,
+        "0": 20,
+        "6": 5
+      },
+      "cluster_min": 5,
+      "cluster_max": 11,
+      "mob_weight": 0.8,
+      "event_weight": 1.1
+    },
+    "deep_wood": {
+      "name": "The Deep Wood",
+      "terrain_weights": {
+        "2": 60,
+        "3": 20,
+        "0": 15,
+        "6": 5
+      },
+      "cluster_min": 10,
+      "cluster_max": 20,
+      "mob_weight": 1.5,
+      "event_weight": 1.0
+    },
+    "clearings": {
+      "name": "The Clearings",
+      "terrain_weights": {
+        "0": 45,
+        "2": 35,
+        "3": 15,
+        "5": 5
+      },
+      "cluster_min": 4,
+      "cluster_max": 9,
+      "mob_weight": 0.7,
+      "event_weight": 1.4
+    },
+    "hill_wood": {
+      "name": "The Hill Wood",
+      "terrain_weights": {
+        "3": 40,
+        "2": 35,
+        "0": 20,
+        "4": 5
+      },
+      "cluster_min": 6,
+      "cluster_max": 13,
+      "mob_weight": 1.1,
+      "event_weight": 1.1
+    },
+    "fen": {
+      "name": "The Fen",
+      "terrain_weights": {
+        "6": 40,
+        "2": 25,
+        "5": 20,
+        "0": 15
+      },
+      "cluster_min": 7,
+      "cluster_max": 14,
+      "mob_weight": 1.2,
+      "event_weight": 0.9
+    },
+    "open_meadow": {
+      "name": "The Open Meadow",
+      "terrain_weights": {
+        "0": 65,
+        "2": 15,
+        "3": 15,
+        "5": 5
+      },
+      "cluster_min": 12,
+      "cluster_max": 22,
+      "mob_weight": 0.8,
+      "event_weight": 1.0
+    },
+    "tall_grass": {
+      "name": "The Tall Grass",
+      "terrain_weights": {
+        "0": 50,
+        "6": 20,
+        "2": 20,
+        "5": 10
+      },
+      "cluster_min": 8,
+      "cluster_max": 16,
+      "mob_weight": 1.0,
+      "event_weight": 1.1
+    },
+    "stone_meadow": {
+      "name": "The Stone Meadow",
+      "terrain_weights": {
+        "3": 40,
+        "0": 35,
+        "4": 15,
+        "2": 10
+      },
+      "cluster_min": 5,
+      "cluster_max": 11,
+      "mob_weight": 1.1,
+      "event_weight": 1.2
+    },
+    "watering_holes": {
+      "name": "The Watering Holes",
+      "terrain_weights": {
+        "0": 40,
+        "5": 30,
+        "6": 20,
+        "2": 10
+      },
+      "cluster_min": 4,
+      "cluster_max": 9,
+      "mob_weight": 1.3,
+      "event_weight": 1.5
+    }
+  },
   "zones": [
     {
       "_comment": "Bottom section. Entry zone — player arrives from the Hungry Ghost Realm. Vast coastal shelf and open ocean: deep water channels, coral reef flats, rocky islets, sandy shallows. The naga rule here and they remember everything.",
       "id": "ocean",
-      "signature_terrain": { "5": 45 },
-      "biomes": [
-        { "id": "open_water", "name": "The Open Water", "weight": 4, "terrain_weights": { "5": 70, "12": 15, "0": 10, "4": 5 } },
-        { "id": "reef_flats", "name": "The Reef Flats", "weight": 3, "terrain_weights": { "5": 45, "12": 30, "0": 15, "3": 10 } },
-        { "id": "rocky_islets", "name": "The Rocky Islets", "weight": 2, "terrain_weights": { "4": 35, "5": 35, "3": 20, "12": 10 } },
-        { "id": "shallows", "name": "The Shallows", "weight": 2, "terrain_weights": { "12": 40, "5": 35, "0": 20, "6": 5 } }
+      "biome_pool": {
+        "open_water": 4,
+        "reef_flats": 3,
+        "rocky_islets": 2,
+        "shallows": 2
+      },
+      "signature_terrain": {
+        "5": 45
+      },
+      "rows": [
+        128,
+        191
       ],
-      "rows": [128, 191],
       "terrain_weights": {
         "4": 30,
         "6": 18,
@@ -45,34 +209,48 @@
         "0": 12,
         "5": 10,
         "11": 5
-      },
-      "road_chance": 0.03,
-      "cluster_min": 3,
-      "cluster_max": 9
+      }
     },
     {
       "_comment": "Horizontal wall separating the ocean from the inland zones. A coral barrier ridge — impassable except at tidal passes where the reef breaks. The karka hold these choke-points.",
       "id": "coastal_wall",
-      "rows": [120, 127],
+      "rows": [
+        120,
+        127
+      ],
       "type": "mountain_wall",
       "orientation": "horizontal",
       "display_name": "Coral Barrier",
       "pass_width": 3,
-      "pass_count": [2, 3],
-      "pass_range": [0.15, 0.85]
+      "pass_count": [
+        2,
+        3
+      ],
+      "pass_range": [
+        0.15,
+        0.85
+      ]
     },
     {
       "_comment": "Upper-left section. Dense canopy — dark, layered, territorial. The forest floor is never quiet. Every fallen log is a claim, every fruiting tree a war. The portal to the Human Realm is hidden in the oldest part, near the northwestern corner.",
       "id": "forest",
-      "signature_terrain": { "2": 30 },
-      "biomes": [
-        { "id": "deep_wood", "name": "The Deep Wood", "weight": 4, "terrain_weights": { "2": 60, "3": 20, "0": 15, "6": 5 } },
-        { "id": "clearings", "name": "The Clearings", "weight": 3, "terrain_weights": { "0": 45, "2": 35, "3": 15, "5": 5 } },
-        { "id": "hill_wood", "name": "The Hill Wood", "weight": 2, "terrain_weights": { "3": 40, "2": 35, "0": 20, "4": 5 } },
-        { "id": "fen", "name": "The Fen", "weight": 2, "terrain_weights": { "6": 40, "2": 25, "5": 20, "0": 15 } }
+      "biome_pool": {
+        "deep_wood": 4,
+        "clearings": 3,
+        "hill_wood": 2,
+        "fen": 2
+      },
+      "signature_terrain": {
+        "2": 28
+      },
+      "rows": [
+        0,
+        119
       ],
-      "rows": [0, 119],
-      "cols": [0, 95],
+      "cols": [
+        0,
+        95
+      ],
       "terrain_weights": {
         "1": 38,
         "0": 20,
@@ -81,35 +259,52 @@
         "2": 7,
         "6": 5,
         "4": 2
-      },
-      "road_chance": 0.04,
-      "cluster_min": 2,
-      "cluster_max": 7
+      }
     },
     {
       "_comment": "Vertical wall between forest and meadow. A ridgeline of tumbled boulders, thorn scrub, and dry ravines. Hard to cross but not impossible — the passes tend to be where the old game trails are.",
       "id": "ridge",
-      "rows": [0, 119],
-      "cols": [96, 103],
+      "rows": [
+        0,
+        119
+      ],
+      "cols": [
+        96,
+        103
+      ],
       "type": "mountain_wall",
       "orientation": "vertical",
       "display_name": "Thorn Ridge",
       "pass_width": 3,
-      "pass_count": [1, 2],
-      "pass_range": [0.3, 0.7]
+      "pass_count": [
+        1,
+        2
+      ],
+      "pass_range": [
+        0.3,
+        0.7
+      ]
     },
     {
       "_comment": "Upper-right section. Open sky-brushed plains, termite cathedrals, migration routes, watering holes. Exposure is the currency here — the khadga charge, the yaksha mark territory, the bhramara darken the midday sun. More dangerous than the forest because there is nowhere to hide.",
       "id": "meadow",
-      "signature_terrain": { "0": 40 },
-      "biomes": [
-        { "id": "open_meadow", "name": "The Open Meadow", "weight": 4, "terrain_weights": { "0": 65, "2": 15, "3": 15, "5": 5 } },
-        { "id": "tall_grass", "name": "The Tall Grass", "weight": 3, "terrain_weights": { "0": 50, "6": 20, "2": 20, "5": 10 } },
-        { "id": "stone_meadow", "name": "The Stone Meadow", "weight": 2, "terrain_weights": { "3": 40, "0": 35, "4": 15, "2": 10 } },
-        { "id": "watering_holes", "name": "The Watering Holes", "weight": 2, "terrain_weights": { "0": 40, "5": 30, "6": 20, "2": 10 } }
+      "biome_pool": {
+        "open_meadow": 4,
+        "tall_grass": 3,
+        "stone_meadow": 2,
+        "watering_holes": 2
+      },
+      "signature_terrain": {
+        "0": 45
+      },
+      "rows": [
+        0,
+        119
       ],
-      "rows": [0, 119],
-      "cols": [104, 191],
+      "cols": [
+        104,
+        191
+      ],
       "terrain_weights": {
         "0": 38,
         "11": 20,
@@ -118,10 +313,7 @@
         "3": 12,
         "5": 3,
         "4": 1
-      },
-      "road_chance": 0.06,
-      "cluster_min": 2,
-      "cluster_max": 6
+      }
     }
   ],
   "fixed_landmarks": [
@@ -500,8 +692,17 @@
           "icon": "treasure",
           "message": "A cluster of oysters in a quiet reef pocket. Some are worth something.",
           "rewards": [
-            {"type": "gold", "value": [30, 60]},
-            {"type": "herbs", "value": 4}
+            {
+              "type": "gold",
+              "value": [
+                30,
+                60
+              ]
+            },
+            {
+              "type": "herbs",
+              "value": 4
+            }
           ],
           "weight": 3
         },
@@ -510,8 +711,17 @@
           "icon": "treasure",
           "message": "Someone lashed a waterproof bundle to a root. Long forgotten.",
           "rewards": [
-            {"type": "gold", "value": [20, 45]},
-            {"type": "food", "value": 8}
+            {
+              "type": "gold",
+              "value": [
+                20,
+                45
+              ]
+            },
+            {
+              "type": "food",
+              "value": 8
+            }
           ],
           "weight": 3
         },
@@ -520,9 +730,18 @@
           "icon": "rest",
           "message": "A sunlit pool left by the retreating tide. The warmth is almost human.",
           "rewards": [
-            {"type": "heal", "value": 35},
-            {"type": "mana", "value": 20},
-            {"type": "herbs", "value": 3}
+            {
+              "type": "heal",
+              "value": 35
+            },
+            {
+              "type": "mana",
+              "value": 20
+            },
+            {
+              "type": "herbs",
+              "value": 3
+            }
           ],
           "one_time": false,
           "weight": 2,
@@ -533,8 +752,21 @@
           "icon": "shrine",
           "message": "The current makes the offerings sway. Something old is paying attention.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}},
-            {"type": "karma", "value": {"realm": "animal", "amount": 2}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "awareness",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "animal",
+                "amount": 2
+              }
+            }
           ],
           "weight": 3
         },
@@ -543,14 +775,42 @@
           "icon": "treasure",
           "message": "Whatever lived here was immense. Something useful is lodged in the ribs.",
           "rewards": [
-            {"type": "item_random_scaled", "value": {
-              "tiers": {
-                "weak": ["bone_dagger", "bone_sword", "wooden_spear", "leather_vest", "leather_cap"],
-                "medium": ["bronze_mace", "bronze_spear", "obsidian_blade", "padded_armor", "bone_amulet"],
-                "strong": ["iron_khanda", "iron_dao", "bronze_shield", "padded_armor", "silver_ring", "lucky_charm"]
+            {
+              "type": "item_random_scaled",
+              "value": {
+                "tiers": {
+                  "weak": [
+                    "bone_dagger",
+                    "bone_sword",
+                    "wooden_spear",
+                    "leather_vest",
+                    "leather_cap"
+                  ],
+                  "medium": [
+                    "bronze_mace",
+                    "bronze_spear",
+                    "obsidian_blade",
+                    "padded_armor",
+                    "bone_amulet"
+                  ],
+                  "strong": [
+                    "iron_khanda",
+                    "iron_dao",
+                    "bronze_shield",
+                    "padded_armor",
+                    "silver_ring",
+                    "lucky_charm"
+                  ]
+                }
               }
-            }},
-            {"type": "scrap", "value": [2, 4]}
+            },
+            {
+              "type": "scrap",
+              "value": [
+                2,
+                4
+              ]
+            }
           ],
           "weight": 2
         },
@@ -559,7 +819,10 @@
           "icon": "shrine",
           "message": "A river of energy runs through the rock. You can feel it in your teeth.",
           "rewards": [
-            {"type": "mana", "value": 80}
+            {
+              "type": "mana",
+              "value": 80
+            }
           ],
           "weight": 3
         },
@@ -568,8 +831,22 @@
           "icon": "shrine",
           "message": "Heat pours from a crack in the seafloor. It scours and clarifies.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "strength", "amount": 2, "combats_remaining": 1}},
-            {"type": "buff", "value": {"stat": "constitution", "amount": -1, "combats_remaining": 1}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "strength",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "constitution",
+                "amount": -1,
+                "combats_remaining": 1
+              }
+            }
           ],
           "weight": 3
         },
@@ -578,9 +855,24 @@
           "icon": "shrine",
           "message": "A weighted bundle dropped from above. A prayer, not a cache.",
           "rewards": [
-            {"type": "gold", "value": [15, 30]},
-            {"type": "karma", "value": {"realm": "human", "amount": 2}},
-            {"type": "food", "value": 5}
+            {
+              "type": "gold",
+              "value": [
+                15,
+                30
+              ]
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "human",
+                "amount": 2
+              }
+            },
+            {
+              "type": "food",
+              "value": 5
+            }
           ],
           "weight": 3
         },
@@ -589,12 +881,21 @@
           "icon": "treasure",
           "message": "A sealed chest — too heavy to float, too good to leave.",
           "rewards": [
-            {"type": "item_random", "value": [
-              "water_charm_common", "enchantment_charm_common", "space_charm_common",
-              "sorcery_charm_common", "black_charm_common",
-              "plain_copper_drilbu", "plain_silver_drilbu", "plain_gold_drilbu",
-              "plain_copper_kangling", "plain_bone_kangling"
-            ]}
+            {
+              "type": "item_random",
+              "value": [
+                "water_charm_common",
+                "enchantment_charm_common",
+                "space_charm_common",
+                "sorcery_charm_common",
+                "black_charm_common",
+                "plain_copper_drilbu",
+                "plain_silver_drilbu",
+                "plain_gold_drilbu",
+                "plain_copper_kangling",
+                "plain_bone_kangling"
+              ]
+            }
           ],
           "weight": 2
         },
@@ -603,8 +904,14 @@
           "icon": "treasure",
           "message": "Dense, living, thriving. It is also edible if you know how.",
           "rewards": [
-            {"type": "herbs", "value": 6},
-            {"type": "food", "value": 10}
+            {
+              "type": "herbs",
+              "value": 6
+            },
+            {
+              "type": "food",
+              "value": 10
+            }
           ],
           "weight": 3
         },
@@ -613,9 +920,29 @@
           "icon": "shrine",
           "message": "Old offerings of gold and mantras pressed into clay.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}},
-            {"type": "buff", "value": {"stat": "awareness", "amount": 1, "combats_remaining": 1}},
-            {"type": "karma", "value": {"realm": "animal", "amount": 1}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "focus",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "awareness",
+                "amount": 1,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "animal",
+                "amount": 1
+              }
+            }
           ],
           "weight": 2
         },
@@ -624,7 +951,10 @@
           "icon": "treasure",
           "message": "Looks like a cache. It is not.",
           "rewards": [
-            {"type": "damage", "value": 18}
+            {
+              "type": "damage",
+              "value": 18
+            }
           ],
           "weight": 1
         },
@@ -633,8 +963,17 @@
           "icon": "shrine",
           "message": "Someone filled this at each low tide for a long time.",
           "rewards": [
-            {"type": "food", "value": 10},
-            {"type": "xp", "value": [10, 20]}
+            {
+              "type": "food",
+              "value": 10
+            },
+            {
+              "type": "xp",
+              "value": [
+                10,
+                20
+              ]
+            }
           ],
           "weight": 2
         },
@@ -643,7 +982,10 @@
           "icon": "rest",
           "message": "Something luminous rises from below. It passes through you and keeps going.",
           "rewards": [
-            {"type": "mana", "value": 100}
+            {
+              "type": "mana",
+              "value": 100
+            }
           ],
           "weight": 3
         },
@@ -652,19 +994,51 @@
           "icon": "dungeon",
           "message": "Someone used this as a dry stash point during low tide.",
           "rewards": [
-            {"type": "item_random_scaled", "value": {
-              "tiers": {
-                "weak": ["leather_vest", "wooden_spear", "bone_dagger", "health_potion"],
-                "medium": ["bronze_spear", "bronze_mace", "padded_armor", "mana_potion", "copper_ring"],
-                "strong": ["iron_dao", "bronze_shield", "padded_armor", "silver_ring", "water_charm_middling"]
+            {
+              "type": "item_random_scaled",
+              "value": {
+                "tiers": {
+                  "weak": [
+                    "leather_vest",
+                    "wooden_spear",
+                    "bone_dagger",
+                    "health_potion"
+                  ],
+                  "medium": [
+                    "bronze_spear",
+                    "bronze_mace",
+                    "padded_armor",
+                    "mana_potion",
+                    "copper_ring"
+                  ],
+                  "strong": [
+                    "iron_dao",
+                    "bronze_shield",
+                    "padded_armor",
+                    "silver_ring",
+                    "water_charm_middling"
+                  ]
+                }
               }
-            }},
-            {"type": "gold", "value": [20, 40]}
+            },
+            {
+              "type": "gold",
+              "value": [
+                20,
+                40
+              ]
+            }
           ],
           "weight": 2
         }
       ],
-      "spell_schools": ["Water", "Enchantment", "Sorcery", "Black", "Space"]
+      "spell_schools": [
+        "Water",
+        "Enchantment",
+        "Sorcery",
+        "Black",
+        "Space"
+      ]
     },
     "forest": {
       "events": [
@@ -1015,8 +1389,17 @@
           "icon": "treasure",
           "message": "Something was using this as a pantry. There is food left.",
           "rewards": [
-            {"type": "food", "value": 12},
-            {"type": "gold", "value": [15, 30]}
+            {
+              "type": "food",
+              "value": 12
+            },
+            {
+              "type": "gold",
+              "value": [
+                15,
+                30
+              ]
+            }
           ],
           "weight": 3
         },
@@ -1025,8 +1408,14 @@
           "icon": "rest",
           "message": "A perfect circle. The smell is medicinal if you know mushrooms.",
           "rewards": [
-            {"type": "heal", "value": 30},
-            {"type": "herbs", "value": 5}
+            {
+              "type": "heal",
+              "value": 30
+            },
+            {
+              "type": "herbs",
+              "value": 5
+            }
           ],
           "one_time": false,
           "weight": 2,
@@ -1037,9 +1426,18 @@
           "icon": "treasure",
           "message": "Honey, comb, and propolis. The bees make their feelings known.",
           "rewards": [
-            {"type": "herbs", "value": 4},
-            {"type": "food", "value": 8},
-            {"type": "damage", "value": 10}
+            {
+              "type": "herbs",
+              "value": 4
+            },
+            {
+              "type": "food",
+              "value": 8
+            },
+            {
+              "type": "damage",
+              "value": 10
+            }
           ],
           "weight": 3
         },
@@ -1048,8 +1446,21 @@
           "icon": "shrine",
           "message": "The roots are as wide as roads and as old as the forest itself.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "constitution", "amount": 2, "combats_remaining": 1}},
-            {"type": "karma", "value": {"realm": "animal", "amount": 1}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "constitution",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "animal",
+                "amount": 1
+              }
+            }
           ],
           "weight": 3
         },
@@ -1058,9 +1469,18 @@
           "icon": "rest",
           "message": "Shallow, cold, and briefly peaceful.",
           "rewards": [
-            {"type": "heal", "value": 25},
-            {"type": "mana", "value": 15},
-            {"type": "food", "value": 5}
+            {
+              "type": "heal",
+              "value": 25
+            },
+            {
+              "type": "mana",
+              "value": 15
+            },
+            {
+              "type": "food",
+              "value": 5
+            }
           ],
           "one_time": false,
           "weight": 2,
@@ -1071,7 +1491,14 @@
           "icon": "shrine",
           "message": "Claw lines cut deep into bark. You study the pattern; it tells you something.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "finesse", "amount": 2, "combats_remaining": 1}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "finesse",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            }
           ],
           "weight": 3
         },
@@ -1080,11 +1507,21 @@
           "icon": "treasure",
           "message": "Hidden in a tree hollow where no one without nimble fingers could reach. Until now.",
           "rewards": [
-            {"type": "item_random", "value": [
-              "health_potion", "mana_potion", "fire_bomb", "poison_bomb",
-              "plain_copper_dorje", "plain_copper_drilbu", "plain_copper_phurba",
-              "earth_charm_common", "summoning_charm_common", "black_charm_common"
-            ]}
+            {
+              "type": "item_random",
+              "value": [
+                "health_potion",
+                "mana_potion",
+                "fire_bomb",
+                "poison_bomb",
+                "plain_copper_dorje",
+                "plain_copper_drilbu",
+                "plain_copper_phurba",
+                "earth_charm_common",
+                "summoning_charm_common",
+                "black_charm_common"
+              ]
+            }
           ],
           "weight": 2
         },
@@ -1093,8 +1530,17 @@
           "icon": "shrine",
           "message": "The mycelium puts out a body for one day, then reabsorbs it. You got lucky.",
           "rewards": [
-            {"type": "xp", "value": [15, 35]},
-            {"type": "herbs", "value": 7}
+            {
+              "type": "xp",
+              "value": [
+                15,
+                35
+              ]
+            },
+            {
+              "type": "herbs",
+              "value": 7
+            }
           ],
           "weight": 2
         },
@@ -1103,10 +1549,22 @@
           "icon": "rest",
           "message": "Cold and deep and inexhaustible.",
           "rewards": [
-            {"type": "heal", "value": 40},
-            {"type": "mana", "value": 25},
-            {"type": "herbs", "value": 4},
-            {"type": "food", "value": 6}
+            {
+              "type": "heal",
+              "value": 40
+            },
+            {
+              "type": "mana",
+              "value": 25
+            },
+            {
+              "type": "herbs",
+              "value": 4
+            },
+            {
+              "type": "food",
+              "value": 6
+            }
           ],
           "weight": 3
         },
@@ -1115,7 +1573,14 @@
           "icon": "shrine",
           "message": "A tree stripped to white wood by repeated sharpening. The confidence in those marks is unsettling.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "strength", "amount": 2, "combats_remaining": 1}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "strength",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            }
           ],
           "weight": 3
         },
@@ -1124,9 +1589,21 @@
           "icon": "shrine",
           "message": "Wrapped in vines now, but still intact. Whatever was asked for here, it was asked sincerely.",
           "rewards": [
-            {"type": "karma", "value": {"realm": "animal", "amount": 2}},
-            {"type": "food", "value": 8},
-            {"type": "xp", "value": 10}
+            {
+              "type": "karma",
+              "value": {
+                "realm": "animal",
+                "amount": 2
+              }
+            },
+            {
+              "type": "food",
+              "value": 8
+            },
+            {
+              "type": "xp",
+              "value": 10
+            }
           ],
           "weight": 2
         },
@@ -1135,7 +1612,10 @@
           "icon": "dungeon",
           "message": "Looks safe. It is a deadfall trap.",
           "rewards": [
-            {"type": "damage", "value": 22}
+            {
+              "type": "damage",
+              "value": 22
+            }
           ],
           "weight": 1
         },
@@ -1144,14 +1624,40 @@
           "icon": "treasure",
           "message": "A waterproofed bundle wedged in a root fork, deliberately hidden.",
           "rewards": [
-            {"type": "gold", "value": [25, 50]},
-            {"type": "item_random_scaled", "value": {
-              "tiers": {
-                "weak": ["bone_dagger", "wooden_spear", "leather_vest", "health_potion"],
-                "medium": ["bronze_dao", "obsidian_blade", "leather_vest", "mana_potion", "copper_ring"],
-                "strong": ["iron_dao", "bronze_axe", "padded_armor", "silver_ring", "earth_charm_middling"]
+            {
+              "type": "gold",
+              "value": [
+                25,
+                50
+              ]
+            },
+            {
+              "type": "item_random_scaled",
+              "value": {
+                "tiers": {
+                  "weak": [
+                    "bone_dagger",
+                    "wooden_spear",
+                    "leather_vest",
+                    "health_potion"
+                  ],
+                  "medium": [
+                    "bronze_dao",
+                    "obsidian_blade",
+                    "leather_vest",
+                    "mana_potion",
+                    "copper_ring"
+                  ],
+                  "strong": [
+                    "iron_dao",
+                    "bronze_axe",
+                    "padded_armor",
+                    "silver_ring",
+                    "earth_charm_middling"
+                  ]
+                }
               }
-            }}
+            }
           ],
           "weight": 2
         },
@@ -1160,7 +1666,13 @@
           "icon": "shrine",
           "message": "Something large came down here. The feathers say a raptor. The silence says it won.",
           "rewards": [
-            {"type": "xp", "value": [12, 25]}
+            {
+              "type": "xp",
+              "value": [
+                12,
+                25
+              ]
+            }
           ],
           "weight": 3
         },
@@ -1169,13 +1681,31 @@
           "icon": "treasure",
           "message": "The fall tore open a dry rot cavity. Usable material inside.",
           "rewards": [
-            {"type": "scrap", "value": [3, 5]},
-            {"type": "gold", "value": [10, 20]}
+            {
+              "type": "scrap",
+              "value": [
+                3,
+                5
+              ]
+            },
+            {
+              "type": "gold",
+              "value": [
+                10,
+                20
+              ]
+            }
           ],
           "weight": 2
         }
       ],
-      "spell_schools": ["Earth", "Summoning", "Black", "Fire", "Enchantment"]
+      "spell_schools": [
+        "Earth",
+        "Summoning",
+        "Black",
+        "Fire",
+        "Enchantment"
+      ]
     },
     "meadow": {
       "events": [
@@ -1527,9 +2057,21 @@
           "icon": "treasure",
           "message": "Rich in resin and edible material. The builders disagree.",
           "rewards": [
-            {"type": "herbs", "value": 5},
-            {"type": "gold", "value": [15, 30]},
-            {"type": "damage", "value": 8}
+            {
+              "type": "herbs",
+              "value": 5
+            },
+            {
+              "type": "gold",
+              "value": [
+                15,
+                30
+              ]
+            },
+            {
+              "type": "damage",
+              "value": 8
+            }
           ],
           "weight": 3
         },
@@ -1538,8 +2080,17 @@
           "icon": "treasure",
           "message": "Buried where the trail bends, marked with a chipped stone.",
           "rewards": [
-            {"type": "gold", "value": [25, 50]},
-            {"type": "food", "value": 10}
+            {
+              "type": "gold",
+              "value": [
+                25,
+                50
+              ]
+            },
+            {
+              "type": "food",
+              "value": 10
+            }
           ],
           "weight": 3
         },
@@ -1548,8 +2099,14 @@
           "icon": "rest",
           "message": "Shared by everyone and fought over at dusk. Right now it is quiet.",
           "rewards": [
-            {"type": "heal", "value": 35},
-            {"type": "food", "value": 8}
+            {
+              "type": "heal",
+              "value": 35
+            },
+            {
+              "type": "food",
+              "value": 8
+            }
           ],
           "one_time": false,
           "weight": 2,
@@ -1560,8 +2117,21 @@
           "icon": "shrine",
           "message": "Marked with a boundary script no living scholar recognizes. You touch it anyway.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "awareness", "amount": 2, "combats_remaining": 1}},
-            {"type": "karma", "value": {"realm": "animal", "amount": 2}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "awareness",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "karma",
+              "value": {
+                "realm": "animal",
+                "amount": 2
+              }
+            }
           ],
           "weight": 3
         },
@@ -1570,11 +2140,24 @@
           "icon": "treasure",
           "message": "Packed into a ceramic vessel and buried with deliberate care.",
           "rewards": [
-            {"type": "gold", "value": [20, 45]},
-            {"type": "item_random", "value": [
-              "plain_copper_phurba", "plain_bronze_phurba", "earth_charm_common",
-              "summoning_charm_common", "health_potion", "mana_potion"
-            ]}
+            {
+              "type": "gold",
+              "value": [
+                20,
+                45
+              ]
+            },
+            {
+              "type": "item_random",
+              "value": [
+                "plain_copper_phurba",
+                "plain_bronze_phurba",
+                "earth_charm_common",
+                "summoning_charm_common",
+                "health_potion",
+                "mana_potion"
+              ]
+            }
           ],
           "weight": 2
         },
@@ -1583,14 +2166,37 @@
           "icon": "treasure",
           "message": "A khadga died here. Something useful remains.",
           "rewards": [
-            {"type": "item_random_scaled", "value": {
-              "tiers": {
-                "weak": ["bone_dagger", "bone_sword", "leather_vest"],
-                "medium": ["bronze_mace", "bronze_axe", "padded_armor", "copper_ring"],
-                "strong": ["iron_khanda", "bronze_shield", "silver_ring", "bone_amulet"]
+            {
+              "type": "item_random_scaled",
+              "value": {
+                "tiers": {
+                  "weak": [
+                    "bone_dagger",
+                    "bone_sword",
+                    "leather_vest"
+                  ],
+                  "medium": [
+                    "bronze_mace",
+                    "bronze_axe",
+                    "padded_armor",
+                    "copper_ring"
+                  ],
+                  "strong": [
+                    "iron_khanda",
+                    "bronze_shield",
+                    "silver_ring",
+                    "bone_amulet"
+                  ]
+                }
               }
-            }},
-            {"type": "scrap", "value": [2, 4]}
+            },
+            {
+              "type": "scrap",
+              "value": [
+                2,
+                4
+              ]
+            }
           ],
           "weight": 2
         },
@@ -1599,8 +2205,14 @@
           "icon": "shrine",
           "message": "An abandoned section of hive, thick with resin and old honey.",
           "rewards": [
-            {"type": "herbs", "value": 8},
-            {"type": "heal", "value": 15}
+            {
+              "type": "herbs",
+              "value": 8
+            },
+            {
+              "type": "heal",
+              "value": 15
+            }
           ],
           "weight": 3
         },
@@ -1609,7 +2221,13 @@
           "icon": "treasure",
           "message": "The silk is strong and worth something to the right buyer.",
           "rewards": [
-            {"type": "gold", "value": [30, 55]}
+            {
+              "type": "gold",
+              "value": [
+                30,
+                55
+              ]
+            }
           ],
           "weight": 2
         },
@@ -1618,7 +2236,14 @@
           "icon": "shrine",
           "message": "The stone has been reading the wind for a thousand years. Something of that patience transfers.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "finesse", "amount": 2, "combats_remaining": 1}}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "finesse",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            }
           ],
           "weight": 3
         },
@@ -1627,8 +2252,20 @@
           "icon": "shrine",
           "message": "Every pilgrim tradition in the meadow passes through here. They all leave something.",
           "rewards": [
-            {"type": "karma", "value": {"realm": "animal", "amount": 3}},
-            {"type": "xp", "value": [15, 30]}
+            {
+              "type": "karma",
+              "value": {
+                "realm": "animal",
+                "amount": 3
+              }
+            },
+            {
+              "type": "xp",
+              "value": [
+                15,
+                30
+              ]
+            }
           ],
           "weight": 2
         },
@@ -1637,8 +2274,18 @@
           "icon": "rest",
           "message": "A great mud depression, still warm. Restorative in a basic way.",
           "rewards": [
-            {"type": "heal", "value": 30},
-            {"type": "buff", "value": {"stat": "constitution", "amount": 2, "combats_remaining": 1}}
+            {
+              "type": "heal",
+              "value": 30
+            },
+            {
+              "type": "buff",
+              "value": {
+                "stat": "constitution",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            }
           ],
           "weight": 2
         },
@@ -1647,8 +2294,20 @@
           "icon": "treasure",
           "message": "The fire passed through fast and left useful debris behind.",
           "rewards": [
-            {"type": "gold", "value": [20, 35]},
-            {"type": "scrap", "value": [2, 3]}
+            {
+              "type": "gold",
+              "value": [
+                20,
+                35
+              ]
+            },
+            {
+              "type": "scrap",
+              "value": [
+                2,
+                3
+              ]
+            }
           ],
           "weight": 2
         },
@@ -1657,8 +2316,18 @@
           "icon": "shrine",
           "message": "Toppled, old, still radiating something. May be blessing. May be warning.",
           "rewards": [
-            {"type": "buff", "value": {"stat": "focus", "amount": 2, "combats_remaining": 1}},
-            {"type": "damage", "value": 12}
+            {
+              "type": "buff",
+              "value": {
+                "stat": "focus",
+                "amount": 2,
+                "combats_remaining": 1
+              }
+            },
+            {
+              "type": "damage",
+              "value": 12
+            }
           ],
           "weight": 2
         },
@@ -1667,7 +2336,10 @@
           "icon": "treasure",
           "message": "Rich vegetation, undisturbed. Whoever grazed here is gone for now.",
           "rewards": [
-            {"type": "food", "value": 18}
+            {
+              "type": "food",
+              "value": 18
+            }
           ],
           "weight": 3
         },
@@ -1676,13 +2348,31 @@
           "icon": "shrine",
           "message": "A lightning strike burned a circle in the grass. The soil underneath is charged.",
           "rewards": [
-            {"type": "xp", "value": [20, 40]},
-            {"type": "gold", "value": [15, 25]}
+            {
+              "type": "xp",
+              "value": [
+                20,
+                40
+              ]
+            },
+            {
+              "type": "gold",
+              "value": [
+                15,
+                25
+              ]
+            }
           ],
           "weight": 2
         }
       ],
-      "spell_schools": ["Earth", "Air", "Enchantment", "White", "Summoning"]
+      "spell_schools": [
+        "Earth",
+        "Air",
+        "Enchantment",
+        "White",
+        "Summoning"
+      ]
     }
   },
   "mob_pools": {
@@ -1822,7 +2512,9 @@
         "difficulty": "hard",
         "aggression": 0.8,
         "weight": 1,
-        "tags": ["flying"]
+        "tags": [
+          "flying"
+        ]
       },
       {
         "name": "Kapota Flock",
@@ -1894,7 +2586,9 @@
         "enemy_group": "animal_bhramara_cloud",
         "difficulty": "normal",
         "weight": 3,
-        "tags": ["flying"]
+        "tags": [
+          "flying"
+        ]
       },
       {
         "name": "Patanga Cloud",
@@ -1905,7 +2599,9 @@
         "enemy_group": "animal_patanga_flock",
         "difficulty": "normal",
         "weight": 2,
-        "tags": ["flying"]
+        "tags": [
+          "flying"
+        ]
       },
       {
         "name": "Shyena Lord",
@@ -1917,7 +2613,9 @@
         "difficulty": "hard",
         "aggression": 0.5,
         "weight": 1,
-        "tags": ["flying"]
+        "tags": [
+          "flying"
+        ]
       },
       {
         "name": "Uluka Omen",
@@ -1928,7 +2626,9 @@
         "enemy_group": "animal_uluka_watch",
         "difficulty": "hard",
         "weight": 1,
-        "tags": ["flying"]
+        "tags": [
+          "flying"
+        ]
       },
       {
         "name": "Kapota Messenger",
@@ -1952,15 +2652,39 @@
     ]
   },
   "density": {
-    "events_per_zone": [40, 64],
-    "pickups_per_zone": [220, 360],
-    "mobs_per_zone": [120, 180],
-    "guaranteed_shops": [1, 2],
-    "guaranteed_rest": [1, 2],
-    "guaranteed_guilds": [1, 1],
+    "events_per_zone": [
+      40,
+      64
+    ],
+    "pickups_per_zone": [
+      220,
+      360
+    ],
+    "mobs_per_zone": [
+      120,
+      180
+    ],
+    "guaranteed_shops": [
+      1,
+      2
+    ],
+    "guaranteed_rest": [
+      1,
+      2
+    ],
+    "guaranteed_guilds": [
+      1,
+      1
+    ],
     "guaranteed_simples": [
-      {"tier": 1, "count": 2},
-      {"tier": 2, "count": 1}
+      {
+        "tier": 1,
+        "count": 2
+      },
+      {
+        "tier": 2,
+        "count": 1
+      }
     ],
     "min_spacing": 3
   }

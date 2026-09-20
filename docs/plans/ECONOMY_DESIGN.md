@@ -241,10 +241,32 @@ organic shapes with a KNOWN COUNT AND SIZE, which is what "regular and
 logically placed, but not overwhelming" needs. Six to nine subregions per zone,
 each roughly 40×20 on a 192-wide map.
 
-**What a subregion is.** An id, a name from the pools that already exist, a
-biome, a centre, and a settlement quota. The biome is drawn from the zone's own
-palette, so a zone becomes "mostly pine slopes with two salt flats and a
-burned-over stretch" rather than an even scatter of everything it contains.
+**What a subregion is.** An id, a name, a biome, a centre. The biome is drawn
+from the zone's pool, so a zone becomes "mostly pine slopes with two salt flats
+and a burned-over stretch" rather than an even scatter of everything it
+contains.
+
+**A biome belongs to the WORLD, not to a zone.** Each map config carries a
+`biomes` library — a kind of place, defined once — and a zone names the ones it
+may grow in `biome_pool` (id to weight). Two zones that could both hold a
+frozen wood say so, rather than each carrying a copy of one.
+
+**And a biome decides more than its terrain.** Every field is read:
+
+| Field | What it decides |
+|---|---|
+| `terrain_weights` | what the ground is made of |
+| `cluster_min` / `cluster_max` | how large its patches are — a deep wood is one canopy, a reef is broken up |
+| `mob_weight` | how much of the zone's danger is placed here |
+| `event_weight` | how much of its interest — a mausoleum has things to find, a dust plain does not |
+| `name` | what the player is told they are standing in |
+
+`cluster_min` and `cluster_max` were already in all three map configs and read
+by nothing, alongside `road_chance`, which is deleted until the road network has
+a use for it. The fill seeds PATCHES now rather than rolling each tile alone,
+which is what those two numbers were always for: per-tile independence gives
+speckle, and three passes of smoothing turn speckle into porridge — which is
+why a terrain declared at under a tenth of a zone used to vanish entirely.
 
 **The seams take care of themselves.** The cellular-automata smoothing already
 runs across the whole zone, so it blurs subregion borders into each other —

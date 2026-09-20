@@ -93,6 +93,7 @@ func generate(config: Dictionary, seed_value: int = 0) -> Dictionary:
 	_mobs.clear()
 	_regions.clear()
 	_subregion_records.clear()
+	_biome_library = config.get("biomes", {})
 	_obj_counter = 0
 	_location_name_pools.clear()
 	# Pre-shuffle each name pool so placement order is random
@@ -193,14 +194,11 @@ func _generate_zone_terrain(zone: Dictionary) -> void:
 	#
 	# A zone that declares no `biomes` keeps the old behaviour exactly, which is
 	# why this could land without touching the three existing maps at once.
-	var biomes: Array = zone.get("biomes", [])
+	var biomes: Array = _resolve_biome_pool(zone)
 	var subregions: Array[Dictionary] = _cut_subregions(zone, row_start, row_end,
 		col_start, col_end, biomes)
 
-	for y in range(row_start, row_end + 1):
-		for x in range(col_start, col_end + 1):
-			var sub: Dictionary = _subregion_at(subregions, x, y)
-			_set_terrain(x, y, _pick_weighted(sub.weight_table))
+	_fill_in_patches(subregions, row_start, row_end, col_start, col_end)
 
 	# Cellular automata smoothing — 3 passes.
 	#
@@ -216,6 +214,89 @@ func _generate_zone_terrain(zone: Dictionary) -> void:
 		for y in range(row_start, row_end + 1):
 			for x in range(col_start, col_end + 1):
 				_terrain[y * _width + x] = new_terrain[y * _width + x]
+
+
+## How willing this tile's subregion is to hold the thing being placed, as a
+## fraction of the most willing biome in the library. 1.0 where nothing says.
+func _placement_bias(pos: Vector2i, field: String) -> float:
+	var best: Dictionary = {}
+	var best_dist: int = 1 << 30
+	for sub in _subregion_records:
+		var seed_pos: Vector2i = sub.get("seed", Vector2i.ZERO)
+		var dx: int = seed_pos.x - pos.x
+		var dy: int = seed_pos.y - pos.y
+		var dist: int = dx * dx + dy * dy
+		if dist < best_dist:
+			best_dist = dist
+			best = sub
+	if best.is_empty():
+		return 1.0
+	var mine: float = float(best.get(field, 1.0))
+	var ceiling := 1.0
+	for biome_id in _biome_library:
+		ceiling = maxf(ceiling, float(_biome_library[biome_id].get(field, 1.0)))
+	return clampf(mine / maxf(0.01, ceiling), 0.05, 1.0)
+
+
+## A zone's biome pool, resolved against the world's library.
+##
+## The pool is `{id: weight}` and the library holds the definitions, so two
+## zones that could both hold a frozen wood say so rather than each carrying a
+## copy of one.
+func _resolve_biome_pool(zone: Dictionary) -> Array:
+	var pool: Dictionary = zone.get("biome_pool", {})
+	var out: Array = []
+	for biome_id in pool:
+		var definition: Dictionary = _biome_library.get(biome_id, {})
+		if definition.is_empty():
+			push_warning("MapGenerator: zone '%s' names biome '%s', which the "
+				% [str(zone.get("id", "")), str(biome_id)]
+				+ "world's library does not define")
+			continue
+		var entry: Dictionary = definition.duplicate(true)
+		entry["id"] = str(biome_id)
+		entry["weight"] = int(pool[biome_id])
+		out.append(entry)
+	return out
+
+
+## Fill the zone by seeding PATCHES rather than rolling every tile on its own.
+##
+## Per-tile independence gives speckle, and three passes of smoothing turn
+## speckle into porridge — which is why a terrain declared at under a tenth of
+## a zone used to vanish entirely. A blob of `cluster_min`..`cluster_max` tiles
+## keeps its shape through smoothing, and lets a biome say how large its
+## features are: a deep wood is one canopy, a reef is broken up.
+func _fill_in_patches(subregions: Array[Dictionary], row_start: int, row_end: int,
+		col_start: int, col_end: int) -> void:
+	var unfilled: Dictionary = {}
+	for y in range(row_start, row_end + 1):
+		for x in range(col_start, col_end + 1):
+			unfilled[Vector2i(x, y)] = true
+
+	while not unfilled.is_empty():
+		var start: Vector2i = unfilled.keys()[randi() % unfilled.size()]
+		var sub: Dictionary = _subregion_at(subregions, start.x, start.y)
+		var terrain: int = _pick_weighted(sub.weight_table)
+		var size: int = randi_range(
+			maxi(1, int(sub.get("cluster_min", 4))),
+			maxi(1, int(sub.get("cluster_max", 9))))
+
+		# Grow outward from the seed, taking only tiles still unclaimed, so the
+		# patch is contiguous and the fill terminates.
+		var frontier: Array[Vector2i] = [start]
+		var grown := 0
+		while grown < size and not frontier.is_empty():
+			var at: Vector2i = frontier.pop_front()
+			if not unfilled.has(at):
+				continue
+			unfilled.erase(at)
+			_set_terrain(at.x, at.y, terrain)
+			grown += 1
+			for step in [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]:
+				var next: Vector2i = at + step
+				if unfilled.has(next):
+					frontier.append(next)
 
 
 ## Cut a zone into subregions and give each one a biome.
@@ -241,6 +322,8 @@ func _cut_subregions(zone: Dictionary, row_start: int, row_end: int,
 			"seed": Vector2i((col_start + col_end) / 2, (row_start + row_end) / 2),
 			"weight_table": _build_weight_table(fallback),
 			"rect": [col_start, row_start, col_end, row_end],
+			"cluster_min": 4, "cluster_max": 9,
+			"mob_weight": 1.0, "event_weight": 1.0,
 		}
 		var single: Array[Dictionary] = [whole]
 		_record_subregions(single)
@@ -289,7 +372,10 @@ func _cut_subregions(zone: Dictionary, row_start: int, row_end: int,
 				"weight_table": _build_weight_table(
 					biome.get("terrain_weights", fallback)),
 				"rect": [x0, y0, x1, y1],
-				"settlements": biome.get("settlements", {}),
+				"cluster_min": int(biome.get("cluster_min", 4)),
+				"cluster_max": int(biome.get("cluster_max", 9)),
+				"mob_weight": float(biome.get("mob_weight", 1.0)),
+				"event_weight": float(biome.get("event_weight", 1.0)),
 			})
 			index += 1
 	_record_subregions(out)
@@ -342,12 +428,18 @@ func _record_subregions(subregions: Array[Dictionary]) -> void:
 			"name": sub.name if sub.has("name") else "",
 			"seed": sub.seed,
 			"rect": sub.rect,
-			"settlements": sub.get("settlements", {}),
+			"mob_weight": sub.get("mob_weight", 1.0),
+			"event_weight": sub.get("event_weight", 1.0),
 		})
 
 
 ## Subregions of every zone, in generation order.
 var _subregion_records: Array[Dictionary] = []
+
+## The world's biome library, keyed by id: a kind of place defined once and
+## drawn on by any region that could hold it. Zones name what they may grow in
+## `biome_pool`.
+var _biome_library: Dictionary = {}
 
 
 ## Fill a zone with mountains and carve passes through it.
@@ -950,7 +1042,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 		if event_pool.is_empty():
 			break
 		var template = _pick_from_pool(event_pool, event_weights)
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end, "event_weight")
 		if pos != Vector2i(-1, -1):
 			_place_event_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -961,7 +1053,7 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 		if pickup_pool.is_empty():
 			break
 		var template = _pick_from_pool(pickup_pool, pickup_weights)
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end, "event_weight")
 		if pos != Vector2i(-1, -1):
 			_place_pickup_object(zone_id, template, pos)
 			placed_positions.append(pos)
@@ -1081,7 +1173,8 @@ func _place_zone_mobs(zone: Dictionary, pool: Array, density: Dictionary) -> voi
 	var placement_failures = 0
 	for i in range(num_mobs):
 		var template = _pick_from_pool(pool, mob_weights)
-		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end)
+		var pos = _find_placement_tile(row_start, row_end, min_spacing,
+			placed_positions, col_start, col_end, "mob_weight")
 		if pos == Vector2i(-1, -1):
 			placement_failures += 1
 			if placement_failures >= 5:
@@ -1170,8 +1263,16 @@ func _generate_patrol_route(start: Vector2i, row_min: int, row_max: int) -> Arra
 ## Must be walkable, not occupied, and min_spacing from existing placements.
 ## Uses reservoir sampling so all valid tiles have equal probability (no terrain bias).
 ## col_start/col_end are optional — if omitted, defaults to full map width.
+## A tile to put something on, optionally weighted by what kind of place it is.
+##
+## `bias_field` names a per-biome number — "mob_weight" or "event_weight" — and
+## a candidate tile is then accepted in proportion to its subregion's value for
+## it. So a deep wood draws more danger than a clearing and a mausoleum draws
+## more interest than a dust plain, which is what those numbers are FOR: they
+## were the reason to give a biome variables beyond its terrain.
 func _find_placement_tile(row_start: int, row_end: int, min_spacing: int,
-		placed: Array[Vector2i], col_start: int = 0, col_end: int = -1) -> Vector2i:
+		placed: Array[Vector2i], col_start: int = 0, col_end: int = -1,
+		bias_field: String = "") -> Vector2i:
 	if col_end < 0:
 		col_end = _width - 1
 	var best_pos = Vector2i(-1, -1)
@@ -1187,6 +1288,10 @@ func _find_placement_tile(row_start: int, row_end: int, min_spacing: int,
 		if terrain in IMPASSABLE:
 			continue
 		if pos in _occupied:
+			continue
+
+		# And, where a bias is asked for, the kind of place this is gets a say.
+		if bias_field != "" and randf() > _placement_bias(pos, bias_field):
 			continue
 
 		# Check spacing from other placed objects
