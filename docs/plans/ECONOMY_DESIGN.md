@@ -557,6 +557,178 @@ memo, and it should be chosen rather than discovered three systems later.
 
 ---
 
+## Who you meet, not just how many
+
+**A biome decides how many mobs stand here. It does not decide which.** The two
+lines are adjacent in `_place_zone_mobs`:
+
+```gdscript
+var template = _pick_from_pool(pool, mob_weights)        # WHICH — zone pool, biome-blind
+var pos = _find_placement_tile(..., "mob_weight")        # WHERE — biome-aware
+```
+
+The template is drawn *before* the position is known, so it cannot consult the
+subregion it is about to stand in. A Swamp Wraith is exactly as likely in the
+reed flats as in the deep swamp, and the mob record even writes
+`"region": zone_id` — the zone, never the subregion.
+
+**And the friendly NPCs are already there, placed just as badly.** Every mob
+pool already carries `attitude: 0` entries — Wandering Peddler, Pearl Merchant,
+Forest Merchant, Plains Merchant, Wandering Hermit, Forest Healer, Bone
+Peddler, Grave Robber Gang. The caravan layer this memo proposes is not a new
+spawn system; it is *these*, given a road and a reason. Today they scatter
+uniformly, so a peddler is as likely to be met chest-deep in the fetid swamps
+as on a road.
+
+**The reason one number cannot fix it.** `mob_weight` is a single scalar
+meaning "how much of the zone's danger goes here", and peddlers and wraiths
+want *opposite* answers from it. The Old Roads sit at `mob_weight: 0.7` — the
+safest biome in the charnel grounds, and therefore the one with the *fewest*
+merchants, when it is the one place merchants would obviously be. The field is
+doing one job for two populations that disagree.
+
+So: **tag the pool entries and let the biome bias by tag.**
+
+```jsonc
+// on a mob pool entry — additive, anything untagged behaves as it does today
+{ "name": "Wandering Peddler", "attitude": 0, "tags": ["traveller"], ... }
+{ "name": "Swamp Wraith",      "attitude": 1, "tags": ["hostile", "undead"], ... }
+
+// on a biome — a multiplier on the zone pool's weights, 1.0 where unsaid
+"old_roads":  { "mob_bias": { "traveller": 2.5, "hostile": 0.5 } }
+"deep_swamp": { "mob_bias": { "undead": 1.6, "traveller": 0.1 } }
+```
+
+Six tags carry all three realms: `hostile`, `traveller`, `undead`, `demon`,
+`beast`, `aquatic`. A biome that declares nothing behaves exactly as it does
+now, which is what lets this land one realm at a time.
+
+**The generator change is an order swap**, not a rewrite: find the tile first,
+resolve its subregion by the same nearest-seed rule `_placement_bias` already
+uses, then build the weight table with that subregion's bias applied. While the
+subregion is in hand, write it into the mob record beside `region` — the
+battlefield generator samples the world map, so a fight that knows its
+subregion can look like the place it happens in.
+
+This is also the honest answer to where caravans come from. A caravan is a
+`traveller`-tagged mob that starts at a settlement, carries that settlement's
+prices, and walks the road network — and two of the three pieces already exist.
+
+---
+
+## The thirty-two biomes, and what they should declare
+
+Each of the eight zones already carries four biomes from `09e6be8`/`7b41efd`,
+with name, terrain, cluster size, mob weight and event weight. What none of
+them carry is the economic and settlement half proposed above. Below is a first
+pass at those fields — `produces` and `wants` in trade goods, `wealth` and
+`habitability` as multipliers, `special` where one belongs.
+
+`produces` is the **bonus on top of** the terrain-derived sum, not a
+replacement: the deep wood is 60% forest and would equilibrate high on timber
+with no declaration at all. The numbers below say what the terrain cannot.
+
+### Hell — the cold hells
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Snowfields | hides 2 | grain 1.7, timber 1.6 | 0.5 | 0.3 | nothing grows; everything is carried in |
+| Black Ice | salt 2, fish 1 | grain 1.8 | 0.6 | 0.1 | **bitter salt** — `traveller` 0.2 |
+| Frozen Wood | timber 3, hides 2, herbs 1 | grain 1.4 | 0.9 | **0.7** | the one liveable place — **capital** |
+| Broken Ground | ore 2, salvage 2 | grain 1.5, timber 1.3 | 0.8 | 0.5 | |
+
+### Hell — the fire hells
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Lava Flats | — | everything 1.8 | 0.3 | **0.0** | `demon` 1.5, `traveller` 0.0 |
+| Ash Desert | salt 3 | grain 1.9, fish 1.7 | 0.4 | 0.2 | |
+| Cinder Hills | ore 3, salvage 1 | grain 1.6 | 1.1 | **0.6** | **ash-iron** — **capital**, the forge |
+| Burned Ruins | salvage 3, ore 1 | grain 1.5 | 0.8 | 0.4 | event weight already 1.7 |
+
+### Hungry Ghost — the fetid swamps
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Deep Swamp | herbs 3, fish 1 | grain 1.8, salt 1.6 | 0.5 | 0.2 | **bog amber** — `undead` 1.6, `traveller` 0.1 |
+| Drowned Wood | timber 2, herbs 2 | grain 1.5 | 0.6 | 0.4 | |
+| Reed Flats | fish 2, grain 1, herbs 1 | salt 1.4, ore 1.5 | 0.9 | **1.0** | the dry ground — **capital** |
+| Sour Hills | ore 1, herbs 1, timber 1 | grain 1.4 | 0.6 | 0.6 | |
+
+### Hungry Ghost — the charnel grounds
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Bone Fields | salvage 3 | grain 1.6 | 0.5 | 0.2 | |
+| Pyres | salvage 1 | grain 1.6, timber 1.5 | 0.7 | 0.3 | **grave incense** — `undead` 1.5 |
+| Grave Hills | ore 1, salvage 2 | grain 1.5 | 0.6 | 0.5 | |
+| Old Roads | — | mildly, everything | **1.2** | **1.0** | **capital** — `traveller` 2.5, `hostile` 0.5 |
+
+### Hungry Ghost — the dry graveyards
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Dust Plain | grain 1, salvage 1 | fish 1.8, timber 1.7 | 0.4 | 0.4 | |
+| Tomb Hills | ore 2, salvage 2 | grain 1.5 | 0.6 | 0.5 | |
+| Dry Wash | salt 3 | grain 1.7, timber 1.6 | 0.5 | 0.4 | |
+| Mausolea | salvage 3 | grain 1.6 | 0.9 | 0.3 | event weight 1.8; **wants a special, and a name from you** |
+
+**This zone should declare zero towns**, and that is the argument for authored
+capitals rather than rolled ones. The dry graveyards are where nobody lives —
+that should be a decision the map config states, not an outcome a die
+occasionally produces.
+
+### Animal — the ocean
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Open Water | fish 3 | everything 1.6 | 0.6 | **0.0** | `aquatic` 1.6 |
+| Reef Flats | fish 2, salt 2 | grain 1.6, timber 1.7 | 1.1 | 0.6 | **naga pearl** |
+| Rocky Islets | ore 2, fish 1 | grain 1.7, timber 1.5 | 0.7 | 0.5 | |
+| Shallows | fish 2, salt 2 | grain 1.5, timber 1.6 | 1.0 | **1.1** | the port — **capital** |
+
+### Animal — the forest
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Deep Wood | timber 3, herbs 1, hides 1 | grain 1.5, salt 1.4 | 0.7 | 0.4 | `beast` 1.4, `traveller` 0.4 |
+| Clearings | grain 2, hides 2, timber 1 | ore 1.6, salt 1.4 | 1.0 | **1.3** | where the villages go |
+| Hill Wood | timber 2, ore 2, herbs 1 | grain 1.3 | 0.9 | 0.7 | |
+| Fen | herbs 3, fish 1 | grain 1.6, ore 1.5 | 0.6 | 0.3 | |
+
+### Animal — the meadow
+
+| Biome | Produces | Wants | Wealth | Hab. | Notes |
+|---|---|---|---|---|---|
+| Open Meadow | grain 3, hides 2 | ore 1.6, timber 1.3 | 1.0 | 1.2 | |
+| Tall Grass | grain 2, herbs 1, hides 1 | ore 1.5, salt 1.3 | 0.8 | 0.9 | |
+| Stone Meadow | ore 3, hides 1 | grain 1.4 | 0.9 | 0.7 | candidate home for **garuda plume** — see below |
+| Watering Holes | fish 2, hides 2, grain 1 | ore 1.5, salt 1.4 | 1.1 | **1.4** | **capital** |
+
+### One thing the specials chart gets wrong
+
+**Garuda plume is assigned to the ridge, and the ridge cannot produce
+anything.** `ridge` is `type: mountain_wall` — a border. Borders have no
+`biome_pool`, get no subregions, and are skipped outright by both the object
+and mob placement loops. Under the scheme above, where `special` is a biome
+field, the plume has nowhere to come from.
+
+Two ways out, and the second is better:
+
+1. Move the plume to `stone_meadow` or `rocky_islets` — true enough, since both
+   are the high stony ground, and free.
+2. **Let a border carry a `special` of its own.** A pass is exactly where you
+   find the thing that is only found in one place, and it gives borders an
+   economic reason to exist beyond friction: the crossing everyone must use is
+   also the only place the plume is traded. It also answers what a border
+   *contains*, which is a question the border section above leaves open.
+
+Taking the plume off a zone and putting it on a border is a one-line data
+change either way — the question is whether a border is scenery with gaps in it
+or a place.
+
+---
+
 ## Guard rails I would build in from the first commit
 
 - **Stock depletion, always on.** The market answers back. This is the one that
@@ -609,3 +781,11 @@ memo, and it should be chosen rather than discovered three systems later.
    properties of a town, the rich town is where progression happens and the
    route to it is the critical path. That gives the map a spine and it
    sharpens question 1 rather than answering it.
+7. **Is a border scenery or a place?** If it can carry a `special` and a toll,
+   the garuda plume has somewhere to come from and the crossings become
+   economic. If it cannot, the plume moves to the stone meadow and borders stay
+   walls with gaps in them.
+8. **The Mausolea want a special and neither of us has named it.** It is the
+   richest biome in the dry graveyards, it is 50% ruins, and the zone around it
+   should have no town — which makes whatever comes out of it worth carrying a
+   long way. That is your register, not mine.
