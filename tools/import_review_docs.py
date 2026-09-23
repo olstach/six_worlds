@@ -156,51 +156,88 @@ def main():
 
     loaded, changes, misses = {}, [], []
 
+    # Gather every anchor first. The same record can appear in more than one
+    # document — a zone workbook repeats births, backgrounds and companions that
+    # ANIMAL_RACES.md and ANIMAL_COMPANIONS.md also carry. Applying them file by
+    # file would let an untouched copy in a later file undo an edit made in an
+    # earlier one, so each path is decided once, from all of its copies.
+    copies = {}
     for md in sorted(glob.glob(os.path.join(REVIEW, "*.md"))):
         for key, text in ANCHOR.findall(open(md, encoding="utf-8").read()):
-            parts = [p.strip() for p in key.split("|")]
-            if len(parts) != 3:
-                misses.append(f"{os.path.basename(md)}: malformed anchor '{key}'")
-                continue
-            source, record_id, field = parts
-            rel = FILE_FOR.get(source)
-            if rel is None:
-                misses.append(f"unknown source file '{source}'")
-                continue
-            if rel not in loaded:
-                loaded[rel] = json.load(open(os.path.join(ROOT, rel), encoding="utf-8"))
-            records = container(loaded[rel], source)
-            if record_id not in records:
-                misses.append(f"{source}: no record '{record_id}'")
-                continue
-            owner, k = resolve(records[record_id], field)
-            if owner is None:
-                misses.append(f"{source}:{record_id}: cannot resolve '{field}'")
-                continue
-            new = text.strip()
+            copies.setdefault(key, []).append((os.path.basename(md), text.strip()))
 
-            # build_weights round-trips as a comma list, strongest first.
-            # Rewriting it only when the list actually changed keeps existing
-            # weightings intact — re-importing an untouched document is a no-op.
-            if k == "build_weights" and isinstance(owner, dict):
+    conflicts = []
+    for key, found in copies.items():
+        parts = [p.strip() for p in key.split("|")]
+        if len(parts) != 3:
+            misses.append(f"{found[0][0]}: malformed anchor '{key}'")
+            continue
+        source, record_id, field = parts
+        rel = FILE_FOR.get(source)
+        if rel is None:
+            misses.append(f"unknown source file '{source}'")
+            continue
+        if rel not in loaded:
+            loaded[rel] = json.load(open(os.path.join(ROOT, rel), encoding="utf-8"))
+        records = container(loaded[rel], source)
+        if record_id not in records:
+            misses.append(f"{source}: no record '{record_id}'")
+            continue
+        owner, k = resolve(records[record_id], field)
+        if owner is None:
+            misses.append(f"{source}:{record_id}: cannot resolve '{field}'")
+            continue
+
+        # build_weights round-trips as a comma list, strongest first.
+        # Rewriting it only when the list actually changed keeps existing
+        # weightings intact — re-importing an untouched document is a no-op.
+        if k == "build_weights" and isinstance(owner, dict):
+            current = owner.get(k, {})
+            now = [x for x, _ in sorted(current.items(), key=lambda kv: -kv[1])]
+            edits = {}
+            for md, text in found:
                 names = [n.strip().rstrip(".").strip().lower().replace(" ", "_")
-                         for n in new.split(",") if n.strip()]
-                current = owner.get(k, {})
-                if names == [x for x, _ in sorted(current.items(), key=lambda kv: -kv[1])]:
-                    continue
+                         for n in text.split(",") if n.strip()]
+                if names != now:
+                    edits.setdefault(tuple(names), []).append(md)
+            if len(edits) > 1:
+                conflicts.append((key, edits))
+                continue
+            if edits:
+                names = list(next(iter(edits)))
                 weights = [5, 4, 3, 2]
                 rebuilt = {n: (weights[i] if i < len(weights) else 2)
                            for i, n in enumerate(names)}
                 changes.append((rel, record_id, field, str(current), str(rebuilt)))
                 if args.write:
                     owner[k] = rebuilt
-                continue
+            continue
 
-            old = str(owner[k] if isinstance(owner, list) else owner.get(k, ""))
-            if new != old.strip():
-                changes.append((rel, record_id, field, old, new))
-                if args.write:
-                    owner[k] = new
+        old = str(owner[k] if isinstance(owner, list) else owner.get(k, ""))
+        # Only the copies that differ from the data are edits. One edited copy
+        # wins over any number of untouched ones; two different edits of the
+        # same text are a conflict and nothing is written.
+        edits = {}
+        for md, text in found:
+            if text != old.strip():
+                edits.setdefault(text, []).append(md)
+        if len(edits) > 1:
+            conflicts.append((key, edits))
+            continue
+        if edits:
+            new = next(iter(edits))
+            changes.append((rel, record_id, field, old, new))
+            if args.write:
+                owner[k] = new
+
+    if conflicts:
+        print(f"{len(conflicts)} anchors were edited differently in different documents."
+              " Make the copies agree and run again — nothing has been written.\n")
+        for key, edits in conflicts:
+            print(f"    {key}")
+            for text, mds in edits.items():
+                print(f"      {', '.join(mds)}: {str(text)[:90]}")
+        return 1
 
     if args.write and changes:
         for rel in {c[0] for c in changes}:
