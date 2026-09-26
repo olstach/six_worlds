@@ -47,7 +47,14 @@ func _load_traits() -> void:
 		file.close()
 		return
 	file.close()
-	_traits = json.get_data()
+	# Skip "_comment*" keys: they are notes for humans (plain strings), not
+	# traits. Left in, they crash any loop that expects every entry to be a
+	# trait dictionary — which is how New Game broke in get_inborn_traits().
+	_traits = {}
+	var data: Dictionary = json.get_data()
+	for trait_id in data:
+		if not str(trait_id).begins_with("_"):
+			_traits[trait_id] = data[trait_id]
 
 
 # ============================================

@@ -120,11 +120,13 @@ static func generate(sample: Array, size: Vector2i, rng_seed: int = 0) -> Dictio
 
 	# Deployment columns must stay walkable, or a fight can begin with nobody
 	# able to stand anywhere.
-	var deploy_lo: int = size.x / 3
-	var deploy_hi: int = size.x * 2 / 3
-	var in_deploy := func(x: int) -> bool:
-		return (x >= deploy_lo and x < deploy_lo + 4) \
-			or (x >= deploy_hi - 4 and x < deploy_hi)
+	# Same slice CombatGrid deploys into (CombatGrid.deploy_bounds).
+	var db: Dictionary = CombatGrid.deploy_bounds(size)
+	var in_deploy := func(x: int, y: int) -> bool:
+		if y < int(db.y0) or y >= int(db.y1):
+			return false
+		return (x >= int(db.player_x0) and x < int(db.player_x1)) \
+			or (x >= int(db.enemy_x0) and x < int(db.enemy_x1))
 
 	# Obstacle density is per block, so a field of forest is not thinner per
 	# tile than a single stand of trees.
@@ -143,7 +145,7 @@ static func generate(sample: Array, size: Vector2i, rng_seed: int = 0) -> Dictio
 			var tile_name: String = str(battle.get("tile", "floor"))
 			var tile_type: int = _tile_type_from(tile_name)
 			# Never wall off or drop a hole under a deployment column.
-			if in_deploy.call(x) and tile_type in [
+			if in_deploy.call(x, y) and tile_type in [
 					CombatGrid.TileType.WALL, CombatGrid.TileType.PIT]:
 				tile_type = CombatGrid.TileType.DIFFICULT
 			if tile_type != CombatGrid.TileType.FLOOR:
@@ -230,7 +232,7 @@ static func _free_spot(x0: int, x1: int, y0: int, y1: int, placed: Dictionary,
 	for _try in range(24):
 		var x: int = randi_range(x0, maxi(x0, x1 - 1))
 		var y: int = randi_range(y0, maxi(y0, y1 - 1))
-		if in_deploy.call(x):
+		if in_deploy.call(x, y):
 			continue
 		var at := Vector2i(x, y)
 		if placed.has(at):

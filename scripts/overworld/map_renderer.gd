@@ -111,7 +111,8 @@ func _process(delta: float) -> void:
 			queue_redraw()
 
 	# Continuous arrow key movement: queue next tile when party stops moving
-	if not MapManager._is_moving and not MapManager._is_paused:
+	# (skipped while the cheat console is open — the arrows are for its text box)
+	if not MapManager._is_moving and not MapManager._is_paused and not CheatConsole.is_open():
 		var dir := Vector2i.ZERO
 		if Input.is_key_pressed(KEY_UP):
 			dir = Vector2i(0, -1)

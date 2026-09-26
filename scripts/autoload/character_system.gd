@@ -624,6 +624,9 @@ func create_player_character(char_name: String, birth: String, background: Strin
 	# Apply background starting skills (will expand with background data)
 	apply_background_skills(character, background)
 
+	# Starting spells that follow from the skills just granted
+	grant_skill_starting_spells(character)
+
 	# Apply starting equipment from background (adds to inventory and equips)
 	apply_background_equipment(character, background)
 
@@ -766,16 +769,7 @@ func apply_birth_modifiers(character: Dictionary, birth: String) -> void:
 func apply_background_skills(character: Dictionary, background: String) -> void:
 	var data = get_background_data(background)
 	if data.is_empty():
-		# No background data in JSON yet — use fallback starting skills/spells
-		# TODO: Replace with proper background data files per background
-		set_skill_level(character, "swords", 1)
-		set_skill_level(character, "learning", 1)
-		set_skill_level(character, "fire_magic", 2)
-		set_skill_level(character, "sorcery", 2)
-		set_skill_level(character, "white_magic", 1)
-		set_skill_level(character, "black_magic", 1)
-		learn_spell(character, "firebolt")
-		learn_spell(character, "lesser_heal")
+		push_error("CharacterSystem: unknown background '%s' — no skills applied" % background)
 		return
 
 	# Apply small background attribute tweaks on top of race modifiers
@@ -798,34 +792,86 @@ func apply_background_skills(character: Dictionary, background: String) -> void:
 	# a String — so the 10 spec-shaped entries in races.json raised a type error
 	# that aborted the whole function, and seven backgrounds granted no spells
 	# at all. Rolled specs go through _pick_random_spell() now.
+	# No entry means no background spells. (This used to hand out firebolt and
+	# lesser_heal to the 112 backgrounds without a list — spells nobody could
+	# cast without the skills. Spells from skills come from
+	# grant_skill_starting_spells() instead.)
 	var starting_spells = data.get("starting_spells", [])
-	if starting_spells.is_empty():
-		learn_spell(character, "firebolt")
-		learn_spell(character, "lesser_heal")
-	else:
-		for entry in starting_spells:
-			if entry is String:
-				learn_spell(character, entry)
-				continue
-			if not entry is Dictionary:
-				push_error("CharacterSystem: background '%s' has an unreadable "
-					% background + "starting_spells entry: %s" % [entry])
-				continue
-			var schools: Array = []
-			if entry.has("school"):
-				schools = [entry["school"]]
-			elif entry.has("schools"):
-				schools = entry["schools"]
-			else:
-				push_error("CharacterSystem: background '%s' starting_spells "
-					% background + "spec names no school: %s" % [entry])
-				continue
-			var spell_level := int(entry.get("level", 1))
-			for _i in range(int(entry.get("count", 1))):
-				var rolled := _pick_random_spell(
-					schools, spell_level, character.get("known_spells", []))
-				if rolled != "":
-					learn_spell(character, rolled)
+	for entry in starting_spells:
+		if entry is String:
+			learn_spell(character, entry)
+			continue
+		if not entry is Dictionary:
+			push_error("CharacterSystem: background '%s' has an unreadable "
+				% background + "starting_spells entry: %s" % [entry])
+			continue
+		var schools: Array = []
+		if entry.has("school"):
+			schools = [entry["school"]]
+		elif entry.has("schools"):
+			schools = entry["schools"]
+		else:
+			push_error("CharacterSystem: background '%s' starting_spells "
+				% background + "spec names no school: %s" % [entry])
+			continue
+		var spell_level := int(entry.get("level", 1))
+		for _i in range(int(entry.get("count", 1))):
+			var rolled := _pick_random_spell(
+				schools, spell_level, character.get("known_spells", []))
+			if rolled != "":
+				learn_spell(character, rolled)
+
+
+## Magic skill id for each spell school (lower-case school name -> skill id)
+const SCHOOL_SKILLS: Dictionary = {
+	"space": "space_magic", "air": "air_magic", "fire": "fire_magic",
+	"water": "water_magic", "earth": "earth_magic", "white": "white_magic",
+	"black": "black_magic", "sorcery": "sorcery", "enchantment": "enchantment",
+	"summoning": "summoning",
+}
+
+
+## Give a new character one castable spell for each magic school they have
+## skill in but no spell for. A character with Fire Magic 1 starts with one
+## circle-1 Fire spell; a character with no magic skills starts with none.
+## Spells granted by the birth or background (e.g. a Sorcerer's list) count,
+## so this only fills schools those left empty.
+func grant_skill_starting_spells(character: Dictionary) -> void:
+	var skills: Dictionary = character.get("skills", {})
+	for school in SCHOOL_SKILLS:
+		if int(skills.get(SCHOOL_SKILLS[school], 0)) < 1:
+			continue
+		if _knows_spell_of_school(character, school):
+			continue
+		var spell_id := _pick_random_spell([school], 1, character.get("known_spells", []))
+		if spell_id != "":
+			learn_spell(character, spell_id)
+
+
+## True if the character's skills let them cast this spell: at least one of
+## the spell's schools at a skill level >= the spell's circle ("level").
+## The one copy of this rule — combat casting, spell shops and guilds all ask
+## here, so "can learn" and "can cast" can never disagree.
+func meets_spell_skill(character: Dictionary, spell: Dictionary) -> bool:
+	var required_level: int = int(spell.get("level", 1))
+	var skills: Dictionary = character.get("skills", {})
+	for school in spell.get("schools", []):
+		var school_lower := str(school).to_lower()
+		var skill_id: String = SCHOOL_SKILLS.get(school_lower, school_lower)
+		if int(skills.get(skill_id, 0)) >= required_level:
+			return true
+	return false
+
+
+## True if the character already knows any spell tagged with this school.
+func _knows_spell_of_school(character: Dictionary, school: String) -> bool:
+	for spell_id in character.get("known_spells", []):
+		var spell: Dictionary = _spell_database.get(spell_id, {})
+		for s in spell.get("schools", []):
+			if str(s).to_lower() == school:
+				return true
+	return false
+
 
 ## Apply starting equipment from the background definition to the player character.
 ## Items are added to the global inventory and immediately equipped.

@@ -135,6 +135,15 @@ func _ready() -> void:
 	# Clear the combat return flag
 	GameState.returning_from_combat = false
 
+	# The pause flag lives in MapManager (an autoload), so it survives scene
+	# changes: a pause set before a load, a New Game, a rebirth or a portal
+	# would otherwise carry into this fresh map. Arrow-key movement is skipped
+	# while paused (a mouse click happened to clear it), which is why the
+	# keyboard seemed dead until the first click. Nothing is open yet unless
+	# an event result is showing, so settle it here.
+	if not _event_open:
+		MapManager.resume_movement()
+
 	# Connect MapManager signals for game loop triggers
 	MapManager.event_triggered.connect(_on_event_triggered)
 	MapManager.mob_combat_triggered.connect(_on_mob_combat_triggered)
@@ -230,7 +239,17 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	# Update camera to follow party smoothly
-	_update_camera()
+	_update_camera(delta)
+
+	# Holding Space keeps waiting, one step per WAIT_REPEAT_INTERVAL
+	if _wait_held:
+		if Input.is_key_pressed(KEY_SPACE) and _can_wait():
+			_wait_repeat_timer -= delta
+			if _wait_repeat_timer <= 0.0:
+				_wait_repeat_timer = WAIT_REPEAT_INTERVAL
+				_do_wait_step()
+		else:
+			_wait_held = false
 
 	# Fade toast
 	if _toast_timer > 0:
@@ -247,6 +266,44 @@ func _process(delta: float) -> void:
 			_abandon_confirm = false
 			if _abandon_btn:
 				_abandon_btn.text = "Abandon Run"
+
+
+## Waiting with Space: the first step on press, then one step every
+## WAIT_REPEAT_INTERVAL while the key stays held (after a short delay, so a
+## single tap never counts twice).
+const WAIT_HOLD_DELAY := 0.35
+const WAIT_REPEAT_INTERVAL := 0.15
+var _wait_held: bool = false
+var _wait_repeat_timer: float = 0.0
+
+
+func _can_wait() -> bool:
+	return not (_event_open or _shop_open or _quest_board_open
+		or _main_menu_open or _char_sheet_open or _rest_open
+		or GameState.is_party_wiped)
+
+
+## Wait action: advance time + tick mobs + tick statuses
+func _do_wait_step() -> void:
+	GameState.advance_time(GameState.HOURS_PER_STEP)
+	MapManager.tick_mobs()
+	_tick_overworld_statuses()
+	_update_time_label()
+	_check_party_death()
+
+
+## Middle-mouse drag pans the camera. Uses _input (not _unhandled_input) so the
+## drag keeps working when the mouse passes over a HUD panel mid-drag.
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE:
+		if event.pressed and _can_wait():
+			_cam_dragging = true
+			_cam_drag_start_mouse = event.position
+			_cam_drag_start_offset = _cam_offset
+		elif not event.pressed:
+			_cam_dragging = false
+	elif event is InputEventMouseMotion and _cam_dragging:
+		_cam_offset = _cam_drag_start_offset + (_cam_drag_start_mouse - event.position)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -281,13 +338,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				_toggle_log_panel()
 				get_viewport().set_input_as_handled()
 			KEY_SPACE:
-				if _event_open or _shop_open or _quest_board_open or _main_menu_open or _char_sheet_open:
+				if not _can_wait():
 					return
-				# Wait action: advance time + tick mobs + tick statuses
-				GameState.advance_time(GameState.HOURS_PER_STEP)
-				MapManager.tick_mobs()
-				_tick_overworld_statuses()
-				_update_time_label()
+				# First step happens at once; _process repeats it while Space is held
+				_do_wait_step()
+				_wait_held = true
+				_wait_repeat_timer = WAIT_HOLD_DELAY
 				get_viewport().set_input_as_handled()
 			KEY_ESCAPE:
 				if _world_picker_layer != null:
@@ -310,9 +366,53 @@ func _unhandled_input(event: InputEvent) -> void:
 					get_viewport().set_input_as_handled()
 
 
-func _update_camera() -> void:
+## Free-look camera. The camera follows the party, plus an offset the player
+## can push around by holding the mouse at a screen edge or dragging with the
+## middle button. The offset snaps back to zero whenever the party takes a
+## step (see _on_party_moved), so walking always brings the view home.
+const EDGE_SCROLL_MARGIN := 16      # pixels from the window edge that trigger scrolling
+const EDGE_SCROLL_SPEED := 900.0    # pixels per second
+var _cam_offset: Vector2 = Vector2.ZERO
+var _cam_dragging: bool = false
+var _cam_drag_start_mouse: Vector2 = Vector2.ZERO
+var _cam_drag_start_offset: Vector2 = Vector2.ZERO
+
+
+func _update_camera(delta: float = 0.0) -> void:
+	var old_offset := _cam_offset
+	# Edge scrolling only while the map itself is what the player is looking at
+	var map_has_focus := not (_event_open or _shop_open or _main_menu_open
+		or _char_sheet_open or _quest_board_open or _rest_open)
+	if map_has_focus and not _cam_dragging and delta > 0.0:
+		_cam_offset += _edge_scroll_direction() * EDGE_SCROLL_SPEED * delta
 	# party_world_position is already tile center (from _tile_to_world), no extra offset
-	camera.position = MapManager.party_world_position
+	var ts: float = MapManager.tile_size
+	var map_px := Vector2(MapManager.map_size) * ts
+	var target: Vector2 = MapManager.party_world_position + _cam_offset
+	target = target.clamp(Vector2.ZERO, map_px)
+	# Keep the offset honest when the clamp stopped it, so scrolling back
+	# away from a map edge responds immediately instead of "unwinding" first.
+	_cam_offset = target - MapManager.party_world_position
+	camera.position = target
+	if _cam_offset != old_offset:
+		map_renderer.queue_redraw()   # visible tile range changed
+
+
+## Returns a direction vector (-1..1 per axis) when the mouse sits at a window edge.
+func _edge_scroll_direction() -> Vector2:
+	# Ignore the mouse when the window isn't focused (e.g. alt-tabbed away)
+	if not get_window().has_focus():
+		return Vector2.ZERO
+	var rect := get_viewport().get_visible_rect()
+	var mouse := get_viewport().get_mouse_position()
+	if not rect.has_point(mouse):
+		return Vector2.ZERO
+	var dir := Vector2.ZERO
+	if mouse.x < rect.position.x + EDGE_SCROLL_MARGIN: dir.x = -1.0
+	elif mouse.x > rect.end.x - EDGE_SCROLL_MARGIN: dir.x = 1.0
+	if mouse.y < rect.position.y + EDGE_SCROLL_MARGIN: dir.y = -1.0
+	elif mouse.y > rect.end.y - EDGE_SCROLL_MARGIN: dir.y = 1.0
+	return dir
 
 
 func _update_hud() -> void:
@@ -713,6 +813,7 @@ func _on_portal_entered(destination: Dictionary) -> void:
 	tween.tween_callback(func():
 		MapManager.load_map(dest_map)
 		_update_hud()
+		MapManager.resume_movement()   # paused above for the fade
 	)
 	tween.tween_interval(0.1)  # One frame of breathing room after load
 	tween.tween_property(overlay, "modulate:a", 0.0, 0.5)
@@ -757,6 +858,7 @@ func _on_char_sheet_visibility_changed() -> void:
 # ============================================
 
 func _on_party_moved(_from: Vector2i, _to: Vector2i) -> void:
+	_cam_offset = Vector2.ZERO   # walking brings a scrolled camera back to the party
 	GameState.advance_time(GameState.HOURS_PER_STEP)
 	_update_terrain_label()
 	_tick_overworld_statuses()

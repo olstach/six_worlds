@@ -549,20 +549,8 @@ func barter_buy_spell(character: Dictionary, spell_id: String, offered_items: Ar
 	if spell.is_empty():
 		return {"success": false, "reason": "Spell not found"}
 
-	# The spell's "level" field IS the minimum skill level required.
-	var required_level = spell.get("level", 1)
-	var schools = spell.get("schools", [])
-	var skills = character.get("skills", {})
-	var has_skill = false
-
-	for school in schools:
-		var skill_name = school + "_magic" if school in ["earth", "water", "fire", "air", "space"] else school
-		var skill_level = skills.get(skill_name, 0)
-		if skill_level >= required_level:
-			has_skill = true
-			break
-
-	if not has_skill:
+	# Need one of the spell's schools at the spell's circle (shared rule)
+	if not CharacterSystem.meets_spell_skill(character, spell):
 		return {"success": false, "reason": "Insufficient magic skill"}
 
 	# Check if shop offers this spell
@@ -699,20 +687,8 @@ func buy_spell(character: Dictionary, spell_id: String) -> Dictionary:
 	if spell.is_empty():
 		return {"success": false, "reason": "Spell not found"}
 
-	# The spell's "level" field IS the minimum skill level required.
-	var required_level = spell.get("level", 1)
-	var schools = spell.get("schools", [])
-	var skills = character.get("skills", {})
-	var has_skill = false
-
-	for school in schools:
-		var skill_name = school + "_magic" if school in ["earth", "water", "fire", "air", "space"] else school
-		var skill_level = skills.get(skill_name, 0)
-		if skill_level >= required_level:
-			has_skill = true
-			break
-
-	if not has_skill:
+	# Need one of the spell's schools at the spell's circle (shared rule)
+	if not CharacterSystem.meets_spell_skill(character, spell):
 		return {"success": false, "reason": "Insufficient magic skill"}
 
 	# Check if shop offers this spell

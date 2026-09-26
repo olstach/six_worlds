@@ -303,9 +303,13 @@ func _check_deployment_columns_stay_usable() -> void:
 	var built: Dictionary = BattlefieldGenerator.generate(
 		_uniform(int(MapManager.Terrain.MOUNTAINS)), SIZE, 808)
 	var tiles: Dictionary = built.get("tiles", {})
+	var db := CombatGrid.deploy_bounds(SIZE)
+	var deploy_cols: Array[int] = []
+	for x in range(db.player_x0, db.player_x1): deploy_cols.append(x)
+	for x in range(db.enemy_x0, db.enemy_x1): deploy_cols.append(x)
 	var blocked := 0
-	for x in [16, 17, 18, 19, 28, 29, 30, 31]:
-		for y in range(SIZE.y):
+	for x in deploy_cols:
+		for y in range(db.y0, db.y1):
 			var t = tiles.get("%d,%d" % [x, y], CombatGrid.TileType.FLOOR)
 			if t in [CombatGrid.TileType.WALL, CombatGrid.TileType.PIT]:
 				blocked += 1
@@ -315,7 +319,7 @@ func _check_deployment_columns_stay_usable() -> void:
 
 	for obs in built.get("obstacles", []):
 		var at: Vector2i = obs["pos"]
-		if (at.x >= 16 and at.x <= 19) or (at.x >= 28 and at.x <= 31):
+		if at.x in deploy_cols and at.y >= db.y0 and at.y < db.y1:
 			_fail("an obstacle was placed in a deployment column at %s" % str(at))
 			break
 	_done()

@@ -3320,20 +3320,7 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 
 	# Check skill requirements - need at least one school at required skill level.
 	# The spell's "level" field IS the minimum skill level required (1,2,3,4,5,7,9).
-	var required_skill_level = spell.get("level", 1)
-	var schools = spell.get("schools", [])
-	var has_skill = false
-
-	for school in schools:
-		# Lowercase school name for comparison (spells.json uses capitalized names)
-		var school_lower = school.to_lower()
-		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
-		var skill_level = skills.get(skill_name, 0)
-		if skill_level >= required_skill_level:
-			has_skill = true
-			break
-
-	if not has_skill:
+	if not CharacterSystem.meets_spell_skill({"skills": skills}, spell):
 		return {"success": false, "reason": "Insufficient skill level"}
 
 	return {"success": true}

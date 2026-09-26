@@ -23,7 +23,7 @@ extends CanvasLayer
 ##   help / cheatlist       — Show this help text
 
 var _panel: PanelContainer
-var _input: LineEdit
+var _line_edit: LineEdit
 var _output: RichTextLabel
 var _visible: bool = false
 
@@ -35,6 +35,29 @@ func _ready() -> void:
 	layer = 100  # Always on top
 	_build_ui()
 	_panel.hide()
+
+
+## True while the console is open. Code that polls the keyboard directly
+## (Input.is_key_pressed / is_action_pressed) checks this so typing in the
+## console doesn't also walk the party or pan the camera.
+func is_open() -> bool:
+	return _visible
+
+
+## While the console is open it owns the keyboard. _input runs before the GUI,
+## so re-focusing the text box here means the key lands in it and never reaches
+## the game's hotkeys (P = party, C = character, ...) in _unhandled_input.
+func _input(event: InputEvent) -> void:
+	if not _visible or not event is InputEventKey:
+		return
+	if event.pressed and event.keycode in [KEY_F12, KEY_ESCAPE]:
+		_toggle()
+		get_viewport().set_input_as_handled()
+		return
+	if not _line_edit.has_focus():
+		_line_edit.grab_focus()
+	if not _line_edit.is_editing():
+		_line_edit.edit()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -50,8 +73,8 @@ func _toggle() -> void:
 	_visible = not _visible
 	if _visible:
 		_panel.show()
-		_input.grab_focus()
-		_input.text = ""
+		_line_edit.grab_focus()
+		_line_edit.text = ""
 	else:
 		_panel.hide()
 
@@ -86,12 +109,15 @@ func _build_ui() -> void:
 	_output.add_theme_font_size_override("normal_font_size", 13)
 	vbox.add_child(_output)
 
-	_input = LineEdit.new()
-	_input.placeholder_text = "Type a command... (try 'help')"
-	_input.add_theme_color_override("font_color", Color(0.95, 0.9, 0.7))
-	_input.add_theme_font_size_override("font_size", 14)
-	_input.text_submitted.connect(_on_command_submitted)
-	vbox.add_child(_input)
+	_line_edit = LineEdit.new()
+	_line_edit.placeholder_text = "Type a command... (try 'help')"
+	_line_edit.add_theme_color_override("font_color", Color(0.95, 0.9, 0.7))
+	_line_edit.add_theme_font_size_override("font_size", 14)
+	# Stay in edit mode after Enter, so the next command can be typed straight
+	# away (by default Godot drops out of editing, and keys fall to hotkeys).
+	_line_edit.keep_editing_on_text_submit = true
+	_line_edit.text_submitted.connect(_on_command_submitted)
+	vbox.add_child(_line_edit)
 
 	add_child(_panel)
 
@@ -109,7 +135,7 @@ func _log_err(text: String) -> void:
 
 
 func _on_command_submitted(text: String) -> void:
-	_input.text = ""
+	_line_edit.text = ""
 	if text.strip_edges().is_empty():
 		return
 	_log("[color=yellow]> " + text + "[/color]")
@@ -356,16 +382,25 @@ func _cmd_tactician() -> void:
 
 func _cmd_goto(args: Array) -> void:
 	if args.is_empty():
-		_log_err("Usage: goto <world> (hell, hungry_ghost, animal, human, demigod, god)")
+		_log_err("Usage: goto <world> (%s)" % ", ".join(GameState.WORLDS.keys()))
 		return
 	var world = args[0].to_lower()
 	if not world in GameState.WORLDS:
 		_log_err("Unknown world: %s. Valid: %s" % [world, ", ".join(GameState.WORLDS.keys())])
 		return
-	GameState.current_world = world
+	# Travel the way a realm gate does: unlock, move, and load the realm's map.
+	# Setting current_world alone did nothing — the overworld only loads a map
+	# when none is loaded yet, so the party landed back where it stood.
+	GameState.unlock_world(world)
+	GameState.travel_to_world(world)
+	GameState.planar_return = {}
 	GameState.returning_from_combat = false
+	if not FileAccess.file_exists("res://resources/data/map_configs/%s.json" % world):
+		_log_err("%s has no map yet — you'll get a placeholder test map" % world)
+	MapManager.load_map("%s_01" % world)
 	_log_ok("Travelling to %s..." % world)
-	_toggle()
+	if _visible:
+		_toggle()   # close the console
 	get_tree().change_scene_to_file("res://scenes/overworld/overworld.tscn")
 
 

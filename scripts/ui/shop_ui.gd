@@ -379,12 +379,22 @@ func _create_spell_slot(spell_id: String) -> void:
 		no_party.add_theme_font_size_override("font_size", 11)
 		vbox.add_child(no_party)
 	elif is_guild:
-		# Single "Buy" button — teaches every party member who doesn't already know it
+		# Single "Buy" button — teaches every party member who can cast it and
+		# doesn't know it yet (see _guild_learners)
 		var all_known = party.all(func(c): return CharacterSystem.knows_spell(c, spell_id))
+		var learners := _guild_learners(spell_id)
 		var learn_btn = Button.new()
-		learn_btn.text = "Known by all" if all_known else "Buy"
 		learn_btn.add_theme_font_size_override("font_size", 11)
-		learn_btn.disabled = all_known or not can_afford
+		if all_known:
+			learn_btn.text = "Known by all"
+		elif learners.is_empty():
+			learn_btn.text = "Nobody qualifies"
+			learn_btn.tooltip_text = reqs
+		else:
+			learn_btn.text = "Buy"
+			var names: Array = learners.map(func(c): return c.get("name", "?"))
+			learn_btn.tooltip_text = "Teaches: " + ", ".join(names)
+		learn_btn.disabled = learners.is_empty() or not can_afford
 		learn_btn.pressed.connect(func(): _on_guild_learn_spell_pressed(spell_id))
 		vbox.add_child(learn_btn)
 	else:
@@ -719,14 +729,8 @@ func _populate_companions_tab() -> void:
 
 
 func _create_companion_panel(companion_id: String, def: Dictionary) -> void:
-	# Scale recruitment cost with how far the party has come, so early-game
-	# companions stay affordable. Anchored on party XP now that power is gone:
-	# a fresh party is worth little and pays ~20%, a party around the animal
-	# realm's budget pays full price.
-	var base_cost: int = def.get("recruitment_cost", 0)
-	var party_xp: float = float(CharacterSystem.get_party_xp_worth())
-	var price_mult: float = clampf(party_xp / 1200.0, 0.20, 2.0)
-	var cost: int = maxi(10, int(base_cost * price_mult))
+	# Price scales with party progress — see CompanionSystem.get_recruit_cost()
+	var cost: int = CompanionSystem.get_recruit_cost(companion_id)
 	var can_afford: bool = GameState.can_afford(cost)
 	var party_full: bool = CharacterSystem.get_party().size() >= CharacterSystem.get_max_party_size()
 
@@ -1059,9 +1063,24 @@ func _on_learn_spell_pressed(character: Dictionary, spell_id: String) -> void:
 		print("Learning failed: ", result.reason)
 
 
-## Guild spell purchase — charges once, teaches all party members who don't already know it.
-## Skill requirements are NOT enforced at guilds (that's the point of a guild teacher).
+## Party members a guild would teach this spell to: those who don't know it
+## yet AND whose skills let them cast it (CharacterSystem.meets_spell_skill).
+func _guild_learners(spell_id: String) -> Array:
+	var spell: Dictionary = CombatManager.get_spell(spell_id)
+	return CharacterSystem.get_party().filter(func(c):
+		return not CharacterSystem.knows_spell(c, spell_id) \
+			and CharacterSystem.meets_spell_skill(c, spell))
+
+
+## Guild spell purchase — charges once, teaches every qualified party member.
+## (Decided 2026-09-26: guilds used to teach everyone regardless of skill,
+## which left spells in spellbooks nobody could cast. Now they teach only
+## those who meet the spell's skill requirement.)
 func _on_guild_learn_spell_pressed(spell_id: String) -> void:
+	var learners := _guild_learners(spell_id)
+	if learners.is_empty():
+		print("Guild purchase failed: nobody in the party qualifies")
+		return
 	var price = ShopSystem.get_spell_cost(spell_id)
 	if not GameState.can_afford(price):
 		print("Guild purchase failed: not enough gold")
@@ -1070,9 +1089,8 @@ func _on_guild_learn_spell_pressed(spell_id: String) -> void:
 	GameState.spend_gold(price)
 	ShopSystem.spell_purchased.emit(spell_id, price)
 
-	for character in CharacterSystem.get_party():
-		if not CharacterSystem.knows_spell(character, spell_id):
-			CharacterSystem.learn_spell(character, spell_id)
+	for character in learners:
+		CharacterSystem.learn_spell(character, spell_id)
 
 	_refresh_display()
 
