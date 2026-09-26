@@ -331,8 +331,8 @@ func display_outcome(outcome: Dictionary) -> void:
 	match outcome.get("type", "text"):
 		"combat":
 			result_text += "\n[b][color=#ef4444]⚔ COMBAT BEGINS[/color][/b]"
-		"shop":
-			result_text += "\n[b][color=#4ade80]🏪 SHOP OPENED[/color][/b]"
+		# No banner for "shop": this panel is hidden while the shop is open and
+		# only shown after it closes, so "SHOP OPENED" was always stale.
 	
 	result_label.text = result_text
 	

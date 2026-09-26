@@ -268,6 +268,18 @@ func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
 					character.equipment[slot] = ItemSystem.generate_armor(armor_val, rarity, "", "", realm)
 
 
+## What recruiting this companion costs right now. The one place the price is
+## computed, so the price a shop SHOWS is always the price recruit() CHARGES.
+## Scales with how far the party has come, so early-game companions stay
+## affordable. Anchored on party XP: a fresh party is worth little and pays
+## ~20%, a party around the animal realm's budget pays full price.
+func get_recruit_cost(companion_id: String) -> int:
+	var base_cost: int = get_definition(companion_id).get("recruitment_cost", 0)
+	var party_xp: float = float(CharacterSystem.get_party_xp_worth())
+	var price_mult: float = clampf(party_xp / 1200.0, 0.20, 2.0)
+	return maxi(10, int(base_cost * price_mult))
+
+
 ## Recruit a companion by id. Deducts gold, builds and stats the character,
 ## and adds them to the party. Returns the new companion dict, or {} on failure.
 ## Pass free=true to skip the gold cost (for event-granted companions).
@@ -277,7 +289,7 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 		push_error("CompanionSystem: Unknown companion id: ", companion_id)
 		return {}
 
-	var cost: int = 0 if free else def.get("recruitment_cost", 0)
+	var cost: int = 0 if free else get_recruit_cost(companion_id)
 	if GameState.gold < cost:
 		push_warning("CompanionSystem: Cannot afford companion ", companion_id)
 		return {}
@@ -353,7 +365,7 @@ func recruit(companion_id: String, free: bool = false) -> Dictionary:
 	CharacterSystem.update_derived_stats(companion)
 
 	# 12. Deduct gold and register in party
-	GameState.add_gold(-cost)
+	GameState.spend_gold(cost)   # add_gold() ignores negative amounts
 	CharacterSystem.add_companion(companion)
 
 	companion_recruited.emit(companion)

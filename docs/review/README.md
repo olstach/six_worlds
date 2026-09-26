@@ -1,6 +1,6 @@
 # Review documents
 
-Generated prose for reading and editing away from the JSON. Eleven files.
+Generated prose for reading and editing away from the JSON. Twelve files.
 
 **The animal realm — its whole text, one document per kind of thing:**
 
@@ -13,6 +13,19 @@ Generated prose for reading and editing away from the JSON. Eleven files.
 | `ANIMAL_WORLD.md` | The realm blurb, its 5 zones, the fixed landmarks, 15 settlement names |
 | `ANIMAL_NAMES.md` | Naming lore — how each birth names itself, 389 names and meanings |
 | `EVENTS_ANIMAL.md` | 94 events |
+
+**Zone workbooks — one zone's births gathered for a writing pass:**
+
+| File | Contents |
+|---|---|
+| `ANIMAL_MEADOW.md` | The five meadow births and the two sky births with meadow companions: each birth's text, traits, backgrounds, companions, enemies, events, naming lore, a computed gap list, and a notes space. Opens with a table against the forest, which had the full pass. |
+
+A workbook repeats records the other files also carry. The importer decides
+each record from all its copies: the one that differs from the data is the
+edit, and two copies edited differently stop the import with nothing written.
+The **Notes** sections are free text and are not imported — turn them into data
+before regenerating. New workbooks are an entry in `WORKBOOKS` in
+`tools/export_review_docs.py`.
 
 **Everything else:**
 

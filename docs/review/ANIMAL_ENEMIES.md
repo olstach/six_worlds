@@ -371,7 +371,7 @@ Tusk charge; maces perk concussive_force gives knockback on crits
 
 ## Varaha Elder  `animal_varaha_elder`
 
-`tier: devil  ·  roles: support  ·  skills: earth_magic, medicine  ·  resists: earth 15%, physical 10%  ·  threat ×1.1`
+`tier: devil  ·  roles: support  ·  skills: earth_magic, medicine  ·  resists: crushing 15%, physical 10%  ·  threat ×1.1`
 
 
 *Named directly in: animal_boss_simha_king, animal_varaha_elder_encounter*
@@ -399,7 +399,7 @@ Sounder tactician; heals allies via medicine perks; raises aggression when sound
 
 ## Bhramara Drone  `animal_bhramara_drone`
 
-`tier: imp  ·  roles: support  ·  skills: summoning, air_magic  ·  resists: air 10%  ·  threat ×0.8`
+`tier: imp  ·  roles: support  ·  skills: summoning, air_magic  ·  resists: lightning 10%  ·  threat ×0.8`
 
 
 **Name**
@@ -418,7 +418,7 @@ Support caster that calls reinforcements; weak alone but dangerous when it compl
 
 ## Bhramara Soldier  `animal_bhramara_soldier`
 
-`tier: shade  ·  roles: frontline  ·  skills: spears, air_magic  ·  resists: air 15%  ·  threat ×1.0`
+`tier: shade  ·  roles: frontline  ·  skills: spears, air_magic  ·  resists: lightning 15%  ·  threat ×1.0`
 
 
 **Name**
@@ -430,7 +430,7 @@ Bhramara Soldier
 
 ## Dura Burrower  `animal_dura_burrower`
 
-`tier: shade  ·  roles: skirmisher  ·  ai: burrow_emerge  ·  skills: earth_magic, unarmed  ·  resists: earth 15%, physical 10%  ·  spells: burrow  ·  threat ×1.0`
+`tier: shade  ·  roles: skirmisher  ·  ai: burrow_emerge  ·  skills: earth_magic, unarmed  ·  resists: crushing 15%, physical 10%  ·  spells: burrow  ·  threat ×1.0`
 
 
 *Named directly in: animal_dura_burrower_encounter*
@@ -511,7 +511,7 @@ Natural mantis blades; very high crit chance from high finesse + unarmed crit pe
 
 ## Patanga Ascetic  `animal_patanga_ascetic`
 
-`tier: shade  ·  roles: support, caster  ·  skills: air_magic, ritual, yoga  ·  resists: air 20%, fire -15%  ·  threat ×0.9`
+`tier: shade  ·  roles: support, caster  ·  skills: air_magic, ritual, yoga  ·  resists: lightning 20%, fire -15%  ·  threat ×0.9`
 
 
 *Named directly in: animal_patanga_ascetic_encounter*
@@ -526,7 +526,7 @@ Patanga Ascetic
 
 ## Patanga Flame Seeker  `animal_patanga_seeker`
 
-`tier: shade  ·  roles: frontline  ·  ai: erratic_movement  ·  skills: fire_magic, grace  ·  resists: fire 20%, earth -15%  ·  threat ×1.0`
+`tier: shade  ·  roles: frontline  ·  ai: erratic_movement  ·  skills: fire_magic, grace  ·  resists: fire 20%, crushing -15%  ·  threat ×1.0`
 
 
 *Named directly in: animal_patanga_ascetic_encounter*
@@ -548,7 +548,7 @@ Moves unpredictably before striking — impossible to anticipate.
 
 ## Yaksha Guardian  `animal_yaksha_guardian`
 
-`tier: devil  ·  roles: frontline  ·  skills: earth_magic, axes, might  ·  resists: earth 20%, air -10%  ·  threat ×1.1`
+`tier: devil  ·  roles: frontline  ·  skills: earth_magic, axes, might  ·  resists: crushing 20%, lightning -10%  ·  threat ×1.1`
 
 
 *Named directly in: animal_yaksha_circle*
@@ -563,7 +563,7 @@ Yaksha Guardian
 
 ## Yaksha Shaman  `animal_yaksha_shaman`
 
-`tier: devil  ·  roles: caster  ·  skills: earth_magic, summoning  ·  resists: earth 25%  ·  threat ×1.2`
+`tier: devil  ·  roles: caster  ·  skills: earth_magic, summoning  ·  resists: crushing 25%  ·  threat ×1.2`
 
 
 *Named directly in: animal_yaksha_circle*
@@ -584,7 +584,7 @@ Yaksha Shaman
 
 ## Karka Crusher  `animal_karka_crusher`
 
-`tier: shade  ·  roles: frontline  ·  skills: unarmed, might  ·  resists: physical 15%, earth 10%  ·  threat ×1.0`
+`tier: shade  ·  roles: frontline  ·  skills: unarmed, might  ·  resists: physical 15%, crushing 10%  ·  threat ×1.0`
 
 
 *Named directly in: animal_karka_vent*
@@ -599,7 +599,7 @@ Karka Crusher
 
 ## Karka Guardian  `animal_karka_guardian`
 
-`tier: devil  ·  roles: frontline  ·  skills: sorcery, maces, armor  ·  resists: physical 20%, earth 15%, crushing -10%  ·  threat ×1.1`
+`tier: devil  ·  roles: frontline  ·  skills: sorcery, maces, armor  ·  resists: physical 20%, crushing -10%  ·  threat ×1.1`
 
 
 *Named directly in: animal_karka_vent*
@@ -614,7 +614,7 @@ Karka Guardian
 
 ## Makara Currentmaster  `animal_makara_current`
 
-`tier: devil  ·  roles: caster, support  ·  skills: water_magic, enchantment  ·  resists: water 30%  ·  threat ×1.1`
+`tier: devil  ·  roles: caster, support  ·  skills: water_magic, enchantment  ·  resists: ice 30%  ·  threat ×1.1`
 
 
 *Named directly in: animal_makara_with_guard*
@@ -629,7 +629,7 @@ Makara Currentmaster
 
 ## Makara Titan  `animal_makara_titan`
 
-`tier: devil  ·  roles: frontline  ·  skills: unarmed, might  ·  resists: water 20%, crushing 15%, physical 10%  ·  threat ×1.4`
+`tier: devil  ·  roles: frontline  ·  skills: unarmed, might  ·  resists: ice 20%, crushing 15%, physical 10%  ·  threat ×1.4`
 
 
 *Named directly in: animal_makara_with_guard*
@@ -644,7 +644,7 @@ Makara Titan
 
 ## Matsya Hunter  `animal_matsya_hunter`
 
-`tier: shade  ·  roles: skirmisher  ·  skills: spears, grace  ·  resists: water 15%  ·  threat ×1.0`
+`tier: shade  ·  roles: skirmisher  ·  skills: spears, grace  ·  resists: ice 15%  ·  threat ×1.0`
 
 
 *Named directly in: animal_matsya_ambush*
@@ -659,7 +659,7 @@ Matsya Hunter
 
 ## Matsya Shoal  `animal_matsya_shoal`
 
-`tier: imp  ·  roles: frontline  ·  ai: pack_bonus  ·  skills: unarmed, water_magic  ·  resists: water 10%  ·  threat ×0.7`
+`tier: imp  ·  roles: frontline  ·  ai: pack_bonus  ·  skills: unarmed, water_magic  ·  resists: ice 10%  ·  threat ×0.7`
 
 
 *Named directly in: animal_matsya_ambush*
@@ -681,7 +681,7 @@ Weak individually; pack bonus applies when 3+ present in encounter
 
 ## Naga Sorcerer  `animal_naga_sorcerer`
 
-`tier: devil  ·  roles: caster  ·  skills: water_magic, sorcery, space_magic  ·  resists: water 25%, space 15%  ·  threat ×1.2`
+`tier: devil  ·  roles: caster  ·  skills: water_magic, sorcery, space_magic  ·  resists: ice 25%, space 15%  ·  threat ×1.2`
 
 
 *Named directly in: animal_naga_court, animal_naga_sorcerer*
@@ -696,7 +696,7 @@ Naga Sorcerer
 
 ## Naga Warrior  `animal_naga_warrior`
 
-`tier: devil  ·  roles: frontline  ·  skills: spears, armor, might  ·  resists: water 20%, space 10%  ·  threat ×1.1`
+`tier: devil  ·  roles: frontline  ·  skills: spears, armor, might  ·  resists: ice 20%, space 10%  ·  threat ×1.1`
 
 
 *Named directly in: animal_naga_court, animal_naga_sorcerer*
@@ -717,7 +717,7 @@ Naga Warrior
 
 ## Kapota Flock  `animal_kapota_flock`
 
-`tier: shade  ·  roles: frontline  ·  skills: air_magic, grace  ·  resists: air 10%  ·  threat ×0.9`
+`tier: shade  ·  roles: frontline  ·  skills: air_magic, grace  ·  resists: lightning 10%  ·  threat ×0.9`
 
 
 **Name**
@@ -736,7 +736,7 @@ Flying mob; individually weak but overwhelming in numbers; grace perks give evas
 
 ## Kapota Messenger  `animal_kapota_messenger`
 
-`tier: imp  ·  roles: support  ·  skills: air_magic, grace  ·  resists: air 15%  ·  threat ×0.7`
+`tier: imp  ·  roles: support  ·  skills: air_magic, grace  ·  resists: lightning 15%  ·  threat ×0.7`
 
 
 **Name**
@@ -755,7 +755,7 @@ Fast support; disrupts party formation; grace perks make it very hard to pin dow
 
 ## Shyena Sky Lord  `animal_shyena_lord`
 
-`tier: boss  ·  roles: frontline  ·  skills: unarmed, martial_arts, might  ·  resists: air 20%, earth -10%  ·  threat ×1.5`
+`tier: boss  ·  roles: frontline  ·  skills: unarmed, martial_arts, might  ·  resists: lightning 20%, crushing -10%  ·  threat ×1.5`
 
 
 *Named directly in: animal_shyena_with_stooper*
@@ -777,7 +777,7 @@ Territorial boss; might perks give enrage-style bonuses when below 50% HP
 
 ## Shyena Stooper  `animal_shyena_stooper`
 
-`tier: devil  ·  roles: skirmisher  ·  skills: unarmed, martial_arts  ·  resists: air 15%, earth -10%  ·  threat ×1.1`
+`tier: devil  ·  roles: skirmisher  ·  skills: unarmed, martial_arts  ·  resists: lightning 15%, crushing -10%  ·  threat ×1.1`
 
 
 *Named directly in: animal_shyena_dive, animal_shyena_with_stooper*
@@ -799,7 +799,7 @@ Aerial dive attacker; flying tag; martial_arts perks give first-strike on initia
 
 ## Uluka Nightwatcher  `animal_uluka_nightwatcher`
 
-`tier: shade  ·  roles: ranged, caster  ·  skills: black_magic, ranged  ·  resists: black 10%, air 10%  ·  threat ×1.0`
+`tier: shade  ·  roles: ranged, caster  ·  skills: black_magic, ranged  ·  resists: black 10%, lightning 10%  ·  threat ×1.0`
 
 
 **Name**
@@ -818,7 +818,7 @@ Fires black magic from range in darkness; high awareness gives initiative advant
 
 ## Uluka Ill Omen  `animal_uluka_omen`
 
-`tier: devil  ·  roles: caster  ·  skills: black_magic, performance  ·  resists: black 15%, air 10%, white -15%  ·  threat ×1.2`
+`tier: devil  ·  roles: caster  ·  skills: black_magic, performance  ·  resists: black 15%, lightning 10%, white -15%  ·  threat ×1.2`
 
 
 *Named directly in: animal_uluka_omen_encounter*

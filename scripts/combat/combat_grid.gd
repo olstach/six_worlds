@@ -60,9 +60,32 @@ const COLOR_DEPLOY_FRONT = Color(0.3, 0.6, 0.3, 0.4)  # Green for front line
 const COLOR_DEPLOY_BACK = Color(0.3, 0.3, 0.6, 0.4)   # Blue for back line
 const COLOR_DEPLOY_ENEMY = Color(0.6, 0.3, 0.3, 0.3)  # Red tint for enemy zone
 
-# Deployment zone configuration
-const PLAYER_DEPLOY_COLUMNS: int = 4  # 4 columns wide; start at grid_size.x/3 (centered)
-const ENEMY_DEPLOY_COLUMNS: int = 4   # 4 columns wide; start at grid_size.x*2/3 - 4 (centered)
+# Deployment zone configuration.
+# Both sides deploy in a slice at the CENTRE of the battlefield: player block,
+# a gap, enemy block, all centred horizontally, inside a band of rows centred
+# vertically. The rest of the field is room to flank, retreat and manoeuvre.
+# deploy_bounds() is the one place this geometry is computed.
+const PLAYER_DEPLOY_COLUMNS: int = 4  # how many columns wide the player zone is
+const ENEMY_DEPLOY_COLUMNS: int = 4   # how many columns wide the enemy zone is
+const DEPLOY_GAP_COLUMNS: int = 4     # empty columns between the two front lines
+const DEPLOY_ROWS: int = 12           # height of the deployment band
+
+
+## The deployment slice for a battlefield of the given size.
+## Static and pure so BattlefieldGenerator can keep the same tiles clear.
+## Returns x/y ranges with the END exclusive, like range():
+##   player_x0..player_x1, enemy_x0..enemy_x1, y0..y1
+static func deploy_bounds(size: Vector2i) -> Dictionary:
+	var total_w: int = PLAYER_DEPLOY_COLUMNS + DEPLOY_GAP_COLUMNS + ENEMY_DEPLOY_COLUMNS
+	var player_x0: int = maxi(0, (size.x - total_w) / 2)
+	var enemy_x0: int = player_x0 + PLAYER_DEPLOY_COLUMNS + DEPLOY_GAP_COLUMNS
+	var rows: int = mini(DEPLOY_ROWS, size.y)
+	var y0: int = (size.y - rows) / 2
+	return {
+		"player_x0": player_x0, "player_x1": player_x0 + PLAYER_DEPLOY_COLUMNS,
+		"enemy_x0": enemy_x0, "enemy_x1": mini(size.x, enemy_x0 + ENEMY_DEPLOY_COLUMNS),
+		"y0": y0, "y1": y0 + rows,
+	}
 
 # Tile types (base terrain)
 enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
@@ -1544,18 +1567,18 @@ func create_test_arena() -> void:
 # DEPLOYMENT ZONES
 # ============================================
 
-## Get player deployment zone tiles
-## For the larger arena, zones are in the CENTER THIRD of the grid so there's
-## flanking room on all sides. Player deploys at grid_size.x/3 .. +PLAYER_DEPLOY_COLUMNS-1.
+## Get player deployment zone tiles (left block of the central slice —
+## see deploy_bounds()).
 func get_player_deployment_zones() -> Dictionary:
 	var front_tiles: Array[Vector2i] = []
 	var back_tiles: Array[Vector2i] = []
 
-	var start_x = grid_size.x / 3  # e.g. 16 for a 48-wide grid
+	var b := deploy_bounds(grid_size)
+	var start_x: int = b.player_x0
 	# Front column = rightmost of deploy zone (closest to enemy)
-	var front_col = start_x + PLAYER_DEPLOY_COLUMNS - 1  # e.g. 19
+	var front_col: int = b.player_x1 - 1
 
-	for y in range(grid_size.y):
+	for y in range(b.y0, b.y1):
 		var front_pos = Vector2i(front_col, y)
 		if _is_valid_deployment_tile(front_pos):
 			front_tiles.append(front_pos)
@@ -1571,21 +1594,21 @@ func get_player_deployment_zones() -> Dictionary:
 	}
 
 
-## Get enemy deployment zone tiles
-## Enemy deploys at (grid_size.x*2/3 - ENEMY_DEPLOY_COLUMNS) .. grid_size.x*2/3 - 1.
+## Get enemy deployment zone tiles (right block of the central slice —
+## see deploy_bounds()).
 func get_enemy_deployment_zones() -> Dictionary:
 	var front_tiles: Array[Vector2i] = []
 	var back_tiles: Array[Vector2i] = []
 
-	var start_x = grid_size.x * 2 / 3 - ENEMY_DEPLOY_COLUMNS  # e.g. 28 for a 48-wide grid
+	var b := deploy_bounds(grid_size)
 	# Front column = leftmost of enemy zone (closest to player)
-	var front_col = start_x  # e.g. 28
+	var front_col: int = b.enemy_x0
 
-	for y in range(grid_size.y):
+	for y in range(b.y0, b.y1):
 		var front_pos = Vector2i(front_col, y)
 		if _is_valid_deployment_tile(front_pos):
 			front_tiles.append(front_pos)
-		for x in range(front_col + 1, start_x + ENEMY_DEPLOY_COLUMNS):
+		for x in range(front_col + 1, b.enemy_x1):
 			var back_pos = Vector2i(x, y)
 			if _is_valid_deployment_tile(back_pos):
 				back_tiles.append(back_pos)
@@ -1663,9 +1686,13 @@ func get_random_unoccupied(positions: Array) -> Vector2i:
 
 ## Check if a position is in player deployment zone
 func is_in_player_zone(grid_pos: Vector2i) -> bool:
-	return grid_pos.x < PLAYER_DEPLOY_COLUMNS
+	var b := deploy_bounds(grid_size)
+	return grid_pos.x >= b.player_x0 and grid_pos.x < b.player_x1 \
+		and grid_pos.y >= b.y0 and grid_pos.y < b.y1
 
 
 ## Check if a position is in enemy deployment zone
 func is_in_enemy_zone(grid_pos: Vector2i) -> bool:
-	return grid_pos.x >= grid_size.x - ENEMY_DEPLOY_COLUMNS
+	var b := deploy_bounds(grid_size)
+	return grid_pos.x >= b.enemy_x0 and grid_pos.x < b.enemy_x1 \
+		and grid_pos.y >= b.y0 and grid_pos.y < b.y1

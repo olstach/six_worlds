@@ -310,7 +310,7 @@ thievery, guile, grace
 **Flavor Text**
 
 <!--@ companions.json | mandaka | flavor_text -->
-Third storey, no rope, and back down with the thing before the dog finished turning its head. Considers locks a personal remark.
+Third storey, no rope, and back down with the thing before the dog finished turning its head. Considers locks a personal challenge.
 <!--@end-->
 
 

@@ -55,6 +55,10 @@ window/size/viewport_height=1080
 window/size/mode=2
 window/stretch/mode="canvas_items"
 
+[gui]
+
+theme/custom="res://resources/themes/global_theme.tres"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

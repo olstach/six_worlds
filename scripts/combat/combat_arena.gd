@@ -257,9 +257,9 @@ func _center_camera() -> void:
 	camera.limit_right  = int(origin.x + gw * ts)
 	camera.limit_bottom = int(origin.y + gh * ts)
 	# camera.position is LOCAL within GridContainer, so no offset needed here
-	var player_center_x = (gw / 3 + CombatGrid.PLAYER_DEPLOY_COLUMNS / 2.0) * ts
-	var enemy_center_x  = (gw * 2.0 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS / 2.0) * ts
-	camera.position = Vector2((player_center_x + enemy_center_x) / 2.0, gh * ts / 2.0)
+	var deploy := CombatGrid.deploy_bounds(combat_grid.grid_size)
+	var slice_center_x: float = (deploy.player_x0 + deploy.enemy_x1) / 2.0 * ts
+	camera.position = Vector2(slice_center_x, gh * ts / 2.0)
 
 
 ## Smoothly pan the camera to a local grid position (clamped to grid bounds)
@@ -285,17 +285,43 @@ var _pan_start_mouse: Vector2 = Vector2.ZERO
 var _pan_start_cam: Vector2 = Vector2.ZERO
 
 func _process(delta: float) -> void:
+	if CheatConsole.is_open():
+		return   # keys belong to the console's text box
 	var cam_dir = Vector2.ZERO
 	if Input.is_action_pressed("ui_up"):    cam_dir.y -= 1.0
 	if Input.is_action_pressed("ui_down"):  cam_dir.y += 1.0
 	if Input.is_action_pressed("ui_left"):  cam_dir.x -= 1.0
 	if Input.is_action_pressed("ui_right"): cam_dir.x += 1.0
+	# Edge scrolling: the mouse resting at a window edge pans that way too
+	if cam_dir == Vector2.ZERO and not _is_panning:
+		cam_dir = _edge_scroll_direction()
 	if cam_dir != Vector2.ZERO:
 		var ts = combat_grid.tile_size
 		var gw = combat_grid.grid_size.x
 		var gh = combat_grid.grid_size.y
 		camera.position = (camera.position + cam_dir * _cam_pan_speed * delta).clamp(
 			Vector2.ZERO, Vector2(gw * ts, gh * ts))
+
+
+## Pixels from the window edge that trigger edge scrolling
+const EDGE_SCROLL_MARGIN := 16
+
+
+## Returns a direction vector (-1..1 per axis) when the mouse sits at a window edge.
+func _edge_scroll_direction() -> Vector2:
+	# Ignore the mouse when the window isn't focused (e.g. alt-tabbed away)
+	if not get_window().has_focus():
+		return Vector2.ZERO
+	var rect := get_viewport().get_visible_rect()
+	var mouse := get_viewport().get_mouse_position()
+	if not rect.has_point(mouse):
+		return Vector2.ZERO
+	var dir := Vector2.ZERO
+	if mouse.x < rect.position.x + EDGE_SCROLL_MARGIN: dir.x = -1.0
+	elif mouse.x > rect.end.x - EDGE_SCROLL_MARGIN: dir.x = 1.0
+	if mouse.y < rect.position.y + EDGE_SCROLL_MARGIN: dir.y = -1.0
+	elif mouse.y > rect.end.y - EDGE_SCROLL_MARGIN: dir.y = 1.0
+	return dir
 
 
 ## Start a test combat for debugging
@@ -308,8 +334,10 @@ func _start_test_combat() -> void:
 	# Create player units from party
 	var party = CharacterSystem.get_party()
 	# Center-zone positions (player at columns 16-19, enemy at 28-31 for 48-wide grid)
-	var pz = combat_grid.grid_size.x / 3  # player zone start x
-	var player_start_positions = [Vector2i(pz, 13), Vector2i(pz, 15), Vector2i(pz + 1, 14)]
+	var deploy := CombatGrid.deploy_bounds(combat_grid.grid_size)
+	var tcy: int = combat_grid.grid_size.y / 2
+	var pz: int = deploy.player_x0  # player zone start x
+	var player_start_positions = [Vector2i(pz, tcy - 1), Vector2i(pz, tcy + 1), Vector2i(pz + 1, tcy)]
 
 	for i in range(mini(party.size(), player_start_positions.size())):
 		var char_data = party[i]
@@ -320,8 +348,8 @@ func _start_test_combat() -> void:
 		_log_message("Player: %s placed at %s" % [unit.unit_name, player_start_positions[i]])
 
 	# Create test enemies (mix of melee, ranged, and mage)
-	var ez = combat_grid.grid_size.x * 2 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS  # enemy zone start x
-	var enemy_start_positions = [Vector2i(ez + 3, 13), Vector2i(ez + 3, 15), Vector2i(ez + 2, 14)]
+	var ez: int = deploy.enemy_x0  # enemy zone start x
+	var enemy_start_positions = [Vector2i(ez + 3, tcy - 1), Vector2i(ez + 3, tcy + 1), Vector2i(ez + 2, tcy)]
 
 	for i in range(3):
 		var enemy_def: Dictionary
@@ -383,13 +411,17 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 
 	# Place enemies based on their roles (frontline closer, ranged/caster in back)
 	var enemy_units: Array = []
-	var ez = gw * 2 / 3 - CombatGrid.ENEMY_DEPLOY_COLUMNS  # enemy zone start x (28 on 48-wide)
+	# Enemy zone: the right-hand block of the central deployment slice.
+	# Its LEFT column (ez) faces the party, so the frontline stands there and
+	# ranged/casters stand two and three columns further back.
+	var deploy := CombatGrid.deploy_bounds(combat_grid.grid_size)
+	var ez: int = deploy.enemy_x0
 	var frontline_positions = [
-		Vector2i(ez + 3, cy - 2), Vector2i(ez + 3, cy), Vector2i(ez + 3, cy - 1),
-		Vector2i(ez + 3, cy - 3), Vector2i(ez + 3, cy + 1)]
+		Vector2i(ez, cy - 2), Vector2i(ez, cy), Vector2i(ez, cy - 1),
+		Vector2i(ez, cy - 3), Vector2i(ez, cy + 1)]
 	var backline_positions = [
-		Vector2i(ez + 1, cy - 2), Vector2i(ez + 1, cy), Vector2i(ez + 1, cy - 1),
-		Vector2i(ez, cy - 2), Vector2i(ez, cy)]
+		Vector2i(ez + 2, cy - 2), Vector2i(ez + 2, cy), Vector2i(ez + 2, cy - 1),
+		Vector2i(ez + 3, cy - 2), Vector2i(ez + 3, cy)]
 	var front_idx = 0
 	var back_idx = 0
 
@@ -429,7 +461,7 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	else:
 		# Auto-deploy player units and start combat immediately
 		var player_units: Array = []
-		var pz = gw / 3
+		var pz: int = deploy.player_x0   # player zone: left block of the slice
 		var player_start_positions = [
 			Vector2i(pz, cy - 2), Vector2i(pz, cy), Vector2i(pz + 1, cy - 1),
 			Vector2i(pz + 1, cy + 1), Vector2i(pz, cy + 2), Vector2i(pz + 1, cy - 3),
@@ -1391,12 +1423,14 @@ func _try_use_item(target_pos: Vector2i) -> void:
 		return
 
 	var item_type: String = selected_item.get("type", "")
+	# Read the id NOW: _cancel_action_mode() below clears selected_item, and
+	# reading it afterwards made every combat item fail with "Item not found".
+	var item_id: String = selected_item.get("id", "")
 
 	# Cancel action mode before async work
 	_cancel_action_mode()
 
-	var result = CombatManager.use_combat_item(user, selected_item.get("id", ""), target_pos)
-	selected_item = {}
+	var result = CombatManager.use_combat_item(user, item_id, target_pos)
 
 	if not result.get("success", false):
 		_log_message("Failed to use item: " + result.get("reason", "Unknown"))

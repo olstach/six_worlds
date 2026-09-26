@@ -470,6 +470,16 @@ func load_map(map_id: String) -> bool:
 	if map_id != current_map_id:
 		stash_current_map()
 
+	# From here on this is a brand-new map, so the old map's per-map state goes.
+	# (It was stashed just above; revisiting restores it via load_save_data.)
+	# Leaving it caused two bugs: explored tiles stayed revealed at the same
+	# coordinates in the next realm, and IDs shared across realms — above all
+	# "realm_boss" — stayed "collected", so after beating one realm's boss the
+	# next realm's boss was never placed and its portal could never open.
+	visited_tiles.clear()
+	collected_objects.clear()
+	defeated_mobs.clear()
+
 	# Try static JSON map first
 	var file_path = "res://resources/data/maps/%s.json" % map_id
 	if FileAccess.file_exists(file_path):

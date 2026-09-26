@@ -667,6 +667,359 @@ def export_animal_names():
     return len(regions), total
 
 
+# ── Zone workbooks ──────────────────────────────────────────────────────────
+#
+# A workbook gathers everything about one zone's births in one place, birth by
+# birth, for a writing pass: the birth, its traits, its backgrounds, its
+# companions, its enemies, the events that mention it, its naming lore, and a
+# computed list of gaps. The forest had this pass (2026-09-03/04) without a
+# workbook; ANIMAL_MEADOW.md is the first one.
+#
+# The same records also appear in ANIMAL_RACES.md and ANIMAL_COMPANIONS.md.
+# That is safe: the importer applies whichever copy differs from the data, and
+# refuses to write if two copies disagree.
+
+# Births the workbook is compared against. The forest had the full pass, so its
+# numbers are the yardstick for "how much a birth should have".
+FOREST_BIRTHS = ["rakshasa", "varaha", "marjara", "gana", "mriga", "vanara"]
+
+WORKBOOKS = [
+    {
+        "file": "ANIMAL_MEADOW.md",
+        "title": "Meadow",
+        "zone": "meadow",
+        "births": ["yaksha", "dura", "khadga", "bhramara", "patanga"],
+        # Sky births live in every zone; these two have their companions here.
+        "sky_births": ["shyena", "uluka"],
+        "intro": (
+            "The meadow's births, one at a time, the way the forest was done: rewrite "
+            "the prose, add backgrounds and companions where a birth is thin, and note "
+            "anything that wants a new trait, item or mechanic. Enemies, events and "
+            "naming lore are here for reference."
+        ),
+        # Findings a script cannot compute, written by hand and kept with the
+        # workbook so a regeneration does not lose them.
+        "known_issues": [
+            "**Khadga is two animals.** The birth, its body plan (`mantis`), its "
+            "backgrounds and its enemy archetypes are the mantis. Its naming lore is a "
+            "rhinoceros — wallows, horns, *The Good Mud*, *Where the Horn Broke*, "
+            "\"May your horn be long\" — and so are both its companions: "
+            "Tikshnashringa means *sharp horn* and charges in straight lines, and "
+            "Nirvikalpa weighs two thousand pounds. *Khadga* is Sanskrit for both a "
+            "sword and a rhinoceros, which is probably how it happened. Pick one — or "
+            "split it into two births, as gana and mriga were split.",
+        ],
+    },
+]
+
+
+def _event_mentions(birth_ids):
+    """Event ids per birth, from any event whose text or conditions name it."""
+    out = {b: [] for b in birth_ids}
+    for src, _, _ in REALMS:
+        events = load(f"resources/data/events/{src}").get("events", {})
+        items = events.items() if isinstance(events, dict) else \
+            ((e.get("id", str(i)), e) for i, e in enumerate(events))
+        for eid, e in items:
+            if not _is_record(e):
+                continue
+            blob = json.dumps(e, ensure_ascii=False).lower()
+            for b in birth_ids:
+                if re.search(rf"\b{b}\b", blob):
+                    out[b].append(eid)
+    return out
+
+
+def _bg_line(b, births_named):
+    bm = [f"births: {births_named}"]
+    bmods = {k: v for k, v in b.get("attribute_modifiers", {}).items() if v}
+    if bmods:
+        bm.append("attributes: " + ", ".join(f"{k}{v:+d}" for k, v in bmods.items()))
+    if b.get("starting_skills"):
+        bm.append("skills: " + ", ".join(f"{k} {v}" for k, v in b["starting_skills"].items()))
+    for s in b.get("starting_spells", []):
+        if isinstance(s, dict):
+            bm.append(f"spells: {s.get('count', 1)}× {s.get('school')} L{s.get('level')}")
+    kit = b.get("starting_equipment", {})
+    gear = [kit[k] for k in ("base_weapon",) if kit.get(k)] + kit.get("items", [])
+    if gear:
+        bm.append("kit: " + ", ".join(gear))
+    bm.append(f"weight {b.get('weight', '?')}")
+    return "`" + "  ·  ".join(bm) + "`\n"
+
+
+def _trait_line(tid, t):
+    """One reference line for a trait: name, text, and what it actually does."""
+    if not t:
+        return f"- `{tid}` — **missing from traits.json**\n"
+    fx = []
+    for k, v in t.get("stat_modifiers", {}).items():
+        fx.append(f"{k} {v:+d}")
+    for k, v in t.get("skill_modifiers", {}).items():
+        fx.append(f"{k} {v:+d}")
+    pm = t.get("pressure_modifiers", {})
+    if pm:
+        fx.append("pressure " + ", ".join(f"{k} {v:+d}" for k, v in pm.items()))
+    if t.get("event_tags"):
+        fx.append("tags " + ", ".join(t["event_tags"]))
+    fxs = f"  *({'; '.join(fx)})*" if fx else ""
+    return f"- **{t.get('name', tid)}** `{tid}` — {t.get('description', '')}{fxs}\n"
+
+
+def _birth_counts(bid, races, bgs, comps, arch, ev):
+    own = [k for k, b in bgs.items() if b.get("available_races") == [bid]]
+    shared = [k for k, b in bgs.items()
+              if bid in b.get("available_races", []) and len(b["available_races"]) > 1]
+    return {
+        "companions": sum(1 for c in comps.values() if c.get("birth") == bid),
+        "own": len(own), "shared": len(shared),
+        "archetypes": sum(1 for a in arch if a.startswith(f"animal_{bid}_")),
+        "events": len(ev.get(bid, [])),
+        "traits": len(races[bid].get("starting_traits", [])),
+    }
+
+
+def export_zone_workbook(wb):
+    d = load("resources/data/races.json")
+    races = _animal_races(d)
+    bgs = {k: v for k, v in d["backgrounds"].items() if _is_record(v)}
+    cdata = load("resources/data/companions.json")["companions"]
+    comps = {k: v for k, v in (cdata.items() if isinstance(cdata, dict)
+                               else ((c["id"], c) for c in cdata))
+             if _is_record(v) and v.get("realm") == "animal"}
+    traits = load("resources/data/traits.json")
+    arch = {k: v for k, v in load("resources/data/enemies/animal_archetypes.json")
+            ["archetypes"].items() if _is_record(v)}
+    enc = {k: v for k, v in load("resources/data/enemies/animal_encounters.json")
+           ["encounters"].items() if _is_record(v)}
+    regions = load("resources/data/animal_realm_names.json")["regions"]
+    names_of = {}
+    for rdata in regions.values():
+        for b, bdata in rdata.get("births", {}).items():
+            names_of[b] = bdata
+
+    births = wb["births"] + wb.get("sky_births", [])
+    ev = _event_mentions(births + FOREST_BIRTHS)
+    tier_of = rarity_tiers(races)
+    used_names = {c.get("name", "").lower() for c in comps.values()}
+
+    L = [f"# Animal Realm — {wb['title']} Workbook\n",
+         f"*{wb['intro']}*\n",
+         "*Prose between the anchors is editable and goes back into the game with "
+         "`python3 tools/import_review_docs.py`. The **Notes** space at the end of each "
+         "birth is for you: new backgrounds, companions, traits, digressions — write them "
+         "any shape you like and we turn them into data together. Notes are not imported, "
+         "and regenerating this file (`tools/export_review_docs.py`) replaces it, so "
+         "import and move your notes into data before regenerating.*\n",
+         "*Traits are shown for reference; edit their text in `TRAITS.md`.*\n", "---\n"]
+
+    # ── The yardstick ────────────────────────────────────────────────────────
+    L.append("\n## Against the forest\n")
+    L.append("\n*The forest births have had the full pass. Own = backgrounds only this "
+             "birth can take; shared = taken by several births but not universal.*\n")
+    L.append("\n| birth | zone | companions | own bgs | shared bgs | racial traits "
+             "| archetypes | events |\n|---|---|---|---|---|---|---|---|")
+    rows = [(b, "forest") for b in FOREST_BIRTHS] + \
+           [(b, wb["zone"]) for b in wb["births"]] + \
+           [(b, "sky") for b in wb.get("sky_births", [])]
+    for b, z in rows:
+        c = _birth_counts(b, races, bgs, comps, arch, ev)
+        L.append(f"| {races[b].get('name', b)} | {z} | {c['companions']} | {c['own']} "
+                 f"| {c['shared']} | {c['traits']} | {c['archetypes']} | {c['events']} |")
+    L.append("")
+
+    if wb.get("known_issues"):
+        L.append("\n## Known issues\n")
+        for s in wb["known_issues"]:
+            L.append(f"- {s}")
+        L.append("")
+    L.append("\n---\n")
+
+    # Shared backgrounds are written once, after the births — an anchor may
+    # appear only once per file.
+    shared_seen = {}
+
+    for bid in births:
+        r = races[bid]
+        sky = bid in wb.get("sky_births", [])
+        L.append(f"\n# {r.get('name', bid)}  `{bid}`{'  *(sky birth)*' if sky else ''}\n")
+
+        mech = []
+        if tier_of.get(bid):
+            mech.append(tier_of[bid])
+        mods = {k: v for k, v in r.get("attribute_modifiers", {}).items() if v}
+        if mods:
+            mech.append("attributes: " + ", ".join(f"{k}{v:+d}" for k, v in mods.items())
+                        + f" (total {sum(mods.values()):+d})")
+        if r.get("elemental_affinity_bonuses"):
+            mech.append("affinity: " + ", ".join(f"{k} {v:+d}" for k, v in
+                                                  r["elemental_affinity_bonuses"].items()))
+        if r.get("starting_skills"):
+            mech.append("skills: " + ", ".join(f"{k} {v}" for k, v in r["starting_skills"].items()))
+        if r.get("resistances"):
+            mech.append("resists: " + ", ".join(f"{k} {v}%" for k, v in r["resistances"].items()))
+        mech.append("body: " + (r.get("body_plan_species") or "standard"))
+        mech.append(f"reincarnation weight: {r.get('reincarnation_weight', 0)}")
+        L.append("`" + "  ·  ".join(mech) + "`\n")
+
+        L.append("\n**Name**\n")
+        L.append(anchor(["races.json", bid, "name"], r.get("name", "")))
+        L.append("\n**Description**\n")
+        L.append(anchor(["races.json", bid, "description"], r.get("description", "")))
+
+        # Traits
+        L.append("\n## Racial traits\n")
+        st = r.get("starting_traits", [])
+        if st:
+            for tid in st:
+                L.append(_trait_line(tid, traits.get(tid)))
+        else:
+            L.append("*None.*\n")
+
+        # Backgrounds
+        own = sorted(k for k, b in bgs.items() if b.get("available_races") == [bid])
+        shared = sorted(k for k, b in bgs.items()
+                        if bid in b.get("available_races", []) and len(b["available_races"]) > 1)
+        L.append(f"\n## Backgrounds only a {r.get('name', bid).lower()} can take  ({len(own)})\n")
+        for k in own:
+            b = bgs[k]
+            L.append(f"\n### {b.get('name', k)}  `{k}`\n")
+            L.append(_bg_line(b, r.get("name", bid)))
+            L.append("\n**Name**\n")
+            L.append(anchor(["backgrounds.json", k, "name"], b.get("name", "")))
+            L.append("\n**Description**\n")
+            L.append(anchor(["backgrounds.json", k, "description"], b.get("description", "")))
+        if shared:
+            L.append("\n**Shared with other births** *(written out under "
+                     "[Shared backgrounds](#shared-backgrounds))*: "
+                     + ", ".join(f"{bgs[k].get('name', k)} `{k}`" for k in shared) + "\n")
+            for k in shared:
+                shared_seen.setdefault(k, None)
+        L.append("\n*Plus the universal backgrounds every birth can take.*\n")
+
+        # Companions
+        mine = sorted((k, c) for k, c in comps.items() if c.get("birth") == bid)
+        L.append(f"\n## Companions  ({len(mine)})\n")
+        for cid, c in mine:
+            L.append(f"\n### {c.get('name', cid)}  `{cid}`\n")
+            stat = [f"zone: {c.get('zone', '?')}", f"background: {c.get('background', '?')}"]
+            if c.get("traits"):
+                stat.append("traits: " + ", ".join(c["traits"]))
+            stat.append(f"cost: {c.get('recruitment_cost', '?')}")
+            fs = c.get("fixed_starter", {}).get("skills", {})
+            if fs:
+                stat.append("starts with: " + ", ".join(f"{k} {v}" for k, v in fs.items()))
+            eq = list(c.get("starting_equipment", {}).values()) + c.get("fixed_items", [])
+            if eq:
+                stat.append("carries: " + ", ".join(eq))
+            L.append("`" + "  ·  ".join(str(s) for s in stat) + "`\n")
+            for tid in c.get("traits", []):
+                L.append(_trait_line(tid, traits.get(tid)))
+            bw = c.get("build_weights", {})
+            L.append("\n**Skills** *(strongest first)*\n")
+            L.append(anchor(["companions.json", cid, "build_weights"],
+                            ", ".join(k for k, _ in sorted(bw.items(), key=lambda kv: -kv[1]))))
+            for field in ("flavor_text", "description", "recruitment_text"):
+                if field in c:
+                    L.append(f"\n**{field.replace('_', ' ').title()}**\n")
+                    L.append(anchor(["companions.json", cid, field], c[field]))
+
+        # Enemies
+        mine_a = sorted((k, a) for k, a in arch.items() if k.startswith(f"animal_{bid}_"))
+        L.append(f"\n## Enemies  ({len(mine_a)} archetypes)\n")
+        for aid, a in mine_a:
+            used_in = sorted(e for e, v in enc.items() if aid in json.dumps(v))
+            L.append(f"- **{a.get('name', aid)}** `{aid}` — {a.get('tier')} "
+                     f"{'/'.join(a.get('roles', []))}"
+                     + (f"; in {', '.join(used_in)}" if used_in else "; in no encounter"))
+        if not mine_a:
+            L.append("*None.*")
+        L.append("")
+
+        # Events
+        L.append(f"\n## Events that mention it  ({len(ev[bid])})\n")
+        L.append((", ".join(f"`{e}`" for e in ev[bid]) or "*None.*") + "\n")
+
+        # Naming lore — reference; edit it in ANIMAL_NAMES.md
+        nm = names_of.get(bid)
+        L.append("\n## Naming lore  *(reference — edit in `ANIMAL_NAMES.md`)*\n")
+        if nm:
+            if nm.get("naming_philosophy"):
+                L.append(f"> {nm['naming_philosophy']}\n")
+            if nm.get("parent_wishes"):
+                L.append("**Parent wishes:** " + " · ".join(nm["parent_wishes"]) + "\n")
+            if nm.get("personal_names"):
+                L.append("**Personal names** *(~~struck~~ = already a companion)*\n")
+                for p in nm["personal_names"]:
+                    n = p.get("name", "")
+                    shown = f"~~{n}~~" if n.lower() in used_names else f"**{n}**"
+                    L.append(f"- {shown} — {p.get('meaning', '')}")
+                L.append("")
+            places = nm.get("place_names") or nm.get("named_places") or []
+            if places:
+                L.append("**Place names**\n")
+                for p in places:
+                    L.append(f"- **{p.get('name', '')}** — {p.get('meaning', '')}")
+                L.append("")
+        else:
+            L.append("*No naming lore.*\n")
+
+        # Gaps — computed, so they shrink as the pass fills them
+        gaps = []
+        if len(mine) < 5:
+            gaps.append(f"{len(mine)} companion{'s' if len(mine) != 1 else ''} — the forest "
+                        "births sit at six to eight.")
+        if len(own) < 3:
+            gaps.append(f"{len(own)} background{'s' if len(own) != 1 else ''} of its own.")
+        idle = [k for k in own + shared
+                if not any(c.get("background") == k for c in comps.values())]
+        if idle:
+            gaps.append("No companion has these backgrounds: "
+                        + ", ".join(f"`{k}`" for k in idle) + ".")
+        if not st:
+            gaps.append("No racial trait.")
+        if not r.get("body_plan_species"):
+            gaps.append("Standard body plan — no natural weapons or extra limbs.")
+        tiers = {a.get("tier") for _, a in mine_a}
+        missing = [t for t in ("imp", "shade", "devil") if t not in tiers]
+        if missing and mine_a:
+            gaps.append("No " + "/".join(missing) + "-tier archetype.")
+        if not ev[bid]:
+            gaps.append("No events mention it.")
+        if nm:
+            free = [p["name"] for p in nm.get("personal_names", [])
+                    if p.get("name", "").lower() not in used_names]
+            if free:
+                gaps.append(f"{len(free)} unused names ready for new companions.")
+        L.append("\n## Gaps\n")
+        for g in gaps:
+            L.append(f"- {g}")
+        L.append("")
+
+        L.append("\n## Notes\n\n*Your space — new backgrounds, companions, traits, ideas.*\n\n\n")
+        L.append("\n---\n")
+
+    # Shared backgrounds, once each
+    L.append("\n# Shared backgrounds\n")
+    L.append("\n*Backgrounds several births can take. Births outside this workbook are "
+             "listed too — an edit here changes it for them as well.*\n")
+    for k in sorted(shared_seen):
+        b = bgs[k]
+        who = ", ".join(races[x].get("name", x) if x in races else x
+                        for x in b.get("available_races", []))
+        holders = [c.get("name", cid) for cid, c in comps.items() if c.get("background") == k]
+        L.append(f"\n## {b.get('name', k)}  `{k}`\n")
+        L.append(_bg_line(b, who))
+        L.append("*Companions: " + (", ".join(holders) or "none") + "*\n")
+        L.append("\n**Name**\n")
+        L.append(anchor(["backgrounds.json", k, "name"], b.get("name", "")))
+        L.append("\n**Description**\n")
+        L.append(anchor(["backgrounds.json", k, "description"], b.get("description", "")))
+
+    write(wb["file"], "\n".join(L))
+    return len(births)
+
+
 ANCHOR_KEY = re.compile(r"<!--@ (.+?) -->")
 
 
@@ -703,6 +1056,9 @@ if __name__ == "__main__":
     print(f"     animal map: {z} zones, {t} settlement names")
     r, n = export_animal_names()
     print(f"     naming lore: {r} regions, {n} entries")
+    for wb in WORKBOOKS:
+        n = export_zone_workbook(wb)
+        print(f"     {wb['title']} workbook: {n} births")
     for src, out, title in REALMS:
         total, new = export_events(src, out, title)
         print(f"     {title}: {total} events, {new} new")
