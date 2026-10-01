@@ -77,6 +77,7 @@ resources/data/      all content as JSON
 docs/review/         content prose, round-trips to JSON (see below)
 docs/superpowers/specs/   design docs for work not yet built
 tools/               validators, verifiers, data authoring scripts
+tools/writer_guide/  builds docs/SIX_WORLDS_WRITERS_GUIDE.pdf from the data (render.sh)
 ```
 
 Systems worth knowing by name: `CharacterSystem` (stats, skills, party),

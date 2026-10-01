@@ -1,0 +1,87 @@
+:root{--red:#7a1f1f;--gold:#b8902f;--indigo:#1f2a5a;--ink:#2b2118;--paper:#fffdf8;--soft:#f6efe0;--mute:#7b6f60}
+@page{size:A4;margin:20mm 18mm 20mm 18mm}
+*{box-sizing:border-box}
+html{font-size:10pt}
+body{font-family:"Liberation Serif","Times New Roman",serif;color:var(--ink);line-height:1.42;margin:0;background:#fff;
+  hyphens:none;text-align:left}
+p{margin:.45em 0}
+em{font-style:italic}
+code{font-family:"DejaVu Sans Mono",monospace;font-size:.88em;background:var(--soft);padding:0 2px}
+h1,h2,h3,h4{font-family:"DejaVu Serif","Liberation Serif",serif;color:var(--red);line-height:1.2;break-after:avoid}
+h1.part{font-size:30pt;color:var(--indigo);margin:0;text-align:center;font-weight:bold;letter-spacing:.02em}
+h2{font-size:19pt;margin:0 0 .5em;padding-bottom:.25em;border-bottom:2px solid var(--gold);break-before:page}
+h3{font-size:13pt;margin:1.3em 0 .4em;color:var(--indigo)}
+h4{font-size:11pt;margin:1em 0 .2em}
+h4.sub{color:var(--indigo);font-size:10.5pt;border-bottom:1px solid #d9cdb0;padding-bottom:2px;margin-top:1.2em}
+h4.birthhead{font-size:12pt;color:var(--indigo);border-bottom:1px solid var(--gold);margin-top:1.5em;break-before:auto}
+.chapter{}
+.part-page{break-before:page;break-after:page;height:240mm;display:flex;align-items:center;justify-content:center;
+  border:3px double var(--gold);padding:30mm}
+.part-page h1{border:none}
+.cover{height:257mm;display:flex;align-items:center;justify-content:center;text-align:center;break-after:page;
+  border:4px double var(--gold)}
+.cover-in{width:80%}
+.cover .rule{height:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:14mm 0}
+.cover .title{font-family:"DejaVu Serif",serif;font-size:50pt;color:var(--red);margin:0;letter-spacing:.04em}
+.cover .subtitle{font-family:"DejaVu Serif",serif;font-size:18pt;color:var(--indigo);margin-top:6mm}
+.cover .for{font-size:15pt;margin-top:10mm;font-style:italic}
+.cover .small{margin-top:14mm;color:var(--mute);font-size:10pt}
+.tagline{font-style:italic;font-size:12pt;color:var(--indigo);margin-top:0}
+.note{background:var(--soft);border-left:4px solid var(--gold);padding:.5em .8em;margin:.9em 0;break-inside:avoid}
+.figure{margin:1em 0;break-inside:avoid}
+ul,ol{margin:.4em 0 .6em 1.2em;padding:0}
+li{margin:.2em 0}
+ol.steps{margin-left:1.4em}ol.steps.small{font-size:9pt}
+table.grid{width:100%;border-collapse:collapse;margin:.7em 0;font-size:9pt}
+table.grid th{background:var(--indigo);color:#fff;text-align:left;padding:4px 6px;font-family:"DejaVu Sans",sans-serif;font-size:8.5pt}
+table.grid td{border-bottom:1px solid #e0d6bd;padding:4px 6px;vertical-align:top}
+table.grid tr{break-inside:avoid}
+table.grid tr:nth-child(even) td{background:#fbf7ec}
+table.traits td{font-size:8.5pt}
+.id{font-family:"DejaVu Sans Mono",monospace;font-size:7pt;color:var(--mute);font-weight:normal;letter-spacing:0}
+.mech,.dnote{font-size:8.5pt;color:var(--mute);font-family:"DejaVu Sans",sans-serif}
+.dnote{font-style:italic;font-family:"Liberation Serif",serif;font-size:9pt;margin-top:1px}
+.lvl{font-family:"DejaVu Sans",sans-serif;font-size:8pt;color:var(--mute);font-weight:normal}
+.karma{font-family:"DejaVu Sans",sans-serif;font-size:8.5pt;color:var(--mute)}
+.school{break-inside:avoid;margin-bottom:.4em}
+ul.spells li{margin:.15em 0}
+ul.names{columns:2;column-gap:10mm;margin-top:.2em;font-size:9pt}
+ul.names li{break-inside:avoid}
+.perk{margin:0 0 .35em;font-size:8.8pt}
+.place{margin:.55em 0 .6em;break-inside:avoid}
+.place p{margin:.2em 0}
+/* events */
+.event{margin:1.1em 0 1.3em;padding-top:.5em;border-top:1px solid #cfc2a0}
+.event h4{margin:.1em 0 .25em;font-size:11.5pt;color:var(--red)}
+.etext{margin:.3em 0 .5em}
+.choice{margin:.35em 0;padding:.25em .6em;border-left:4px solid #bbb;background:#faf8f2;break-inside:avoid}
+.choice.blue{border-left-color:#3566b8;background:#f1f5fc}
+.choice.yellow{border-left-color:#c9a21a;background:#fdf8e6}
+.badge{display:inline-block;font-family:"DejaVu Sans",sans-serif;font-size:7pt;font-weight:bold;text-transform:uppercase;letter-spacing:.04em;
+  padding:1px 5px;border-radius:2px;color:#fff;background:#888;vertical-align:1px}
+.badge.blue{background:#3566b8}.badge.yellow{background:#b8901a}.badge.grey{background:#888}
+.chead{font-weight:bold}
+.req{font-family:"DejaVu Sans",sans-serif;font-size:8pt;color:#3d4f7a;margin:1px 0 2px}
+.outcome{margin:.2em 0 .25em .4em;font-size:9.6pt}
+.outcome p{margin:.2em 0}
+.olabel{font-family:"DejaVu Sans",sans-serif;font-size:8pt;font-weight:bold;color:var(--indigo)}
+.otag{font-family:"DejaVu Sans",sans-serif;font-size:8pt;font-weight:bold;color:var(--red)}
+.after{margin-left:.6em;border-left:2px solid #d9cdb0;padding-left:.5em}
+/* companions, births, backgrounds */
+.comp,.birth,.bg{margin:.6em 0 .9em;padding:.4em .7em;border:1px solid #e0d6bd;border-left:4px solid var(--gold);background:#fffcf4;break-inside:avoid}
+.comp h4,.birth h4,.bg h4{margin:.1em 0 .2em}
+.cmeta{font-family:"DejaVu Sans",sans-serif;font-size:8.5pt;color:var(--indigo)}
+.cmeta2{font-family:"DejaVu Sans",sans-serif;font-size:8pt;color:var(--mute);margin-top:.3em}
+.meaning{font-size:9.5pt;color:#5a4a30;margin:.1em 0 .2em}
+.flavor p{margin:.25em 0}
+/* TOC */
+.toc-page{break-after:page}
+.tochead{break-before:avoid;font-size:22pt;border:none;margin-bottom:.4em}
+.toc a{display:flex;align-items:baseline;color:inherit;text-decoration:none}
+.toc .tl{white-space:normal}
+.toc .dots{flex:1;border-bottom:1px dotted #aaa;margin:0 4px;transform:translateY(-3px);min-width:10px}
+.toc .tp{min-width:2.4em;text-align:right;font-variant-numeric:tabular-nums}
+.toc.l1{margin-top:.9em;font-weight:bold;color:var(--indigo);font-size:11pt;font-family:"DejaVu Serif",serif}
+.toc.l2{margin-left:.8em;font-size:9.8pt;margin-top:.15em}
+.toc.l3{margin-left:2.2em;font-size:8.6pt;color:#5a4a30}
+.pskill{color:var(--indigo)}
