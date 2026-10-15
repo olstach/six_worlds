@@ -727,13 +727,24 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	# apply_birth_modifiers() above stored the birth's resistances on
 	# built["base_resistances"]; today every race's list is empty, so this
 	# changes nothing until races are given some.
+	# (The zeroed keys were the old air/water/earth until 2026-10-15 — schools,
+	# not damage types, so three of the seven named nothing anyone deals.)
 	var resistances = {
-		"physical": 0, "space": 0, "air": 0,
-		"fire": 0, "water": 0, "earth": 0, "black": 0
+		"physical": 0, "space": 0, "lightning": 0,
+		"fire": 0, "ice": 0, "poison": 0, "black": 0
 	}
 	var racial_resists: Dictionary = built.get("base_resistances", {})
 	for key in racial_resists:
 		resistances[key] = resistances.get(key, 0) + racial_resists[key]
+	# And the birth's TRAITS. Most racial resistance actually lives on traits
+	# (Undead: poison 25, disease 50; Incorporeal: physical 50), which
+	# apply_birth_modifiers() gave this enemy through `starting_traits`. A player
+	# gets them via TraitSystem.get_resistances() in update_derived_stats(); an
+	# enemy never ran that step, so a skeleton enemy shrugged off poison no
+	# better than a living one until 2026-10-15.
+	var trait_resists: Dictionary = TraitSystem.get_resistances(built)
+	for key in trait_resists:
+		resistances[key] = resistances.get(key, 0) + trait_resists[key]
 	var arch_resists = archetype.get("resistances", {})
 	for key in arch_resists:
 		resistances[key] = resistances.get(key, 0) + arch_resists[key]

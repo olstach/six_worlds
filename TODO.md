@@ -1773,17 +1773,34 @@ were accurate on 2026-10-15 and drift.
       (`combat_manager.gd:~9290`; the slots are `hand_l`/`hand_r`). Gauntlets
       never count as armour, while trousers make you armoured. Affects Diamond
       Body, Bare Chest, Flowing Footwork and the new `unarmored_or_light`.
-- [ ] **Poison and acid ground deal `physical` damage**
+- [x] **Poison and acid ground deal `physical` damage**
       (`combat_manager.gd:~6531/~6537`), so armour reduces them and poison
       resistance does nothing, while the Poisoned status deals poison.
-- [ ] **Storm_Lord and Lightning_Form retaliate with `"element": "air"`**
+      *Fixed 2026-10-15:* both deal `poison`. Acid could have been "physical
+      that ignores armour", but the acid bomb and flask already deal poison
+      and the puddle should be the same stuff as the splash.
+- [x] **Storm_Lord and Lightning_Form retaliate with `"element": "air"`**
       (`statuses.json:~657/~698`). Air stopped being a damage type in the
       resistance rebuild, so it lands unresisted and not as magic — should be
       `lightning`. `validate_data.py`'s `_walk_damage_types` (`~1013`) checks
       `damage_type` keys but not `element`, which is why nothing caught it.
-- [ ] **Wet ground only slows.** Comments at `combat_manager.gd:~6558` and in
+      *Fixed 2026-10-15:* lightning. The validator now checks `element` in
+      the files where it means damage (statuses, zones, auras, ammo, spells,
+      summons — elsewhere it is a skill element), plus `damage_element`,
+      `attack_damage_type`, `retaliation_damage`, and the brand and weapon
+      enchant tables in combat_manager.gd. That turned up five more of the
+      same: the tornado zone dealt `air` (now physical, like its spell), the
+      vajra mandala's toll and Drowning Pressure dealt `water` (now crushing,
+      what water spells deal), Frost/Stone/Storm brands dealt water/earth/air
+      (now ice/crushing/lightning) and Electrified_Weapon's bonus was `air`
+      (now lightning).
+- [x] **Wet ground only slows.** Comments at `combat_manager.gd:~6558` and in
       `CombatGrid.add_terrain_effect` promise an ice/air (or water)
       vulnerability that the code never grants.
+      *Fixed 2026-10-15:* wet ground also applies a new **Soaked** status,
+      `grants_vulnerability: {lightning: 25}`, for a turn. Lightning only —
+      water conducts, and it makes wet ground a set-up an Air caster cashes
+      in rather than a Water caster's combo with itself. 25 is first-pass.
 - [ ] **Supply purchases never pay the shop's purse** — `buy_item` returns
       before `_adjust_shop_purse(price)` for supply items
       (`shop_system.gd:~643-653`).
@@ -1796,9 +1813,13 @@ were accurate on 2026-10-15 and drift.
 - [ ] **Severing a primary arm drops only the ACTIVE weapon set's weapon**
       (`body_system.gd:~444`); the other set's stays in the lost hand. And
       with a full inventory the force-clear deletes the item (`~433`).
-- [ ] **Bombs and the poison talisman brand apply statuses with no source**
+- [x] **Bombs and the poison talisman brand apply statuses with no source**
       (`combat_manager.gd:~7174`, `~10060`), so the thrower's
       `burning_damage_pct` / `poison_damage_pct` never scale them.
+      *Fixed 2026-10-15,* and aura `grant_status` passes its owner too. On the
+      way: the flashbang and acid flask list bare status names, and `_use_bomb`
+      called `.get()` on them — a script error that stopped the throw. Bare
+      names now take the bomb's `status_duration`.
 - [ ] **Luck's loot weighting is dead code.** `_get_modified_rarity_weights()`
       (`combat_manager.gd:~787`) is never called, `_generate_loot_drops`
       (`~634`) ignores its `_best_luck`, and the jackpot reads raw
@@ -1815,8 +1836,10 @@ were accurate on 2026-10-15 and drift.
 - [ ] **`duel_stop_hp_pct` on an encounter is ignored** — only the archetype's
       copy is read (`hungry_ghost_encounters.json:~603`, `enemy_system.gd:~928`).
       And the duel threshold moves with in-combat max-HP changes.
-- [ ] **Enemies don't get their birth TRAITS' resistances**
+- [x] **Enemies don't get their birth TRAITS' resistances**
       (`enemy_system.gd:~723`); players do, through `TraitSystem.get_resistances`.
+      *Fixed 2026-10-15:* the same call, added after the racial block. An
+      undead enemy now resists poison 25 and disease 50 like an undead player.
 
 ### Multi-arm attacks drift from the main hit
 
@@ -1867,10 +1890,20 @@ adding one a single line when it is wanted.
       has 16 `effect_duration_turns` and no `effect_duration_pct`. Re-check
       whether `_calculate_status_duration` and `derived.effect_duration_turns`
       actually double-count before deciding anything.
-- [ ] **Unread flags in spell `special` blocks** duplicate what their statuses
+- [x] **Unread flags in spell `special` blocks** duplicate what their statuses
       do: `spells.json:~5419` `physical_immunity`, `~7044`
       `immune_to_all_damage`, `~7436` `magic_resistance_bonus`, `~1380`
       `fire_vulnerability`, `~4757` `ranged_damage_reduction`. Delete them.
+      *Done 2026-10-15,* with their unread siblings that also only restated
+      the status (`cannot_deal_physical`, `major_speed_boost`, `defense_bonus`,
+      `short_duration`). Oily Skin keeps `cumulative: true` — see below.
+- [ ] **Oily Skin says `cumulative: true`** (`spells.json:~1380`) and nothing
+      reads it; Fire_Vulnerable is not `stackable`, so a second cast only
+      refreshes. Make the status stack, or drop the flag.
+- [ ] **The acid bomb and flask apply `Corroded`, which is not a status**
+      (`items.json:~2690/~2993`), and the flask's `armor_reduction: 5` has no
+      reader. "Eats through armour" is the item's whole point and does nothing
+      beyond poison damage. Needs a Corroded status (armour down) to exist.
 - [ ] **The disease-on-hit and crit-wound code exists twice**
       (`combat_manager.gd:~1566-1594` and `~9549-9600`) — see the multi-arm note.
 - [ ] **`_check_special_requirement`'s attribute branch has no users**

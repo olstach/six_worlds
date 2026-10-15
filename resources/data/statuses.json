@@ -106,6 +106,22 @@
 	  ]
 	},
 	{
+	  "name": "Soaked",
+	  "_comment": "What standing in water does to you: lightning finds you more easily. Applied by wet ground at the start of each turn you begin on it (CombatManager._process_terrain_effects), so it lasts through the round in which an enemy could exploit it and lapses a turn after you step out. Lightning only, not ice: water conducts, and that makes wet ground a set-up an Air caster can cash in, rather than a Water caster's own combo with itself. 25% is a first-pass balance number — modest because the ground already slows you.",
+	  "type": "debuff",
+	  "category": "debuff",
+	  "effects": [],
+	  "grants_vulnerability": {
+		"lightning": 25
+	  },
+	  "duration_type": "turns",
+	  "default_duration": 1,
+	  "dispellable": true,
+	  "dispel_methods": [
+		"cleanse"
+	  ]
+	},
+	{
 	  "name": "Petrified",
 	  "type": "debuff",
 	  "category": "cc",
@@ -654,7 +670,7 @@
 	  "retaliation": {
 		"range": "melee",
 		"damage": 8,
-		"element": "air"
+		"element": "lightning"
 	  }
 	},
 	{
@@ -695,7 +711,7 @@
 	  "retaliation": {
 		"range": "melee",
 		"damage": 10,
-		"element": "air",
+		"element": "lightning",
 		"status": "Stunned",
 		"status_duration": 1,
 		"status_chance": 0.3

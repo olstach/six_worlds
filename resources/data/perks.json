@@ -6277,7 +6277,7 @@
       "skill": "water_magic",
       "required_level": 9,
       "requires_perks": [],
-      "description": "Active (once per combat, 15 Mana). All enemies in a 3-tile radius take Water damage (75% Spellpower) and are Silenced for 2 turns (Focus save negates silence, damage still applies).",
+      "description": "Active (once per combat, 15 Mana). All enemies in a 3-tile radius take crushing Water damage (75% Spellpower) and are Silenced for 2 turns (Focus save negates silence, damage still applies).",
       "flavor": "",
       "is_mantra": false,
       "combat_data": {
@@ -6287,7 +6287,7 @@
         "range": 5,
         "aoe_radius": 3,
         "damage_pct": 75,
-        "damage_element": "water",
+        "damage_element": "crushing",
         "save_type": "focus",
         "dc_stat": "focus",
         "statuses": [

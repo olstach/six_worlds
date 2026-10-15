@@ -33,10 +33,10 @@
         { "kind": "stat", "stat": "spellpower", "amount": 3, "affects": "allies" }
       ],
       "on_enter": [
-        { "kind": "damage", "amount": 25, "element": "water", "affects": "enemies" },
+        { "kind": "damage", "amount": 25, "element": "crushing", "affects": "enemies" },
         { "kind": "grant_status", "status": "Frozen", "duration": 1, "chance": 0.35, "affects": "enemies" }
       ],
-      "_comment": "A circle of orbiting vajras. Allies inside are sheltered from magic and cast from a consecrated circle — a mandala is what Ritual is for — while enemies pay to cross the line, once, each time they cross it. The shelter and the spellpower are the two payload kinds that are READ where they apply rather than pushed on a tick; see CombatManager._zone_damage_taken_multiplier."
+      "_comment": "A circle of orbiting vajras. Allies inside are sheltered from magic and cast from a consecrated circle — a mandala is what Ritual is for — while enemies pay to cross the line, once, each time they cross it. The shelter and the spellpower are the two payload kinds that are READ where they apply rather than pushed on a tick; see CombatManager._zone_damage_taken_multiplier. The crossing toll was `water` until 2026-10-15, which is not a damage type, so nothing resisted it; it is crushing now — the vajras are what hit you, and the spell itself deals crushing."
     },
 
     "poison_cloud": {
@@ -133,12 +133,12 @@
       "affects": "all",
       "drift": "random",
       "while_inside": [
-        { "kind": "damage", "amount": 20, "element": "air" }
+        { "kind": "damage", "amount": 20, "element": "physical" }
       ],
       "on_enter": [
-        { "kind": "damage", "amount": 10, "element": "air" }
+        { "kind": "damage", "amount": 10, "element": "physical" }
       ],
-      "_comment": "A zone that will not stay where you put it. Hits everyone, including the caster's own people, and wanders a tile a round — which is the whole character of the spell and the reason its `special` keys sat unread for months."
+      "_comment": "A zone that will not stay where you put it. Hits everyone, including the caster's own people, and wanders a tile a round — which is the whole character of the spell and the reason its `special` keys sat unread for months. It dealt `air` until 2026-10-15; air stopped being a damage type in the resistance rebuild, and wind that throws people is debris, so it is physical, like the spell."
     }
   }
 }

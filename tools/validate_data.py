@@ -1003,11 +1003,27 @@ for _name in sorted(_damage_types):
             "is not a damage type")
 
 
+# Keys that name a damage type, whatever file they are in. `damage_element` is
+# a perk's combat_data (Drowning Pressure); `attack_damage_type` a summon's;
+# `retaliation_damage` an old spell `special` flag.
+_DT_KEYS = ("damage_type", "bonus_damage_type", "element_damage_type",
+            "damage_element", "attack_damage_type", "retaliation_damage")
+# `element` is the awkward one. In items.json, skills.json and the equipment
+# tables it names a SKILL element (earth, air, water — not damage types), but
+# in these files it is what a retaliation, a zone payload or an ammo burst
+# DEALS. Storm_Lord and Lightning_Form retaliated with `"element": "air"` for
+# months after air stopped being a damage type, and the tornado and vajra
+# mandala zones dealt `air` and `water`: all unresisted, all invisible to this
+# check, because it only looked at `damage_type`.
+_ELEMENT_IS_DAMAGE_IN = ("statuses.json", "zones.json", "auras.json",
+                         "ammo.json", "spells.json", "summon_templates.json")
+
+
 def _walk_damage_types(node, where):
     """Every damage_type field and resistance key under `node`."""
     if isinstance(node, dict):
         for k, v in node.items():
-            if k in ("damage_type", "bonus_damage_type", "element_damage_type") \
+            if (k in _DT_KEYS or (k == "element" and where in _ELEMENT_IS_DAMAGE_IN)) \
                     and isinstance(v, str) and v not in ("", "none"):
                 # A `resistance` effect reuses the `damage_type` field to name
                 # what is resisted, and some of those are afflictions rather
@@ -1068,6 +1084,19 @@ for _gd in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
         if _m.group(1) not in _damage_types:
             err("code->data", f"{_rel}: apply_damage deals '{_m.group(1)}', which "
                 "is not in damage_types.json")
+    # And the two lookup tables that feed apply_damage a VARIABLE, which the
+    # regex above cannot see: the talisman brands ("air_brand": ["air", 0.10])
+    # and the status weapon enchants ("adds_air_damage_to_attacks": "air").
+    # Storm, Frost and Stone brands and Electrified_Weapon dealt air, water and
+    # earth — no resistance in the game matched them — until 2026-10-15.
+    for _m in re.finditer(r'"[a-z_]*brand[a-z_]*":\s*\["([a-z_]+)"', _src):
+        if _m.group(1) not in _damage_types:
+            err("code->data", f"{_rel}: a talisman brand deals '{_m.group(1)}', "
+                "which is not in damage_types.json")
+    for _m in re.finditer(r'"adds_[a-z_]+_damage_to_attacks":\s*"([a-z_]+)"', _src):
+        if _m.group(1) not in _damage_types:
+            err("code->data", f"{_rel}: a weapon enchant deals '{_m.group(1)}', "
+                "which is not in damage_types.json")
 
 
 # ── Reaction stances ────────────────────────────────────────────────────────

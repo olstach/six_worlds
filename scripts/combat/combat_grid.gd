@@ -808,7 +808,7 @@ func add_terrain_effect(grid_pos: Vector2i, effect: int, duration: int = 3, valu
 			TerrainEffect.CURSED:
 				value = 2  # Damage per turn
 			TerrainEffect.WET:
-				value = 0  # No damage, slows and grants water vulnerability
+				value = 0  # No damage; slows and Soaks (lightning vulnerability)
 			TerrainEffect.STORMY:
 				value = 3  # Air damage per turn, stun chance
 			TerrainEffect.VOID:
