@@ -35,6 +35,36 @@
       "weight": 10
     }
   ],
+  "_comment_difficulty": "THE place to tune how hard a fight is. Every event outcome and map mob that starts a fight carries a `difficulty` word (easy, normal, hard, very_hard, boss); this table says what each word does. It works THROUGH the XP budget above rather than multiplying HP afterwards, so a harder fight is built from more XP: its enemies get better attributes, skills, gear and spells the way a stronger character would, and the XP and gold the party earns for winning rise with it automatically (rewards are a fraction of what the enemy party cost). Knobs per tier: `xp_multiplier` multiplies the party XP budget (1.0 = unchanged, 1.2 = a fifth more). `min_tier` (optional) prices the fight as at least this encounter tier, so a 'boss' fight is boss-priced even if its enemy list is ordinary. `band` (optional) skips the common/uncommon/rare roll and always uses this band, so an authored set piece cannot randomly come out 2.3 times as strong. 'normal' must stay at 1.0 with no other knobs: it is what every fight without a difficulty gets.",
+  "difficulty": {
+    "easy": {
+      "xp_multiplier": 0.75
+    },
+    "normal": {
+      "xp_multiplier": 1.0
+    },
+    "hard": {
+      "xp_multiplier": 1.2
+    },
+    "very_hard": {
+      "xp_multiplier": 1.4
+    },
+    "_comment_boss": "All four boss fights in the game already use boss-tier enemies, which the tier table above prices at 2.0. A further multiplier here would count being a boss twice (2.0 x 1.6 = 3.2), so boss leaves the size alone and instead makes the fight predictable: always boss-priced, never a rolled rare band.",
+    "boss": {
+      "xp_multiplier": 1.0,
+      "min_tier": "boss",
+      "band": "common"
+    }
+  },
+  "_comment_difficulty_aliases": "Words that are NOT combat difficulties but are understood at runtime (with a warning) by mapping them onto one that is. Event skill-roll tiers use a different vocabulary (difficult, very_difficult, trivial), so a fight written with a roll word still works. tools/validate_data.py rejects these in data; they exist for old saves and slips of the pen.",
+  "difficulty_aliases": {
+    "trivial": "easy",
+    "medium": "normal",
+    "moderate": "normal",
+    "difficult": "hard",
+    "very_difficult": "very_hard",
+    "almost_impossible": "very_hard"
+  },
   "_comment_reward": "Fraction of the enemy party's XP the player party gains, before division by party size.",
   "reward_fraction": 0.12,
   "_comment_breadth": "Past xp_threshold a growing share of the budget is spent OUTSIDE the archetype's plan — attributes it does not weight, skills off its priority list. Keeps a high-XP enemy from being three maxed skills and one enormous attribute, and makes it memorable: a fighter who also took a class in clay sculpture.",

@@ -54,6 +54,12 @@ for path in glob.glob(os.path.join(ROOT, "resources/data/enemies/*_encounters.js
         if not k.startswith("_"):
             encounters[k] = (v, os.path.basename(path))
 
+# Fight difficulty tiers: the `difficulty` table in encounter_budgets.json is
+# the only vocabulary EnemySystem understands. Anything else in data falls back
+# to "normal" at runtime with a warning — so here it is an error instead.
+budgets_data = load("resources/data/enemies/encounter_budgets.json")
+FIGHT_DIFFICULTIES = {k for k in budgets_data.get("difficulty", {}) if not k.startswith("_")}
+
 events = {}
 for path in glob.glob(os.path.join(ROOT, "resources/data/events/*_events.json")):
     for k, v in json.load(open(path, encoding="utf-8"))["events"].items():
@@ -139,6 +145,10 @@ def check_outcome(outcome, ctx, depth=0):
 
     if otype == "combat" and outcome.get("enemy_group", "") not in encounters:
         err("event->enemy_group", f"{ctx}: enemy_group '{outcome.get('enemy_group', '')}' unknown")
+    if "difficulty" in outcome and outcome["difficulty"] not in FIGHT_DIFFICULTIES:
+        err("event->difficulty",
+            f"{ctx}: fight difficulty {outcome['difficulty']!r} is not one of "
+            f"{sorted(FIGHT_DIFFICULTIES)} (encounter_budgets.json 'difficulty')")
     if otype == "shop" and outcome.get("shop_id", "") not in shops:
         err("event->shop", f"{ctx}: shop_id '{outcome.get('shop_id', '')}' unknown")
     if otype == "recruit_companion":
@@ -471,6 +481,38 @@ for path in sorted(glob.glob(os.path.join(ROOT, "resources/data/map_configs/*.js
             group = mob.get("enemy_group", "")
             if group and group not in encounters:
                 err("map->enemy_group", f"{base}:{zone}: enemy_group '{group}' unknown")
+            if "difficulty" in mob and mob["difficulty"] not in FIGHT_DIFFICULTIES:
+                err("map->difficulty",
+                    f"{base}:{zone}: mob '{mob.get('name', group)}' difficulty "
+                    f"{mob['difficulty']!r} is not one of {sorted(FIGHT_DIFFICULTIES)}")
+
+# ── fight difficulty table ───────────────────────────────────────────────────
+# The knobs themselves must point at things that exist, and "normal" must stay
+# the identity: every fight without a difficulty gets it, so changing it would
+# silently re-tune the whole game.
+_diff_table = budgets_data.get("difficulty", {})
+_tier_ids = {k for k in budgets_data.get("tier_multipliers", {}) if not k.startswith("_")}
+_band_ids = {b.get("id") for b in budgets_data.get("bands", [])}
+if _diff_table.get("normal") != {"xp_multiplier": 1.0}:
+    err("budgets->difficulty", f"'normal' must be exactly {{'xp_multiplier': 1.0}}, found {_diff_table.get('normal')!r}")
+for _dk in sorted(FIGHT_DIFFICULTIES):
+    _dv = _diff_table[_dk]
+    if not isinstance(_dv, dict):
+        err("budgets->difficulty", f"'{_dk}' should be a dict of knobs")
+        continue
+    for _knob in _dv:
+        if _knob not in ("xp_multiplier", "min_tier", "band") and not _knob.startswith("_"):
+            err("budgets->difficulty", f"'{_dk}': knob '{_knob}' is not read by EnemySystem")
+    _mult = _dv.get("xp_multiplier")
+    if not isinstance(_mult, (int, float)) or _mult <= 0:
+        err("budgets->difficulty", f"'{_dk}': xp_multiplier must be a positive number, found {_mult!r}")
+    if "min_tier" in _dv and _dv["min_tier"] not in _tier_ids:
+        err("budgets->difficulty", f"'{_dk}': min_tier '{_dv['min_tier']}' is not in tier_multipliers")
+    if "band" in _dv and _dv["band"] not in _band_ids:
+        err("budgets->difficulty", f"'{_dk}': band '{_dv['band']}' is not one of the bands")
+for _alias, _target in budgets_data.get("difficulty_aliases", {}).items():
+    if not _alias.startswith("_") and _target not in FIGHT_DIFFICULTIES:
+        err("budgets->difficulty", f"alias '{_alias}' points at unknown tier '{_target}'")
 
 # ── code -> data ─────────────────────────────────────────────────────────────
 perks_data = load("resources/data/perks.json")

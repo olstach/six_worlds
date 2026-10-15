@@ -31,6 +31,7 @@ func _ready() -> void:
 	_check_heroes()
 	_check_reward()
 	_check_equipment()
+	_check_difficulty()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -629,6 +630,148 @@ func _dearest_possible_item() -> int:
 
 
 var _dearest_cache: int = 0
+
+
+## Fight difficulty (encounter_budgets.json `difficulty`). Until 2026-10-15
+## generate_encounter took a difficulty and never read it, so "easy" and
+## "hard" fights were the same fight. Every comparison below re-seeds before
+## each tier, so the band roll and composition are identical and the ONLY
+## thing that differs between two tiers is the difficulty itself.
+func _check_difficulty() -> void:
+	print("-- fight difficulty --")
+	if not EnemySystem.has_method("normalize_difficulty"):
+		fail("EnemySystem has no normalize_difficulty()")
+		return
+	var table: Dictionary = EnemySystem.budgets.get("difficulty", {})
+	for t in ["easy", "normal", "hard", "very_hard", "boss"]:
+		expect(table.has(t), "difficulty table has no '%s' tier" % t)
+	if not table.has("normal"):
+		return
+
+	# The table itself points the intended way: easy below 1, hard and
+	# very_hard above, each harder than the last. Read from the file so a
+	# re-tune passes as long as it keeps the order.
+	var mult := func(t: String) -> float:
+		return float(table.get(t, {}).get("xp_multiplier", 1.0))
+	expect(is_equal_approx(mult.call("normal"), 1.0), "normal xp_multiplier is not 1.0")
+	expect(mult.call("easy") < 1.0, "easy is not easier than normal")
+	expect(mult.call("hard") > 1.0, "hard is not harder than normal")
+	expect(mult.call("very_hard") > mult.call("hard"), "very_hard is not harder than hard")
+
+	# Vocabulary: blank is normal, a skill-roll word maps across, junk is normal.
+	expect(EnemySystem.normalize_difficulty("") == "normal", "blank difficulty is not normal")
+	expect(EnemySystem.normalize_difficulty("HARD") == "hard", "difficulty is case-sensitive")
+	expect(EnemySystem.normalize_difficulty("difficult") == "hard",
+		"roll word 'difficult' did not map to hard")
+	expect(EnemySystem.normalize_difficulty("no_such_tier") == "normal",
+		"unknown difficulty did not fall back to normal")
+
+	# Budget, per encounter: normal is exactly the pre-difficulty formula
+	# (realm_base * tier * band), the default argument is normal, and every
+	# other tier is that number times its multiplier.
+	var bands := {}
+	for band in EnemySystem.budgets.get("bands", []):
+		bands[String(band.get("id", ""))] = float(band.get("multiplier", 1.0))
+	var checked := 0
+	for eid in EnemySystem.encounters:
+		if eid.begins_with("_"):
+			continue
+		var realm: String = EnemySystem.encounters[eid].get("realm", "hell")
+		seed(RNG_SEED + checked)
+		var plain: Dictionary = EnemySystem.resolve_party_budget(eid, realm)
+		seed(RNG_SEED + checked)
+		var normal: Dictionary = EnemySystem.resolve_party_budget(eid, realm, "normal")
+		var tier: String = EnemySystem.resolve_encounter_tier(EnemySystem.encounters[eid])
+		var old_formula: int = maxi(1, int(round(
+			float(EnemySystem.budgets["realm_base"].get(realm, 200))
+			* float(EnemySystem.budgets["tier_multipliers"].get(tier, 1.0))
+			* float(bands.get(String(normal["band"]), 1.0)))))
+		expect(plain == normal, "%s: default difficulty differs from 'normal'" % eid)
+		expect(int(normal["xp"]) == old_formula,
+			"%s: normal budget %d is not the unchanged formula %d" % [eid, normal["xp"], old_formula])
+		for t in ["easy", "hard", "very_hard"]:
+			seed(RNG_SEED + checked)
+			var r: Dictionary = EnemySystem.resolve_party_budget(eid, realm, t)
+			var want: int = maxi(1, int(round(float(old_formula) * mult.call(t))))
+			# Rounding happens once on the product, not on the normal number,
+			# so allow one XP either way.
+			expect(absi(int(r["xp"]) - want) <= 1,
+				"%s: %s budget %d, expected ~%d" % [eid, t, r["xp"], want])
+			expect(String(r["band"]) == String(normal["band"]),
+				"%s: %s rolled a different band — the comparison is not like for like" % [eid, t])
+		checked += 1
+	print("   %d encounters: normal unchanged, easy/hard/very_hard scale the budget" % checked)
+
+	# Built enemies, not just budgets: across every encounter in the game,
+	# seeded identically per tier, a harder tier is built from more XP and
+	# comes out with more HP, more attribute points and more skill levels.
+	var totals := {}
+	for t in ["easy", "normal", "hard", "very_hard"]:
+		var xp := 0
+		var hp := 0
+		var attrs := 0
+		var skill_levels := 0
+		var idx := 0
+		for eid in EnemySystem.encounters:
+			if eid.begins_with("_"):
+				continue
+			var realm: String = EnemySystem.encounters[eid].get("realm", "hell")
+			# Same seed per encounter in every tier: same band, same party
+			# shape, same first birth roll.
+			seed(RNG_SEED + idx)
+			idx += 1
+			for e in EnemySystem.generate_encounter(eid, "", realm, t):
+				xp += int(e.get("xp_earned", 0))
+				hp += int(e.get("max_hp", 0))
+				for a in e.get("attributes", {}).values():
+					attrs += int(a)
+				for s in e.get("skills", {}).values():
+					skill_levels += int(s)
+		totals[t] = {"xp": xp, "hp": hp, "attrs": attrs, "skills": skill_levels}
+	print("   built totals per tier: %s" % [totals])
+	var order := ["easy", "normal", "hard", "very_hard"]
+	for i in range(order.size() - 1):
+		var lo: Dictionary = totals[order[i]]
+		var hi: Dictionary = totals[order[i + 1]]
+		for stat in ["xp", "hp", "attrs", "skills"]:
+			expect(int(hi[stat]) > int(lo[stat]),
+				"%s %s (%d) is not above %s (%d)" % [order[i + 1], stat, hi[stat], order[i], lo[stat]])
+
+	# The reward follows on its own: it is a fraction of the enemy party's XP.
+	var fraction: float = float(EnemySystem.budgets.get("reward_fraction", 0.12))
+	expect(int(round(totals["hard"]["xp"] * fraction)) > int(round(totals["normal"]["xp"] * fraction)),
+		"a hard fight does not pay more than a normal one")
+
+	# Boss: boss-priced and never a rolled band, so a realm gate cannot come
+	# out 2.3x by luck — and it must not count "boss" twice on an encounter
+	# whose enemies are already boss tier.
+	if EnemySystem.encounters.has("skeleton_king_duel"):
+		var want_boss: int = int(round(
+			float(EnemySystem.budgets["realm_base"]["hungry_ghost"])
+			* float(EnemySystem.budgets["tier_multipliers"]["boss"])
+			* float(bands.get(String(table["boss"].get("band", "common")), 1.0))
+			* mult.call("boss")))
+		var seen := {}
+		for i in range(40):
+			seed(RNG_SEED + i)
+			var r: Dictionary = EnemySystem.resolve_party_budget(
+				"skeleton_king_duel", "hungry_ghost", "boss")
+			seen[int(r["xp"])] = true
+			expect(String(r["tier"]) == "boss", "boss fight priced at tier %s" % r["tier"])
+		expect(seen.size() == 1 and seen.has(want_boss),
+			"boss duel budget varied or missed %d: %s" % [want_boss, seen.keys()])
+	# min_tier lifts an ordinary encounter marked "boss" to boss pricing.
+	var ordinary := ""
+	for eid in EnemySystem.encounters:
+		if not eid.begins_with("_") \
+				and EnemySystem.resolve_encounter_tier(EnemySystem.encounters[eid]) == "devil":
+			ordinary = eid
+			break
+	if ordinary != "" and table["boss"].has("min_tier"):
+		var r: Dictionary = EnemySystem.resolve_party_budget(ordinary, "hell", "boss")
+		expect(String(r["tier"]) == String(table["boss"]["min_tier"]),
+			"'boss' on devil encounter %s priced at tier %s" % [ordinary, r["tier"]])
+	print("   boss fights: fixed band, boss tier, priced once")
 
 
 func _dump_table() -> void:

@@ -397,10 +397,13 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	var enemy_group = mob_inner.get("enemy_group", "demon_patrol")
 	# Region can be on the mob dict (from MapManager) or in its inner data
 	var region = mob_data.get("region", mob_inner.get("region", ""))
-	# Difficulty tier can be on the mob dict (map mobs) or inner data (event combats)
-	var difficulty = mob_data.get("difficulty", mob_inner.get("difficulty", "normal"))
+	# Difficulty tier can be on the mob dict or its inner data (map mobs and
+	# event fights both put it in the inner data). str() so a null in a save
+	# cannot crash the typed call; EnemySystem turns anything unknown into
+	# "normal" with a warning. What each tier does: encounter_budgets.json.
+	var difficulty: String = str(mob_data.get("difficulty", mob_inner.get("difficulty", "normal")))
 
-	# Generate scaled enemies from EnemySystem
+	# Build the enemies from the realm's XP budget, scaled by the difficulty
 	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region, GameState.current_world, difficulty)
 
 	# Get party characters for deployment
