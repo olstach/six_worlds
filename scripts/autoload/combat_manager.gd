@@ -377,8 +377,11 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 
 
 ## Apply perks that trigger once at the very start of combat.
+## Both ways into a fight call this — start_combat() and, after deployment,
+## _finalize_combat_start().
 func _apply_combat_start_perks() -> void:
 	for unit in all_units:
+		_fire_perk_triggers(unit, "combat_start", {})
 		var char_data = unit.character_data if "character_data" in unit else {}
 		# Rousing Display (Performance 1): allies within 3 tiles gain +5 Initiative for round 1
 		if PerkSystem.has_perk(char_data, "rousing_display"):
@@ -996,6 +999,10 @@ func _finalize_combat_start() -> void:
 
 	combat_started.emit()
 
+	# Combat-start perks. This path used to skip them, so Rousing Display did
+	# nothing in any fight that had a deployment phase.
+	_apply_combat_start_perks()
+
 	# Start first turn
 	_start_current_turn()
 
@@ -1273,6 +1280,9 @@ func _start_current_turn() -> void:
 
 	# Process passive perk turn-start effects
 	_process_turn_start_perks(unit)
+	# ...and the data-driven ones, after the per-turn counters above have reset
+	# so a turn_start payload sees the turn it is starting.
+	_fire_perk_triggers(unit, "turn_start", {})
 
 	turn_started.emit(unit)
 
@@ -1757,8 +1767,9 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 					else:
 						combat_log.emit("%s stays hidden (Shady Dealings)." % attacker.unit_name)
 
-		# Apply damage
-		apply_damage(defender, result.damage, result.damage_type)
+		# Apply damage — naming the attacker, so a take_damage passive knows
+		# who to answer
+		apply_damage(defender, result.damage, result.damage_type, attacker)
 
 		# Apply weapon oil effects (bonus damage + status procs)
 		if attacker.has_method("consume_oil_charge"):
@@ -1882,6 +1893,12 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Attack missed — check dodge/parry perks on defender
 		_process_on_dodge_perks(defender, attacker)
 		_fire_perk_triggers(defender, "dodge_success", {"attacker": attacker})
+		# A melee blow that missed someone holding a melee weapon met steel:
+		# that is a parry as well as a dodge, and fires both. Riposte has
+		# always read "dodge or parry" as one moment; this keeps the two
+		# apart for perks that want only the second.
+		if _is_parry(defender, attacker, is_ranged):
+			_fire_perk_triggers(defender, "parry_success", {"attacker": attacker})
 		# Reset consecutive hit streaks on miss
 		attacker.momentum_stacks = 0
 		attacker.unarmed_hit_stacks = 0
@@ -1893,6 +1910,9 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			result.merge(dev, true)
 
 	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
+	if "attacks_this_turn" in attacker:
+		attacker.attacks_this_turn += 1
+		attacker.attacks_this_combat += 1
 	if attacker.has_method("get_equipped_weapon"):
 		if attacker.get_equipped_weapon().get("type", "") == "dagger":
 			attacker.dagger_attacks_this_turn += 1
@@ -2029,7 +2049,37 @@ func _resolve_projectile_deviation(attacker: Node, defender: Node, miss_margin: 
 ## Returns the hit chance and stores cover info in _last_cover_result for logging
 var _last_cover_result: Dictionary = {}
 
+## Hit chance and damage are both worked out by reading the attacker's stat
+## getters, and a passive perk can make those getters depend on the target
+## ("+10% crit against a bleeding enemy"). A getter has no target argument, so
+## for the length of the calculation the attacker is told who it is aiming at
+## through perk_attack_target, then told again what it was told before — a
+## reaction attack can start inside another attack's calculation.
 func calculate_hit_chance(attacker: Node, defender: Node) -> float:
+	var previous: Node = _aim_perks_at(attacker, defender)
+	var chance: float = _calculate_hit_chance(attacker, defender)
+	_aim_perks_at(attacker, previous)
+	return chance
+
+
+func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
+	var previous: Node = _aim_perks_at(attacker, defender)
+	var result: Dictionary = _calculate_physical_damage(attacker, defender, dmg_type)
+	_aim_perks_at(attacker, previous)
+	return result
+
+
+## Point `attacker`'s target-dependent perk conditions at `target`, returning
+## whatever they pointed at before so the caller can put it back.
+func _aim_perks_at(attacker: Node, target: Node) -> Node:
+	if attacker == null or not "perk_attack_target" in attacker:
+		return null
+	var previous: Node = attacker.perk_attack_target
+	attacker.perk_attack_target = target
+	return previous
+
+
+func _calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	var base_chance = 80.0
 	var accuracy = attacker.get_accuracy()
 	var dodge = defender.get_dodge()
@@ -2152,8 +2202,9 @@ func calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	return clampf(hit_chance, 10.0, 95.0)
 
 
-## Calculate physical damage (slashing, crushing, or piercing)
-func calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
+## Calculate physical damage (slashing, crushing, or piercing).
+## Called through calculate_physical_damage() above, which aims the perks.
+func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
 	# Thin_Air: unit cannot deal physical damage at all
 	if _unit_has_effect(attacker, "cannot_deal_physical"):
 		return {"damage": 0, "crit": false, "armor_pen": 0}
@@ -2421,7 +2472,10 @@ func calculate_magic_damage(caster: Node, target: Node, base_spell_damage: int, 
 ## the defender, so they belong where the damage is computed — which is also
 ## why Permafrost's +30% lands before resistance and Marked_for_Death's +50%
 ## after it. That was an accident before it was a rule; now it is the rule.
-func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
+## `source` is whoever dealt the damage, when the caller knows. It is optional
+## because most of the sixty-odd callers (ticks, terrain, splash) have no one to
+## name; it is only read by the take_damage / ally_damaged passive triggers.
+func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = null) -> void:
 	# God mode: player units take no damage
 	if CheatConsole and CheatConsole.god_mode and "team" in unit and unit.team == Team.PLAYER:
 		unit_damaged.emit(unit, 0, damage_type)
@@ -2553,6 +2607,9 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 
 	unit.take_damage(damage)
 	unit_damaged.emit(unit, damage, damage_type)
+	# Data-driven passives that answer being hurt, and allies being hurt.
+	if damage > 0:
+		_fire_damage_triggers(unit, damage, damage_type, source)
 	# Hit Back Harder (Might 3): taking damage sets a ready flag for +20% bonus on next melee attack
 	if damage > 0 and unit.is_alive() and "hit_back_ready" in unit:
 		var char_data = unit.character_data if "character_data" in unit else {}
@@ -4092,7 +4149,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		if "lord_of_death_empowered" in caster and caster.lord_of_death_empowered:
 			total_damage = int(total_damage * 1.3)
 
-		apply_damage(target, total_damage, element)
+		apply_damage(target, total_damage, element, caster)
 		result.effects_applied.append({"type": "damage", "amount": total_damage, "element": element})
 
 		# A status_stacks formula is paid for with the status it counted.
@@ -4267,7 +4324,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 				var total_damage = base_value + bonus
 				var variance = randf_range(0.85, 1.15)
 				total_damage = int(total_damage * variance)
-				apply_damage(target, total_damage, element)
+				apply_damage(target, total_damage, element, caster)
 				effect_result = {"type": "damage", "amount": total_damage, "element": element}
 
 			"heal":
@@ -9442,27 +9499,97 @@ func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 func _fire_perk_triggers(unit: Node, trigger: String, context: Dictionary = {}) -> void:
 	if unit == null or not "character_data" in unit or not PerkSystem:
 		return
+	# Re-entrancy guard. A payload can cause the very thing that fires a
+	# trigger: a take_damage perk that hurt its attacker would fire the
+	# attacker's take_damage, whose answer fires ours, and round it goes. So
+	# while one trigger's payload is resolving, no other trigger fires — the
+	# answer to an answer is silence, never a loop.
+	if _resolving_perk_trigger:
+		return
+	if not CombatStats.is_perk_trigger(trigger):
+		push_error("CombatManager: _fire_perk_triggers called with '%s', which is not in CombatStats.PERK_TRIGGERS"
+			% trigger)
+		return
+	# The other unit in this moment, for conditions like target_bleeding: the
+	# one hit, or the attacker that missed, or failing both nobody.
+	var other: Node = context.get("target", context.get("attacker", null))
 	for entry in PerkSystem.get_combat_passives(unit.character_data):
 		var effect: Dictionary = entry.effect
 		if effect.get("type", "") != "on_trigger":
 			continue
 		if effect.get("trigger", "") != trigger:
 			continue
+		if unit.has_method("_all_perk_conditions_met") \
+				and not unit._all_perk_conditions_met(effect.get("conditions", []), other):
+			continue
 		var chance: float = float(effect.get("chance", 100))
 		if chance < 100.0 and randf() * 100.0 > chance:
 			continue
+		_resolving_perk_trigger = true
 		_apply_trigger_effect(unit, entry.perk_id, effect.get("effect", {}), context)
+		_resolving_perk_trigger = false
+
+
+## True while a perk trigger's payload is being resolved. See _fire_perk_triggers.
+var _resolving_perk_trigger: bool = false
+
+
+## take_damage for the hurt unit, ally_damaged for each living teammate.
+## Called from apply_damage() once damage has actually landed.
+func _fire_damage_triggers(unit: Node, damage: int, damage_type: String, source: Node) -> void:
+	var context := {"damage": damage, "damage_type": damage_type}
+	if source != null and is_instance_valid(source) and source != unit:
+		context["attacker"] = source
+	# A unit that just went down does not react to it.
+	if unit.is_alive():
+		_fire_perk_triggers(unit, "take_damage", context)
+	var ally_context := context.duplicate()
+	ally_context["ally"] = unit
+	for ally in get_team_units(unit.team if "team" in unit else 0):
+		if ally == unit or not ally.is_alive():
+			continue
+		_fire_perk_triggers(ally, "ally_damaged", ally_context)
+
+
+## A miss counts as a parry when it was a melee blow and the defender had a
+## melee weapon in hand to turn it with.
+func _is_parry(defender: Node, attacker: Node, attack_was_ranged: bool) -> bool:
+	if attack_was_ranged or attacker == null or not defender.has_method("get_equipped_weapon"):
+		return false
+	if defender.get_equipped_weapon().is_empty():
+		return false   # bare hands block nothing
+	if defender.has_method("is_ranged_weapon") and defender.is_ranged_weapon():
+		return false   # nor does a bow
+	return true
+
+
+## True when `unit` carries any status whose definition is typed "debuff" —
+## the same test _apply_status_effect uses for debuff immunity.
+func unit_has_debuff(unit: Node) -> bool:
+	if unit == null or not "status_effects" in unit:
+		return false
+	for effect in unit.status_effects:
+		if _status_effects.get(effect.get("status", ""), {}).get("type", "") == "debuff":
+			return true
+	return false
 
 
 ## Resolve one fired trigger's payload.
 func _apply_trigger_effect(unit: Node, perk_id: String, payload: Dictionary,
 		context: Dictionary) -> void:
+	# Who the payload lands on: "self" (default), "attacker", "victim" (the
+	# one this unit hit), or "ally" (the teammate an ally_damaged is about).
+	# A payload aimed at someone the moment does not have is dropped rather
+	# than redirected onto self — "burn the attacker" must not burn you.
 	var target: Node = unit
-	if payload.get("target", "self") == "attacker" and context.has("attacker"):
-		target = context["attacker"]
-	elif payload.get("target", "self") == "victim" and context.has("target"):
-		target = context["target"]
-	if target == null or not target.is_alive():
+	match payload.get("target", "self"):
+		"attacker":
+			target = context.get("attacker", null)
+		"victim":
+			target = context.get("target", null)
+		"ally":
+			target = context.get("ally", null)
+	if target == null or not is_instance_valid(target) or not target.is_alive():
 		return
 
 	match payload.get("type", ""):
@@ -10053,6 +10180,7 @@ func _process_turn_start_perks(unit: Node) -> void:
 	unit.unarmed_hit_stacks = 0
 	unit.dagger_attacks_this_turn = 0
 	unit.ranged_attacks_this_turn = 0
+	unit.attacks_this_turn = 0
 	unit.knife_storm_proc_this_turn = false
 	unit.call_the_shot_used_this_turn = false
 	# Call the Shot: mark on defender expires at the start of their own turn

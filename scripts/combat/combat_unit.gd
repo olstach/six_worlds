@@ -48,6 +48,13 @@ var chod_spellpower_bonus: int = 0 # Accumulated Chöd Offering spellpower; stac
 var last_attacker: Node = null     # Last unit that dealt damage to this unit (used for risen_dead talisman perk)
 var dagger_attacks_this_turn: int = 0    # Dagger attacks made this turn; cleared at turn start (too_fast_to_count perk)
 var ranged_attacks_this_turn: int = 0    # Ranged attacks made this turn; cleared at turn start (one_breath_one_arrow perk)
+var attacks_this_turn: int = 0     # Weapon attacks made this turn, any weapon; cleared at turn start (first_attack_turn condition)
+var attacks_this_combat: int = 0   # Weapon attacks made this fight; a unit is built fresh per combat (first_attack_combat condition)
+# Who this unit is attacking right now, while CombatManager works out an attack
+# (set by calculate_hit_chance / calculate_physical_damage, null otherwise).
+# Passive perk conditions about "the target" — from_behind, target_bleeding,
+# target_debuffed — read it, because a stat getter has no other way to know.
+var perk_attack_target: Node = null
 var selected_ammo_id: String = ""  # Which ammo is loaded; "" = default (bone arrow/bolt)
 var knife_storm_proc_this_turn: bool = false  # Prevents knife_storm from proccing twice in one turn
 var enemies_hit_this_combat: Array = []  # Tracks enemies hit for cheap_shot (first-attack crit bonus)
@@ -583,13 +590,13 @@ func is_targetable() -> bool:
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_init = get_equipped_weapon().get("stats", {}).get("initiative", 0)
-	return derived.get("initiative", 10) + weapon_init + _get_status_stat_bonus("initiative") + CombatManager.get_continuous_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative")
+	return derived.get("initiative", 10) + weapon_init + _get_status_stat_bonus("initiative") + CombatManager.get_continuous_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative") + _get_conditional_perk_bonus("initiative")
 
 
 ## Get movement range (includes status effect and perk bonuses)
 func get_movement() -> int:
 	var derived = character_data.get("derived", {})
-	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_continuous_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0) + _get_stat_modifier_bonus("movement"))
+	return maxi(0, derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_continuous_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0) + _get_stat_modifier_bonus("movement") + _get_conditional_perk_bonus("movement"))
 
 
 ## Get maximum actions per turn
@@ -888,7 +895,8 @@ func get_armor() -> int:
 ## between turns. PerkSystem hands those over as-is and this evaluates them at
 ## the moment a stat is read.
 ##
-## Adding a condition: give it a case in _perk_condition_met(). An unrecognised
+## Adding a condition: list it in CombatStats.PERK_CONDITIONS (the tools read
+## that list) and give it a case in _perk_condition_met(). An unrecognised
 ## condition returns false and pushes an error rather than passing silently —
 ## a passive that quietly applies always is worse than one that never does.
 
@@ -920,14 +928,20 @@ func _get_conditional_perk_bonus(stat: String) -> int:
 	return total
 
 
-func _all_perk_conditions_met(conditions: Array) -> bool:
+## `target` is the other unit in the moment being judged — the one being hit,
+## or the attacker that just missed. Left null, it falls back to
+## perk_attack_target, which is how a stat getter (that has no target of its
+## own) finds out who the attack in progress is aimed at.
+func _all_perk_conditions_met(conditions: Array, target: Node = null) -> bool:
 	for condition in conditions:
-		if not _perk_condition_met(str(condition)):
+		if not _perk_condition_met(str(condition), target):
 			return false
 	return true
 
 
-func _perk_condition_met(condition: String) -> bool:
+func _perk_condition_met(condition: String, target: Node = null) -> bool:
+	if target == null:
+		target = perk_attack_target
 	match condition:
 		"wielding_sword", "wielding_axe", "wielding_mace", "wielding_spear", \
 		"wielding_dagger", "wielding_staff":
@@ -948,9 +962,63 @@ func _perk_condition_met(condition: String) -> bool:
 			return current_hp * 2 < max_hp
 		"above_half_hp":
 			return current_hp * 2 >= max_hp
-		_:
-			push_error("CombatUnit: unknown passive perk condition '%s'" % condition)
+
+		# ── What this unit is wearing ──
+		"wearing_heavy_armor":
+			return is_wearing_heavy_armor()
+		"unarmored_or_light":
+			# The rule Diamond Body, Bare Chest and Flowing Footwork already
+			# use, so "unarmored" means one thing everywhere.
+			return CombatManager._unit_is_unarmored(self)
+
+		# ── Where this unit is in the fight ──
+		# The counters go up after an attack resolves, so during the first
+		# attack itself they still read zero.
+		"first_attack_combat":
+			return attacks_this_combat == 0
+		"first_attack_turn":
+			return attacks_this_turn == 0
+
+		# ── Who is on the other end ── (false when there is no target)
+		"from_behind":
+			# The rear arc of the target's facing — the same test that gives
+			# a rear attack its +20% crit in calculate_physical_damage, so a
+			# perk "from behind" and the base game agree on where behind is.
+			return target != null and \
+				CombatManager._get_facing_zone(grid_position, target) == "rear"
+		"target_bleeding":
+			return target != null and target.has_method("has_status") \
+				and target.has_status("Bleeding")
+		"target_debuffed":
+			return target != null and CombatManager.unit_has_debuff(target)
+
+	# ── The ground under this unit: on_terrain_<ground key> ──
+	if condition.begins_with(CombatStats.TERRAIN_CONDITION_PREFIX):
+		var ground: Dictionary = Ground.by_key(
+			condition.trim_prefix(CombatStats.TERRAIN_CONDITION_PREFIX))
+		if ground.is_empty():
+			push_error("CombatUnit: passive perk condition '%s' names no ground in terrain.json"
+				% condition)
 			return false
+		if CombatManager.combat_grid == null:
+			return false
+		return CombatManager.combat_grid.get_ground(grid_position) == int(ground.get("id", -1))
+
+	push_error("CombatUnit: unknown passive perk condition '%s'" % condition)
+	return false
+
+
+## True when this unit's body armour is heavy — a chest piece with a Strength
+## requirement. That requirement IS the game's definition of heavy armour:
+## ItemSystem.generate_armor() writes one exactly for the heavy armour types,
+## and the hand-made heavy pieces (chainmail, lamellar, iron) all carry one,
+## while leather and padding do not. A helmet alone does not make you heavy.
+func is_wearing_heavy_armor() -> bool:
+	var chest_id: String = character_data.get("equipment", {}).get("chest", "")
+	if chest_id == "":
+		return false
+	var chest: Dictionary = ItemSystem.get_item(chest_id)
+	return int(chest.get("requirements", {}).get("strength", 0)) > 0
 
 
 ## True when an enemy stands directly behind this unit, relative to its facing.
@@ -973,7 +1041,7 @@ func get_crit_chance() -> float:
 	var weapon_crit = float(equipped.get("stats", {}).get("crit_chance", 0))
 	# Natural weapons can carry a crit_bonus field (e.g. mantis blades +10%)
 	var natural_crit = float(equipped.get("crit_bonus", 0))
-	return float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_continuous_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance"))
+	return float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_continuous_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance")) + float(_get_conditional_perk_bonus("crit_chance"))
 
 
 ## Get current stamina
@@ -1048,7 +1116,7 @@ func tick_mantras() -> void:
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_sp = get_equipped_weapon().get("stats", {}).get("spellpower", 0)
-	return derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + CombatManager.get_continuous_stat_bonus(self, "spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower") + chod_spellpower_bonus
+	return derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + CombatManager.get_continuous_stat_bonus(self, "spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower") + chod_spellpower_bonus + _get_conditional_perk_bonus("spellpower")
 
 
 ## Get magic skill bonus for an element (spellpower from the skill's base_bonuses table)

@@ -1573,14 +1573,69 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
       `resource_regen`, `spell_modifier`, `summon_modifier`, `special`.
       `summon_modifier` has the most data waiting on it — several black, fire
       and air perks buff summons and all of them are inert.
-- [ ] **More trigger points.** `_fire_perk_triggers` is only called for
-      `on_hit`, `on_crit`, `on_kill`, `dodge_success`. The taxonomy also wants
-      `combat_start`, `turn_start`, `take_damage`, `parry_success`,
-      `ally_damaged`.
-- [ ] **More conditions.** `_perk_condition_met` answers fourteen. Missing ones
-      the perk text asks for: `wearing_heavy_armor`, `unarmored_or_light`,
-      `first_attack_combat`, `first_attack_turn`, `from_behind`,
-      `target_bleeding`, `target_debuffed`, `on_terrain_type`.
+- [x] ~~**More trigger points.**~~ — **done 2026-10-15.** `combat_start`,
+      `turn_start`, `take_damage`, `parry_success` and `ally_damaged` all fire
+      now, nine in all. Both vocabularies live in `CombatStats.PERK_TRIGGERS` /
+      `PERK_CONDITIONS` beside the stat lists, and `wire_passive_perks.py` and
+      `validate_data.py` read them from there instead of restating them — the
+      wiring tool's own copy was the thing that would have gone stale.
+      Decisions worth knowing before authoring against them:
+      - **A parry is a melee miss against someone holding a melee weapon.**
+        There was no parry event — Parry is an armour conversion — so this is
+        the definition. It fires *as well as* `dodge_success`, never instead.
+      - **`take_damage` names its attacker only when the caller does.**
+        `apply_damage` gained an optional `source`; weapon hits and spell damage
+        pass it, ticks, terrain and splash do not. A payload aimed at an
+        attacker who is not there is dropped, not turned on self.
+      - **Payloads can now target `ally`** (the teammate an `ally_damaged` is
+        about), and an `on_trigger` effect's `conditions` are finally checked —
+        they were accepted by the tooling and ignored by the engine.
+      - **Re-entrancy:** while one trigger's payload resolves, no trigger
+        fires. The answer to an answer is silence, never a loop.
+      - **Durations:** stat modifiers tick at turn start (twice — see below),
+        so a `combat_start` buff needs duration 3 to survive the first turn; a
+        `turn_start` one fires after the ticks and lasts its turn at 1.
+      - The deployment path into combat never called
+        `_apply_combat_start_perks`, so Rousing Display did nothing in any
+        fight with a deployment phase. It does now.
+- [x] ~~**More conditions.**~~ — **done 2026-10-15.** Twenty-one plus the
+      terrain family. Each reuses the rule the game already had rather than
+      inventing one: `unarmored_or_light` is `_unit_is_unarmored` (Diamond
+      Body's test); `wearing_heavy_armor` is a chest piece with a Strength
+      requirement, which is exactly what `generate_armor` writes for heavy
+      types and what chainmail and lamellar carry; `from_behind` is the rear
+      arc of `_get_facing_zone`, the same test as the +20% rear crit;
+      `target_debuffed` is any status typed `debuff`. `on_terrain_type` became
+      a family, `on_terrain_<ground>` for any key of `terrain.json`, checked
+      against that file. Target conditions read the unit being hit — through
+      `perk_attack_target`, which hit-chance and damage calculation set for
+      their duration, because a stat getter has no target of its own.
+      **Also fixed on the way:** conditional `stat_bonus` on `crit_chance`,
+      `initiative`, `movement` and `spellpower` was accepted (all four are
+      MODIFIABLE) and never summed — only accuracy, dodge, damage and armour
+      getters read conditional perk bonuses. And `verify_passive_perks` had
+      been calling the deleted `_perform_save_roll` since 2026-09-12; the
+      SCRIPT ERROR aborted one function and the scene still printed VERIFY OK.
+- [ ] **Perks the new conditions and triggers unblock** (2026-10-15). Fully
+      expressible now: `aim_at_the_vitals` (crit vs a debuffed target, dagger),
+      `one_line_one_breath` (accuracy on the first sword attack — the
+      "cannot critically fail" half has no mechanic). Expressible in part, the
+      rest waiting on an unbuilt effect type: `bedrock` (self half only — the
+      ally half is an aura; "earth or stone" needs choosing among hills,
+      mountains, ruins), `armored_skin` (needs a *conditional* `resistance`,
+      which `get_passive_resistances` does not do), `hurry_betrays_distraction`
+      (combat_start restore_stamina, but flat not %, and no mana payload),
+      `field_commander` / `lay_of_the_land` (combat_start movement/initiative,
+      but self only — no party-wide payload target), `burning_blood`
+      (take_damage + movement buff, but "from a ranged attack" needs a
+      condition on the attacker's weapon). Still blocked: `the_blade_decides`
+      and `dont_lose_the_momentum` hear `parry_success` now but want stacks and
+      a stamina-cost stat; `terrain_mastery` wants height, not ground.
+- [ ] **Stat modifiers tick twice per turn start.** `_process_status_effects`
+      calls `_process_stat_modifiers`, then `_process_turn_start_perks` ticks
+      the same list again, so every timed buff and debuff lasts half its
+      stated duration. Found 2026-10-15, not fixed — it changes every active
+      skill's balance at once and wants a deliberate decision.
 
 ## 14. Systems the perk text assumes and the game does not have
 

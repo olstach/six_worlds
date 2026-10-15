@@ -1331,6 +1331,38 @@ for _section in ("skill_perks", "cross_perks"):
 check_vocabulary("active skill effect", _effect_types)
 check_vocabulary("passive effect type", _passive_types)
 
+# Passive perk triggers and conditions, against the lists in combat_stats.gd.
+# A bare literal search would pass "take_damage" because the word appears in
+# combat_manager.gd whether or not anything fires it, so these are checked
+# against the vocabulary itself — which the engine refuses to step outside of
+# (_fire_perk_triggers rejects an unlisted trigger, _perk_condition_met an
+# unanswered condition) and verify_passive_perks exercises entry by entry.
+_cs_src = open(os.path.join(ROOT, "scripts/combat/combat_stats.gd"), encoding="utf-8").read()
+_perk_triggers = _gd_list(_cs_src, "PERK_TRIGGERS")
+_perk_conditions = _gd_list(_cs_src, "PERK_CONDITIONS")
+_ground_keys = {k for k, v in load("resources/data/terrain.json")["terrain"].items()
+                if isinstance(v, dict)}
+if not _perk_triggers or not _perk_conditions:
+    err("data->code", "could not read PERK_TRIGGERS / PERK_CONDITIONS from combat_stats.gd")
+for _section in ("skill_perks", "cross_perks"):
+    for _pid, _pk in perks_data.get(_section, {}).items():
+        if not isinstance(_pk, dict):
+            continue
+        for _fx in _pk.get("effects", []):
+            if not isinstance(_fx, dict):
+                continue
+            if _fx.get("type") == "on_trigger" and _fx.get("trigger") not in _perk_triggers:
+                err("data->code", f"perk '{_pid}' listens for trigger '{_fx.get('trigger')}', "
+                    "which nothing fires (CombatStats.PERK_TRIGGERS)")
+            for _c in _fx.get("conditions", []):
+                _c = str(_c)
+                if _c in _perk_conditions:
+                    continue
+                if _c.startswith("on_terrain_") and _c[len("on_terrain_"):] in _ground_keys:
+                    continue
+                err("data->code", f"perk '{_pid}' has condition '{_c}', which "
+                    "CombatUnit._perk_condition_met() does not answer")
+
 # ── report ───────────────────────────────────────────────────────────────────
 print(f"TOTAL ISSUES: {len(errors)}")
 for category, count in Counter(c for c, _ in errors).most_common():
