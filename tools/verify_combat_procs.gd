@@ -11,7 +11,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 11
+const EXPECTED_CHECKS: int = 12
 
 
 func _ready() -> void:
@@ -22,6 +22,7 @@ func _ready() -> void:
 	_check_status_chance_reaches_every_roll_site()
 	_check_ritual_raises_status_save_dc()
 	_check_loot_chance_reaches_the_jackpot()
+	_check_on_hit_procs_spare_the_fallen()
 
 	_check_hardened()
 	_check_stubborn_body()
@@ -398,4 +399,48 @@ func _check_iron_cortex() -> void:
 	PerkSystem.grant_perk(body, "akimbo")
 	if CombatManager.arm_chain_fire_chance(body, 3) != arm3 + 20.0:
 		_fail("Akimbo's +20 no longer reaches arm 3 once Iron Cortex is owned")
+	_done()
+
+
+## The blow that drops a unit must not go on to stun or bleed the body. Every
+## on-hit proc runs after the damage lands, and a bleeding-out unit keeps its
+## statuses through a revive — so the stun used to wait for whoever picked them
+## back up. Drives the real weapon-proc path (Trishula-style on_crit_status and
+## a 100% bleed passive) against a fallen and a standing defender, then checks
+## no on-hit function still applies a status to `defender` unguarded.
+func _check_on_hit_procs_spare_the_fallen() -> void:
+	var attacker := _team_unit(0)
+	attacker.character_data["equipped_weapon"] = {"type": "mace", "name": "Probe mace",
+		"on_crit_status": "Stunned", "passive": {"bleed_chance": 100}}
+	var crit_hit := {"success": true, "hit": true, "crit": true, "damage": 5}
+
+	var fallen := _team_unit(1)
+	fallen.is_bleeding_out = true
+	CombatManager._process_weapon_on_hit_procs(attacker, fallen, crit_hit.duplicate())
+	if not fallen.status_effects.is_empty():
+		_fail("on-hit procs landed on a bleeding-out defender: %s" % [fallen.status_effects])
+
+	# The control: the same procs on someone still standing do land, so the
+	# check above is not passing because nothing fires at all.
+	var standing := _team_unit(1)
+	CombatManager._process_weapon_on_hit_procs(attacker, standing, crit_hit.duplicate())
+	if not standing.has_status("Stunned") or not standing.has_status("Bleeding"):
+		_fail("weapon on-hit procs did not land on a living defender (%s)"
+			% [standing.status_effects])
+
+	# Every on-hit function goes through the guarded helper.
+	var src := FileAccess.get_file_as_string("res://scripts/autoload/combat_manager.gd")
+	for fn in ["func _process_on_hit_perks(", "func _process_weapon_on_hit_procs(",
+			"func _process_ammo_special_effect("]:
+		var start := src.find(fn)
+		var stop := src.find("\nfunc ", start + 1)
+		if start < 0:
+			_fail("%s not found" % fn)
+			continue
+		if src.substr(start, stop - start).contains("_apply_status_effect(defender,"):
+			_fail("%s) applies a status to the defender without the is_alive() guard "
+				% fn.trim_suffix("(") + "— use _apply_on_hit_status()")
+
+	for unit in [attacker, fallen, standing]:
+		unit.queue_free()
 	_done()
