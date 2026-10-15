@@ -3,7 +3,7 @@ description and theme are writing. Each school group also starts with a
 "School notes" entry holding the designer notes from `school_notes`, one
 writing field per key (string values only; anything else is skipped)."""
 from ..model import Entry, Field, Group
-from ._util import clean
+from ._common import clean
 
 TITLE = "Spells"
 FILE = "resources/data/spells.json"

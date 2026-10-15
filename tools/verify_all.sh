@@ -120,6 +120,24 @@ else
 fi
 rm -f /tmp/_vd.log
 
+# CONTENT.md and the JSON must agree, or a build could ship without
+# writing that exists only in the document.
+if [ ! -f CONTENT.md ]; then
+    ok "CONTENT.md not created yet"
+elif out=$(python3 tools/content_sync.py --check 2>&1); then
+    ok "CONTENT.md matches the data"
+else
+    bad "CONTENT.md and the data disagree - run: python3 tools/content_sync.py --write"
+    echo "$out" | tail -15 | sed 's/^/        /'
+fi
+if python3 tools/test_content_model.py >/dev/null 2>&1 \
+   && python3 tools/test_content_sections.py >/dev/null 2>&1 \
+   && python3 tools/test_content_sync.py >/dev/null 2>&1; then
+    ok "content sync tests"
+else
+    bad "content sync tests - run python3 tools/test_content_sync.py -v"
+fi
+
 if [ "$QUICK" -eq 0 ]; then
     if [ -n "$ONLY" ]; then
         log "4. verifiers — only those matching '$ONLY'"

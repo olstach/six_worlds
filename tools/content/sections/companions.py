@@ -1,7 +1,7 @@
 """Companions, grouped realm -> birth. The flavor text is writing, and so is
 the skills list, which is a readable view of `build_weights`."""
 from ..model import Entry, Field, Group
-from ._realms import (clean, realm_title, sort_realms, text_field,
+from ._common import (clean, realm_title, sort_realms, text_field,
                       title_and_path)
 
 TITLE = "Companions"

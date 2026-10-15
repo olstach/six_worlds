@@ -2,7 +2,7 @@
 category. Name, description and flavor are writing; the requirements and the
 mantra flag are context. base_bonuses is plain numbers, so it is skipped."""
 from ..model import Entry, Field, Group
-from ._util import clean
+from ._common import clean
 
 TITLE = "Perks"
 FILE = "resources/data/perks.json"

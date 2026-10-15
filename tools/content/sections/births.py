@@ -6,7 +6,7 @@ when all its births are from one realm, otherwise at the end)."""
 import re
 
 from ..model import Entry, Field, Group
-from ._realms import (clean, field_name, realm_title, sort_realms, text_field,
+from ._common import (clean, field_name, realm_title, sort_realms, text_field,
                       title_and_path, title_ok)
 
 TITLE = "Births"

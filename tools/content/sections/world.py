@@ -3,7 +3,7 @@ its places (shops), then terrain and domains."""
 import sys
 
 from ..model import Entry, Field, Group
-from ._realms import (clean, realm_title, sort_realms, text_field,
+from ._common import (clean, realm_title, sort_realms, text_field,
                       title_and_path)
 
 TITLE = "World"

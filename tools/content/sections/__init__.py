@@ -10,6 +10,9 @@ The section contract every module here follows:
           only needed when importing a field is more than
           ds.set_at(field.path, new_value). Without it the sync uses set_at.
 """
-from . import traits
+from . import (world, births, companions, skills, perks, spells, statuses,
+               traits, equipment, enemies, events, quests)
 
-SECTIONS = [traits]   # Task 5 extends this to the full ordered list
+# Shops live inside World (as Places), so there is no shops module.
+SECTIONS = [world, births, companions, skills, perks, spells, statuses,
+            traits, equipment, enemies, events, quests]

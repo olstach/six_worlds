@@ -22,6 +22,15 @@ def walk(group):
         yield from walk(g)
 
 
+def _json_value(ds, path):
+    """The JSON value at path; a missing last key counts as ""."""
+    try:
+        return ds.get_at(path)
+    except KeyError:
+        ds.get_at(path[:-1])   # the parent must exist, or this raises
+        return ""
+
+
 def check_entry(test, ds, entry, parsed):
     """Compare one built Entry with what the PARSER read back from the text."""
     for f in entry.fields:
@@ -33,7 +42,9 @@ def check_entry(test, ds, entry, parsed):
         else:
             test.assertEqual(got, f.value, (entry.key, f.name))
             # and the model really mirrors the JSON
-            test.assertEqual(ds.get_at(f.path), f.value, (entry.key, f.name))
+            # An ABSENT writing key is shown as "" (its parent must exist,
+            # so the sync can create the key); anything else must match.
+            test.assertEqual(_json_value(ds, f.path), f.value, (entry.key, f.name))
     test.assertEqual(len(parsed.children), len(entry.children), entry.key)
     for ce, cp in zip(entry.children, parsed.children):
         check_entry(test, ds, ce, cp)

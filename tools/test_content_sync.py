@@ -26,6 +26,16 @@ class SyncTests(unittest.TestCase):
     def traits(self):
         return json.loads((self.tmp / TRAITS).read_text(encoding="utf-8"))
 
+    def test_full_document_round_trips(self):
+        # setUp already ran the sync once; a second run must find nothing.
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual((r.imported, r.to_inbox, r.conflicts, r.doc_changed), ([], [], [], False))
+        heads = [l[2:] for l in self.doc.read_text(encoding="utf-8").splitlines()
+                 if l.startswith("# ")]
+        self.assertEqual(heads, ["Inbox", "World", "Births", "Companions", "Skills", "Perks",
+                                 "Spells", "Statuses", "Traits", "Equipment", "Enemies",
+                                 "Events", "Quests"])
+
     def test_clean_after_first_run(self):
         r = sync.run(self.tmp, write=False)
         self.assertEqual((r.imported, r.to_inbox, r.conflicts, r.doc_changed), ([], [], [], False))

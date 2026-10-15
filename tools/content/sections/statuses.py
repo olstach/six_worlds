@@ -5,7 +5,7 @@ type, duration and effects are context.
 Only 39 statuses have a description key today; the rest show (empty) and the
 key is created when someone fills it in."""
 from ..model import Entry, Field, Group
-from ._util import clean
+from ._common import clean
 
 TITLE = "Statuses"
 FILE = "resources/data/statuses.json"

@@ -2,7 +2,7 @@
 the two attributes are shown as context. Each element group also holds the
 element itself (its name and theme are writing)."""
 from ..model import Entry, Field, Group
-from ._util import clean
+from ._common import clean
 
 TITLE = "Skills"
 FILE = "resources/data/skills.json"
