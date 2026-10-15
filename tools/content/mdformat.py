@@ -85,7 +85,7 @@ def _render_entry(lines: list, entry: Entry, depth: int, top: bool) -> None:
         head += f"[{entry.tag}] "
     head += f"{title} `{entry.ident}`"
     if entry.context:
-        head += f" — {entry.context}"
+        head += " — " + str(entry.context).replace("\r", " ").replace("\n", " ")
     lines.append(head)
     for f in entry.fields:
         _render_field(lines, indent + "  ", f.name, f.value, f.kind)
@@ -135,7 +135,7 @@ def location_index(doc: Doc) -> dict:
     Uses exactly the same keys parse() produces for the rendered text, which
     is what lets the sync match a parsed entry to a record. Children live
     inside their parent. If two entries share a key the first one wins (the
-    parser sends the later one to `stray`).
+    parser keeps the later one under a "(duplicate N)" key).
     """
     index: dict = {}
 
@@ -159,16 +159,14 @@ class ParsedEntry:
     ident: str
     title: str
     tag: str = ""
-    # str, or list[str] for an inline value containing ", ". "(empty)" -> "".
-    # The parser has no schema, so it cannot know a one-item list from text:
-    # use raw_fields + split_list() when you know the field is a list.
+    # Always str: the raw text ("" for "(empty)"). The parser has no schema,
+    # so for a field whose kind is "list" apply split_list() yourself.
     fields: dict = field(default_factory=dict)
     children: list = field(default_factory=list)
     children_label: str = ""
     raw: str = ""                 # exact source lines, moveable to the Inbox
     location: str = ""
     context: str = ""             # the read-only text after " — "
-    raw_fields: dict = field(default_factory=dict)   # always str, never split
 
     @property
     def notes(self) -> str:
@@ -224,8 +222,9 @@ def _split_inbox(lines: list):
 class _Block:
     """A key line with nothing after the colon: collects ">" lines (or turns
     out to be the children label)."""
-    def __init__(self, key, indent, owner):
+    def __init__(self, key, indent, owner, line):
         self.key, self.indent, self.owner, self.lines = key, indent, owner, []
+        self.first = self.last = line      # source line range, for stray
 
 
 def parse(text: str) -> ParsedDoc:
@@ -242,6 +241,7 @@ def parse(text: str) -> ParsedDoc:
     ends: dict = {}              # id(entry) -> last line index belonging to it
     starts: dict = {}
     block = None                 # the open _Block, if any
+    label_ind: dict = {}         # id(parent entry) -> indent of its children label
 
     def where() -> str:
         titles = [t for _, t in headings]
@@ -250,6 +250,10 @@ def parse(text: str) -> ParsedDoc:
             label += SEP + stack[-1][1].location.split(SEP)[-1]
         return label
 
+    def where_of(owner: ParsedEntry) -> str:
+        titles = [t for _, t in headings]
+        return SEP.join(titles) + SEP + owner.location.split(SEP)[-1]
+
     def close_block() -> None:
         """A block ends: store its text, unless it was a children label."""
         nonlocal block
@@ -257,7 +261,10 @@ def parse(text: str) -> ParsedDoc:
             if not block.lines and block.owner.children_label == block.key:
                 pass                                    # it was the label
             else:
-                _set_field(block.owner, block.key, "\n".join(block.lines), True)
+                if not _set_field(block.owner, block.key,
+                                  "\n".join(block.lines), True):
+                    result.stray.append((where_of(block.owner), "\n".join(
+                        src[block.first:block.last + 1])))
         block = None
 
     def touch(i: int) -> None:
@@ -290,6 +297,7 @@ def parse(text: str) -> ParsedDoc:
             if block is not None and block.owner is not None and \
                     len(m.group("ind")) > block.indent:
                 block.lines.append(m.group("txt") or "")
+                block.last = i
                 touch(i)
             else:
                 close_block()
@@ -310,9 +318,10 @@ def parse(text: str) -> ParsedDoc:
             owner = stack[-1][1]
             val = m.group("val")
             if val is None or val == "":
-                block = _Block(m.group("key"), ind, owner)
+                block = _Block(m.group("key"), ind, owner, i)
             else:
-                _set_field(owner, m.group("key"), val, False)
+                if not _set_field(owner, m.group("key"), val, False):
+                    stray(i)                # repeated key: first value stays
             touch(i)
             continue
 
@@ -342,13 +351,16 @@ def parse(text: str) -> ParsedDoc:
             else:
                 # a child: only valid under a children label key line
                 label = None
-                if block is not None and block.owner is parent and block.indent < ind:
+                # children sit exactly one indent level under the label line
+                if block is not None and block.owner is parent \
+                        and ind == block.indent + 2:
                     label = block.key
-                elif parent.children_label:
+                    label_ind[id(parent)] = block.indent
+                elif parent.children_label and \
+                        ind == label_ind.get(id(parent), -9) + 2:
                     label = parent.children_label
                 if label is None:
-                    close_block()
-                    stray(i)
+                    stray(i)             # block stays open for later children
                     continue
                 parent.children_label = label
                 parent.children.append(entry)
@@ -373,13 +385,13 @@ def parse(text: str) -> ParsedDoc:
     return result
 
 
-
-def _set_field(entry: ParsedEntry, key: str, value: str, is_block: bool) -> None:
-    """Store a field's value. Inline values with ', ' become lists."""
+def _set_field(entry: ParsedEntry, key: str, value: str, is_block: bool) -> bool:
+    """Store a field's value (always text). Returns False, storing nothing,
+    if the entry already has a field with this key: the first value stays and
+    the caller sends the repeated lines to `stray`."""
+    if key in entry.fields:
+        return False
     if value == EMPTY and not is_block:
         value = ""
-    entry.raw_fields[key] = value
-    if not is_block and ", " in value:
-        entry.fields[key] = split_list(value)
-    else:
-        entry.fields[key] = value
+    entry.fields[key] = value
+    return True

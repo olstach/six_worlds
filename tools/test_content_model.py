@@ -56,7 +56,7 @@ class FormatTests(unittest.TestCase):
         self.assertEqual(p.inbox.strip(), "raw idea: a goat oracle\n\n- with a list")
         (entry,) = p.entries.values()
         self.assertEqual(entry.fields["text"], "Line one.\n\nLine two — with - dash\n- not a list")
-        self.assertEqual(entry.fields["skills"], ["swords", "yoga"])
+        self.assertEqual(mdformat.split_list(entry.fields["skills"]), ["swords", "yoga"])
         self.assertEqual(entry.fields["flavor"], "")
         self.assertEqual(entry.notes, "keep this")
         self.assertEqual(entry.children[0].fields["result"], "You learn nothing.")
@@ -68,7 +68,7 @@ class FormatTests(unittest.TestCase):
         text = mdformat.render(sample_doc()).replace("  ", "\t").replace("\n", "\r\n")
         p = mdformat.parse(text)
         (entry,) = p.entries.values()
-        self.assertEqual(entry.fields["skills"], ["swords", "yoga"])
+        self.assertEqual(mdformat.split_list(entry.fields["skills"]), ["swords", "yoga"])
         self.assertEqual(entry.children[0].fields["result"], "You learn nothing.")
 
     def test_unicode_survives(self):
@@ -124,6 +124,37 @@ class FormatTests(unittest.TestCase):
         d.sections[0].groups[0].entries[0].fields[0].value = "x" * 200
         (e,) = mdformat.parse(mdformat.render(d)).entries.values()
         self.assertEqual(e.fields["text"], "x" * 200)
+
+    def test_fields_are_always_text(self):
+        text = "# Inbox\n\n# T\n\n- **X** `x`\n  - a: one, two\n  - b: (empty)\n  - c: solo\n"
+        (e,) = mdformat.parse(text).entries.values()
+        self.assertEqual(e.fields, {"a": "one, two", "b": "", "c": "solo"})
+        self.assertEqual(mdformat.split_list("one, two"), ["one", "two"])
+        self.assertEqual(mdformat.split_list("(empty)"), [])
+        self.assertEqual(mdformat.split_list(""), [])
+
+    def test_repeated_field_key_goes_to_stray(self):
+        text = ("# Inbox\n\n# T\n\n- **X** `x`\n  - f: one\n  - f: two\n"
+                "  - g:\n    > a\n  - g:\n    > b\n")
+        p = mdformat.parse(text)
+        (e,) = p.entries.values()
+        self.assertEqual(e.fields, {"f": "one", "g": "a"})
+        self.assertEqual([s[1] for s in p.stray], ["  - f: two", "  - g:\n    > b"])
+        self.assertIn("T", p.stray[0][0])
+
+    def test_child_must_be_one_level_under_label(self):
+        text = ("# Inbox\n\n# T\n\n- **X** `x`\n  - kids:\n"
+                "      - deep `d`\n    - ok `o`\n")
+        p = mdformat.parse(text)
+        (e,) = p.entries.values()
+        self.assertEqual([c.ident for c in e.children], ["o"])
+        self.assertEqual(len(p.stray), 1)
+
+    def test_context_newlines_flattened(self):
+        d = sample_doc()
+        d.sections[0].groups[0].entries[0].context = "a\nb"
+        (e,) = mdformat.parse(mdformat.render(d)).entries.values()
+        self.assertEqual(e.context, "a b")
 
     def test_duplicate_idents_are_kept(self):
         d = sample_doc()
