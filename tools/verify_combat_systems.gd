@@ -305,8 +305,8 @@ func _check_severing_an_extra_arm() -> void:
 		_fail("sever: items.json has no gloves or sword to test with")
 		_done()
 		return
-	# Equip directly: equip_item() only offers hand_l/hand_r for gloves, so
-	# the extra hand slots are written the way a save or cheat would.
+	# Equip directly, the way a save would — equip_item() would want the
+	# items in the inventory first (verify_multi_arm covers equip_item).
 	c["equipment"]["hand_l2"] = glove_id
 	c["equipment"]["weapon_set_1"]["main"] = blade_id
 	var gloves_before: int = ItemSystem.get_inventory_count(glove_id)

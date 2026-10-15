@@ -209,6 +209,12 @@ func equip_item(character: Dictionary, item_id: String, slot: String) -> bool:
 	# Reject if the target body part is missing (prosthetics are exempt — they fill the gap)
 	# or if the slot is locked by a natural weapon.
 	var is_prosthetic: bool = item_type == "prosthetic"
+	# A slot this body simply does not have (hand_l2 on a two-armed human)
+	# is refused for everything, prosthetics included — there is nothing to
+	# attach it to.
+	if BodySystem and not BodySystem.body_has_slot(character, slot):
+		push_warning("ItemSystem: This body has no '%s' slot." % slot)
+		return false
 	if BodySystem and not is_prosthetic:
 		var part := BodySystem.get_part_for_slot(character, slot)
 		if not part.is_empty() and part.get("id", "") in character.get("body_plan", {}).get("missing_parts", []):
@@ -270,13 +276,17 @@ func swap_equipped(character: Dictionary, slot: String, new_item_id: String) -> 
 	_set_equipped_item(character, slot, new_item_id)
 
 
-func unequip_item(character: Dictionary, slot: String) -> bool:
+## force=true: the item MUST come off (a severed limb), so it goes into the
+## pack even past max_inventory_size rather than being refused. The pack is
+## then over-full until the player sorts it out — better than deleting a
+## weapon nobody chose to throw away. Ordinary unequips leave force off.
+func unequip_item(character: Dictionary, slot: String, force: bool = false) -> bool:
 	var item_id = get_equipped_item(character, slot)
 	if item_id == "":
 		return false  # Nothing equipped
 
 	# Check if inventory has space
-	if _inventory.size() >= max_inventory_size:
+	if not force and _inventory.size() >= max_inventory_size:
 		push_warning("ItemSystem: Inventory full, cannot unequip")
 		return false
 
@@ -288,7 +298,7 @@ func unequip_item(character: Dictionary, slot: String) -> bool:
 		BodySystem.set_prosthetic_for_slot(character, slot, "")
 
 	# Add to inventory
-	add_to_inventory(item_id, 1)
+	add_to_inventory(item_id, 1, force)
 
 	# Update derived stats
 	if CharacterSystem:
@@ -360,7 +370,9 @@ func set_weapon_set(character: Dictionary, set_num: int) -> void:
 
 
 ## Add item to party inventory
-func add_to_inventory(item_id: String, quantity: int = 1) -> bool:
+## force=true ignores max_inventory_size — only for items that would otherwise
+## be destroyed (see unequip_item).
+func add_to_inventory(item_id: String, quantity: int = 1, force: bool = false) -> bool:
 	if not item_exists(item_id):
 		push_warning("ItemSystem: Cannot add unknown item ", item_id)
 		return false
@@ -380,7 +392,7 @@ func add_to_inventory(item_id: String, quantity: int = 1) -> bool:
 		if existing_index != -1:
 			_inventory[existing_index]["quantity"] += quantity
 		else:
-			if _inventory.size() >= max_inventory_size:
+			if not force and _inventory.size() >= max_inventory_size:
 				push_warning("ItemSystem: Inventory full")
 				return false
 			_inventory.append({"item_id": item_id, "quantity": quantity})
@@ -389,7 +401,7 @@ func add_to_inventory(item_id: String, quantity: int = 1) -> bool:
 
 	# Non-stackable: add separate entries (equipment, etc.)
 	for i in range(quantity):
-		if _inventory.size() >= max_inventory_size:
+		if not force and _inventory.size() >= max_inventory_size:
 			push_warning("ItemSystem: Inventory full")
 			inventory_changed.emit()
 			return false

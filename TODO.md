@@ -1883,9 +1883,14 @@ were accurate on 2026-10-15 and drift.
       take an optional day and the overworld listener reads `new_day`. The
       investment tick is idempotent, so it copes. Latent today (the longest
       advance is an 8-hour rest). Check in `verify_economy_bonuses`.
-- [ ] **Severing a primary arm drops only the ACTIVE weapon set's weapon**
+- [x] ~~**Severing a primary arm drops only the ACTIVE weapon set's weapon**
       (`body_system.gd:~444`); the other set's stays in the lost hand. And
-      with a full inventory the force-clear deletes the item (`~433`).
+      with a full inventory the force-clear deletes the item (`~433`).~~
+      **Fixed 2026-10-15.** `BodySystem._drop_from_lost_part` empties that
+      hand in both weapon sets. There is no stash or ground to drop onto, so
+      a full pack now takes the item anyway (`unequip_item`/`add_to_inventory`
+      grew a `force` flag) and stays over-full until sorted — nothing is
+      destroyed. The drop is printed, as the event's sever already is.
 - [x] **Bombs and the poison talisman brand apply statuses with no source**
       (`combat_manager.gd:~7174`, `~10060`), so the thrower's
       `burning_damage_pct` / `poison_damage_pct` never scale them.
@@ -1907,8 +1912,15 @@ were accurate on 2026-10-15 and drift.
       take) and does not touch the find, so nothing counts twice. The numbers
       are the old dead function's: worth a look in play. Checks in
       `verify_combat_procs`.
-- [ ] **`unbroken` (perks.json `~8458`) is description-only** — "wounds
-      inflicted on you are downgraded one severity"; there is no downgrade step.
+- [x] ~~**`unbroken` (perks.json `~8458`) is description-only** — "wounds
+      inflicted on you are downgraded one severity"; there is no downgrade step.~~
+      **Built 2026-10-15** in `WoundSystem.apply_wound`: physical wounds only
+      (a disease is not a wound). Severe counts as moderate, moderate as
+      light, and a light wound is shrugged off. The entry keeps its id and
+      carries `downgraded`, read through `get_entry_severity()` by the
+      penalties, Scarred and the wounds panel — it stays one step lighter
+      through escalation. **Still open:** the perk's FIRST sentence (stop at
+      25% HP once per combat, armour doubled) is not built either.
 - [x] ~~**`every_opening_is_an_invitation` counts buffs**~~ — **fixed
       2026-10-15.** Both halves (accuracy and crit) ask one helper,
       `_opening_is_an_invitation`, which asks `unit_has_debuff()`.
@@ -1953,6 +1965,23 @@ show HP lost (the main hit too); a 0-damage arm shows "Arm N: 0" where the main
 hit shows nothing; and `_has_shield_equipped` (`combat_unit.gd:~1256`, plus
 `combat_manager.gd:~2081/~2207`) reads only `weapon_off`, never weapon set 2.
 
+**Done 2026-10-15.** One path now: `_apply_hit_damage`, `_apply_weapon_oil`,
+`_resolve_hit_procs` (on-hit perks, on_hit/on_crit/on_kill triggers, weapon
+procs) and `_count_weapon_attack`, called by the primary hit and by
+`_execute_arm_chain_attack` alike. Arms hit at full strength, as before; the
+arm's fire chance still scales only the *persistent* afflictions (crit wounds,
+diseases, poisoned blood). Each landed arm spends an oil charge. Chakram
+`pass_through` is skipped for arms on purpose (it is the thrown ring's one
+flight; arms are melee-only anyway). Arms are logged once, by the arena; every
+attack log shows HP lost ("12 (18 before armour)"), from a new
+`result.damage_taken`. A blow that costs no HP shows no popup, arm or main.
+Arm crits play the crit sting. The shield half was wrong: `_has_shield_equipped`
+goes through `ItemSystem.get_equipped_item`, which already reads the active
+set. The real bug was the three `combat_manager` reads of a top-level
+`equipment["weapon_off"]` that does not exist — so **a two-armed dual-wielder
+never chained an extra arm at all**, and Offhand Jab never fired. All three
+read the active set now. `tools/verify_multi_arm` covers it.
+
 ### Four-armed bodies are half-built
 
 No race uses the `four_armed` body plan. Its `hand_l2`/`hand_r2` slots cannot be
@@ -1960,6 +1989,13 @@ filled — gloves, gauntlets and bracers list only `hand_l`/`hand_r` in items.js
 — and are missing from the default equipment dict (`character_system.gd:~196`).
 There is no `weapon_main2`/`weapon_off2`; `BodySystem.ARM_WEAPON_SLOTS` makes
 adding one a single line when it is wanted.
+
+**Slots done 2026-10-15:** gloves, gauntlets and bracers list `hand_l2`/`hand_r2`,
+the default equipment dict has them, and `equip_item` now refuses a slot the
+body does not have (`BodySystem.body_has_slot`), so a human can't glove a third
+hand. Still missing: the paper doll in `main_menu.gd` (`~2662`) has no
+hand_l2/hand_r2 boxes, so the player can only fill them through starting gear.
+And still no race uses the plan.
 
 ### UI and legibility
 
@@ -2040,8 +2076,10 @@ adding one a single line when it is wanted.
       (`items.json:~2690/~2993`), and the flask's `armor_reduction: 5` has no
       reader. "Eats through armour" is the item's whole point and does nothing
       beyond poison damage. Needs a Corroded status (armour down) to exist.
-- [ ] **The disease-on-hit and crit-wound code exists twice**
-      (`combat_manager.gd:~1566-1594` and `~9549-9600`) — see the multi-arm note.
+- [x] ~~**The disease-on-hit and crit-wound code exists twice**
+      (`combat_manager.gd:~1566-1594` and `~9549-9600`) — see the multi-arm note.~~
+      **Fixed 2026-10-15** — only the `_process_weapon_on_hit_procs` copy is
+      left; see below.
 - [x] **`_check_special_requirement`'s attribute branch has no users**
       (`perk_system.gd:~269`) and reads base attributes. Remove it. Removed
       2026-10-15. Every `special_requirement` in perks.json is an

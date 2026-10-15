@@ -19221,21 +19221,27 @@
       "category": "armor",
       "slots": [
         "hand_l",
-        "hand_r"
+        "hand_r",
+        "hand_l2",
+        "hand_r2"
       ]
     },
     "gauntlets": {
       "category": "armor",
       "slots": [
         "hand_l",
-        "hand_r"
+        "hand_r",
+        "hand_l2",
+        "hand_r2"
       ]
     },
     "bracers": {
       "category": "armor",
       "slots": [
         "hand_l",
-        "hand_r"
+        "hand_r",
+        "hand_l2",
+        "hand_r2"
       ]
     },
     "pants": {
