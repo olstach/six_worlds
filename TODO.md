@@ -25,6 +25,46 @@ Companion documents:
 
 ## Where to pick up
 
+- [ ] **NEXT — one master content document, and a cleaner folder.**
+      *Asked for 2026-10-15.* Content Olaf is working on is spread across
+      ~40 markdown files. Gather every `.md` that holds **content data** into
+      a single master file, the one source of truth for content not yet
+      fully in code. Then remove every doc that is not directly called by
+      code or tooling. This file is meant to be **temporary**. As each piece
+      of content is fully implemented in normalized data (`resources/data/`
+      JSON plus the loaders), it leaves the master file. When nothing is
+      left, the master file is deleted and the content lives only in the
+      code structure.
+
+      What exists today (main tree, 2026-10-15):
+      - **Content:** `PERKS.md`, `CHARACTERS.md`,
+        `docs/BACKGROUNDS_BY_BIRTH.md`, `docs/companion_quirks.md`, the 13
+        files in `docs/review/` (realm prose, events, traits, the Meadow
+        workbook), `resources/data/events/hungry_ghost_events_plan.md`,
+        `docs/SIX_WORLDS_COMPOSER_BRIEF.md`.
+      - **Design/plan:** `docs/plans/` (6 files: economy, perk wiring, the
+        resistance, spell and terrain audits), `docs/superpowers/plans/` (8)
+        and `docs/superpowers/specs/` (6). Most of these are built, so they
+        are history that git already keeps.
+      - **Project docs that stay separate:** `README.md`, `TODO.md`,
+        `CLAUDE.md`, `.claude/skills/`.
+
+      **Referenced by code or tools, so check before deleting.** Every
+      `docs/review/*.md` (round-tripped by `tools/import_review_docs.py`),
+      `PERKS.md` (10 references in tools), and `docs/plans/ECONOMY_DESIGN.md`
+      and `ECONOMY_FLOWS.md` (cited from code comments). If one of these is
+      folded into the master file, update the tool to read the master file
+      too. Otherwise the round-trip breaks.
+
+      Also found while listing: CLAUDE.md points to `SPECIFICATION/chat1.txt`
+      (the spell list), and this file points to `EDIT_LATER.md` (wound
+      design notes). **Neither file exists in the tree.** Either recover
+      them from git history into the master file, or drop the references.
+
+      To settle with Olaf when this starts: which plan/spec docs count as
+      content to keep and which are history to delete, and the master
+      file's name and location (e.g. `CONTENT.md` at the root).
+
 **A hell → hungry ghost → animal playthrough.** All three realms are populated
 and none of the recent content has been played; the animal realm has never been
 played at all. Progression is genuinely gated now (boss seal enforced, boss
