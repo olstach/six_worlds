@@ -5396,10 +5396,6 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 	return removed
 
 
-## Process status effects at turn start.
-## Handles DoT, HoT, incapacitation, saving throws, escalating damage,
-## expiry callbacks, and status spread.
-## Returns true if the unit should skip their turn (incapacitated).
 ## The damage type a status's DoT deals, read from its `<type>_damage_per_turn`
 ## effect string.
 ##
@@ -5418,6 +5414,10 @@ func _dot_element(effect_def: Dictionary) -> String:
 	return "physical"
 
 
+## Process status effects at turn start.
+## Handles DoT, HoT, incapacitation, saving throws, escalating damage,
+## expiry callbacks, and status spread.
+## Returns true if the unit should skip their turn (incapacitated).
 func _process_status_effects(unit: Node) -> bool:
 	if not "status_effects" in unit or unit.status_effects.is_empty():
 		return false
@@ -8471,13 +8471,6 @@ func _save_gates_status(spell: Dictionary) -> bool:
 		or not failed_branch.get("random_one_of", []).is_empty()
 
 
-## Roll a save against a spell. The caster's Focus sets the DC unless the spell
-## names another attribute; `save_tier` and `save_dc_modifier` let one spell be
-## harder to shrug off than another.
-##
-## See SaveSystem for the model. The percentage-based roll this replaced took no
-## input at all from the caster, so a Constitution-12 target resisted every
-## effect in the game at exactly 44% whoever cast it.
 ## Roll the spell's save once and apply whichever branch it landed in.
 ##
 ##   "save_type": "Constitution",
@@ -8608,6 +8601,14 @@ func _apply_resource_op(caster: Node, target: Node, spec: Dictionary,
 				"amount": moved, "landed": landed})
 
 
+## Roll a save against a spell. The caster's Focus sets the DC unless the spell
+## names another attribute; `save_tier` and `save_dc_modifier` let one spell be
+## harder to shrug off than another.
+##
+## See SaveSystem for the model. The percentage-based roll this replaced took no
+## input at all from the caster, so a Constitution-12 target resisted every
+## effect in the game at exactly 44% whoever cast it.
+##
 ## `gates_status` is true when what rides on the save is a status — then the
 ## caster's Ritual raises the DC (see status_save_dc_bonus). A save that only
 ## halves damage or stands between the target and an instant kill is not a
@@ -9995,8 +9996,10 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 					result["persistent_wound"] = wound_id
 
 	# 15% chance hits from undead/diseased enemies inflict a disease on player characters.
-	# "undead_hunter" perk grants immunity to these disease procs.
 	# 15% chance hits from poison-tagged enemies inflict poisoned blood.
+	# Both procs ask _check_perk_status_immunity first, which is where Undead
+	# Hunter (disease, from these attackers only) and Diamond Body (disease and
+	# poison, while unarmored) live — no perk is checked by id here.
 	if WoundSystem and attacker.team == Team.ENEMY and defender.team == Team.PLAYER:
 		var attacker_tags: Array = attacker.character_data.get("tags", [])
 		# Perk immunities are checked here as well as for the Diseased status:

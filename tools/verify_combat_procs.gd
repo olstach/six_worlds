@@ -1,8 +1,9 @@
 extends Node
-## Headless verification for the four skill payouts that modify a combat roll
-## or magnitude: mace stuns, fire damage-over-time, status landing chance, and
-## Comedy's luck — and the four wound/body perks that change what a hit leaves
-## behind: Hardened, Stubborn Body, Undead Hunter and Iron Cortex.
+## Headless verification for the five skill payouts that modify a combat roll
+## or magnitude: mace stuns, fire damage-over-time, status landing chance,
+## Enchantment's status duration and Comedy's luck — and the four wound/body
+## perks that change what a hit leaves behind: Hardened, Stubborn Body, Undead
+## Hunter and Iron Cortex.
 ##
 ## Each check drives or inspects the real consumer. An earlier phase of this
 ## work "verified" bonuses by calling an accessor the same commit added, which
@@ -11,7 +12,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 14
+const EXPECTED_CHECKS: int = 15
 
 
 func _ready() -> void:
@@ -25,6 +26,7 @@ func _ready() -> void:
 	_check_effective_luck_reaches_the_loot()
 	_check_luck_weights_a_lucky_find()
 	_check_on_hit_procs_spare_the_fallen()
+	_check_enchantment_duration_counts_once()
 
 	_check_hardened()
 	_check_stubborn_body()
@@ -283,6 +285,32 @@ func _check_luck_weights_a_lucky_find() -> void:
 			found = true
 	if not found:
 		_fail("a certain lucky find produced no equipment: %s" % str(drops))
+	_done()
+
+
+## Enchantment lengthens spell statuses exactly once.
+##
+## The duration bonus used to be stated twice — `int(level / 2)` inside
+## _calculate_status_duration, and a parallel table key nothing read. Now the
+## table (`effect_duration_turns`) is the only statement and the function reads
+## it. Wiring the table without deleting the formula (or restoring the formula
+## beside the table) would double it; this pins the curve so either shows.
+## Spellpower is held at 0 so only Enchantment moves the number.
+func _check_enchantment_duration_counts_once() -> void:
+	var spell: Dictionary = {"duration": "spellpower"}
+	for level in range(0, 11):
+		var u: CombatUnit = _unit({"enchantment": level} if level > 0 else {})
+		var table_turns: int = int(u.character_data["derived"].get("effect_duration_turns", 0))
+		var expected: int = 2 + int(level / 2)
+		var got: int = CombatManager._calculate_status_duration(u, spell, 0)
+		if table_turns != int(level / 2):
+			_fail("Enchantment %d: effect_duration_turns is %d, expected %d"
+				% [level, table_turns, int(level / 2)])
+		if got != expected:
+			_fail("Enchantment %d: a spellpower-duration status lasts %d turns, "
+				% [level, got] + "expected %d (base 2 + table %d) — counted twice?"
+				% [expected, table_turns])
+		u.queue_free()
 	_done()
 
 

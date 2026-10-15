@@ -728,11 +728,17 @@ the Earth/Black plant line — so the work went where the gaps were:
         nothing, and the map "luck" buff already pays one crit per point.
       verify_combat_procs is seven checks, and fails when either half is
       unwired.
-- [ ] **`effect_duration_pct` is a DUPLICATE, not a gap.** Enchantment's
-      duration bonus already works, computed straight from the skill level in
-      `_calculate_status_duration` (+1 turn per 2 levels). Wiring the table key
-      would double-count it. Decide which one is the truth and delete the other
-      — do not wire this.
+- [x] **Enchantment's status duration is stated once** (re-checked
+      2026-10-15; this entry used to call it `effect_duration_pct`). The
+      per-level table key is `effect_duration_turns` — 0,1,1,2,2,3,3,4,4,5 at
+      Enchantment 1–10, i.e. +1 turn per 2 levels — and
+      `_calculate_status_duration` reads only that (`derived.
+      effect_duration_turns`); the old `int(level / 2)` formula in the
+      function is gone. Not a double count: a spellpower-duration status lasts
+      2 + table + SP/15 turns, so Enchantment 10 at SP 0 gives 7.
+      `verify_combat_procs` pins the 1–10 curve and fails if the formula comes
+      back beside the table. Lingering Touch and Weakening Gaze add their own
+      +level/3 on top, but those are perks, chosen, not the skill paying twice.
 - [ ] **Original design notes:** They behave
       like equipment bonuses — another additive source folded into `derived` —
       except the source is a different character's skill. No ordering problem
@@ -1985,13 +1991,20 @@ adding one a single line when it is wanted.
 
 ### Data and tooling hygiene
 
-- [ ] **`vocabulary_baseline.json` has stale entries** — `crafting_yield_pct`,
+- [x] **`vocabulary_baseline.json` has stale entries** — `crafting_yield_pct`,
       `loot_quality_pct`, `trap_detection_pct` are wired but still listed. The
       validator should fail on a baseline entry that has gained a reader.
-- [ ] **The `effect_duration_pct` entry in §6 uses an old name.** perks.json
+      Done 2026-10-15: validate_data.py now fails on a baseline line whose
+      value has gained a reader *or* left the data, so the file only shrinks.
+      It found two more — `black_damage_per_turn` (read by `_dot_element`'s
+      suffix parse) and `spreads_on_contact` (no status carries it any more).
+      All five removed; `crafting_quality_pct` is the last skill payout left.
+- [x] **The `effect_duration_pct` entry in §6 uses an old name.** perks.json
       has 16 `effect_duration_turns` and no `effect_duration_pct`. Re-check
       whether `_calculate_status_duration` and `derived.effect_duration_turns`
-      actually double-count before deciding anything.
+      actually double-count before deciding anything. Re-checked 2026-10-15:
+      they do not — the function reads the table and nothing else. §6 entry
+      rewritten and ticked; `verify_combat_procs` now guards it.
 - [x] **Unread flags in spell `special` blocks** duplicate what their statuses
       do: `spells.json:~5419` `physical_immunity`, `~7044`
       `immune_to_all_damage`, `~7436` `magic_resistance_bonus`, `~1380`
@@ -2008,18 +2021,30 @@ adding one a single line when it is wanted.
       beyond poison damage. Needs a Corroded status (armour down) to exist.
 - [ ] **The disease-on-hit and crit-wound code exists twice**
       (`combat_manager.gd:~1566-1594` and `~9549-9600`) — see the multi-arm note.
-- [ ] **`_check_special_requirement`'s attribute branch has no users**
-      (`perk_system.gd:~269`) and reads base attributes. Remove it.
-- [ ] **Small stale comments:** `perk_system.gd:~511` says 164 hand-wired perks
+- [x] **`_check_special_requirement`'s attribute branch has no users**
+      (`perk_system.gd:~269`) and reads base attributes. Remove it. Removed
+      2026-10-15. Every `special_requirement` in perks.json is an
+      `<element>_affinity_N` or `any_[N_]<category>_at_N`, and validate_data.py
+      now rejects any other shape — the function returns false for it, so the
+      perk could never be taken.
+- [x] **Small stale comments:** `perk_system.gd:~511` says 164 hand-wired perks
       (176 now); `combat_manager.gd:~9571` on Undead Hunter; `_spell_save`'s
-      doc comment is fused into `_apply_save_gated`'s (`~8214`).
+      doc comment is fused into `_apply_save_gated`'s (`~8214`). Fixed
+      2026-10-15, plus the same 164 in wire_passive_perks.py's docstring, and
+      a second fused pair: `_process_status_effects`'s doc had landed on
+      `_dot_element`.
 - [ ] **Air_Shield's 25% is still a hard-coded effect string**
       (`combat_manager.gd:~1710`). It could become a status `ranged`
       resistance, which would change its stacking from multiplicative to
       additive.
-- [ ] **A verifier's own parse errors were invisible.** Fixed 2026-10-15:
+- [x] **A verifier's own parse errors were invisible.** Fixed 2026-10-15:
       `verify_all.sh` now fails a scene that prints `SCRIPT ERROR` and shows
       the line. Worth remembering when a verifier "fails" with no message.
+      The root cause was layer 1: `godot --editor --quit` does not compile
+      scripts nothing loads — tried with a duplicate function and an
+      undeclared name, in both `scripts/` and `tools/`, and it reported none
+      of the four. Layer 1 now also runs `tools/parse_check.gd`, which loads
+      every .gd for real and caught all four.
 
 ### Decisions for Olaf
 
@@ -2282,8 +2307,9 @@ Setting Sun (copper construct), Matriarch of All Longing (yidag).
 
 > **Stale — cleared, kept as history (2026-10-15).** Every key in the table
 > below has been renamed, wired, merged or removed; the live state is §6
-> above. Only `crafting_quality_pct` is still unread, and the Enchantment
-> duration question (now spelt `effect_duration_turns`) waits on a decision.
+> above. Only `crafting_quality_pct` is still unread; the Enchantment
+> duration question (now spelt `effect_duration_turns`) was settled — it is
+> read once, from the table (§6).
 > Read what follows as the July snapshot it is: the names, the "13 of 40"
 > count and the suggested target systems are all out of date.
 
