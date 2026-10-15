@@ -611,11 +611,19 @@ func buy_item(item_id: String) -> Dictionary:
 		if item_id in stock:
 			if stock[item_id] <= 0:
 				return {"success": false, "reason": "Out of stock"}
-			stock[item_id] -= 1
 
 	# Process purchase
 	if not GameState.spend_gold(price):
 		return {"success": false, "reason": "Transaction failed"}
+
+	# Only now that it's paid for does it leave the shop. The decrement is for
+	# this visit's UI; the rack is what the next visit reads (barter_buy_item
+	# already did this — plain gold purchases didn't, so racks never emptied).
+	if not _current_shop.is_empty():
+		var stock = _current_shop.get("items", {})
+		if item_id in stock:
+			stock[item_id] -= 1
+			_remove_from_rack(item_id)
 
 	var item = ItemSystem.get_item(item_id)
 

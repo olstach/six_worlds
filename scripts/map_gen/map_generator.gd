@@ -463,6 +463,10 @@ func _record_subregions(subregions: Array[Dictionary]) -> void:
 			"rect": sub.rect,
 			"mob_weight": sub.get("mob_weight", 1.0),
 			"event_weight": sub.get("event_weight", 1.0),
+			# Settlement placement reads this record. Without it every
+			# subregion defaulted to 1.0, so the tier floors never filtered
+			# anything and villages went up on lava.
+			"habitability": sub.get("habitability", 1.0),
 		})
 
 
@@ -1105,12 +1109,16 @@ func _place_zone_objects(zone: Dictionary, pool: Dictionary, density: Dictionary
 					placed_positions.append(pos)
 					num_pickups -= 1
 
-	# Fill remaining events from weighted pool
-	var event_weights = _build_pool_weight_table(event_pool)
+	# Fill remaining events from weighted pool. Shops are left out: they were
+	# placed above, into settlements, and drawing them again here scattered
+	# 15-20 extra shops a realm across open ground — towns named after nothing,
+	# guild-grade shops on hillsides.
+	var fill_pool: Array = event_pool.filter(func(e): return e.get("tag", "") != "shop")
+	var event_weights = _build_pool_weight_table(fill_pool)
 	for i in range(maxi(num_events, 0)):
-		if event_pool.is_empty():
+		if fill_pool.is_empty():
 			break
-		var template = _pick_from_pool(event_pool, event_weights)
+		var template = _pick_from_pool(fill_pool, event_weights)
 		var pos = _find_placement_tile(row_start, row_end, min_spacing, placed_positions, col_start, col_end, "event_weight")
 		if pos != Vector2i(-1, -1):
 			_place_event_object(zone_id, template, pos)
