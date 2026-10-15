@@ -207,8 +207,35 @@ var active_zones: Array[Dictionary] = []
 # affinity while ice did. It lives in resources/data/terrain.json now, beside
 # everything else that ground means.
 
+## Spellpower bonus for a Summoning spell cast on ground whose spirits match
+## one of its schools (see summon_terrain_affinity_for below).
+const SUMMON_TERRAIN_BONUS_PCT: float = 0.25
+
 # Combat rewards (filled before combat_ended signal, cleared on next combat start)
 var last_combat_rewards: Dictionary = {}
+
+## The summoning affinity a spell draws on, fighting on `overworld_terrain`
+## (a MapManager.Terrain / Ground id), or {} when it gets none.
+##
+## A spell qualifies when it is a Summoning spell AND one of its schools is
+## the school this ground favours — nagas answer a Water summoning on a lake,
+## earth spirits an Earth summoning in the mountains. The returned dictionary
+## is terrain.json's `summon_affinity` block: {school, label}.
+##
+## Both the cast (the spellpower calculation) and the spell tooltip in
+## combat_arena.gd ask this one function, so the bonus a player is promised
+## is the bonus they get.
+static func summon_terrain_affinity_for(spell: Dictionary, overworld_terrain: int) -> Dictionary:
+	if overworld_terrain < 0:
+		return {}
+	var schools_lower: Array = spell.get("schools", []).map(func(s): return str(s).to_lower())
+	if not "summoning" in schools_lower:
+		return {}
+	var affinity: Dictionary = Ground.summon_affinity_of(overworld_terrain)
+	if affinity.is_empty() or not str(affinity.get("school", "")) in schools_lower:
+		return {}
+	return affinity
+
 
 func _ready() -> void:
 	_load_spell_database()
@@ -1844,8 +1871,14 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 						combat_log.emit("%s stays hidden (Shady Dealings)." % attacker.unit_name)
 
 		# Apply damage — naming the attacker, so a take_damage passive knows
-		# who to answer
+		# who to answer. A crit flags the defender first so its damage number
+		# reads "crit!" (the flag is cleared straight after, so oil or
+		# enchant damage that follows shows plainly).
+		if "next_damage_is_crit" in defender:
+			defender.next_damage_is_crit = bool(result.get("crit", false))
 		apply_damage(defender, result.damage, result.damage_type, attacker)
+		if "next_damage_is_crit" in defender:
+			defender.next_damage_is_crit = false
 
 		# Apply weapon oil effects (bonus damage + status procs)
 		if attacker.has_method("consume_oil_charge"):
@@ -3703,15 +3736,14 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	# Summoning terrain affinity: the spirits native to this ground answer more
 	# readily. +25% spellpower for Summoning spells whose element matches the
 	# overworld terrain the battle is being fought on.
-	if battlefield_overworld_terrain >= 0:
-		var schools_lower_sum: Array = spell.get("schools", []).map(func(s): return s.to_lower())
-		if "summoning" in schools_lower_sum:
-			var affinity: Dictionary = Ground.summon_affinity_of(battlefield_overworld_terrain)
-			if not affinity.is_empty() and affinity.get("school", "") in schools_lower_sum:
-				var summon_delta := int(spellpower_bonus * 0.25)
-				spellpower_bonus += summon_delta
-				combat_log.emit("The spirits of %s answer %s readily! (+%d spellpower)" % [
-					affinity.get("label", "this place"), caster.unit_name, summon_delta])
+	# The rule itself lives in summon_terrain_affinity_for(), which the spell
+	# tooltip also reads, so the player sees the bonus before casting.
+	var summon_affinity: Dictionary = summon_terrain_affinity_for(spell, battlefield_overworld_terrain)
+	if not summon_affinity.is_empty():
+		var summon_delta := int(spellpower_bonus * SUMMON_TERRAIN_BONUS_PCT)
+		spellpower_bonus += summon_delta
+		combat_log.emit("The spirits of %s answer %s readily! (+%d spellpower)" % [
+			summon_affinity.get("label", "this place"), caster.unit_name, summon_delta])
 
 	# Lunar & weekday spellpower bonuses
 	var calendar_schools: Array = spell.get("schools", []).map(func(s: String): return s.to_lower())
@@ -6653,73 +6685,52 @@ func _process_terrain_effects(unit: Node) -> void:
 	var value = terrain.value
 	var effect_name = combat_grid.get_effect_name(effect)
 
+	# What this effect does comes from CombatGrid.TERRAIN_HAZARDS — the same
+	# table the tile hover tooltip reads, so the two can never disagree.
+	var hazard: Dictionary = CombatGrid.TERRAIN_HAZARDS.get(effect, {})
+	if hazard.is_empty():
+		return
+	var benign: bool = bool(hazard.get("heals", false))
+
 	# Levitating units are immune to damaging ground effects (still get blessed)
-	if movement_mode == CombatGrid.MovementMode.LEVITATE:
-		if effect != CombatGrid.TerrainEffect.BLESSED:
-			return
+	if movement_mode == CombatGrid.MovementMode.LEVITATE and not benign:
+		return
 
 	# Status-based terrain immunity (Levitating, Flying statuses even without movement mode set)
 	if _unit_has_effect(unit, "immune_to_ground_effects") or _unit_has_effect(unit, "immune_to_terrain_hazards"):
-		if effect != CombatGrid.TerrainEffect.BLESSED:
+		if not benign:
 			return
 
 	# Water_Walking: immune to water/wet terrain effects
-	if _unit_has_effect(unit, "immune_to_water_terrain"):
-		if effect in [CombatGrid.TerrainEffect.WET, CombatGrid.TerrainEffect.ICE]:
-			return
+	if _unit_has_effect(unit, "immune_to_water_terrain") and bool(hazard.get("water", false)):
+		return
 
-	# Apply effect based on type — terrain now also applies matching status effects
-	match effect:
-		CombatGrid.TerrainEffect.FIRE:
-			apply_damage(unit, value, "fire")
-			if not unit.has_status("Burning"):
-				_apply_status_effect(unit, "Burning", 2)
-			terrain_damage.emit(unit, value, effect_name)
+	# Healing ground
+	if benign:
+		unit.heal(value)
+		unit_healed.emit(unit, value)
+		terrain_heal.emit(unit, value, effect_name)
+		return
 
-		CombatGrid.TerrainEffect.POISON:
-			apply_damage(unit, value, "physical")
-			if not unit.has_status("Poisoned"):
-				_apply_status_effect(unit, "Poisoned", 3)
-			terrain_damage.emit(unit, value, effect_name)
+	# Damage, if the effect deals any
+	var damage_type: String = str(hazard.get("damage_type", ""))
+	if damage_type != "":
+		apply_damage(unit, value, damage_type)
 
-		CombatGrid.TerrainEffect.ACID:
-			apply_damage(unit, value, "physical")
-			terrain_damage.emit(unit, value, effect_name)
+	# The matching status (Burning on fire, Slowed on ice...) — only when the
+	# unit does not already have it, and only on a successful roll for the
+	# chance-based ones (cursed ground, storms).
+	var status_name: String = str(hazard.get("status", ""))
+	if status_name != "" and randf() < float(hazard.get("status_chance", 1.0)):
+		var blocked: bool = unit.has_status(status_name)
+		for other in hazard.get("status_blocked_by", []):
+			if unit.has_status(str(other)):
+				blocked = true
+		if not blocked:
+			_apply_status_effect(unit, status_name, int(hazard.get("status_turns", 1)))
 
-		CombatGrid.TerrainEffect.CURSED:
-			apply_damage(unit, value, "black")
-			# 30% chance to apply Cursed debuff
-			if randf() < 0.3 and not unit.has_status("Cursed"):
-				_apply_status_effect(unit, "Cursed", 2)
-			terrain_damage.emit(unit, value, effect_name)
-
-		CombatGrid.TerrainEffect.BLESSED:
-			unit.heal(value)
-			unit_healed.emit(unit, value)
-			terrain_heal.emit(unit, value, effect_name)
-
-		CombatGrid.TerrainEffect.ICE:
-			# Ice applies Slowed (no damage)
-			if not unit.has_status("Slowed") and not unit.has_status("Frozen"):
-				_apply_status_effect(unit, "Slowed", 1)
-
-		CombatGrid.TerrainEffect.WET:
-			# Wet ground slows and makes units vulnerable to ice/air damage
-			if not unit.has_status("Slowed"):
-				_apply_status_effect(unit, "Slowed", 1)
-			terrain_damage.emit(unit, 0, effect_name)
-
-		CombatGrid.TerrainEffect.STORMY:
-			# Storm terrain deals lightning damage and has a chance to stun
-			apply_damage(unit, value, "lightning")
-			if randf() < 0.2 and not unit.has_status("Stunned"):
-				_apply_status_effect(unit, "Stunned", 1)
-			terrain_damage.emit(unit, value, effect_name)
-
-		CombatGrid.TerrainEffect.VOID:
-			# Void terrain deals space damage
-			apply_damage(unit, value, "space")
-			terrain_damage.emit(unit, value, effect_name)
+	if damage_type != "":
+		terrain_damage.emit(unit, value, effect_name)
 
 
 ## Create ground effects on tiles from AoE damage (fire leaves fire, ice leaves ice, etc.)
