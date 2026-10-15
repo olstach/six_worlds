@@ -34,7 +34,7 @@ def _items_group(ds) -> Group:
     data = ds.get(ITEMS)
     types = data.get("item_types", {})
     # type -> category, in the order item_types lists them
-    cat_of = {t: v.get("category", "other") for t, v in types.items()
+    cat_of = {t: v.get("category", "Other") for t, v in types.items()
               if isinstance(v, dict)}
     by_cat: dict = {}                      # category -> type -> [(id, rec)]
     for t in cat_of:                       # fixes a stable, file-driven order

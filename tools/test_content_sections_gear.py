@@ -95,8 +95,8 @@ class GearCoverage(unittest.TestCase):
         ds = load()
         g = equipment.build(ds)
         self.assertEqual(count(g, "ammo:"), len([k for k in ds.get("resources/data/ammo.json")["ammo"] if not k.startswith("_")]))
-        self.assertEqual(count(g, "upgrades:"), len(ds.get("resources/data/upgrades.json")["upgrades"]))
-        self.assertEqual(count(g, "supplies:"), len(ds.get("resources/data/supplies.json")["supply_types"]))
+        self.assertEqual(count(g, "upgrades:"), len([k for k in ds.get("resources/data/upgrades.json")["upgrades"] if not k.startswith("_")]))
+        self.assertEqual(count(g, "supplies:"), len([k for k in ds.get("resources/data/supplies.json")["supply_types"] if not k.startswith("_")]))
         self.assertEqual(count(g, "talisman:perk:"), len(ds.get("resources/data/talisman_tables.json")["perks"]))
 
     def test_name_parts_are_list_fields(self):
@@ -130,6 +130,46 @@ class GearCoverage(unittest.TestCase):
         n = sum(len([k for k in ds.get("resources/data/enemies/name_parts.json")[s] if not k.startswith("_")])
                 for s in ("prefixes", "roots", "suffixes"))
         self.assertEqual(sum(1 for e in walk(g) if e.key.startswith("enemies:name_part:")), n)
+
+    def test_titles_meanings_and_design_fields_present(self):
+        ds = load()
+        g = enemies.build(ds)
+        by_key = {e.key: e for e in walk(g)}
+        n_title = n_design = n_mean = 0
+        for f in ds.files():
+            if f.endswith("_archetypes.json"):
+                realm = Path(f).name[:-len("_archetypes.json")]
+                for aid, a in ds.get(f)["archetypes"].items():
+                    if aid.startswith("_"):
+                        continue
+                    e = by_key[f"enemies:{realm}:archetype:{aid}"]
+                    if "name" in a:
+                        n_title += 1
+                        self.assertEqual(e.title_path, (f, "archetypes", aid, "name"))
+                    if "_comment" in a:
+                        n_design += 1
+                        self.assertEqual([x.name for x in e.fields], ["design"])
+                    else:
+                        self.assertEqual(e.fields, [])
+        self.assertGreater(n_title, 0)
+        self.assertGreater(n_design, 0)
+        for kind in ("prefixes", "roots", "suffixes"):
+            for pid in ds.get("resources/data/enemies/name_parts.json")[kind]:
+                if pid.startswith("_"):
+                    continue
+                e = by_key[f"enemies:name_part:{kind}:{pid}"]
+                self.assertEqual([x.name for x in e.fields], ["meaning"])
+                n_mean += 1
+        self.assertGreater(n_mean, 0)
+
+    def test_single_other_group(self):
+        ds = load()
+        items = ds.get("resources/data/items.json")
+        items["item_types"]["nocat"] = {"slots": ["x"]}
+        items["items"]["zz_nocat"] = {"name": "N", "type": "nocat", "description": "d"}
+        items["items"]["zz_odd"] = {"name": "O", "type": "nope", "description": "d"}
+        titles = [c.title.lower() for c in equipment.build(ds).groups[0].groups]
+        self.assertEqual(titles.count("other"), 1)
 
 
 class FillAbsentField(unittest.TestCase):

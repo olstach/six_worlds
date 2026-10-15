@@ -76,6 +76,7 @@ def _realm_group(ds, realm: str, heading: str) -> Group:
                 ag.entries.append(Entry(
                     key=f"enemies:{realm}:archetype:{aid}",
                     title=a.get("name", aid), ident=aid,
+                    title_path=path + ("name",) if "name" in a else (),
                     context=join([a.get("tier"), "/".join(a.get("roles", [])),
                                   ", ".join(a.get("tags", []))]),
                     fields=_design(a, path)))
