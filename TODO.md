@@ -1674,9 +1674,10 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
         they were accepted by the tooling and ignored by the engine.
       - **Re-entrancy:** while one trigger's payload resolves, no trigger
         fires. The answer to an answer is silence, never a loop.
-      - **Durations:** stat modifiers tick at turn start (twice — see below),
-        so a `combat_start` buff needs duration 3 to survive the first turn; a
-        `turn_start` one fires after the ticks and lasts its turn at 1.
+      - **Durations:** stat modifiers tick at turn start — twice, until §15
+        fixed it the same day; once now — so a `combat_start` buff needs
+        duration 2 to survive the first turn; a `turn_start` one fires after
+        the tick and lasts its turn at 1.
       - The deployment path into combat never called
         `_apply_combat_start_perks`, so Rousing Display did nothing in any
         fight with a deployment phase. It does now.
@@ -1764,15 +1765,37 @@ were accurate on 2026-10-15 and drift.
       `"boss"`, `"easy"` and the rest in event outcomes are inert, and the
       easy 0.75× … boss 1.6× multipliers "Where to pick up" described do not
       exist anywhere. Build them, or drop the field.
-- [ ] **Timed buffs and debuffs last half their stated duration.** Stat
-      modifiers tick twice at each turn start — once in
-      `_process_status_effects` (`combat_manager.gd:~5324`) and again at
-      `~10160`. Fixing it doubles every active skill's buff, so it is a balance
-      change as much as a bug fix: decide deliberately.
-- [ ] **`_unit_is_unarmored` reads a `hands` slot that does not exist**
-      (`combat_manager.gd:~9290`; the slots are `hand_l`/`hand_r`). Gauntlets
-      never count as armour, while trousers make you armoured. Affects Diamond
-      Body, Bare Chest, Flowing Footwork and the new `unarmored_or_light`.
+- [x] ~~**Timed buffs and debuffs last half their stated duration.**~~ —
+      **fixed 2026-10-15; decided: the data is right, the clock was wrong.**
+      Worse than "half": the second tick only happened when the unit carried a
+      status (with none, `_process_status_effects` returned early), so the same
+      buff lasted one length or the other depending on whether someone was
+      Blessed. Both ticks are gone; `_start_current_turn` ticks stat modifiers
+      once, right after the statuses, stunned turns included. A duration now
+      means: counts down at the start of its owner's turn, gone at 0 — 1 lasts
+      until your next turn begins, 2 lasts through it. Nothing retuned. Things
+      that look tuned around the old clock, left for a balance pass:
+      `shield_wall` (duration 2, says "until next turn" — now lasts a turn
+      longer); `shield_bash` (−10% accuracy "for 1 turn" on an ENEMY at
+      duration 1 — ticks off at the enemy's turn start, before it attacks, and
+      always did); `borrowed_opening` and Borrowed Force (a buff at duration 1
+      from a dodge on the enemy's turn — gone at your turn start, before your
+      attack). Statuses, taunt, cooldowns, mantras and the overworld's
+      `combats_remaining` buffs were checked and already ticked once.
+- [x] ~~**`_unit_is_unarmored` reads a `hands` slot that does not exist**~~
+      — **fixed 2026-10-15.** The perks say two things and now get two
+      answers from one helper. "While unarmored" (Diamond Body, Iron Shirt):
+      no armour piece at all — but clothing is not armour, so robe, hat,
+      trousers, boots, sandals, gloves and prosthetics are fine
+      (`CLOTHING_TYPES`). "Unarmored or in light armor" (Flowing Footwork,
+      Bare Chest, `unarmored_or_light`): armour allowed so long as no piece is
+      heavy, and heavy is a Strength requirement, the `wearing_heavy_armor`
+      rule. Every hand slot is read, `hand_l2`/`hand_r2` included. So a leather
+      vest now keeps Flowing Footwork (it did not before — the old helper
+      called it armour and the verifier asserted so); iron gauntlets now break
+      it. Note: generated gauntlets and helmets never carry a Strength
+      requirement (`generate_armor` only adds one at base armour ≥ 3), so they
+      count as light.
 - [x] **Poison and acid ground deal `physical` damage**
       (`combat_manager.gd:~6531/~6537`), so armour reduces them and poison
       resistance does nothing, while the Poisoned status deals poison.
@@ -1859,13 +1882,24 @@ were accurate on 2026-10-15 and drift.
       `verify_combat_procs`.
 - [ ] **`unbroken` (perks.json `~8458`) is description-only** — "wounds
       inflicted on you are downgraded one severity"; there is no downgrade step.
-- [ ] **`every_opening_is_an_invitation` counts buffs** (`combat_manager.gd:~2091,
-      ~2232`) — "any status" includes Blessed. `unit_has_debuff()` exists now.
-- [ ] **Rousing Display's +5 initiative never affects round 1** — applied after
-      turn order is built (`combat_manager.gd:~367/~997`) and ticked away at
-      once as a 1-turn buff.
-- [ ] **On-hit procs don't check `defender.is_alive()`** before applying
-      statuses (mace stun `combat_manager.gd:~9915` and others).
+- [x] ~~**`every_opening_is_an_invitation` counts buffs**~~ — **fixed
+      2026-10-15.** Both halves (accuracy and crit) ask one helper,
+      `_opening_is_an_invitation`, which asks `unit_has_debuff()`.
+- [x] ~~**Rousing Display's +5 initiative never affects round 1**~~ — **fixed
+      2026-10-15.** Both ways into a fight now go through `_begin_first_round`:
+      combat-start perks, THEN the round-1 sort, then the first turn. Duration
+      1 is right once the order is: sorted in, ticked off at the ally's own
+      first turn, gone before round 2 is sorted. Still open: the perk's text
+      says "+5% morale and +2 Initiative"; the code gives +5 and no morale.
+- [x] ~~**On-hit procs don't check `defender.is_alive()`**~~ — **fixed
+      2026-10-15.** `_apply_on_hit_status` is `_apply_status_effect` that
+      refuses a fallen defender; every status in `_process_on_hit_perks`, the
+      weapon and ammo procs, the weapon oil and the spell-perk riders (Measured
+      Radiance, Tremor, Scattering Gust, Riptide, the Black fear) goes through
+      it. It mattered more than it looks: a bleeding-out unit keeps its
+      statuses through a revive, so the stun waited for whoever picked them
+      up. Persistent wounds and diseases from a killing blow still land — that
+      reads as intended.
 - [x] **`duel_stop_hp_pct` on an encounter is ignored** — only the archetype's
       copy is read (`hungry_ghost_encounters.json:~603`, `enemy_system.gd:~928`).
       And the duel threshold moves with in-combat max-HP changes. Fixed

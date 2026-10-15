@@ -37,6 +37,9 @@ func _ready() -> void:
 	_check_take_damage_and_ally_damaged()
 	_check_parry_success()
 	_check_reentrancy_guard()
+	_check_stat_modifiers_tick_once()
+	_check_rousing_display_sorts_round_one()
+	_check_every_opening_wants_a_debuff()
 	_teardown_field()
 
 	if failures > 0:
@@ -336,27 +339,58 @@ func _check_vocabulary_is_closed() -> void:
 		_fail("on_terrain_forrest (no such ground) was accepted as a condition")
 
 
-## wearing_heavy_armor and unarmored_or_light, against real items.
+## wearing_heavy_armor, unarmored_or_light and the strict "unarmored", against
+## real items in every armour slot — not just the chest. The old test read a
+## `hands` slot that does not exist, so gauntlets never counted and trousers did.
 func _check_armour_conditions() -> void:
 	var unit := _make_unit(Vector2i(1, 1), 0)
 	var equipment: Dictionary = unit.character_data["equipment"]
-	# chest item -> [wearing_heavy_armor, unarmored_or_light]
-	var cases := {
-		"chainmail": [true, false],     # carries a Strength requirement
-		"leather_vest": [false, false], # armour, but not heavy
-		"cloth_robe": [false, true],
-		"": [false, true],
-	}
-	for chest in cases:
-		equipment["chest"] = chest
-		var want: Array = cases[chest]
-		if unit._perk_condition_met("wearing_heavy_armor") != want[0]:
-			_fail("wearing_heavy_armor with chest '%s' gave %s, expected %s"
-				% [chest, not want[0], want[0]])
-		if unit._perk_condition_met("unarmored_or_light") != want[1]:
-			_fail("unarmored_or_light with chest '%s' gave %s, expected %s"
-				% [chest, not want[1], want[1]])
-	equipment["chest"] = ""
+	# {slot: item} -> [wearing_heavy_armor, unarmored_or_light, strictly unarmored]
+	var cases: Array = [
+		[{"chest": "chainmail"}, [true, false, false]],     # Strength requirement: heavy
+		[{"chest": "leather_vest"}, [false, true, false]],  # armour, but light
+		[{"chest": "cloth_robe"}, [false, true, true]],     # clothing
+		[{}, [false, true, true]],                          # nothing on at all
+		# Clothing in the other slots is still unarmored.
+		[{"chest": "cloth_robe", "legs": "leather_pants", "feet": "leather_boots",
+			"hand_l": "leather_gloves"}, [false, true, true]],
+		# Gauntlets are armour (heavy, they need Strength) — in either hand.
+		[{"hand_l": "iron_gauntlets"}, [false, false, false]],
+		[{"hand_r": "iron_gauntlets"}, [false, false, false]],
+		# A leather cap is light armour: fine for Flowing Footwork, not for
+		# Diamond Body.
+		[{"head": "leather_cap"}, [false, true, false]],
+		[{"legs": "iron_greaves"}, [false, false, false]],
+	]
+	var armour_slots: Array[String] = ["head", "chest", "legs", "feet", "hand_l", "hand_r"]
+	for case in cases:
+		for slot in armour_slots:
+			equipment[slot] = ""
+		var worn: Dictionary = case[0]
+		for slot in worn:
+			equipment[slot] = worn[slot]
+		var want: Array = case[1]
+		var got: Array = [
+			unit._perk_condition_met("wearing_heavy_armor"),
+			unit._perk_condition_met("unarmored_or_light"),
+			CombatManager._unit_is_unarmored(unit),
+		]
+		if got != want:
+			_fail("wearing %s: [heavy, unarmored_or_light, unarmored] = %s, expected %s"
+				% [worn, got, want])
+	for slot in armour_slots:
+		equipment[slot] = ""
+
+	# And the perks that read it. Flowing Footwork takes light armour, Diamond
+	# Body does not; the movement getter is the consumer for the first.
+	var footwork := _make_unit(Vector2i(1, 2), 0, ["flowing_footwork"])
+	var bare_move: int = footwork.get_movement()
+	footwork.character_data["equipment"]["chest"] = "leather_vest"
+	if footwork.get_movement() != bare_move:
+		_fail("Flowing Footwork's +1 Movement was lost to a leather vest (light armour)")
+	footwork.character_data["equipment"]["hand_r"] = "iron_gauntlets"
+	if footwork.get_movement() != bare_move - 1:
+		_fail("Flowing Footwork's +1 Movement survived iron gauntlets (heavy armour)")
 
 
 ## first_attack_combat / first_attack_turn, counted by a real attack_unit().
@@ -484,7 +518,7 @@ func _check_trigger_conditions() -> void:
 func _check_combat_start_and_turn_start() -> void:
 	var perk := _probe_perk("__probe_openers__", [
 		{"type": "on_trigger", "trigger": "combat_start",
-		 "effect": {"type": "buff", "stat": "initiative", "value": 4, "duration": 3}},
+		 "effect": {"type": "buff", "stat": "initiative", "value": 4, "duration": 2}},
 		{"type": "on_trigger", "trigger": "turn_start",
 		 "effect": {"type": "buff", "stat": "movement", "value": 1, "duration": 1}}])
 	var unit := _make_unit(Vector2i(10, 1), 0, [perk])
@@ -505,7 +539,7 @@ func _check_combat_start_and_turn_start() -> void:
 	# And the combat_start buff, authored at the duration the comment in
 	# CombatStats.PERK_TRIGGERS says, is still there for the first turn.
 	if _mod(unit, "initiative") != 4:
-		_fail("combat_start: a duration-3 buff did not survive the first turn start")
+		_fail("combat_start: a duration-2 buff did not survive the first turn start")
 
 
 ## take_damage on the hurt unit (with the attacker reachable as a payload
@@ -601,3 +635,95 @@ func _check_reentrancy_guard() -> void:
 		_fail("take_damage did not fire after the guard was released")
 	if CombatManager._resolving_perk_trigger:
 		_fail("the re-entrancy guard was left set after a payload resolved")
+
+
+## A timed stat modifier loses ONE turn of duration per turn of its owner —
+## with or without a status on the unit. It used to tick twice whenever the
+## unit carried any status (once in _process_status_effects, once in
+## _process_turn_start_perks), so every buff and debuff lasted half its
+## stated duration — and only sometimes, which is worse.
+func _check_stat_modifiers_tick_once() -> void:
+	for with_status in [false, true]:
+		var unit := _make_unit(Vector2i(9, 9), 0)
+		if with_status:
+			# Any long-lived status: it is what sent the old code down the
+			# second tick.
+			unit.status_effects = [{"status": "Blessed", "duration": 10}]
+		CombatManager._apply_stat_modifier(unit, "accuracy", 7, 2)
+
+		CombatManager.turn_order = [unit]
+		CombatManager.current_unit_index = 0
+		CombatManager._start_current_turn()
+		if _mod(unit, "accuracy") != 7:
+			_fail("a duration-2 modifier was gone after ONE turn start (with a status: %s)"
+				% with_status)
+		CombatManager.current_unit_index = 0
+		CombatManager._start_current_turn()
+		if _mod(unit, "accuracy") != 0:
+			_fail("a duration-2 modifier outlived its second turn start (with a status: %s)"
+				% with_status)
+		if with_status and not unit.has_status("Blessed"):
+			_fail("the probe status expired early — the tick check proved nothing")
+
+
+## Rousing Display's round-1 Initiative must be there when round 1 is sorted.
+## It was applied after the turn order was built, changed nothing, and had
+## ticked away by round 2.
+func _check_rousing_display_sorts_round_one() -> void:
+	var leader := _make_unit(Vector2i(1, 8), 0, ["rousing_display"])
+	var ally := _make_unit(Vector2i(2, 8), 0)
+	var enemy := _make_unit(Vector2i(9, 8), 1)
+	# Blank characters tie on Initiative. Put the enemy 3 ahead of the ally,
+	# so only a +5 that arrives before the sort lets the ally go first; and
+	# the leader well behind, so the first turn (which ticks) is not theirs.
+	CombatManager._apply_stat_modifier(enemy, "initiative", 3, 9)
+	CombatManager._apply_stat_modifier(leader, "initiative", -20, 9)
+
+	var saved: Array[Node] = CombatManager.all_units.duplicate()
+	CombatManager.all_units.assign([leader, ally, enemy])
+	CombatManager._finalize_combat_start()
+	var order: Array = CombatManager.turn_order.duplicate()
+	CombatManager.all_units.assign(saved)
+
+	if order.find(ally) < 0 or order.find(enemy) < 0:
+		_fail("Rousing Display probe: the turn order is missing a unit (%s)" % [order])
+	elif order.find(ally) > order.find(enemy):
+		_fail("Rousing Display: the inspired ally still acts after an enemy at +3 — "
+			+ "the buff arrived after round 1 was sorted")
+	# Used, then gone: the ally's own first turn start has ticked it away, so
+	# it cannot carry into round 2's sort.
+	if _mod(ally, "initiative") != 0:
+		_fail("Rousing Display's buff survived the ally's first turn (%d left)"
+			% _mod(ally, "initiative"))
+	CombatManager.turn_order.clear()
+
+
+## Every Opening Is an Invitation: "+15% Attack and +10% crit against enemies
+## SUFFERING from any status effect" — a Blessed enemy is not suffering.
+func _check_every_opening_wants_a_debuff() -> void:
+	var attacker := _make_unit(Vector2i(3, 10), 0)
+	var defender := _make_unit(Vector2i(4, 10), 1)
+	# Keep the hit chance well inside its 10..95 clamp so +15 shows.
+	CombatManager._apply_stat_modifier(defender, "dodge", 40, 9)
+	var perks: Array = attacker.character_data["perks"]
+
+	# [status on the defender, accuracy the perk should add, crit test result]
+	for case in [["Blessed", 0.0, false], ["Bleeding", 15.0, true], ["", 0.0, false]]:
+		defender.status_effects = []
+		if case[0] != "":
+			defender.status_effects = [{"status": case[0], "duration": 5}]
+		perks.clear()
+		var without: float = CombatManager.calculate_hit_chance(attacker, defender)
+		perks.append({"id": "every_opening_is_an_invitation"})
+		var with_perk: float = CombatManager.calculate_hit_chance(attacker, defender)
+		if not is_equal_approx(with_perk - without, case[1]):
+			_fail("Every Opening vs %s: +%.1f accuracy, expected +%.1f"
+				% [case[0] if case[0] != "" else "no status", with_perk - without, case[1]])
+		# The crit half asks the same question; it is inline in the damage roll.
+		if CombatManager._opening_is_an_invitation(attacker, defender) != case[2]:
+			_fail("Every Opening's crit test vs %s gave %s" % [case[0], not case[2]])
+	perks.clear()
+	defender.status_effects = []
+	var cm_src := FileAccess.get_file_as_string("res://scripts/autoload/combat_manager.gd")
+	if cm_src.count("_opening_is_an_invitation(attacker, defender)") < 2:
+		_fail("the accuracy and crit halves of Every Opening no longer share one test")

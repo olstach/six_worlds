@@ -958,9 +958,10 @@ func _perk_condition_met(condition: String, target: Node = null) -> bool:
 		"wearing_heavy_armor":
 			return is_wearing_heavy_armor()
 		"unarmored_or_light":
-			# The rule Diamond Body, Bare Chest and Flowing Footwork already
-			# use, so "unarmored" means one thing everywhere.
-			return CombatManager._unit_is_unarmored(self)
+			# The rule Bare Chest and Flowing Footwork use ("unarmored or in
+			# light armor"), so the words mean one thing everywhere. Diamond
+			# Body asks the strict version — no armour at all.
+			return CombatManager._unit_is_unarmored(self, true)
 
 		# ── Where this unit is in the fight ──
 		# The counters go up after an attack resolves, so during the first
