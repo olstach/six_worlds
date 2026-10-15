@@ -301,7 +301,7 @@ func _check_hazard_text_and_rule_share_one_table() -> void:
 func _check_status_tooltip_names_retaliation_aura_spread() -> void:
 	var lightning: String = TooltipText.status("Lightning_Form", {"status": "Lightning_Form", "duration": 2})
 	_sample("Lightning Form (retaliation)", lightning)
-	for want in ["Hits back at melee attackers", "10 air damage", "30% chance of Stunned"]:
+	for want in ["Hits back at melee attackers", "10 lightning damage", "30% chance of Stunned"]:
 		if not want in lightning:
 			_fail("the Lightning Form tooltip does not say '%s'" % want)
 	var mirror: String = TooltipText.status("Pain_Mirror", {"status": "Pain_Mirror", "duration": 2})
