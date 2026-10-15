@@ -135,11 +135,15 @@ if [ "$QUICK" -eq 0 ]; then
         matched=1
         out=$(timeout 180 "$GODOT" --headless "$scene" 2>&1)
         restore_tree
-        if echo "$out" | grep -q "VERIFY OK"; then
+        # "VERIFY OK" alone is not enough: a script error that aborts one
+        # check partway can still let the scene print it at the end. And show
+        # SCRIPT ERROR lines on failure — a parse error in the verifier itself
+        # otherwise prints nothing matching FAIL and the failure is a blank.
+        if echo "$out" | grep -q "VERIFY OK" && ! echo "$out" | grep -q "SCRIPT ERROR"; then
             ok "$name"
         else
             bad "$name"
-            echo "$out" | grep -E "FAIL|VERIFY" | head -12 | sed 's/^/        /'
+            echo "$out" | grep -E "FAIL|VERIFY|SCRIPT ERROR" | head -12 | sed 's/^/        /'
         fi
     done
     # A typo in --only silently running nothing would read as a clean pass.
