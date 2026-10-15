@@ -715,15 +715,28 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
 	var bare_handed = randf() < no_equip_chance
 
-	# Build resistances dict (start with defaults, apply archetype overrides).
+	# Build resistances dict: zeroed defaults, then the birth's racial
+	# resistances, then the archetype's own.
 	# Includes "black" as a damage type used by Black magic spells.
+	#
+	# Racial and archetype resistances are ADDED together, the same way
+	# CharacterSystem.update_derived_stats() stacks a player's base_resistances
+	# (racial) with trait, equipment and perk resistances. So a skeleton
+	# archetype with physical 30 rolled as a birth with physical 20 ends up at
+	# 50 — the archetype does not replace what the body already has.
+	# apply_birth_modifiers() above stored the birth's resistances on
+	# built["base_resistances"]; today every race's list is empty, so this
+	# changes nothing until races are given some.
 	var resistances = {
 		"physical": 0, "space": 0, "air": 0,
 		"fire": 0, "water": 0, "earth": 0, "black": 0
 	}
+	var racial_resists: Dictionary = built.get("base_resistances", {})
+	for key in racial_resists:
+		resistances[key] = resistances.get(key, 0) + racial_resists[key]
 	var arch_resists = archetype.get("resistances", {})
 	for key in arch_resists:
-		resistances[key] = arch_resists[key]
+		resistances[key] = resistances.get(key, 0) + arch_resists[key]
 
 	# Generate consumable inventory, then merge any archetype-guaranteed items
 	var inventory = _generate_enemy_inventory(archetype, effective_budget)

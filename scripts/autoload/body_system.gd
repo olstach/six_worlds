@@ -86,6 +86,16 @@ const ACCESSORY_SLOTS: Array[String] = [
 # parent: part id this is attached to (for cascading sever)
 # children: part ids that are lost when this part is severed
 
+# Which weapon slot each arm holds. Convention: arm_r = main hand, arm_l = off-hand.
+# Severing an arm listed here also drops its weapon (see sever_part).
+# Four-armed plans have arm_l2/arm_r2, but there are no weapon slots for extra
+# hands yet — if weapon_main2/weapon_off2 are ever added, list them here and
+# sever_part picks them up with no other change.
+const ARM_WEAPON_SLOTS: Dictionary = {
+	"arm_r": "weapon_main",
+	"arm_l": "weapon_off",
+}
+
 const BODY_PLANS: Dictionary = {
 
 	"human": {
@@ -423,16 +433,22 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 					# Force-clear the slot anyway so the item isn't stuck in limbo.
 					if not ItemSystem.unequip_item(character, slot):
 						character.get("equipment", {})[slot] = ""
-				# Arms also unequip their corresponding weapon slot.
-				# Convention: arm_r = main hand (weapon_main), arm_l = off-hand (weapon_off).
+				# Arms also unequip the weapon they were holding, if any.
+				# ARM_WEAPON_SLOTS says which weapon slot belongs to which arm.
+				# The extra arms (arm_l2/arm_r2) are deliberately absent from it:
+				# there is no weapon slot for a third or fourth hand, so all
+				# they can hold is what sits in hand_l2/hand_r2 — and that was
+				# already cleared just above, by the same equip_slot path that
+				# clears hand_l/hand_r for the primary arms.
 				if part.get("category") == "arm" and ItemSystem:
-					match pid:
-						"arm_r":
-							if not ItemSystem.unequip_item(character, "weapon_main"):
-								character.get("equipment", {})["weapon_main"] = ""
-						"arm_l":
-							if not ItemSystem.unequip_item(character, "weapon_off"):
-								character.get("equipment", {})["weapon_off"] = ""
+					var weapon_slot: String = ARM_WEAPON_SLOTS.get(pid, "")
+					if weapon_slot != "":
+						if not ItemSystem.unequip_item(character, weapon_slot):
+							# weapon_main/weapon_off live inside the active
+							# weapon set, so clear them through ItemSystem's
+							# own helper rather than writing a top-level key
+							# that nothing reads.
+							ItemSystem._set_equipped_item(character, weapon_slot, "")
 				break
 
 	# Losing a limb is permanent enough to become part of who they are.

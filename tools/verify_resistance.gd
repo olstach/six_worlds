@@ -16,7 +16,7 @@ extends Node
 var failures: int = 0
 var checks_run: int = 0
 var grid: CombatGrid
-const EXPECTED_CHECKS: int = 27
+const EXPECTED_CHECKS: int = 28
 
 
 func _ready() -> void:
@@ -58,6 +58,9 @@ func _ready() -> void:
 	_check_a_poisoner_gets_twice_the_coating()
 	_check_a_small_hit_is_not_rounded_away()
 	_check_the_ui_number_matches_what_lands()
+
+	# Enemies are built from a birth too, and keep what it resists.
+	_check_an_enemy_inherits_its_birth_resistances()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -239,6 +242,52 @@ func _check_specials_answer_to_nothing() -> void:
 		_fail("a hit of an unknown damage type dealt %d of 40 — it should "
 			% _taken(stranger, 40, "no_such_type") + "arrive unresisted")
 	_cleanup([stranger])
+	_done()
+
+
+# ── enemies ──────────────────────────────────────────────────────────────────
+
+## An enemy rolls a real birth before its archetype is applied, so it must
+## carry that birth's racial resistances, ADDED to the archetype's own — the
+## same stacking a player character's base_resistances get. Every race ships
+## with "resistances": {} today, so this gives each hungry-ghost birth a
+## temporary one, builds the skeleton king (physical 20, crushing 20, ice -10),
+## and puts the race data back afterwards.
+func _check_an_enemy_inherits_its_birth_resistances() -> void:
+	var originals: Dictionary = {}  # birth_id -> its resistances before the test
+	for birth_id in CharacterSystem._birth_data:
+		if String(birth_id).begins_with("_"):
+			continue
+		var data: Dictionary = CharacterSystem._birth_data[birth_id]
+		if data.get("realm", "") != "hungry_ghost":
+			continue
+		originals[birth_id] = data.get("resistances", {})
+		data["resistances"] = {"physical": 15, "poison": 25}
+
+	var enemy: Dictionary = EnemySystem._build_enemy(
+		"hg_skeleton_king", 500, "hungry_ghost", "dry_graveyards", true)
+
+	for birth_id in originals:
+		CharacterSystem._birth_data[birth_id]["resistances"] = originals[birth_id]
+
+	if originals.is_empty():
+		_fail("enemy birth resistance: no hungry_ghost births to test with")
+	elif not String(enemy.get("birth", "")) in originals:
+		_fail("enemy birth resistance: king rolled birth '%s', not a hungry_ghost one"
+			% enemy.get("birth", ""))
+	else:
+		var res: Dictionary = enemy.get("resistances", {})
+		var expected: Dictionary = {
+			"physical": 35,   # archetype 20 + birth 15
+			"crushing": 20,   # archetype only
+			"ice": -10,       # archetype only
+			"poison": 25,     # birth only
+			"fire": 0,        # neither
+		}
+		for key in expected:
+			if int(res.get(key, 0)) != int(expected[key]):
+				_fail("enemy birth resistance: %s is %s, expected %d"
+					% [key, res.get(key, 0), expected[key]])
 	_done()
 
 
