@@ -637,6 +637,11 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 			String(slot.get("region", effective_region)), bool(slot.get("is_hero", false)))
 		if not enemy.is_empty():
 			enemy["disposition"] = party_disposition
+			# A duel threshold written on the ENCOUNTER overrides the
+			# archetype's (which _build_enemy already copied): the same boss
+			# can fight to the death in one place and yield in another.
+			if template.has("duel_stop_hp_pct"):
+				enemy["duel_stop_hp_pct"] = int(template["duel_stop_hp_pct"])
 			enemies.append(enemy)
 
 	if enemies.is_empty():

@@ -19,7 +19,7 @@ var grid: CombatGrid
 ## find no failures and report OK having verified nothing. Every check signs off
 ## by bumping this, and the count is asserted at the end.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 14
+const EXPECTED_CHECKS: int = 16
 
 
 func _ready() -> void:
@@ -45,6 +45,8 @@ func _ready() -> void:
 	# Last, because it really ends a combat — end_combat() clears all_units
 	# and the grid reference that the checks above rely on.
 	await _check_duel_ends_the_moment_the_boss_yields()
+	_check_the_encounter_sets_the_duel_threshold()
+	_check_the_duel_line_does_not_move_with_max_hp()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -434,5 +436,50 @@ func _check_duel_ends_the_moment_the_boss_yields() -> void:
 	CombatManager.combat_ended.disconnect(on_end)
 	CombatManager.combat_active = false
 	CombatManager.combat_grid = grid
+	_cleanup([king, hero])
+	_done()
+
+
+## The encounter's own duel_stop_hp_pct wins over the archetype's. Only the
+## archetype's copy used to be read, so the one in hungry_ghost_encounters.json
+## did nothing (it agreed with the archetype, which is why nobody noticed).
+func _check_the_encounter_sets_the_duel_threshold() -> void:
+	var template: Dictionary = EnemySystem.encounters.get("skeleton_king_duel", {})
+	if template.is_empty():
+		_fail("duel: skeleton_king_duel encounter is missing")
+		_done()
+		return
+	var saved: Variant = template.get("duel_stop_hp_pct")
+	template["duel_stop_hp_pct"] = 25
+	var defs: Array[Dictionary] = EnemySystem.generate_encounter(
+		"skeleton_king_duel", "", "hungry_ghost")
+	template["duel_stop_hp_pct"] = saved
+	if defs.is_empty():
+		_fail("duel: the encounter built no enemies")
+	elif int(defs[0].get("duel_stop_hp_pct", 0)) != 25:
+		_fail("duel: encounter said 25%%, the king carries %s (the archetype says 10)"
+			% str(defs[0].get("duel_stop_hp_pct")))
+	_done()
+
+
+## The yield line is a share of the max HP the king STARTED with. A max-HP
+## buff mid-fight used to lift the line with it (and a drain lowered it).
+func _check_the_duel_line_does_not_move_with_max_hp() -> void:
+	var king := _make_duel_king()
+	if king == null:
+		_done()
+		return
+	var hero := _make_unit(Vector2i(24, 20), CombatManager.Team.PLAYER)
+	var start_max: int = king.max_hp
+	CombatManager._record_duel_thresholds()   # what combat_started does
+	king.max_hp = start_max * 3               # a big max-HP buff lands
+	# Just above 10% of the STARTING max: under the buffed line, over the real one.
+	king.current_hp = start_max / 10 + 1
+	if CombatManager._check_combat_end() != -1:
+		_fail("duel: a max-HP buff moved the yield line — king at %d/%d (started at %d) gave up"
+			% [king.current_hp, king.max_hp, start_max])
+	king.current_hp = start_max / 10
+	if CombatManager._check_combat_end() != CombatManager.Team.PLAYER:
+		_fail("duel: king at 10%% of his starting %d did not yield" % start_max)
 	_cleanup([king, hero])
 	_done()

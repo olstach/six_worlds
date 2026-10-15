@@ -285,6 +285,17 @@ func reset_for_new_life() -> void:
 	active_map_buffs = []
 	active_quests = []
 	overworld_log = []
+	# Places on the old map. Cloud Gate would otherwise teleport to a spot on
+	# a map that no longer exists, and a Planar Shift begun in the last life
+	# would yank the new one "home" to it.
+	last_healing_location = {}
+	planar_return = {}
+	# NOTE: `flags` and `completed_quest_ids` are NOT reset here (only a New
+	# Game clears them). Every flag in the data today is per-world quest/event
+	# state, so they probably should be — but that is a design call, logged in
+	# TODO.md §15 rather than made silently.
+	# The map stash, explored tiles and the rest of the per-map state.
+	MapManager.reset_for_new_life()
 	# Transient hand-offs between the overworld and combat.
 	pending_combat_mob = {}
 	pending_event_outcome = {}
@@ -311,14 +322,19 @@ func has_reached_final_realm() -> bool:
 
 
 ## Advance the time clock by the given number of hours.
-## Fires day_changed when the day counter increments.
+## Fires day_changed ONCE PER DAY CROSSED, in order, each time with the day
+## that just began. A long rest that skips from day 13 to day 15 still fires
+## for day 14, so the full moon on it is not slept through.
+##
+## The clock is already at its final hour while these fire — listeners that
+## care which day it was must read the `new_day` argument, not current_day.
 func advance_time(hours: int) -> void:
 	if hours <= 0:
 		return
 	var old_day: int = current_day
 	hours_elapsed += hours
-	if current_day > old_day:
-		day_changed.emit(current_day)
+	for day in range(old_day + 1, current_day + 1):
+		day_changed.emit(day)
 
 ## Returns the time-of-day label for the current hour.
 func get_time_of_day_label() -> String:
@@ -370,19 +386,23 @@ func get_weekday_school() -> String:
 	return WEEKDAY_SCHOOLS[get_weekday()]
 
 
-## Returns the current day within the lunar month (1–28).
-func get_lunar_day() -> int:
-	return (current_day % LUNAR_MONTH_DAYS) + 1
+## Returns the day within the lunar month (1–28). With no argument that is
+## today; pass a day number to ask about another one (day_changed listeners
+## do, since the clock may already be past the day they are handling).
+func get_lunar_day(day: int = -1) -> int:
+	if day < 0:
+		day = current_day
+	return (day % LUNAR_MONTH_DAYS) + 1
 
 
-## Returns true on the 14th lunar day (full moon).
-func is_full_moon() -> bool:
-	return get_lunar_day() == FULL_MOON_DAY
+## Returns true on the 14th lunar day (full moon). Optional day as above.
+func is_full_moon(day: int = -1) -> bool:
+	return get_lunar_day(day) == FULL_MOON_DAY
 
 
 ## Returns true on the 28th lunar day (new moon — last day of the cycle).
-func is_new_moon() -> bool:
-	return get_lunar_day() == NEW_MOON_DAY
+func is_new_moon(day: int = -1) -> bool:
+	return get_lunar_day(day) == NEW_MOON_DAY
 
 
 ## Returns a display string like "Wednesday, 11th lunar day" or "Saturday, 14th lunar day (Full Moon)".

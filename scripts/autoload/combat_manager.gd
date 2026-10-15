@@ -107,7 +107,8 @@ const SUPPLY_DROP_CHANCE: float = 0.50
 const REAGENT_DROP_ID: String = "raw_reagents"
 const REAGENT_DROP_CHANCE: float = 0.25
 const REAGENT_DROP_CHANCE_CASTER: float = 0.50
-# Base rarity weights (higher = more likely to drop) — still used by boss table picks
+# Base rarity weights (higher = more likely to drop) — the lucky find's starting
+# point, before _get_modified_rarity_weights tilts them by fight size and Luck
 const RARITY_DROP_WEIGHTS: Dictionary = {
 	"common": 100, "uncommon": 50, "rare": 20, "epic": 5, "legendary": 1
 }
@@ -218,6 +219,9 @@ func _ready() -> void:
 	# refresh whenever the distance between units changes.
 	unit_moved.connect(_on_unit_moved_refresh_auras)
 	unit_moved.connect(_on_unit_moved_check_zones)
+	# Both start paths (direct and after deployment) emit combat_started once
+	# every unit is in all_units — the moment to note each duellist's max HP.
+	combat_started.connect(_record_duel_thresholds)
 	print("CombatManager initialized with ", _spell_database.size(), " spells, ",
 		_status_effects.size(), " status effects, ",
 		_summon_templates.size(), " summon templates")
@@ -567,11 +571,8 @@ func _calculate_combat_rewards() -> Dictionary:
 	# --- LUCK JACKPOT ---
 	# Slim chance for a big gold bonus. Luck makes it slightly more likely
 	# but the multiplier is always large - unreliable but consequential.
-	var best_luck := 10
-	for member in CharacterSystem.get_party():
-		var luck = member.get("attributes", {}).get("luck", 10)
-		if luck > best_luck:
-			best_luck = luck
+	# EFFECTIVE Luck (gear, traits, a shrine's blessing), best in the party.
+	var best_luck := best_party_luck(CharacterSystem.get_party())
 
 	var jackpot_triggered := false
 	var jackpot_amount := 0
@@ -608,6 +609,22 @@ func _calculate_combat_rewards() -> Dictionary:
 	return rewards
 
 
+## The party's best EFFECTIVE Luck — attribute plus gear, traits and Luck map
+## buffs, as CharacterSystem.update_derived_stats leaves it in derived["luck"].
+## Never below 10, so an unlucky party is not punished below the baseline
+## (the formulas below only ever reward Luck above 10).
+##
+## This used to read attributes.luck directly, so a talisman "of Fortune" or a
+## shrine's +Luck counted for nothing at the end of a fight.
+func best_party_luck(party: Array) -> int:
+	var best := 10
+	for member in party:
+		var attrs: Dictionary = member.get("attributes", {})
+		var luck := int(member.get("derived", {}).get("luck", attrs.get("luck", 10)))
+		if luck > best:
+			best = luck
+	return best
+
 
 ## The chance a won fight pays a gold jackpot, as 0.0-1.0.
 ##
@@ -631,10 +648,20 @@ func luck_jackpot_chance(best_luck: int, party: Array) -> float:
 	return chance * (1.0 + best_boost / 100.0)
 
 
-## Generate supply, reagent, and boss guaranteed drops.
+## Generate supply, reagent, boss guaranteed drops, and the Luck-driven
+## "lucky find".
 ## Role-based random equipment drops have been removed — enemies now carry real inventories
 ## that feed the budget-based _collect_enemy_loot() system instead.
-func _generate_loot_drops(enemy_count: int, _difficulty_ratio: float, _best_luck: int) -> Array[String]:
+##
+## How the loot stats divide the work, so none of them is counted twice:
+##   - Thievery (`loot_quality_pct`) — how much of what the ENEMIES CARRIED
+##     you manage to take (the drop fraction in _collect_enemy_loot).
+##   - Luck — whether fortune adds a piece nobody was carrying (the lucky
+##     find, below), and how RARE that piece is (_get_modified_rarity_weights).
+##   - `loot_chance_pct` (Comedy's luck_pct, the Shivering Cairn shrine) —
+##     multiplies the chance of both Luck rolls, jackpot and lucky find alike,
+##     because both go through luck_jackpot_chance.
+func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: int) -> Array[String]:
 	var drops: Array[String] = []
 
 	# Collect enemy roles and boss archetype IDs
@@ -677,7 +704,32 @@ func _generate_loot_drops(enemy_count: int, _difficulty_ratio: float, _best_luck
 			if ItemSystem.item_exists(item_id) and not item_id in drops:
 				drops.append(item_id)
 
+	# --- Lucky find ---
+	# Rolled at the same odds as the gold jackpot (same Luck term, same cap,
+	# same loot_chance_pct boost) but independently of it. Luck then weights
+	# the rarity of what turns up — this is where "Luck: loot quality" lives.
+	if randf() < luck_jackpot_chance(best_luck, CharacterSystem.get_party()):
+		var found := lucky_find(difficulty_ratio, best_luck)
+		if found != "":
+			drops.append(found)
+
 	return drops
+
+
+## Item types a lucky find can turn up: any equipment.
+func _lucky_find_types() -> Array[String]:
+	var types: Array[String] = []
+	types.append_array(ItemSystem.WEAPON_TYPES)
+	types.append_array(ItemSystem.ARMOR_TYPES)
+	types.append_array(ItemSystem.TALISMAN_TYPES)
+	return types
+
+
+## One piece of equipment found by luck, its rarity weighted by Luck and by
+## the size of the fight. Returns an item id, or "" when nothing could be made.
+func lucky_find(difficulty_ratio: float, luck: int) -> String:
+	return _pick_item_from_types(_lucky_find_types(),
+		_get_modified_rarity_weights(difficulty_ratio, luck))
 
 
 ## Collect loot from dead enemy inventories using a budget-based system.
@@ -1387,16 +1439,43 @@ func _check_combat_end() -> int:
 	for unit in all_units:
 		if unit.team != Team.ENEMY or not unit.is_alive():
 			continue
-		var stop_pct: int = unit.character_data.get("duel_stop_hp_pct", 0)
-		if stop_pct <= 0:
-			continue
-		var max_hp: int = unit.max_hp
-		var cur_hp: int = unit.current_hp
-		if max_hp > 0 and cur_hp * 100 <= max_hp * stop_pct:
+		var stop_hp: int = duel_stop_hp(unit)
+		if stop_hp > 0 and unit.current_hp <= stop_hp:
 			combat_log.emit("%s yields — the duel is over." % unit.character_data.get("name", "Enemy"))
 			return Team.PLAYER  # Duel victory
 
 	return -1  # Combat continues
+
+
+## Max HP each duelling enemy STARTED the fight with, by instance id. The
+## threshold is a share of this, not of the live max_hp: a max-HP buff or
+## drain mid-fight used to move the line the boss yields at.
+var _duel_start_max_hp: Dictionary = {}
+
+
+## Note every duellist's max HP as the fight begins (on combat_started).
+func _record_duel_thresholds() -> void:
+	_duel_start_max_hp.clear()
+	for unit in all_units:
+		if unit.team == Team.ENEMY and "character_data" in unit \
+				and int(unit.character_data.get("duel_stop_hp_pct", 0)) > 0:
+			_duel_start_max_hp[unit.get_instance_id()] = unit.max_hp
+
+
+## The HP at or below which this enemy yields, or 0 if it does not duel.
+## A unit seen for the first time (e.g. one that joined mid-fight) has its
+## max HP noted now and keeps that number for the rest of the fight.
+func duel_stop_hp(unit) -> int:
+	if not "character_data" in unit:
+		return 0
+	var stop_pct: int = int(unit.character_data.get("duel_stop_hp_pct", 0))
+	if stop_pct <= 0:
+		return 0
+	var id: int = unit.get_instance_id()
+	if not _duel_start_max_hp.has(id):
+		_duel_start_max_hp[id] = unit.max_hp
+	# Integer maths, same rounding as before: hp*100 <= max*pct.
+	return int(_duel_start_max_hp[id]) * stop_pct / 100
 
 
 ## Check combat end after damage/death — triggers immediately via call_deferred

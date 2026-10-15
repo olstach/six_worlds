@@ -11,7 +11,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 11
+const EXPECTED_CHECKS: int = 13
 
 
 func _ready() -> void:
@@ -22,6 +22,8 @@ func _ready() -> void:
 	_check_status_chance_reaches_every_roll_site()
 	_check_ritual_raises_status_save_dc()
 	_check_loot_chance_reaches_the_jackpot()
+	_check_effective_luck_reaches_the_loot()
+	_check_luck_weights_a_lucky_find()
 
 	_check_hardened()
 	_check_stubborn_body()
@@ -221,6 +223,65 @@ func _check_loot_chance_reaches_the_jackpot() -> void:
 	# The boost lands after the Luck cap, so the luckiest party still gains.
 	if CombatManager.luck_jackpot_chance(40, [lucky]) <= CombatManager.luck_jackpot_chance(40, [plain]):
 		_fail("the Luck cap swallowed Comedy's boost for a high-Luck party")
+	_done()
+
+
+## The jackpot read attributes.luck, so Luck from gear, traits and shrines
+## counted for nothing. It reads the effective number in derived now.
+func _check_effective_luck_reaches_the_loot() -> void:
+	var c: Dictionary = _char({})
+	c["attributes"]["luck"] = 10
+	var saved_buffs: Array = GameState.active_map_buffs.duplicate(true)
+	GameState.active_map_buffs = [{"stat": "luck", "amount": 6, "combats_remaining": 1}]
+	CharacterSystem.update_derived_stats(c)
+	GameState.active_map_buffs = saved_buffs
+	if int(c["derived"].get("luck", 0)) != 16:
+		_fail("a +6 Luck shrine left derived luck at %s, expected 16"
+			% str(c["derived"].get("luck", "missing")))
+	var best: int = CombatManager.best_party_luck([c])
+	if best != 16:
+		_fail("best_party_luck read %d — the shrine's Luck never reached the loot" % best)
+	elif CombatManager.luck_jackpot_chance(best, [c]) <= CombatManager.luck_jackpot_chance(10, [c]):
+		_fail("sixteen effective Luck did not raise the jackpot chance")
+	CharacterSystem.update_derived_stats(c)
+	_done()
+
+
+## Luck's rarity weighting was dead code — nothing called it. A won fight now
+## rolls a lucky find at the jackpot's odds, its rarity tilted by Luck.
+func _check_luck_weights_a_lucky_find() -> void:
+	# More Luck, a larger share of rare-and-better.
+	var base: Dictionary = CombatManager._get_modified_rarity_weights(1.0, 10)
+	var lucky: Dictionary = CombatManager._get_modified_rarity_weights(1.0, 25)
+	var share := func(w: Dictionary) -> float:
+		var total: float = 0.0
+		for r in w:
+			total += float(w[r])
+		return float(w["rare"] + w["epic"] + w["legendary"]) / total
+	if share.call(lucky) <= share.call(base):
+		_fail("Luck 25 gave rare+ share %.3f, Luck 10 gives %.3f"
+			% [share.call(lucky), share.call(base)])
+
+	# And the roll is actually made: with the chance pushed past 1 the fight
+	# must turn up a piece of equipment nobody was carrying.
+	var saved_party: Array[Dictionary] = CharacterSystem.party.duplicate()
+	var saved_units: Array[Node] = CombatManager.all_units.duplicate()
+	CombatManager.all_units.clear()
+	var c: Dictionary = _char({})
+	c["derived"]["loot_chance_pct"] = 100000.0
+	CharacterSystem.party.clear()
+	CharacterSystem.party.append(c)
+	var drops: Array[String] = CombatManager._generate_loot_drops(1, 1.0, 10)
+	CharacterSystem.party.clear()
+	CharacterSystem.party.append_array(saved_party)
+	CombatManager.all_units.append_array(saved_units)
+	var equipment_types: Array[String] = CombatManager._lucky_find_types()
+	var found := false
+	for id in drops:
+		if str(ItemSystem.get_item(id).get("type", "")) in equipment_types:
+			found = true
+	if not found:
+		_fail("a certain lucky find produced no equipment: %s" % str(drops))
 	_done()
 
 
