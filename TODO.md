@@ -2107,12 +2107,23 @@ And still no race uses the plan.
 
 ### Decisions for Olaf
 
-- **Investment:** one open stake in the whole world, not one per settlement,
-  so `diversified_portfolio` ("up to 3") means something. One constant,
-  `INVESTMENT_MAX_OUTSTANDING`. Its payout comes from nowhere rather than the
+- ~~**Investment:** one open stake in the whole world~~ — **confirmed by
+  Olaf 2026-10-15.** Its payout still comes from nowhere rather than the
   shop's purse — revisit when settlements have wealth.
-- **Iron Cortex no longer requires Akimbo** — behind Akimbo it added almost
-  nothing. Put it back if the tree should read that way.
+- ~~**Iron Cortex no longer requires Akimbo**~~ — **confirmed by Olaf
+  2026-10-15.**
+- **Luck's "lucky find"** — a won fight rolls for one extra piece of
+  equipment at the jackpot's odds, rarity tilted by Luck. It is the agent's
+  design (the old rarity weighting had nothing left to weigh), untuned.
+- **Flags and finished quests survive a death.** Every flag today is
+  per-world quest/event state, so a regenerated world can find a quest
+  half-done. Two lines in `reset_for_new_life` once decided.
+- **Unbroken shrugs off a light wound entirely** — the reading of
+  "downgraded one severity" at the bottom of the scale.
+- **Difficulty tiers:** easy 0.75 / normal 1.0 / hard 1.2 / very_hard 1.4 XP,
+  boss = boss tier with a fixed band. "hard" is the commonest word in the
+  data (103 of 203 fights), so the average fight grew ~11%. Tune in
+  `encounter_budgets.json` → `difficulty`.
 - **`status_effect_chance_pct` scales two ways:** ×1.3 on a chance roll, but
   +30 percentage points (as DC) on a save. Consistent with how SaveSystem
   treats every other percentage, inconsistent with itself.
@@ -2123,6 +2134,88 @@ And still no race uses the plan.
   `magic_resist`, while Yoga's equanimity excludes it. Probably unintended.
 - **Investment payouts, ritual tooltip wording and the parry definition**
   (a melee miss against someone holding a melee weapon) are all first drafts.
+
+### Round 2 — found while fixing the above (2026-10-15)
+
+**Bugs**
+
+- [ ] **`fallen` is never cleared on a new life or New Game, and not saved**
+      (`character_system.gd:29`) — a previous life's companions can be
+      raised, and the list is lost on load.
+- [ ] **`planar_return` is not saved** (`game_state.gd` `get_save_data`) —
+      loading mid-Planar-Shift strands the party in the other realm.
+- [ ] **`load_map` keeps `searched_tiles`** (`map_manager.gd:~479`), so a
+      searched spot carries over to the same coordinates on another map.
+- [ ] **The bardo screen's "less gold than the first run" never happens** —
+      `GameState.gold = 50` (`bardo_screen.gd:~312`) is overwritten by
+      `start_new_run()`'s 100.
+- [ ] **Trishula's `on_crit_status: "pinned"` is lowercase**
+      (`items.json:~1177/~1205`); the status is `Pinned`. Probably never applies.
+- [ ] **The acid bomb and flask apply `Corroded`, which is not a status**,
+      and the flask's `armor_reduction` has no reader — "eats through armour"
+      does nothing.
+- [ ] **`domain_events.json` uses the roll word `"moderate"`** twice; the DC
+      table does not know it (silently normal) and the validator misses it.
+- [ ] **Imbued arrows still apply their spell to a defender the arrow just
+      dropped** (`combat_manager.gd:~1902`); Touch of Gloom's stat penalties
+      likewise land on a downed target (`~4685`).
+- [ ] **Downed and actionless units (bleeding out, decoys) never tick
+      statuses or stat modifiers**, so a buff on a downed ally rides into
+      later rounds.
+- [ ] **Avatar of the Wind's 1-turn ally buffs expire at each ally's own turn
+      start** (`_process_turn_start_perks`), so allies acting after the perk
+      holder never benefit.
+- [ ] **Buffs tuned around the old double tick** — `shield_wall` (2, "until
+      next turn": now a turn longer), `shield_bash` (1-turn debuff on an enemy
+      ticks off before it attacks; always did), `borrowed_opening` / Borrowed
+      Force (gone before your attack). `borrowed_opening` also says "+20%
+      crit" and gives +20 damage. Rousing Display says "+5% morale and +2
+      Initiative" and gives +5 Initiative, no morale.
+- [ ] **Heavy armour means only the chest** (`combat_unit.gd:~1023`
+      `is_wearing_heavy_armor`), and `generate_armor` (`item_system.gd:~1522`)
+      gives a Strength requirement only at base armour ≥ 3 — generated
+      gauntlets and helmets are always "light".
+- [ ] **`unbroken`'s first half** (stop at 25% HP once per combat, armour
+      doubled) is not built.
+- [ ] **Weakening Gaze and Lingering Touch read raw Enchantment**
+      (`combat_manager.gd:~4785/~5020`), ignoring item and race bonuses.
+
+**Loose ends and dead code**
+
+- [ ] `shop_system.gd:498` `barter_buy_item` is never called, and would not
+      pay the purse or stock supplies if it were. Delete or fix.
+- [ ] `_pick_item_from_types`' fixed-item branch ignores realm, so a lucky
+      find can be another realm's item.
+- [ ] `_get_modified_rarity_weights` rounds to whole numbers — legendary
+      weight does not move until Luck ~17; its "difficulty_ratio" is really
+      fight size.
+- [ ] `_generate_enemy_inventory` (free, by role) and
+      `_generate_skill_consumables` (paid from the kit budget) both hand
+      enemies consumables — double-dipping.
+- [ ] `combat_manager.gd:~4676-4765` still compares `element` with
+      `"air"`/`"water"`/`"earth"`, which can no longer match.
+- [ ] Unread: `summon_templates.json:~1963` `attack_damage_type`, Fireshield's
+      `special.retaliation_damage` (`spells.json:~3277`), Oily Skin's
+      `cumulative`, and `item_system.gd` `active_set_bonus` (the Vajra & Bell
+      opener was never built).
+- [ ] `combat_grid.gd` `add_terrain_effect` (~845), `get_effect_name` (~935)
+      and the effect colours (~990) are still hand-written beside
+      `TERRAIN_HAZARDS`; fold them in.
+- [ ] `tooltip_text.gd` calls the private `CombatManager._spread_chance_to_float()`.
+- [ ] The baseline lists `space_damage_per_turn`, which `_dot_element` probably
+      reads by name — the validator's text search cannot see that.
+- [ ] Poison's `_check_perk_status_immunity` call (`~9822`) passes no attacker.
+- [ ] Every `verify_enemy_xp` run prints ~165 "no births defined for realm
+      'domain'" warnings (`character_system.gd:~554`).
+
+**UI**
+
+- [ ] **The equipment screen has no `hand_l2`/`hand_r2` boxes**
+      (`main_menu.gd:~2662`) — the slots exist but only starting gear fills them.
+- [ ] **Arm lines are logged above the main hit** — the `unit_attacked`
+      handler runs before the arena logs "X attacks Y" (`combat_arena.gd:~2733`).
+- [ ] **Oil damage on an extra arm shows as a separate plain number.**
+- [ ] **Spell crits show a plain damage number** (`combat_manager.gd:~7956/~8042`).
 
 ### Perks the engine can now express (§13)
 
