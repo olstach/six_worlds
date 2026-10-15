@@ -129,11 +129,11 @@ def _items(base_key, path, items) -> list:
     return out
 
 
-def _lore_entries(region, fname, ident, title, path, record) -> list:
+def _lore_entries(realm, region, fname, ident, title, path, record) -> list:
     """Entries for one lore record (a birth, or a region's shared geography):
     one entry for its text and short lists, and one more per list of
     {name, meaning} items."""
-    base = f"births:names:{region}:{ident}"
+    base = f"births:names:{realm}:{region}:{ident}"
     fields, extra = [], []
     for key, val in record.items():
         if key.startswith("_") and key != "_comment":
@@ -165,14 +165,14 @@ def _naming_lore(ds) -> dict:
         for region, rdata in ds.get(rel).get("regions", {}).items():
             rg = Group(realm_title(region), 4, region)
             base = (rel, "regions", region)
-            rg.entries += _lore_entries(region, rel, "region", "How this region is experienced",
+            rg.entries += _lore_entries(realm, region, rel, "region", "How this region is experienced",
                                         base, {k: v for k, v in rdata.items() if k == "_comment"})
             lf = rdata.get("landscape_features")
             if isinstance(lf, dict):
-                rg.entries += _lore_entries(region, rel, "landscape", "Shared geography",
+                rg.entries += _lore_entries(realm, region, rel, "landscape", "Shared geography",
                                             base + ("landscape_features",), lf)
             for birth, bdata in rdata.get("births", {}).items():
-                rg.entries += _lore_entries(region, rel, birth, realm_title(birth),
+                rg.entries += _lore_entries(realm, region, rel, birth, realm_title(birth),
                                             base + ("births", birth), bdata)
             g.groups.append(rg)
         out[realm] = g

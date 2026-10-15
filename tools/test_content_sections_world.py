@@ -146,7 +146,7 @@ class CompanionSkillsImport(unittest.TestCase):
         self.assertEqual(r.exit_code, 0)
         self.assertEqual(self.comps()["karnak"]["build_weights"],
                          {"yoga": 5, "swords": 4, "fire_magic": 3, "unarmed": 2,
-                          "martial_arts": 1, "might": 1})
+                          "martial_arts": 2, "might": 2})
 
     def test_filling_an_absent_field_creates_the_key(self):
         # Remove flavor_text from one companion, rebuild the doc, then fill it in.

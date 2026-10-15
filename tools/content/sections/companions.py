@@ -14,7 +14,10 @@ def _skills(c: dict) -> list:
     bw = c.get("build_weights")
     if not isinstance(bw, dict):
         return []
-    return [k for k, _ in sorted(bw.items(), key=lambda kv: -kv[1])]
+    def weight(kv):
+        w = kv[1]
+        return -w if isinstance(w, (int, float)) and not isinstance(w, bool) else 0
+    return [k for k, _ in sorted(bw.items(), key=weight)]
 
 
 def _context(c: dict) -> str:
@@ -65,7 +68,7 @@ def build(ds) -> Group:
 
 def import_field(ds, entry_key: str, f: Field, new_value) -> None:
     """Skills are a list in the doc but a {skill: weight} dict in the JSON.
-    Rebuild the weights: 5, 4, 3, 2 down the order, then 1 for the rest.
+    Rebuild the weights: 5, 4, 3, 2 down the order, then 2 for the rest.
     (The sync only calls this when the list really changed.)"""
     cid = entry_key.split(":", 1)[1]
     if f.name != "skills":
@@ -79,4 +82,4 @@ def import_field(ds, entry_key: str, f: Field, new_value) -> None:
             ordered.append(n)
     weights = [5, 4, 3, 2]
     ds.set_at((FILE, "companions", cid, "build_weights"),
-              {n: (weights[i] if i < len(weights) else 1) for i, n in enumerate(ordered)})
+              {n: (weights[i] if i < len(weights) else 2) for i, n in enumerate(ordered)})

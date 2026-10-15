@@ -1,5 +1,7 @@
 """The world: each realm's map (name, zones, landmarks, location names) and
 its places (shops), then terrain and domains."""
+import sys
+
 from ..model import Entry, Field, Group
 from ._common import (clean, realm_title, sort_realms, text_field,
                       title_and_path)
@@ -15,7 +17,7 @@ RACES = "resources/data/races.json"
 def _realm_entry(realm, f, m) -> Entry:
     title, tpath = title_and_path(m, "name", realm_title(realm), (f, "name"))
     return Entry(key=f"world:realm:{realm}", title=title, ident="realm", title_path=tpath,
-                 context=clean(f"{m.get('width')}x{m.get('height')} tiles"),
+                 context=clean((f"{m['width']}x{m['height']} tiles" if "width" in m and "height" in m else "")),
                  fields=text_field("description", m, "description", (f, "description")))
 
 
@@ -64,6 +66,9 @@ def _location_names(realm, f, m) -> Group:
         # a name with ", " or a newline cannot live in a comma list
         if all(isinstance(n, str) and n and ", " not in n and "\n" not in n for n in names):
             fields.append(Field(kind, list(names), "list", (f, "location_names", kind)))
+        else:
+            print(f"WARNING: {f} location_names.{kind} has a name containing ', ' or a "
+                  "newline (or a non-string): not shown in CONTENT.md", file=sys.stderr)
     if fields:
         g.entries.append(Entry(key=f"world:names:{realm}", title="Location names",
                                ident="names", fields=fields))
