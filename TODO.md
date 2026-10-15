@@ -1,6 +1,6 @@
 # Six Worlds — TODO
 
-**Last updated:** 2026-09-12
+**Last updated:** 2026-10-15
 
 The open list. Organised as: **what to do next → what is still open → designs
 waiting to be built → what got done**. The full historical checklists (every
@@ -76,8 +76,10 @@ Worth watching for specifically:
 - **First-pass balance numbers** — summoning terrain +25%, pack bonus,
   shield/mirror-image pools, reflect chances, wound-healing prices. All guessed,
   none played.
-- **Difficulty multipliers** (easy 0.75× … boss 1.6×) now apply to every event
-  fight for the first time.
+- ~~**Difficulty multipliers** (easy 0.75× … boss 1.6×) now apply to every event
+  fight for the first time.~~ **Not true (found 2026-10-15):** no multiplier
+  exists in the code, and `EnemySystem.generate_encounter` never reads its
+  `difficulty` argument. See §15.
 - **The wounds and psychology panels** — first look at whether those systems are
   tuned sanely now that they are visible.
 - **Active perks.** 75 of them became usable in 2026-09; before that every one
@@ -1748,6 +1750,170 @@ as a one-off, because several perks and spells want the same thing.
       and 60% to the second; `AoEResolver` returns an unordered tile list with
       no concept of distance-weighting. Useful for every spell that wants a
       softer edge.
+
+## 15. Found in the 2026-10-15 sweep
+
+A pass over the open list by parallel agents turned these up. Each was noticed
+while doing something else and was left alone on purpose. File:line references
+were accurate on 2026-10-15 and drift.
+
+### Bugs — real, small, worth fixing first
+
+- [ ] **Event fight difficulty does nothing.** `EnemySystem.generate_encounter`
+      (`enemy_system.gd:~551`) takes `difficulty` and never reads it, so
+      `"boss"`, `"easy"` and the rest in event outcomes are inert, and the
+      easy 0.75× … boss 1.6× multipliers "Where to pick up" described do not
+      exist anywhere. Build them, or drop the field.
+- [ ] **Timed buffs and debuffs last half their stated duration.** Stat
+      modifiers tick twice at each turn start — once in
+      `_process_status_effects` (`combat_manager.gd:~5324`) and again at
+      `~10160`. Fixing it doubles every active skill's buff, so it is a balance
+      change as much as a bug fix: decide deliberately.
+- [ ] **`_unit_is_unarmored` reads a `hands` slot that does not exist**
+      (`combat_manager.gd:~9290`; the slots are `hand_l`/`hand_r`). Gauntlets
+      never count as armour, while trousers make you armoured. Affects Diamond
+      Body, Bare Chest, Flowing Footwork and the new `unarmored_or_light`.
+- [ ] **Poison and acid ground deal `physical` damage**
+      (`combat_manager.gd:~6531/~6537`), so armour reduces them and poison
+      resistance does nothing, while the Poisoned status deals poison.
+- [ ] **Storm_Lord and Lightning_Form retaliate with `"element": "air"`**
+      (`statuses.json:~657/~698`). Air stopped being a damage type in the
+      resistance rebuild, so it lands unresisted and not as magic — should be
+      `lightning`. `validate_data.py`'s `_walk_damage_types` (`~1013`) checks
+      `damage_type` keys but not `element`, which is why nothing caught it.
+- [ ] **Wet ground only slows.** Comments at `combat_manager.gd:~6558` and in
+      `CombatGrid.add_terrain_effect` promise an ice/air (or water)
+      vulnerability that the code never grants.
+- [ ] **Supply purchases never pay the shop's purse** — `buy_item` returns
+      before `_adjust_shop_purse(price)` for supply items
+      (`shop_system.gd:~643-653`).
+- [ ] **`reset_for_new_life` keeps `last_healing_location`**
+      (`game_state.gd:~272`), so Cloud Gate can target a spot on the previous
+      life's map. `flags` also carry over — maybe deliberately; decide.
+- [ ] **A multi-day `advance_time` fires `day_changed` once**
+      (`game_state.gd:~315`), so the lunar listener (`overworld.gd:~1883`) can
+      miss a full or new moon across a long rest.
+- [ ] **Severing a primary arm drops only the ACTIVE weapon set's weapon**
+      (`body_system.gd:~444`); the other set's stays in the lost hand. And
+      with a full inventory the force-clear deletes the item (`~433`).
+- [ ] **Bombs and the poison talisman brand apply statuses with no source**
+      (`combat_manager.gd:~7174`, `~10060`), so the thrower's
+      `burning_damage_pct` / `poison_damage_pct` never scale them.
+- [ ] **Luck's loot weighting is dead code.** `_get_modified_rarity_weights()`
+      (`combat_manager.gd:~787`) is never called, `_generate_loot_drops`
+      (`~634`) ignores its `_best_luck`, and the jackpot reads raw
+      `attributes.luck` (`~569`), so Luck from buffs and gear counts for nothing.
+- [ ] **`unbroken` (perks.json `~8458`) is description-only** — "wounds
+      inflicted on you are downgraded one severity"; there is no downgrade step.
+- [ ] **`every_opening_is_an_invitation` counts buffs** (`combat_manager.gd:~2091,
+      ~2232`) — "any status" includes Blessed. `unit_has_debuff()` exists now.
+- [ ] **Rousing Display's +5 initiative never affects round 1** — applied after
+      turn order is built (`combat_manager.gd:~367/~997`) and ticked away at
+      once as a 1-turn buff.
+- [ ] **On-hit procs don't check `defender.is_alive()`** before applying
+      statuses (mace stun `combat_manager.gd:~9915` and others).
+- [ ] **`duel_stop_hp_pct` on an encounter is ignored** — only the archetype's
+      copy is read (`hungry_ghost_encounters.json:~603`, `enemy_system.gd:~928`).
+      And the duel threshold moves with in-combat max-HP changes.
+- [ ] **Enemies don't get their birth TRAITS' resistances**
+      (`enemy_system.gd:~723`); players do, through `TraitSystem.get_resistances`.
+
+### Multi-arm attacks drift from the main hit
+
+The extra-arm chain (`_execute_arm_chain_attack`, `combat_manager.gd:~1506-1594`)
+re-implements what the main hit does and keeps falling behind it — Hardened and
+Undead Hunter both drifted that way. The fix is one shared on-hit function with
+a strength multiplier, not more patches. What it currently skips: the 15%
+poisoned-blood roll (`~9590`), weapon on-hit procs (`_process_weapon_on_hit_procs`,
+`~1894`: Trishula, Chakram), weapon-oil damage, crit audio, the dagger/ranged
+per-turn counters. Also: each arm is logged twice in different formats
+(`~1568` and `combat_arena.gd:~2741`); logs show pre-armour damage while popups
+show HP lost (the main hit too); a 0-damage arm shows "Arm N: 0" where the main
+hit shows nothing; and `_has_shield_equipped` (`combat_unit.gd:~1256`, plus
+`combat_manager.gd:~2081/~2207`) reads only `weapon_off`, never weapon set 2.
+
+### Four-armed bodies are half-built
+
+No race uses the `four_armed` body plan. Its `hand_l2`/`hand_r2` slots cannot be
+filled — gloves, gauntlets and bracers list only `hand_l`/`hand_r` in items.json
+— and are missing from the default equipment dict (`character_system.gd:~196`).
+There is no `weapon_main2`/`weapon_off2`; `BodySystem.ARM_WEAPON_SLOTS` makes
+adding one a single line when it is wanted.
+
+### UI and legibility
+
+- [ ] **The tile hover label is hidden in move mode** (`combat_arena.gd:~2460`)
+      — exactly when hazards matter. Merge it with the cover label.
+- [ ] **A main-hit crit has no visual marker** (`combat_unit.gd:~1151`), while
+      extra arms now say "crit!".
+- [ ] **Popup labels have no width but centred text** — they probably start at
+      the unit's centre and run right. Check on screen.
+- [ ] **Status icons are a hard-coded emoji `match`** (`combat_unit.gd:~327`);
+      most of 187 statuses show "•". An `icon` field in statuses.json scales.
+- [ ] **The summoning terrain bonus is never shown** before casting
+      (`combat_manager.gd:~3566`).
+- [ ] **The status tooltip omits `retaliation`, `aura` and `spread`.**
+- [ ] **Tooltip hazard lines hand-copy `_process_terrain_effects()`** — change
+      one, change the other (`TooltipText.tile`).
+- [ ] **Dorje + Drilbu set text is hard-coded** in `item_tooltip.gd:~133`,
+      duplicating `item_system.gd:~557-560` and omitting the opener bonus.
+
+### Data and tooling hygiene
+
+- [ ] **`vocabulary_baseline.json` has stale entries** — `crafting_yield_pct`,
+      `loot_quality_pct`, `trap_detection_pct` are wired but still listed. The
+      validator should fail on a baseline entry that has gained a reader.
+- [ ] **The `effect_duration_pct` entry in §6 uses an old name.** perks.json
+      has 16 `effect_duration_turns` and no `effect_duration_pct`. Re-check
+      whether `_calculate_status_duration` and `derived.effect_duration_turns`
+      actually double-count before deciding anything.
+- [ ] **Unread flags in spell `special` blocks** duplicate what their statuses
+      do: `spells.json:~5419` `physical_immunity`, `~7044`
+      `immune_to_all_damage`, `~7436` `magic_resistance_bonus`, `~1380`
+      `fire_vulnerability`, `~4757` `ranged_damage_reduction`. Delete them.
+- [ ] **The disease-on-hit and crit-wound code exists twice**
+      (`combat_manager.gd:~1566-1594` and `~9549-9600`) — see the multi-arm note.
+- [ ] **`_check_special_requirement`'s attribute branch has no users**
+      (`perk_system.gd:~269`) and reads base attributes. Remove it.
+- [ ] **Small stale comments:** `perk_system.gd:~511` says 164 hand-wired perks
+      (176 now); `combat_manager.gd:~9571` on Undead Hunter; `_spell_save`'s
+      doc comment is fused into `_apply_save_gated`'s (`~8214`).
+- [ ] **Air_Shield's 25% is still a hard-coded effect string**
+      (`combat_manager.gd:~1710`). It could become a status `ranged`
+      resistance, which would change its stacking from multiplicative to
+      additive.
+- [ ] **A verifier's own parse errors were invisible.** Fixed 2026-10-15:
+      `verify_all.sh` now fails a scene that prints `SCRIPT ERROR` and shows
+      the line. Worth remembering when a verifier "fails" with no message.
+
+### Decisions for Olaf
+
+- **Investment:** one open stake in the whole world, not one per settlement,
+  so `diversified_portfolio` ("up to 3") means something. One constant,
+  `INVESTMENT_MAX_OUTSTANDING`. Its payout comes from nowhere rather than the
+  shop's purse — revisit when settlements have wealth.
+- **Iron Cortex no longer requires Akimbo** — behind Akimbo it added almost
+  nothing. Put it back if the tree should read that way.
+- **`status_effect_chance_pct` scales two ways:** ×1.3 on a chance roll, but
+  +30 percentage points (as DC) on a save. Consistent with how SaveSystem
+  treats every other percentage, inconsistent with itself.
+- **Should Ritual reach** aura `grant_status`, retaliation `status_chance`
+  and the hard-coded perk procs (Magnetizing Aura, Play Dirty, Put Your
+  Weight Into It)?
+- **"Magic resistance" blocks poison** through `non_physical` and mantra
+  `magic_resist`, while Yoga's equanimity excludes it. Probably unintended.
+- **Investment payouts, ritual tooltip wording and the parry definition**
+  (a melee miss against someone holding a melee weapon) are all first drafts.
+
+### Perks the engine can now express (§13)
+
+Authorable in full: `aim_at_the_vitals`; `one_line_one_breath` except "cannot
+critically fail". In part, waiting on an effect type: `bedrock` (ally half needs
+an aura), `armored_skin` (conditional resistance), `hurry_betrays_distraction`
+(flat stamina only, no mana payload), `field_commander` and `lay_of_the_land`
+(no party-wide payload target), `burning_blood` (needs an "attacker used ranged"
+condition). Still blocked: `the_blade_decides`, `dont_lose_the_momentum`
+(stacks, a stamina-cost stat), `terrain_mastery` (height, not ground).
 
 # Part II — Designs waiting to be built
 
