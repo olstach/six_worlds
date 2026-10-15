@@ -897,11 +897,36 @@ timed terrain tiles), `create_images` / `smoke_and_mirrors` (illusion units),
 `the_lineage_continues` (companion spell-teaching), `black_market_contacts` /
 `fence` (black-market tier), `patron_of_the_arts` (renown).
 
-**Wound/body perks designed, not written:** `hardened` (Con 14+, 50% chance to
-negate an incoming crit wound), `undead_hunter` (Earth magic 3+, disease
-immunity from undead hits), `stubborn_body` (Con 15+, +1 to all
-`escalation_rests`, as `character.wound_escalation_delay`), `iron_cortex` (arms
-1–2 always fire, 3+ still roll).
+**Wound/body perks: all four built (2026-10-15).** They turned out to be
+half-written rather than unwritten — each was in perks.json and had a
+`has_perk` branch somewhere — and every one was broken in a different way:
+
+- **`hardened`** (Armor 5, Con 14) negated crit wounds from the main attack
+  only. The multi-arm chain rolls its own crit wounds and never asked, so a
+  four-armed demon's arms 2–4 wounded a Hardened character at full rate. Both
+  paths now go through `_crit_wound_negated()`.
+- **`stubborn_body`** (Armor 8, Con 15, Hardened) worked in `tick_wounds` but
+  the party screen's "worsens in N rests" read `escalation_rests` raw and
+  counted down one rest short. Both now ask `WoundSystem.get_escalation_threshold()`,
+  which adds `character.wound_escalation_delay` (any future source) plus 1 for
+  the perk, and leaves never-escalating wounds at never.
+- **`undead_hunter`** (Earth Magic 3) was immune to the Diseased status from
+  *anything* — a living plague-caster included — while the arm chain's disease
+  proc skipped the immunity check entirely. Now it is exactly "from undead or
+  diseased attackers", on both paths; `_check_perk_status_immunity` takes the
+  source to know.
+- **`iron_cortex`** was keyed to a `finesse` *skill*, which does not exist, so
+  nobody could learn it — the same fault akimbo/coordinated_strikes had.
+  Now `required_attributes: {finesse: 12}`, and **its Akimbo prerequisite was
+  dropped**: with Akimbo (Finesse 14) arm 2 already fires 90%+ and 100% by
+  Finesse 16, so behind Akimbo the perk bought almost nothing. As an early
+  alternative it takes arm 2 from 60% to certain. Revisit if that reads wrong.
+  The chance itself lives in `CombatManager.arm_chain_fire_chance()`.
+
+`hardened` and `stubborn_body` also moved from `special_requirement:
+"constitution_14"` to `required_attributes`, which counts trait bonuses the
+way akimbo's gate does; the special-requirement form read base attributes only.
+Checked in `verify_combat_procs`.
 
 ### Active perks without a resolver: none (was 26 — 2026-09-16/17)
 

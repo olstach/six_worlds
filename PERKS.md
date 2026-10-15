@@ -2780,6 +2780,18 @@ _Requires: Armor 2_
 _Requires: Armor 7_
 Gain bonus Armor equal to 10% of your highest elemental affinity total.
 
+**Hardened**
+_Requires: Armor 5, Constitution 14_
+Passive. When a critical hit would inflict a persistent wound, 50% chance the wound is negated entirely. Applies to every arm of a multi-arm attack.
+
+_The body remembers every blow._
+
+**Stubborn Body**
+_Requires: Armor 8, Constitution 15, Hardened_
+Passive. Every wound and disease that worsens with rest takes 1 additional untreated rest before it escalates to a worse form.
+
+_It takes longer to break what refuses to stay broken._
+
 ---
 
 ## Earth Magic 🪨
@@ -2857,6 +2869,12 @@ Passive. You and allies standing on earth or stone terrain gain +5% Armor and +5
 **Roots of the World**
 _Requires: Earth 9_
 Active (once per combat, 15 Mana). All allies gain +25% Armor, +25% to all saves, and immunity to knockdown and knockback for 3 turns.
+
+**Undead Hunter**
+_Requires: Earth Magic 3_
+Passive. Attacks from undead or diseased enemies cannot give you a disease or the Diseased status. Diseases from other sources still apply.
+
+_Earth purifies what death corrupts._
 
 ---
 
@@ -3625,6 +3643,12 @@ _Requires: Finesse 16, Akimbo_
 Passive (multi-arm species only). If an arm in the attack chain kills its target, reset the chain — the next arm rolls independently rather than stopping.
 
 _The body learns to celebrate without pausing._
+
+**Iron Cortex**
+_Requires: Finesse 12_
+Passive (multi-arm species and dual-wielders). Your second arm always fires in the multi-arm chain — no roll — so arms 1 and 2 always attack. Arms 3+ still roll their normal Finesse-based chance, and the chain still stops at the first arm that fails.
+
+_Two hands, one will._
 
 **Sentinel**
 _Requires: Swords 5, Martial_Arts 3_

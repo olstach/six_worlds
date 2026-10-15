@@ -4878,14 +4878,15 @@
     },
     "iron_cortex": {
       "name": "Iron Cortex",
-      "skill": "finesse",
-      "required_level": 12,
-      "requires_perks": [
-        "akimbo"
-      ],
-      "description": "Passive. Arms 1 and 2 always fire — the probability check is removed for your first two attacks. Arms 3+ still use the normal Finesse-based chain.",
+      "skill": "",
+      "required_level": 0,
+      "requires_perks": [],
+      "description": "Passive (multi-arm species and dual-wielders). Your second arm always fires in the multi-arm chain — no roll — so arms 1 and 2 always attack. Arms 3+ still roll their normal Finesse-based chance, and the chain still stops at the first arm that fails.",
       "flavor": "Two hands, one will.",
-      "is_mantra": false
+      "is_mantra": false,
+      "required_attributes": {
+        "finesse": 12
+      }
     },
     "kindled": {
       "name": "Kindled",
@@ -7486,10 +7487,12 @@
       "skill": "armor",
       "required_level": 5,
       "requires_perks": [],
-      "special_requirement": "constitution_14",
-      "description": "Passive. When a critical hit would inflict a persistent wound, 50% chance the wound is negated entirely.",
+      "description": "Passive. When a critical hit would inflict a persistent wound, 50% chance the wound is negated entirely. Applies to every arm of a multi-arm attack.",
       "flavor": "The body remembers every blow.",
-      "is_mantra": false
+      "is_mantra": false,
+      "required_attributes": {
+        "constitution": 14
+      }
     },
     "stubborn_body": {
       "name": "Stubborn Body",
@@ -7498,10 +7501,12 @@
       "requires_perks": [
         "hardened"
       ],
-      "special_requirement": "constitution_15",
-      "description": "Passive. All wounds require 1 additional rest before they escalate to a worse form.",
+      "description": "Passive. Every wound and disease that worsens with rest takes 1 additional untreated rest before it escalates to a worse form.",
       "flavor": "It takes longer to break what refuses to stay broken.",
-      "is_mantra": false
+      "is_mantra": false,
+      "required_attributes": {
+        "constitution": 15
+      }
     },
     "iron_shirt_training": {
       "name": "Iron Shirt Training",
@@ -7712,7 +7717,7 @@
       "skill": "earth_magic",
       "required_level": 3,
       "requires_perks": [],
-      "description": "Passive. You are immune to diseases inflicted by undead or diseased enemies' attacks.",
+      "description": "Passive. Attacks from undead or diseased enemies cannot give you a disease or the Diseased status. Diseases from other sources still apply.",
       "flavor": "Earth purifies what death corrupts.",
       "is_mantra": false
     },
