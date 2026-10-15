@@ -111,6 +111,70 @@ const TARGETING: Array[String] = [
 ]
 
 
+## Moments CombatManager._fire_perk_triggers() is called with — the `trigger`
+## an `on_trigger` passive may listen for. Same rule as every list here: a
+## trigger named in data that nothing fires is a perk that never happens, and
+## looks exactly like one that works until somebody counts.
+##
+## Each entry names who fires and what `context` carries. `target`/`attacker`/
+## `ally` in the context are also what a payload's `"target"` field can point at.
+const PERK_TRIGGERS: Array[String] = [
+	"on_hit",         # attack_unit, attacker; context.target = the one hit
+	"on_crit",        # attack_unit, attacker, after on_hit; context.target
+	"on_kill",        # attack_unit, attacker, when the hit killed; context.target
+	"dodge_success",  # attack_unit, defender, on any miss; context.attacker
+	"parry_success",  # attack_unit, defender, on a melee miss while holding a
+	                  # melee weapon (the blow met steel); context.attacker
+	"take_damage",    # apply_damage, the hurt unit, damage > 0 and still
+	                  # standing; context.attacker (may be absent), damage
+	"ally_damaged",   # apply_damage, every living teammate of the hurt unit;
+	                  # context.ally, context.attacker (may be absent), damage
+	"combat_start",   # _apply_combat_start_perks, every unit, once per fight.
+	                  # Fires BEFORE the unit's first turn start, which ticks
+	                  # stat modifiers down — so a buff meant to last through
+	                  # that first turn needs a duration of 3, not 1.
+	"turn_start",     # _start_current_turn, the unit whose turn it is, after
+	                  # the turn-start ticks: a duration-1 buff lasts this turn
+]
+
+## Conditions CombatUnit._perk_condition_met() answers. A `conditions` list on
+## a stat_bonus, stat_conversion or on_trigger effect must use only these.
+##
+## `on_terrain_<ground>` is a family rather than one word: the suffix is any
+## key of resources/data/terrain.json ("on_terrain_forest"), read through
+## Ground, so it is checked against that file rather than listed here.
+const PERK_CONDITIONS: Array[String] = [
+	"wielding_sword", "wielding_axe", "wielding_mace", "wielding_spear",
+	"wielding_dagger", "wielding_staff", "wielding_ranged", "unarmed",
+	"not_flanked", "did_not_move", "moved_this_turn", "from_stealth",
+	"below_half_hp", "above_half_hp",
+	"wearing_heavy_armor",   # body armour with a Strength requirement
+	"unarmored_or_light",    # CombatManager._unit_is_unarmored()
+	"first_attack_combat",   # no weapon attack made yet this fight
+	"first_attack_turn",     # no weapon attack made yet this turn
+	"from_behind",           # attacker stands in the target's rear arc
+	"target_bleeding",       # the target has Bleeding
+	"target_debuffed",       # the target carries any status typed debuff
+]
+
+## Prefix of the terrain condition family — see PERK_CONDITIONS.
+const TERRAIN_CONDITION_PREFIX: String = "on_terrain_"
+
+
+## True when a passive may name this condition. Terrain conditions are checked
+## against Ground, so a misspelt ground ("on_terrain_forrest") is refused too.
+static func is_perk_condition(condition: String) -> bool:
+	if condition in PERK_CONDITIONS:
+		return true
+	if condition.begins_with(TERRAIN_CONDITION_PREFIX):
+		return not Ground.by_key(condition.trim_prefix(TERRAIN_CONDITION_PREFIX)).is_empty()
+	return false
+
+
+static func is_perk_trigger(trigger: String) -> bool:
+	return trigger in PERK_TRIGGERS
+
+
 ## True when a timed modifier on this stat will actually be read back.
 static func is_modifiable(stat: String) -> bool:
 	return stat in MODIFIABLE

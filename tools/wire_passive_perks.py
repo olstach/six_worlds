@@ -44,20 +44,11 @@ RESISTANCE_TYPES = {
     "bleed", "poison", "disease", "mental",
 }
 
-# Triggers CombatManager._fire_perk_triggers() is actually called with.
-# Wiring an effect to a trigger nothing fires is silent death, same as the rest.
-LIVE_TRIGGERS = {"on_hit", "on_crit", "on_kill", "dodge_success"}
-
 # Payload types _apply_trigger_effect() knows.
 LIVE_PAYLOADS = {"buff", "status", "heal", "restore_stamina"}
 
-# Conditions CombatUnit._perk_condition_met() answers.
-LIVE_CONDITIONS = {
-    "wielding_sword", "wielding_axe", "wielding_mace", "wielding_spear",
-    "wielding_dagger", "wielding_staff", "wielding_ranged", "unarmed",
-    "not_flanked", "did_not_move", "moved_this_turn", "from_stealth",
-    "below_half_hp", "above_half_hp",
-}
+# Where a payload may land — _apply_trigger_effect()'s `target` field.
+LIVE_PAYLOAD_TARGETS = {"self", "attacker", "victim", "ally"}
 
 
 def _gdscript_string_array(const_name):
@@ -73,6 +64,30 @@ def _gdscript_string_array(const_name):
 
 DERIVED_STATS = _gdscript_string_array("DERIVED")
 MODIFIABLE_STATS = _gdscript_string_array("MODIFIABLE")
+
+# Triggers CombatManager._fire_perk_triggers() is actually called with, and the
+# conditions CombatUnit._perk_condition_met() answers. Both read from
+# combat_stats.gd — they were restated here once, and the restatement is the
+# thing that goes stale. Wiring an effect to a trigger nothing fires is silent
+# death, same as the rest.
+LIVE_TRIGGERS = _gdscript_string_array("PERK_TRIGGERS")
+LIVE_CONDITIONS = _gdscript_string_array("PERK_CONDITIONS")
+
+# The terrain family: "on_terrain_" + any key of terrain.json.
+TERRAIN_PREFIX = "on_terrain_"
+GROUND_KEYS = {
+    k for k, v in json.loads(
+        (ROOT / "resources" / "data" / "terrain.json").read_text(encoding="utf-8")
+    )["terrain"].items()
+    if isinstance(v, dict)
+}
+
+
+def is_live_condition(condition):
+    if condition in LIVE_CONDITIONS:
+        return True
+    return (condition.startswith(TERRAIN_PREFIX)
+            and condition[len(TERRAIN_PREFIX):] in GROUND_KEYS)
 
 
 # ---------------------------------------------------------------------------
@@ -165,7 +180,7 @@ def validate(data, hardcoded):
         for effect in effects:
             kind = effect.get("type", "")
             for condition in effect.get("conditions", []):
-                if condition not in LIVE_CONDITIONS:
+                if not is_live_condition(condition):
                     errors.append(f"{pid}: condition '{condition}' is never evaluated")
 
             if kind == "stat_bonus":
@@ -190,6 +205,9 @@ def validate(data, hardcoded):
                         f"CombatManager"
                     )
                 payload = effect.get("effect", {})
+                if payload.get("target", "self") not in LIVE_PAYLOAD_TARGETS:
+                    errors.append(f"{pid}: payload target '{payload.get('target')}' is not one "
+                                  f"_apply_trigger_effect() can resolve")
                 if payload.get("type") not in LIVE_PAYLOADS:
                     errors.append(f"{pid}: payload type '{payload.get('type')}' has no handler")
                 if payload.get("type") == "buff" and payload.get("stat") not in MODIFIABLE_STATS:
