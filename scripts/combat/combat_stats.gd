@@ -90,7 +90,7 @@ const DERIVED: Array[String] = [
 	"party_max_companions",    # CharacterSystem.get_max_party_size()
 	# Out-of-combat, read by their own systems.
 	"xp_gain_pct",             # CompanionSystem
-	"loot_chance_pct",         # CombatManager loot roll
+	"loot_chance_pct",         # CombatManager.luck_jackpot_chance()
 ]
 
 

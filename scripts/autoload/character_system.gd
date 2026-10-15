@@ -1349,7 +1349,14 @@ func update_derived_stats(character: Dictionary) -> void:
 			derived["stun_chance_pct"] = derived.get("stun_chance_pct", 0.0) \
 				+ float(bonus.get("stun_chance_pct", 0.0))
 			# Comedy's luck feeds the two things Luck actually drives, rather
-			# than existing as a number with no outcome of its own.
+			# than existing as a number with no outcome of its own:
+			#   - crit_chance, as flat points. A map "luck" buff already pays
+			#     one crit point per Luck point, and a percentage of Luck's own
+			#     crit term (Luck / 6, about 1.7 at Luck 10) would round to
+			#     nothing — so "luck" here is read the way the buff reads it.
+			#   - loot_chance_pct, a percentage boost on the Luck jackpot roll
+			#     (CombatManager.luck_jackpot_chance). That one IS a percentage
+			#     of an existing Luck contribution.
 			var luck_bonus: float = float(bonus.get("luck_pct", 0.0))
 			if luck_bonus != 0.0:
 				derived["crit_chance"] = derived.get("crit_chance", 0.0) + luck_bonus
