@@ -126,9 +126,17 @@ Each of these is an hour or less and touches one system.
   `planetary_deity`. All belong to unbuilt realms, so this waits for those.
   (`bee` was the ninth and the only reachable one; it was deleted as a
   duplicate of `bhramara` on 2026-08-31.)
-- [ ] **`sever_part` doesn't handle `arm_l2`/`arm_r2`** — four-armed species have
-  equip slots `hand_l2`/`hand_r2` but no `weapon_main2`/`weapon_off2`, so
-  severing an extra arm doesn't drop its weapon.
+- [x] ~~**`sever_part` doesn't handle `arm_l2`/`arm_r2`**~~ — **checked
+      2026-10-15.** It already did, for everything an extra arm can hold:
+      `hand_l2`/`hand_r2` are the parts' own `equip_slot`, and the generic path
+      clears those exactly as it clears `hand_l`/`hand_r`. There is no weapon to
+      drop because there is no weapon slot for a third hand — the gap is in
+      equipment, not in severing. The arm→weapon pairing is now a table,
+      `BodySystem.ARM_WEAPON_SLOTS`, so a future `weapon_main2` is one line.
+      Found on the way: when the inventory was full, severing a primary arm
+      "force-cleared" a top-level `weapon_main` key that nothing reads, leaving
+      the weapon in the severed hand. It now clears the weapon set.
+      `verify_combat_systems` proves both. (No race uses `four_armed` yet.)
 - [ ] **`extra_arm_results` isn't shown in the combat UI** — the multi-arm chain
   writes per-arm hit/damage into the result dict and the combat log prints it,
   but the unit frames don't (no "Arm 2: 12 dmg" popup).
@@ -139,11 +147,12 @@ Each of these is an hour or less and touches one system.
   the skeleton's 50% physical reduction this item used to cite does not exist.
   Racial resistance is a designed-in field that was never filled.
 
-  The original concern still stands underneath it: `EnemySystem._build_enemy()`
-  copies only the archetype's own `resistances`, so if races are ever given
-  some, an archetype-defined skeleton still will not inherit them. Enemies now
-  roll a real birth and apply its modifiers, which makes the inconsistency
-  easier to fix and more obviously wrong to leave.
+  The original concern underneath it is **fixed 2026-10-15**:
+  `EnemySystem._build_enemy()` now starts from the rolled birth's
+  `base_resistances` and adds the archetype's on top — added, not replaced, the
+  same way a player's racial resistances stack with traits and equipment.
+  `verify_resistance` gives the hungry-ghost births a temporary resistance to
+  prove it. What is left is the data: races still carry `{}`.
 - [ ] **Projectile sprites** — arrows/bolts/firebombs are a `Line2D` flash.
 - [x] ~~**Tooltips**~~ — **done 2026-10-15.** The line was half stale: the
   unit's status icons, the turn order and the tile hover label all had some
@@ -736,8 +745,14 @@ the Earth/Black plant line — so the work went where the gaps were:
     human and god through non-violent play. KarmaSystem has no per-race
     modifier, so this is a small feature rather than a read.
 
-- [ ] **`skeleton_king_duel`** stops at 10% HP — verify the special win
-  condition still fires after the combat refactors.
+- [x] ~~**`skeleton_king_duel`** stops at 10% HP~~ — **checked 2026-10-15, and
+      it was half-broken.** The threshold survives the build (the archetype
+      carries it, and `difficulty: boss` scales nothing, so 10% is of the HP
+      the unit really has). But `_check_combat_end` only ran on a death or at
+      the start of a round, so the king fought on below 10% — took his own
+      turn, and could simply be killed. Damage to a duelling enemy now checks
+      at once, and he yields on the blow that crosses the line.
+      `verify_combat_systems` builds him the way the event does and proves it.
 
 ## 7. Content that wants writing
 

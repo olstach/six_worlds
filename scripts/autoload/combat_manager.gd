@@ -2613,6 +2613,15 @@ func apply_damage(unit: Node, damage: int, damage_type: String) -> void:
 		_start_bleed_out(unit)
 		# Check if combat should end immediately (all enemies or all players down)
 		_check_immediate_combat_end()
+	elif damage > 0 and unit.team == Team.ENEMY and "character_data" in unit \
+			and int(unit.character_data.get("duel_stop_hp_pct", 0)) > 0:
+		# A duelling boss (e.g. skeleton_king_duel) yields the moment it drops
+		# to its stop threshold — not at the start of the next round, which is
+		# the only other place _check_combat_end runs. Without this the rest of
+		# the round plays out: the boss takes its own turn below 10% and the
+		# party can simply kill it, so the "he stops it himself" ending never
+		# happens.
+		_check_immediate_combat_end()
 
 	# Heavy hit: ≥15% of max HP breaks concentration
 	# Uses post-absorption damage (what was actually received). This is intentional:

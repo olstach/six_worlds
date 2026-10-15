@@ -1,5 +1,6 @@
 extends Node
-## Headless verification for forced movement and AoE damage falloff.
+## Headless verification for forced movement, AoE damage falloff, the
+## skeleton_king_duel stop condition, and severing a four-armed body's extra arms.
 ##
 ## Run: godot --headless res://tools/verify_combat_systems.tscn
 ##
@@ -18,7 +19,7 @@ var grid: CombatGrid
 ## find no failures and report OK having verified nothing. Every check signs off
 ## by bumping this, and the count is asserted at the end.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 11
+const EXPECTED_CHECKS: int = 14
 
 
 func _ready() -> void:
@@ -38,6 +39,12 @@ func _ready() -> void:
 	_check_push_immunity()
 	_check_apply_push_blocked_damage()
 	_check_skill_aoe_falloff_integration()
+
+	_check_severing_an_extra_arm()
+	_check_duel_stop_survives_the_encounter_build()
+	# Last, because it really ends a combat — end_combat() clears all_units
+	# and the grid reference that the checks above rely on.
+	await _check_duel_ends_the_moment_the_boss_yields()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -278,4 +285,154 @@ func _check_skill_aoe_falloff_integration() -> void:
 		_expect_near(mult, expected, "falloff for unit at %s" % unit.grid_position)
 
 	_cleanup([attacker, near, far])
+	_done()
+
+
+# ── Body plans ───────────────────────────────────────────────────────────────
+
+## A four-armed body's extra arms hold only what is in hand_l2/hand_r2 — there
+## is no weapon slot for a third or fourth hand. Severing arm_l2 must clear that
+## slot (the item goes back to the inventory, not into the void), and must not
+## touch the weapon the primary arm is holding.
+func _check_severing_an_extra_arm() -> void:
+	var c: Dictionary = CharacterSystem.create_blank_character()
+	c["body_plan"] = {"species": "four_armed", "missing_parts": [], "prosthetics": {}}
+	var glove_id: String = _first_item_of_type("gloves")
+	var blade_id: String = _first_item_of_type("sword")
+	if glove_id == "" or blade_id == "":
+		_fail("sever: items.json has no gloves or sword to test with")
+		_done()
+		return
+	# Equip directly: equip_item() only offers hand_l/hand_r for gloves, so
+	# the extra hand slots are written the way a save or cheat would.
+	c["equipment"]["hand_l2"] = glove_id
+	c["equipment"]["weapon_set_1"]["main"] = blade_id
+	var gloves_before: int = ItemSystem.get_inventory_count(glove_id)
+
+	var severed: Array[String] = BodySystem.sever_part(c, "arm_l2")
+
+	if severed != ["arm_l2"]:
+		_fail("sever arm_l2: severed %s, expected only arm_l2" % [severed])
+	if String(c["equipment"].get("hand_l2", "")) != "":
+		_fail("sever arm_l2: hand_l2 still holds '%s'" % c["equipment"]["hand_l2"])
+	if ItemSystem.get_inventory_count(glove_id) != gloves_before + 1:
+		_fail("sever arm_l2: the glove did not go back to the inventory")
+	if String(c["equipment"]["weapon_set_1"]["main"]) != blade_id:
+		_fail("sever arm_l2: the main-hand weapon was dropped too")
+	if BodySystem.get_attack_arm_count(c) != 3:
+		_fail("sever arm_l2: %d arms still attack, expected 3"
+			% BodySystem.get_attack_arm_count(c))
+
+	# And the primary arm still drops its weapon, from inside the weapon set.
+	BodySystem.sever_part(c, "arm_r")
+	if String(c["equipment"]["weapon_set_1"]["main"]) != "":
+		_fail("sever arm_r: weapon_set_1.main still holds '%s'"
+			% c["equipment"]["weapon_set_1"]["main"])
+	if c["equipment"].has("weapon_main"):
+		_fail("sever arm_r: wrote a stray top-level weapon_main key")
+
+	# Put the shared inventory back the way we found it.
+	ItemSystem.remove_from_inventory(glove_id, 1)
+	ItemSystem.remove_from_inventory(blade_id, 1)
+	_done()
+
+
+func _first_item_of_type(item_type: String) -> String:
+	for item_id in ItemSystem._item_database:
+		if String(item_id).begins_with("_"):
+			continue
+		if ItemSystem._item_database[item_id].get("type", "") == item_type:
+			return String(item_id)
+	return ""
+
+
+# ── The skeleton king's duel ─────────────────────────────────────────────────
+
+## Build the king exactly the way the event does — event outcome →
+## combat_requested → combat_arena → EnemySystem.generate_encounter with
+## difficulty "boss" → CombatUnit.init_as_enemy — and return the unit.
+func _make_duel_king() -> CombatUnit:
+	var defs: Array[Dictionary] = EnemySystem.generate_encounter(
+		"skeleton_king_duel", "", "hungry_ghost", "boss")
+	if defs.size() != 1:
+		_fail("duel: encounter built %d enemies, expected 1" % defs.size())
+		return null
+	var king := CombatUnit.new()
+	add_child(king)
+	king.init_as_enemy(defs[0])
+	king.grid_position = Vector2i(25, 20)
+	grid.unit_positions[king.grid_position] = king
+	CombatManager.all_units.append(king)
+	return king
+
+
+## The threshold travels from the archetype onto the built enemy, and is
+## measured against the HP the unit actually has. "difficulty: boss" is passed
+## all the way down but nothing scales HP with it, so the unit's max_hp must be
+## the built max_hp — if a multiplier ever lands after the build, this catches
+## the threshold reading the wrong maximum.
+func _check_duel_stop_survives_the_encounter_build() -> void:
+	var king := _make_duel_king()
+	if king == null:
+		_done()
+		return
+	var hero := _make_unit(Vector2i(24, 20), CombatManager.Team.PLAYER)
+
+	if int(king.character_data.get("duel_stop_hp_pct", 0)) != 10:
+		_fail("duel: built king carries duel_stop_hp_pct %s, expected 10"
+			% king.character_data.get("duel_stop_hp_pct"))
+	if king.max_hp != int(king.character_data.get("max_hp", -1)):
+		_fail("duel: unit max_hp %d differs from the built max_hp %s"
+			% [king.max_hp, king.character_data.get("max_hp")])
+
+	# Just above 10%: the fight goes on.
+	king.current_hp = king.max_hp / 10 + 1
+	if CombatManager._check_combat_end() != -1:
+		_fail("duel: combat ended with the king at %d/%d (above 10%%)"
+			% [king.current_hp, king.max_hp])
+	# At 10%: he yields, and it counts as the party's victory.
+	king.current_hp = king.max_hp / 10
+	if CombatManager._check_combat_end() != CombatManager.Team.PLAYER:
+		_fail("duel: king at %d/%d did not yield as a player victory"
+			% [king.current_hp, king.max_hp])
+
+	_cleanup([king, hero])
+	_done()
+
+
+## The yield happens on the blow that crosses the threshold. Before this was
+## checked, _check_combat_end ran only on a death or at the start of a round,
+## so the king fought on below 10% and could simply be killed.
+func _check_duel_ends_the_moment_the_boss_yields() -> void:
+	var king := _make_duel_king()
+	if king == null:
+		_done()
+		return
+	var hero := _make_unit(Vector2i(24, 20), CombatManager.Team.PLAYER)
+	king.resistances = {}  # so the blow lands at exactly the size we ask for
+
+	var outcome: Array[bool] = []
+	var on_end := func(victory: bool) -> void: outcome.append(victory)
+	CombatManager.combat_ended.connect(on_end)
+	CombatManager.combat_active = true
+
+	# Take him from full to 5% in one blow, well short of killing him.
+	var blow: int = king.max_hp - king.max_hp / 20
+	CombatManager.apply_damage(king, blow, "fire")
+	if not king.is_alive():
+		_fail("duel: the test blow killed the king outright (hp %d/%d)"
+			% [king.current_hp, king.max_hp])
+	# end_combat is deferred so the current action can finish logging.
+	await get_tree().process_frame
+
+	if outcome.is_empty():
+		_fail("duel: dropping the king to %d/%d did not end the combat"
+			% [king.current_hp, king.max_hp])
+	elif not outcome[0]:
+		_fail("duel: the king yielding ended the combat as a defeat")
+
+	CombatManager.combat_ended.disconnect(on_end)
+	CombatManager.combat_active = false
+	CombatManager.combat_grid = grid
+	_cleanup([king, hero])
 	_done()
