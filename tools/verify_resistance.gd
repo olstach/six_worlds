@@ -16,7 +16,7 @@ extends Node
 var failures: int = 0
 var checks_run: int = 0
 var grid: CombatGrid
-const EXPECTED_CHECKS: int = 28
+const EXPECTED_CHECKS: int = 29
 
 
 func _ready() -> void:

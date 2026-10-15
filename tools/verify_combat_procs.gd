@@ -235,7 +235,7 @@ func _unit(skills: Dictionary) -> CombatUnit:
 
 ## A CombatUnit carrying a blank character, for the helpers that take a unit.
 ## No grid is needed: nothing here moves or targets by position.
-func _unit(team: int, tags: Array = []) -> CombatUnit:
+func _team_unit(team: int, tags: Array = []) -> CombatUnit:
 	var unit := CombatUnit.new()
 	unit.unit_name = "Probe"
 	unit.team = team
@@ -274,7 +274,7 @@ func _check_hardened() -> void:
 	if not _eligible(c, "hardened"):
 		_fail("Hardened not offered at Armor 5 / Constitution 14")
 
-	var unit := _unit(0)
+	var unit := _team_unit(0)
 	if CombatManager._crit_wound_negated(unit, 0.0):
 		_fail("a crit wound was negated for a unit without Hardened")
 	PerkSystem.grant_perk(unit.character_data, "hardened")
@@ -343,12 +343,12 @@ func _check_undead_hunter() -> void:
 	if not _eligible(c, "undead_hunter"):
 		_fail("Undead Hunter not offered at Earth Magic 3")
 
-	var hunter := _unit(0)
-	var plain := _unit(0)
+	var hunter := _team_unit(0)
+	var plain := _team_unit(0)
 	PerkSystem.grant_perk(hunter.character_data, "undead_hunter")
-	var ghoul := _unit(1, ["undead"])
-	var leper := _unit(1, ["diseased"])
-	var bandit := _unit(1, ["biological"])
+	var ghoul := _team_unit(1, ["undead"])
+	var leper := _team_unit(1, ["diseased"])
+	var bandit := _team_unit(1, ["biological"])
 
 	if not CombatManager._check_perk_status_immunity(hunter, "diseased", ghoul):
 		_fail("Undead Hunter caught a disease from an undead attacker")
