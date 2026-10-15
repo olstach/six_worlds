@@ -975,7 +975,7 @@ func _update_wounds(character: Dictionary) -> void:
 		name_lbl.text = wdef.get("display_name", wid)
 		name_lbl.add_theme_font_size_override("font_size", 13)
 		name_lbl.add_theme_color_override("font_color",
-				SEVERITY_COLORS.get(wdef.get("severity", "light"), Color.WHITE))
+				SEVERITY_COLORS.get(WoundSystem.get_entry_severity(entry), Color.WHITE))
 		name_lbl.custom_minimum_size.x = 130
 		row.add_child(name_lbl)
 

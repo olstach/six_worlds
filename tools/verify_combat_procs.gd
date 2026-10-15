@@ -261,10 +261,21 @@ func _count_in_source(path: String, needle: String) -> int:
 	return src.count(needle)
 
 
+## Both the primary hit and the extra arms must land through _resolve_hit_procs
+## — that is what makes the single crit-wound and disease paths cover both.
+func _expect_shared_hit_path() -> void:
+	var calls: int = _count_in_source("res://scripts/autoload/combat_manager.gd",
+		"_resolve_hit_procs(attacker, defender, result")
+	if calls < 2:
+		_fail("only %d call(s) to _resolve_hit_procs — the main hit and the arm chain should both use it" % calls)
+
+
 ## Hardened: Armor 5 and Constitution 14; a crit wound is negated half the time.
-## The roll is injected so the check is not itself a coin flip. Both crit-wound
-## paths (the main attack and each extra arm) must ask the same helper — the arm
-## chain used to roll its own wound with no Hardened check at all.
+## The roll is injected so the check is not itself a coin flip. The main attack
+## and each extra arm must both reach the same helper — the arm chain used to
+## roll its own wound with no Hardened check at all. Since 2026-10-15 there is
+## ONE crit-wound path, in _process_weapon_on_hit_procs, which both reach
+## through _resolve_hit_procs; a second copy appearing is the drift coming back.
 func _check_hardened() -> void:
 	var c: Dictionary = _char({"armor": 5})
 	c["attributes"]["constitution"] = 13
@@ -284,8 +295,9 @@ func _check_hardened() -> void:
 		_fail("Hardened negated a crit wound on a roll of 0.5 (should be 50%, not more)")
 	var sites: int = _count_in_source("res://scripts/autoload/combat_manager.gd",
 		"_crit_wound_negated(defender)")
-	if sites < 2:
-		_fail("only %d crit-wound path(s) ask _crit_wound_negated — expected the main attack and the multi-arm chain" % sites)
+	if sites != 1:
+		_fail("%d crit-wound path(s) ask _crit_wound_negated — expected exactly one, shared by the main attack and the arm chain" % sites)
+	_expect_shared_hit_path()
 	unit.queue_free()
 	_done()
 
@@ -336,8 +348,9 @@ func _check_stubborn_body() -> void:
 
 
 ## Undead Hunter: immune to disease from undead or diseased attackers — and only
-## from them. Both the main-attack proc and the arm-chain proc have to pass the
-## attacker in, or the check has nobody to compare against.
+## from them. The one disease-on-hit proc (shared by the main attack and the
+## arm chain) has to pass the attacker in, or the check has nobody to compare
+## against.
 func _check_undead_hunter() -> void:
 	var c: Dictionary = _char({"earth_magic": 3})
 	if not _eligible(c, "undead_hunter"):
@@ -363,8 +376,9 @@ func _check_undead_hunter() -> void:
 
 	var sites: int = _count_in_source("res://scripts/autoload/combat_manager.gd",
 		'_check_perk_status_immunity(defender, "diseased", attacker)')
-	if sites < 2:
-		_fail("only %d disease-on-hit path(s) pass the attacker to the immunity check — expected the main attack and the multi-arm chain" % sites)
+	if sites != 1:
+		_fail("%d disease-on-hit path(s) pass the attacker to the immunity check — expected exactly one, shared by the main attack and the arm chain" % sites)
+	_expect_shared_hit_path()
 	for u in [hunter, plain, ghoul, leper, bandit]:
 		u.queue_free()
 	_done()

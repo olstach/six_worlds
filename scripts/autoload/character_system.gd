@@ -195,6 +195,10 @@ const BASE_CHARACTER: Dictionary = {
 		"chest": "",
 		"hand_l": "",
 		"hand_r": "",
+		# A four-armed body's second pair of hands. Empty and unused on any
+		# other body (ItemSystem.equip_item refuses them there).
+		"hand_l2": "",
+		"hand_r2": "",
 		"legs": "",
 		"feet": "",
 		"weapon_set_1": {"main": "", "off": ""},

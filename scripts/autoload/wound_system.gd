@@ -230,6 +230,15 @@ func apply_wound(character: Dictionary, wound_id: String, body_location: String 
 	for existing in character.wounds:
 		if existing.get("id") == wound_id:
 			return false
+	# Unbroken (Armor 10): "wounds inflicted on you are downgraded one
+	# severity." Physical wounds only — a disease is not a wound, and armour
+	# does nothing for rot sickness. Severe lands as moderate, moderate as
+	# light, and a light wound, downgraded, is no wound at all.
+	var downgraded: bool = _unbroken_downgrades(character, wound_id)
+	if downgraded and WOUND_TYPES[wound_id].get("severity", "light") == "light":
+		print("WoundSystem: %s is Unbroken — the %s never takes hold" % [
+			character.get("name", "?"), WOUND_TYPES[wound_id].display_name])
+		return false
 	# Resolve location: explicit → forced_location on wound type → random
 	var location := body_location
 	if location == "":
@@ -242,6 +251,13 @@ func apply_wound(character: Dictionary, wound_id: String, body_location: String 
 		"rests_untreated": 0,
 		"source": source,
 	})
+	if downgraded:
+		# Stored on the entry rather than swapping in a lighter wound id, so
+		# the wound keeps its name, cure and escalation path — it simply
+		# counts one step lighter (see get_entry_severity). The flag stays
+		# with the entry through escalation: an Unbroken body's infected cut
+		# is still one step lighter than anyone else's.
+		character.wounds[-1]["downgraded"] = true
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
 	print("WoundSystem: %s gained %s%s" % [
@@ -253,17 +269,17 @@ func apply_wound(character: Dictionary, wound_id: String, body_location: String 
 
 
 ## Apply a random wound appropriate to a melee crit hit.
+## Returns the wound id, or "" when nothing new took hold (already had that
+## wound, or Unbroken shrugged a light one off) — callers log only on non-"".
 func apply_random_crit_wound(character: Dictionary) -> String:
 	var id: String = CRIT_WOUND_POOL[randi() % CRIT_WOUND_POOL.size()]
-	apply_wound(character, id, "", "combat_crit")
-	return id
+	return id if apply_wound(character, id, "", "combat_crit") else ""
 
 
 ## Apply a random wound appropriate to a ranged weapon crit hit.
 func apply_random_ranged_crit_wound(character: Dictionary) -> String:
 	var id: String = RANGED_CRIT_WOUND_POOL[randi() % RANGED_CRIT_WOUND_POOL.size()]
-	apply_wound(character, id, "", "ranged_crit")
-	return id
+	return id if apply_wound(character, id, "", "ranged_crit") else ""
 
 
 ## Apply a random disease appropriate to an undead/diseased attacker.
@@ -271,8 +287,7 @@ func apply_random_disease(character: Dictionary, attacker_tag: String = "undead"
 	if _resisted(character, "disease"):
 		return ""
 	var id: String = DISEASE_POOL[randi() % DISEASE_POOL.size()]
-	apply_wound(character, id, "", attacker_tag)
-	return id
+	return id if apply_wound(character, id, "", attacker_tag) else ""
 
 
 ## Apply a random disease appropriate to a poison-type attacker.
@@ -280,8 +295,30 @@ func apply_random_poison_disease(character: Dictionary) -> String:
 	if _resisted(character, "poison"):
 		return ""
 	var id: String = POISON_DISEASE_POOL[randi() % POISON_DISEASE_POOL.size()]
-	apply_wound(character, id, "", "poison")
-	return id
+	return id if apply_wound(character, id, "", "poison") else ""
+
+
+## Severity steps, lightest first. A downgrade moves one step left.
+const SEVERITY_ORDER: Array[String] = ["light", "moderate", "severe"]
+
+
+## Does Unbroken downgrade this wound for this character? Physical wounds
+## (category "wound") only.
+func _unbroken_downgrades(character: Dictionary, wound_id: String) -> bool:
+	if WOUND_TYPES.get(wound_id, {}).get("category", "") != "wound":
+		return false
+	return PerkSystem != null and PerkSystem.has_perk(character, "unbroken")
+
+
+## The severity a wound entry actually counts at: its type's severity, one
+## step lighter if Unbroken downgraded it when it was inflicted. Read this, not
+## WOUND_TYPES[id].severity, wherever severity matters for an entry.
+func get_entry_severity(entry: Dictionary) -> String:
+	var base: String = WOUND_TYPES.get(entry.get("id", ""), {}).get("severity", "light")
+	if not entry.get("downgraded", false):
+		return base
+	var i: int = SEVERITY_ORDER.find(base)
+	return SEVERITY_ORDER[maxi(0, i - 1)]
 
 
 ## Roll a character's resistance against being afflicted at all.
@@ -309,10 +346,11 @@ func cure_wound(character: Dictionary, wound_id: String, _update_stats: bool = t
 	_ensure_wounds_field(character)
 	for i in range(character.wounds.size()):
 		if character.wounds[i].get("id") == wound_id:
+			var closing_severity: String = get_entry_severity(character.wounds[i])
 			character.wounds.remove_at(i)
 			# A severe wound that closes leaves the Scarred trait behind. The
 			# wound is gone; what it did to them is not.
-			if TraitSystem and WOUND_TYPES.get(wound_id, {}).get("severity", "") == "severe":
+			if TraitSystem and closing_severity == "severe":
 				TraitSystem.grant_trait(character, "scarred")
 			if _update_stats and CharacterSystem:
 				CharacterSystem.update_derived_stats(character)
@@ -432,7 +470,7 @@ func get_stat_penalties(character: Dictionary) -> Dictionary:
 			continue
 		var location: String = entry.get("body_location", "torso")
 		var part_cat: String = BodySystem.get_part_category(character, location) if BodySystem else "torso"
-		var severity: String = wdef.get("severity", "light")
+		var severity: String = get_entry_severity(entry)  # Unbroken-aware
 		var penalties: Dictionary = BodySystem.get_wound_penalties(part_cat, severity) if BodySystem else {}
 		for stat in penalties:
 			totals[stat] = totals.get(stat, 0) + penalties[stat]

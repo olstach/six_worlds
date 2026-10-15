@@ -31,6 +31,11 @@ var temp_hp: int = 0    # Absorbed before real HP; granted by rest overheal
 # primary hit's number. See begin_held_damage() / end_held_damage().
 var _holding_damage_number: bool = false
 var _held_damage: int = 0
+# Every point of HP this unit has lost this fight, after armour, resistance,
+# shields and temp HP — the same number its red popups show. It only ever goes
+# up; CombatManager reads it before and after a blow to learn what that one
+# blow actually cost (result["damage_taken"]), which is what the log reports.
+var damage_taken_total: int = 0
 var current_mana: int = 50
 var max_mana: int = 50
 var current_stamina: int = 50
@@ -1170,6 +1175,7 @@ func take_damage(amount: int) -> void:
 			amount -= temp_hp
 			temp_hp = 0
 	current_hp = maxi(0, current_hp - amount)
+	damage_taken_total += amount
 	# Keep character_data in sync so HP persists after combat
 	var derived_hp = character_data.get("derived", {})
 	derived_hp["current_hp"] = current_hp
@@ -1217,6 +1223,12 @@ func heal(amount: int) -> void:
 
 ## Show floating damage number
 func _show_damage_number(amount: int) -> void:
+	# A blow that cost no HP shows no number. A hit resisted down to nothing
+	# never reaches take_damage() at all, so it already showed nothing; this
+	# makes a hit soaked entirely by temp HP or a shield behave the same way,
+	# and the extra arms follow the same rule (see show_arm_result).
+	if amount <= 0:
+		return
 	var label = Label.new()
 	label.text = str(amount)
 	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 20)
@@ -1339,7 +1351,10 @@ const ARM_POPUP_NUDGE = 10.0   # pixels sideways, alternating left/right
 ## or "Arm 4: dodge". `stagger` is the arm's place in the chain (0 = first
 ## extra arm) and spaces the popups out in time and position so they don't
 ## overlap the primary hit's number or each other.
-func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> void:
+## Returns false when there was nothing to show: an arm that landed but cost
+## no HP gets no popup, exactly like a primary hit that cost none (the combat
+## log still records it).
+func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> bool:
 	var arm_num: int = extra.get("arm_number", 0)
 	var text: String
 	var color: Color
@@ -1348,6 +1363,8 @@ func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> void:
 		# same number the primary hit's popup shows. Fall back to the raw
 		# damage for results made before that field existed.
 		var dmg: int = extra.get("damage_taken", extra.get("damage", 0))
+		if dmg <= 0:
+			return false
 		text = "Arm %d: %d" % [arm_num, dmg]
 		color = COLOR_ARM_HIT
 		if extra.get("crit", false):
@@ -1361,6 +1378,22 @@ func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> void:
 	var side: float = -1.0 if stagger % 2 == 0 else 1.0
 	show_combat_text(text, color, ARM_POPUP_DELAY * (stagger + 1),
 		Vector2(side * ARM_POPUP_NUDGE, -6.0 * stagger))
+	return true
+
+
+## How much a landed weapon blow hurt, for the combat log: "12", or
+## "12 (18 before armour)" when armour, resistance or a shield took some off.
+##
+## result["damage_taken"] is the HP the defender actually lost — the number its
+## red popup shows. result["damage"] is the blow before the defender's
+## defences. The log used to print the second while the popup showed the
+## first, so the two disagreed on every armoured hit.
+static func hit_damage_text(result: Dictionary) -> String:
+	var raw: int = int(result.get("damage", 0))
+	var taken: int = int(result.get("damage_taken", raw))
+	if taken != raw:
+		return "%d (%d before armour)" % [taken, raw]
+	return str(taken)
 
 
 ## Show a popup for every extra arm in an attack result (the multi-arm chain
@@ -1376,8 +1409,8 @@ static func show_arm_chain_popups(attacker: Node, fallback_target: Node, result:
 		var target = extra.get("target", fallback_target)
 		if target == null or not is_instance_valid(target) or not target.has_method("show_arm_result"):
 			continue
-		target.show_arm_result(attacker, extra, i)
-		shown += 1
+		if target.show_arm_result(attacker, extra, i):
+			shown += 1
 	return shown
 
 

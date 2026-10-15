@@ -2132,8 +2132,8 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 
 		if result.hit:
 			var crit_text = " CRITICAL!" if result.crit else ""
-			_log_message("%s attacks %s for %d damage!%s" % [
-				attacker.unit_name, defender.unit_name, result.damage, crit_text
+			_log_message("%s attacks %s for %s damage!%s" % [
+				attacker.unit_name, defender.unit_name, CombatUnit.hit_damage_text(result), crit_text
 			])
 			AudioManager.play(_get_attack_sound(attacker))
 			if result.crit:
@@ -2736,11 +2736,24 @@ func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> vo
 		# someone else after a kill, so this isn't always `defender`.
 		var struck = extra.get("target", defender)
 		var struck_name: String = struck.unit_name if is_instance_valid(struck) else defender.unit_name
+		# This is the ONLY place an arm is logged — CombatManager used to
+		# write its own line for each arm as well, in another format.
 		if extra.get("hit", false):
 			var crit_str: String = " CRIT!" if extra.get("crit", false) else ""
-			_log_message("  Arm %d: %d %s damage to %s%s" % [
-				arm_num, extra.get("damage", 0), extra.get("damage_type", ""),
-				struck_name, crit_str])
+			if int(extra.get("damage_taken", extra.get("damage", 0))) <= 0:
+				# Landed but cost nothing — no popup either (see show_arm_result).
+				_log_message("  Arm %d: hits %s for no damage%s" % [arm_num, struck_name, crit_str])
+			else:
+				_log_message("  Arm %d: %s %s damage to %s%s" % [
+					arm_num, CombatUnit.hit_damage_text(extra), extra.get("damage_type", ""),
+					struck_name, crit_str])
+			if extra.has("oil_damage"):
+				_log_message("    +%d %s damage (oil)!" % [
+					extra.oil_damage, str(extra.get("oil_damage_type", "")).capitalize()])
+			# The primary hit's crit sting plays where it is logged; an
+			# arm's crit deserves the same.
+			if extra.get("crit", false):
+				AudioManager.play("hit_crit", -3.0)
 		else:
 			_log_message("  Arm %d: misses %s" % [arm_num, struck_name])
 	# ...and as floating popups over whoever each arm struck ("Arm 2: 12",
@@ -3329,8 +3342,8 @@ func _do_confused_turn(unit: CombatUnit) -> void:
 				var result = CombatManager.attack_unit(unit, random_target)
 				if result.success:
 					if result.hit:
-						_log_message("%s lashes out at %s for %d damage!" % [
-							unit.unit_name, random_target.unit_name, result.damage])
+						_log_message("%s lashes out at %s for %s damage!" % [
+							unit.unit_name, random_target.unit_name, CombatUnit.hit_damage_text(result)])
 					else:
 						_show_miss_text(unit, random_target)
 						_log_message("%s swings wildly at %s - MISS!" % [
@@ -3375,8 +3388,8 @@ func _do_berserk_turn(unit: CombatUnit) -> void:
 			if result.success:
 				var ally_text = " (ally!)" if nearest.team == unit.team else ""
 				if result.hit:
-					_log_message("%s attacks %s%s in a blind rage for %d damage!" % [
-						unit.unit_name, nearest.unit_name, ally_text, result.damage])
+					_log_message("%s attacks %s%s in a blind rage for %s damage!" % [
+						unit.unit_name, nearest.unit_name, ally_text, CombatUnit.hit_damage_text(result)])
 				else:
 					_show_miss_text(unit, nearest)
 					_log_message("%s rages at %s%s - MISS!" % [
@@ -3552,7 +3565,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			if result.success:
 				if result.hit:
 					var ranged_text = " from range" if dist > 1 else ""
-					_log_message("%s attacks %s%s for %d damage!" % [unit.unit_name, nearest.unit_name, ranged_text, result.damage])
+					_log_message("%s attacks %s%s for %s damage!" % [unit.unit_name, nearest.unit_name, ranged_text, CombatUnit.hit_damage_text(result)])
 					AudioManager.play(_get_attack_sound(unit))
 					if result.crit:
 						AudioManager.play("hit_crit", -3.0)
@@ -4160,7 +4173,7 @@ func _run_bonus_turn(unit: CombatUnit) -> void:
 			if result.get("success", true):
 				unit.actions_remaining -= 1
 				if result.get("hit", false):
-					_log_message("%s attacks %s for %d damage!" % [unit.unit_name, nearest.unit_name, result.get("damage", 0)])
+					_log_message("%s attacks %s for %s damage!" % [unit.unit_name, nearest.unit_name, CombatUnit.hit_damage_text(result)])
 				else:
 					_show_miss_text(unit, nearest)
 			else:

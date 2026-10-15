@@ -1508,14 +1508,6 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 # COMBAT RESOLUTION
 # ============================================
 
-## Perform an attack from one unit to another.
-## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
-## Execute one extra arm hit in the multi-arm attack chain.
-## chain_chance (0–100): the probability that caused this arm to fire.
-## Wound and disease proc chances scale proportionally (e.g. arm 2 at 50% fire chance
-## gets 50% of the primary arm's proc rates — a glancing brush is less likely to sever).
-## No action cost, no further arm chain, no ammo or durability deduction.
-## Oil, sweep, and other weapon passives only apply to the primary arm.
 ## Coordinated Strikes: after an arm kills its target, find another living enemy
 ## within the attacker's melee reach for the remaining arms to swing at.
 func _find_chain_redirect_target(attacker: Node) -> Node:
@@ -1571,6 +1563,111 @@ func _crit_wound_negated(defender: Node, roll: float = -1.0) -> bool:
 	return false
 
 
+## Apply a landed blow's damage and record what it actually cost.
+##
+## result["damage"] is the blow BEFORE the defender's armour, resistance,
+## shields and temp HP; result["damage_taken"] is the HP the defender really
+## lost — the number its red popup shows. The combat log reports the second
+## (and the first beside it when they differ), so the log and the popup agree.
+## Shared by the primary hit and every extra arm.
+func _apply_hit_damage(attacker: Node, defender: Node, result: Dictionary) -> void:
+	var tracked: bool = "damage_taken_total" in defender
+	var before: int = defender.damage_taken_total if tracked else 0
+	# Naming the attacker, so a take_damage passive knows who to answer.
+	apply_damage(defender, result.damage, result.damage_type, attacker)
+	result["damage_taken"] = (defender.damage_taken_total - before) if tracked else int(result.damage)
+
+
+## Weapon oil on a landed blow: bonus damage of the oil's type, and a chance
+## of its status. Each blow that lands spends one of the oil's charges — so a
+## four-armed swing that lands with every arm uses four.
+## Shared by the primary hit and every extra arm.
+func _apply_weapon_oil(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not attacker.has_method("consume_oil_charge"):
+		return
+	var oil = attacker.consume_oil_charge()
+	if oil.is_empty():
+		return
+	var oil_dmg = oil.get("bonus_damage", 0)
+	var oil_dmg_type = oil.get("bonus_damage_type", "fire")
+	if oil_dmg > 0:
+		# Resistance is applied once, inside apply_damage().
+		apply_damage(defender, oil_dmg, oil_dmg_type)
+		result["oil_damage"] = oil_dmg
+		result["oil_damage_type"] = oil_dmg_type
+	# Roll for status proc
+	var oil_status = oil.get("status", "")
+	var oil_chance = effective_status_chance(
+		attacker.character_data if "character_data" in attacker else {},
+		oil.get("status_chance", 0))
+	if oil_status != "" and oil_chance > 0:
+		if randf() * 100.0 <= oil_chance:
+			var oil_duration = oil.get("status_duration", 2)
+			# Source: the alchemist who coated the blade, so their
+			# poison_damage_pct reaches the venom they mixed.
+			_apply_status_effect(defender, oil_status, oil_duration, 0, attacker)
+			result["oil_status"] = oil_status
+	# Track remaining charges (unit's weapon_oil already decremented)
+	var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
+	result["oil_attacks_left"] = remaining
+
+
+## Everything a landed weapon blow sets off once its damage is in: passive
+## on-hit perks, the on_hit / on_crit / on_kill perk triggers, and the
+## weapon's own procs (Trishula's on-crit status, crit wounds with Hardened's
+## save, disease and poisoned-blood rolls with Undead Hunter / Diamond Body's
+## immunity, the weapon's passive status procs, lifesteal, elemental damage).
+##
+## The primary hit and every extra arm both call this. The arm chain used to
+## carry its own copy of half of it, and every fix to the main hit (Hardened,
+## Undead Hunter) had to be remembered twice. One function, one place.
+##
+## proc_scale (0–1) scales the chance of the PERSISTENT afflictions — crit
+## wounds, diseases, poisoned blood. An extra arm passes its own fire chance,
+## so a glancing third-arm blow is less likely to leave a lasting wound than a
+## full swing. extra_arm=true also skips the procs that belong to the whole
+## attack rather than to one blow (see _process_weapon_on_hit_procs).
+func _resolve_hit_procs(attacker: Node, defender: Node, result: Dictionary,
+		proc_scale: float = 1.0, extra_arm: bool = false) -> void:
+	_process_on_hit_perks(attacker, defender, result)
+	_fire_perk_triggers(attacker, "on_hit", {"target": defender})
+	if result.get("crit", false):
+		_fire_perk_triggers(attacker, "on_crit", {"target": defender})
+	if not defender.is_alive():
+		_fire_perk_triggers(attacker, "on_kill", {"target": defender})
+	_process_weapon_on_hit_procs(attacker, defender, result, proc_scale, extra_arm)
+
+
+## Count one weapon swing on the attacker's per-turn and per-fight counters
+## (the first_attack_turn / first_attack_combat conditions, Too Fast to
+## Count's "first dagger attack each turn", the first-ranged-shot perks).
+## Every swing counts, an extra arm's included, hit or miss.
+func _count_weapon_attack(attacker: Node) -> void:
+	if "attacks_this_turn" in attacker:
+		attacker.attacks_this_turn += 1
+		attacker.attacks_this_combat += 1
+	if attacker.has_method("get_equipped_weapon"):
+		if attacker.get_equipped_weapon().get("type", "") == "dagger":
+			attacker.dagger_attacks_this_turn += 1
+	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+		attacker.ranged_attacks_this_turn += 1
+
+
+## Execute one extra arm hit in the multi-arm attack chain.
+##
+## chain_chance (0–100) is the probability that made this arm fire. It scales
+## the arm's chance of inflicting persistent wounds and diseases (arm 2 at a
+## 50% fire chance gets half the primary arm's rates — a glancing brush is less
+## likely to maim), via _resolve_hit_procs' proc_scale.
+##
+## The arm lands its blow through the same functions the primary hit uses —
+## _apply_hit_damage, _apply_weapon_oil, _resolve_hit_procs and
+## _count_weapon_attack — so it cannot drift from it again. What it does NOT
+## do: cost an action, start a further chain, spend ammo, wear the weapon, or
+## sweep (Urumi). Those belong to the attack as a whole, not to each blow.
+##
+## Nothing is written to the combat log here: the arena's unit_attacked
+## handler logs every arm once, from the result this returns.
 func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
 	var weapon_dmg_type: String = "crushing"
 	if attacker.has_method("get_weapon_damage_type"):
@@ -1593,60 +1690,27 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 		"damage_taken": 0,
 	}
 	if hit:
+		if "last_attacker" in defender:
+			defender.last_attacker = attacker
 		var damage_result := calculate_physical_damage(attacker, defender, weapon_dmg_type)
 		result.merge(damage_result, true)
 		# Hold back the defender's plain damage number while this arm's blow
 		# lands: the arena shows it as a labelled, staggered "Arm N: X" popup
 		# instead, so it doesn't stack on top of the primary hit's number.
-		# damage_taken is the HP actually lost, after armour and resistance.
 		var holds: bool = defender.has_method("begin_held_damage")
 		if holds:
 			defender.begin_held_damage()
-		apply_damage(defender, result.damage, weapon_dmg_type)
+		_apply_hit_damage(attacker, defender, result)
 		if holds:
-			result["damage_taken"] = defender.end_held_damage()
-		_process_on_hit_perks(attacker, defender, result)
-		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
-
-		# Wound and disease procs — scaled by chain_chance so later arms are less likely to inflict.
-		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
-		var scale: float = chain_chance / 100.0
-		if WoundSystem and defender.team == Team.PLAYER:
-			if result.get("crit", false) and randf() < 0.20 * scale \
-					and not _crit_wound_negated(defender):
-				var char_data = defender.character_data
-				var wound_id = WoundSystem.apply_random_crit_wound(char_data)
-				if wound_id != "":
-					combat_log.emit("Arm %d: %s received a %s!" % [
-						arm_number, defender.unit_name,
-						WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
-					])
-					result["persistent_wound"] = wound_id
-			if attacker.team == Team.ENEMY:
-				var attacker_tags: Array = attacker.character_data.get("tags", []) if "character_data" in attacker else []
-				# Same immunity gate as the main attack (Undead Hunter, Diamond
-				# Body) — a second arm must not carry in what the first could not.
-				if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * scale \
-						and not _check_perk_status_immunity(defender, "diseased", attacker):
-					var tag_source: String = "undead" if "undead" in attacker_tags else "diseased"
-					var disease_id = WoundSystem.apply_random_disease(defender.character_data, tag_source)
-					if disease_id != "":
-						combat_log.emit("Arm %d: %s afflicted with %s!" % [
-							arm_number, defender.unit_name,
-							WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
-						])
-						result["persistent_disease"] = disease_id
-
-		var msg: String = "Arm %d: %s → %s for %d%s" % [
-			arm_number, attacker.unit_name, defender.unit_name, result.damage,
-			" (crit!)" if result.get("crit", false) else ""
-		]
-		combat_log.emit(msg)
-	else:
-		combat_log.emit("Arm %d: %s misses %s" % [arm_number, attacker.unit_name, defender.unit_name])
+			defender.end_held_damage()
+		_apply_weapon_oil(attacker, defender, result)
+		_resolve_hit_procs(attacker, defender, result, chain_chance / 100.0, true)
+	_count_weapon_attack(attacker)
 	return result
 
 
+## Perform an attack from one unit to another.
+## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
 func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dictionary:
 	if not reaction and not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
@@ -1843,36 +1907,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 					else:
 						combat_log.emit("%s stays hidden (Shady Dealings)." % attacker.unit_name)
 
-		# Apply damage — naming the attacker, so a take_damage passive knows
-		# who to answer
-		apply_damage(defender, result.damage, result.damage_type, attacker)
-
-		# Apply weapon oil effects (bonus damage + status procs)
-		if attacker.has_method("consume_oil_charge"):
-			var oil = attacker.consume_oil_charge()
-			if not oil.is_empty():
-				var oil_dmg = oil.get("bonus_damage", 0)
-				var oil_dmg_type = oil.get("bonus_damage_type", "fire")
-				if oil_dmg > 0:
-					# Resistance is applied once, inside apply_damage().
-					apply_damage(defender, oil_dmg, oil_dmg_type)
-					result["oil_damage"] = oil_dmg
-					result["oil_damage_type"] = oil_dmg_type
-				# Roll for status proc
-				var oil_status = oil.get("status", "")
-				var oil_chance = effective_status_chance(
-					attacker.character_data if "character_data" in attacker else {},
-					oil.get("status_chance", 0))
-				if oil_status != "" and oil_chance > 0:
-					if randf() * 100.0 <= oil_chance:
-						var oil_duration = oil.get("status_duration", 2)
-						# Source: the alchemist who coated the blade, so their
-						# poison_damage_pct reaches the venom they mixed.
-						_apply_status_effect(defender, oil_status, oil_duration, 0, attacker)
-						result["oil_status"] = oil_status
-				# Track remaining charges (unit's weapon_oil already decremented)
-				var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
-				result["oil_attacks_left"] = remaining
+		# Apply damage (recording the HP it actually cost), then weapon oil —
+		# the same two helpers every extra arm uses.
+		_apply_hit_damage(attacker, defender, result)
+		_apply_weapon_oil(attacker, defender, result)
 
 		# --- An imbued arrow delivers its spell on hit ---
 		#
@@ -1929,15 +1967,9 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				unit_healed.emit(attacker, steal)
 				result["lifesteal"] = steal
 
-		# --- Passive perk on-hit effects ---
-		_process_on_hit_perks(attacker, defender, result)
-		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
-		if result.get("crit", false):
-			_fire_perk_triggers(attacker, "on_crit", {"target": defender})
-		if not defender.is_alive():
-			_fire_perk_triggers(attacker, "on_kill", {"target": defender})
-		# --- Weapon passive on-hit procs ---
-		_process_weapon_on_hit_procs(attacker, defender, result)
+		# --- On-hit perks, perk triggers and weapon procs ---
+		# Shared with the extra arms of a multi-arm chain.
+		_resolve_hit_procs(attacker, defender, result)
 		# --- Ammo special effects (fire arrow AoE, status procs) ---
 		if "get_selected_ammo" in attacker:
 			var ammo = attacker.get_selected_ammo()
@@ -1986,14 +2018,8 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			result.merge(dev, true)
 
 	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
-	if "attacks_this_turn" in attacker:
-		attacker.attacks_this_turn += 1
-		attacker.attacks_this_combat += 1
-	if attacker.has_method("get_equipped_weapon"):
-		if attacker.get_equipped_weapon().get("type", "") == "dagger":
-			attacker.dagger_attacks_this_turn += 1
+	_count_weapon_attack(attacker)
 	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
-		attacker.ranged_attacks_this_turn += 1
 		# Consume one ammo; revert to default if depleted
 		if "selected_ammo_id" in attacker and attacker.selected_ammo_id != "":
 			var still_has_ammo = ItemSystem.consume_ammo(attacker.selected_ammo_id)
@@ -2015,10 +2041,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			# Only chain for dual-wielders, natural weapon species, or genuinely multi-armed characters
 			var should_chain: bool = (arm_count > 2)
 			if not should_chain:
-				var weapon_set: int = char_data.get("active_weapon_set", 1)
-				var off_slot: String = "weapon_off" if weapon_set == 1 else "weapon_off_2"
-				var equipment_dict: Dictionary = char_data.get("equipment", {})
-				var oh_id: String = equipment_dict.get(off_slot, "")
+				# The off hand lives inside the active weapon set
+				# (equipment.weapon_set_N.off); ItemSystem knows which set is
+				# active. Reading equipment["weapon_off"] directly found nothing,
+				# so a two-armed dual-wielder never chained at all.
+				var oh_id: String = ItemSystem.get_equipped_item(char_data, "weapon_off")
 				should_chain = (oh_id != "")
 			if not should_chain:
 				var primary_nw: Dictionary = BodySystem.get_natural_weapon(char_data, "hand_r")
@@ -2183,7 +2210,7 @@ func _calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	if PerkSystem.has_perk(att_char, "offhand_jab"):
 		if attacker.has_method("get_equipped_weapon"):
 			if attacker.get_equipped_weapon().get("type", "") == "dagger":
-				var oh_id = att_char.get("equipment", {}).get("weapon_off", "")
+				var oh_id = ItemSystem.get_equipped_item(att_char, "weapon_off")  # active weapon set
 				if oh_id != "" and ItemSystem.get_item(oh_id).get("type", "") == "dagger":
 					hit_chance += 10.0
 
@@ -2310,7 +2337,7 @@ func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String
 	# Offhand Jab: +5% crit when main and off-hand are both daggers
 	if PerkSystem.has_perk(att_char_eoia, "offhand_jab"):
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
-			var oh_id_oj = att_char_eoia.get("equipment", {}).get("weapon_off", "")
+			var oh_id_oj = ItemSystem.get_equipped_item(att_char_eoia, "weapon_off")  # active weapon set
 			if oh_id_oj != "" and ItemSystem.get_item(oh_id_oj).get("type", "") == "dagger":
 				crit_chance += 5.0
 
@@ -9765,8 +9792,15 @@ func _apply_trigger_effect(unit: Node, perk_id: String, payload: Dictionary,
 	combat_log.emit("%s: %s" % [unit.unit_name, PerkSystem.get_perk_data(perk_id).get("name", perk_id)])
 
 
-## Called from attack_unit() after damage lands, alongside _process_on_hit_perks.
-func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary) -> void:
+## Called through _resolve_hit_procs() after a blow's damage lands — by the
+## primary hit and by every extra arm of a multi-arm chain.
+## proc_scale (0–1) scales the persistent afflictions only (crit wounds,
+## diseases, poisoned blood); see _resolve_hit_procs.
+## extra_arm=true skips Chakram pass_through: that is the THROWN ring flying on
+## through the line, one flight per attack. Arm chains are melee-only, so this
+## cannot come up today, but an arm swing must never launch a second flight.
+func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary,
+		proc_scale: float = 1.0, extra_arm: bool = false) -> void:
 	if not attacker.has_method("get_equipped_weapon"):
 		return
 	var weapon = attacker.get_equipped_weapon()
@@ -9780,7 +9814,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		# 20% chance a crit inflicts a persistent wound on player characters.
 		# Hardened gives a 50% chance to negate it — see _crit_wound_negated.
 		# Ranged weapons (skill_tag: "ranged") draw from the ranged wound pool.
-		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
+		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20 * proc_scale:
 			var char_data = defender.character_data
 			if not _crit_wound_negated(defender):
 				var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
@@ -9806,7 +9840,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		# an undead hit is exactly the thing it is claiming immunity to. Reusing
 		# _check_perk_status_immunity keeps its "while unarmored" condition,
 		# which a trait-granted resistance could not express.
-		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 \
+		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * proc_scale \
 				and not _check_perk_status_immunity(defender, "diseased", attacker):
 			var tag_source = "undead" if "undead" in attacker_tags else "diseased"
 			var char_data = defender.character_data
@@ -9817,7 +9851,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 					WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
 				])
 				result["persistent_disease"] = disease_id
-		elif "poison" in attacker_tags and randf() < 0.15 \
+		elif "poison" in attacker_tags and randf() < 0.15 * proc_scale \
 				and not _check_perk_status_immunity(defender, "poisoned"):
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_poison_disease(char_data)
@@ -9829,7 +9863,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 				result["persistent_disease"] = disease_id
 
 	# Chakram pass_through: hit the next unit in the attack line beyond the defender
-	var pass_count = weapon.get("pass_through", 0)
+	var pass_count: int = 0 if extra_arm else int(weapon.get("pass_through", 0))
 	if pass_count > 0 and "grid_position" in attacker and "grid_position" in defender:
 		var dir = (defender.grid_position - attacker.grid_position)
 		var step_x: int = 0 if dir.x == 0 else (1 if dir.x > 0 else -1)
