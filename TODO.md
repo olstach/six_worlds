@@ -534,15 +534,27 @@ the Earth/Black plant line — so the work went where the gaps were:
 
 **Still open, small:**
 
-- The twenty legacy effect strings live in `Resistance.LEGACY_EFFECTS` rather
-  than in the statuses that use them. The table exists so that migrating them
-  to the structured `grants_resistance` they should always have used is a DATA
-  change with nothing to rewrite in code. Worth doing on the next pass through
-  statuses.json.
-- `ranged` resistance (Silk armour, +10) is a resistance to how the damage
-  arrived rather than to what it was. `Air_Shield`'s `ranged_damage_reduction`
-  is the same axis and IS read; the armour-material version is not. Wiring it
-  means reading it in the attack path, next to that one.
+- [x] ~~The twenty legacy effect strings live in `Resistance.LEGACY_EFFECTS`~~
+  — **migrated 2026-10-15.** All 27 statuses that carried one say it in
+  `grants_resistance` / `grants_vulnerability` now, and the table is gone.
+  Two things the table did that a plain type key could not: `physical`
+  covering its three subtypes, and the two scopes (`all` for Invulnerable,
+  `non_physical` for Mantric Armor, Praying and Rainbow Cloak). Both live in
+  `DamageType.scope_covers()`, and the scopes are a list on DamageType the
+  validator reads, so they are allowed on a status and nowhere else. The two
+  statuses that kept their number in a side field (`vulnerability_pct`,
+  `resistance_pct`) just write it in the block. Checked the honest way: every
+  status against every damage type, before and after — 136 non-zero
+  figures, identical. The status tooltip lost three hand-written labels and
+  gained a line per resistance key, so Inner Flame shows what it does for the
+  first time.
+- [x] ~~`ranged` resistance (Silk armour, +10) is not read~~ — **wired
+  2026-10-15.** It was worse than unread: nothing copied a material's
+  `resistances` onto anything, so the +10 never reached a character either.
+  `ItemSystem._add_item_stats` reads the worn item's material row now, and the
+  attack path reads `Resistance.delivery(defender, "ranged")` beside
+  Air_Shield, ranged weapons only. It shows in the examine panel as its own
+  row. verify_resistance checks the robe, the arrow and that a sword ignores it.
 - Nothing absorbs anything yet. The mechanic is built and checked; a fire
   elemental that drinks fire, or an undead thing that feeds on Black magic, is
   content waiting to be written.

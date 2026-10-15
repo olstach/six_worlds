@@ -1709,6 +1709,14 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Air_Shield: ranged attacks deal 25% less damage to the defender
 		if is_ranged and _unit_has_effect(defender, "ranged_damage_reduction"):
 			result["damage"] = int(result["damage"] * 0.75)
+		# `ranged` resistance — Silk armour's +10 — is the same axis as Air_Shield:
+		# a resistance to how the hit arrived, not what it is made of. So it is
+		# read here, beside it, rather than by the damage-type resolver. A hit
+		# that was landing for something still lands for at least 1.
+		if is_ranged and result["damage"] > 0:
+			var turned: float = Resistance.delivery(defender, "ranged")
+			if turned != 0.0:
+				result["damage"] = maxi(1, int(result["damage"] * (1.0 - turned / 100.0)))
 
 		# Riposte_Ready (riposte perk): next sword attack +25% damage, −2 stamina, consumed
 		if _unit_has_effect(attacker, "riposte_next_sword_attack"):

@@ -585,6 +585,36 @@ func _add_item_stats(item_id: String, bonuses: Dictionary) -> void:
 			var element = key.replace("_resistance", "")
 			bonuses["resistances"][element] = bonuses["resistances"].get(element, 0) + passive[key]
 
+	# And from what the item is MADE of. A material may declare `resistances`
+	# in equipment_tables.json — Silk's {"ranged": 10}, a silk layer catching
+	# an arrowhead — and until 2026-10-15 nothing copied it anywhere, so silk
+	# robes turned no arrows at all. Read from the table rather than stamped
+	# onto the item, so authored and generated items behave alike.
+	var mat_resists: Dictionary = get_material_info(get_item_material(item)).get("resistances", {})
+	for key in mat_resists:
+		if str(key).begins_with("_"):
+			continue   # `_comment` keys are documentation, not resistances
+		bonuses["resistances"][key] = bonuses["resistances"].get(key, 0) + int(mat_resists[key])
+
+
+## The material an item is made of, or "" if none. Generated items keep it
+## under `generated`; authored items declare it at the top level.
+func get_item_material(item: Dictionary) -> String:
+	var generated: Dictionary = item.get("generated", {})
+	if generated.has("material"):
+		return str(generated["material"])
+	return str(item.get("material", ""))
+
+
+## A material's row from equipment_tables.json, or {} for none/unknown.
+func get_material_info(material: String) -> Dictionary:
+	if material == "":
+		return {}
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	var info = _equipment_tables.get("materials", {}).get(material, {})
+	return info if info is Dictionary else {}
+
 
 ## Get rarity color for an item
 func get_rarity_color(item_id: String) -> Color:

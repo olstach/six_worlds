@@ -415,9 +415,6 @@ func _build_status_tooltip() -> String:
 		"speed_bonus": "+2 movement",
 		"initiative_bonus": "+10 initiative",
 		"movement_reduced_50": "Movement halved",
-		"vulnerable_to_physical": "Vulnerable to physical",
-		"physical_immunity": "Immune to physical",
-		"fire_resistance_minus_50": "-50% fire resistance",
 		"melee_hit_chance_halved": "Melee accuracy halved",
 		"ranged_hit_chance_halved": "Ranged accuracy halved",
 		"armor_reduced_50": "Armor reduced by 50%",
@@ -457,6 +454,13 @@ func _build_status_tooltip() -> String:
 					if dmg > 0:
 						label = str(dmg) + " " + label
 				bullets.append(label)
+		# Resistances the status grants or takes away. These were effect
+		# strings with a label each above ("Immune to physical"); they are
+		# structured data on the status now, so one line covers them all.
+		for key in def.get("grants_resistance", {}):
+			bullets.append(_resistance_bullet(str(key), float(def["grants_resistance"][key])))
+		for key in def.get("grants_vulnerability", {}):
+			bullets.append(_resistance_bullet(str(key), -float(def["grants_vulnerability"][key])))
 		# Dispel info
 		var dispel_methods: Array = def.get("dispel_methods", [])
 		if not dispel_methods.is_empty():
@@ -471,6 +475,23 @@ func _build_status_tooltip() -> String:
 			lines.append(header + "\n  " + "\n  ".join(bullets))
 
 	return "\n\n".join(lines)
+
+
+## One tooltip line for a status's resistance key: "Immune to fire",
+## "+25% physical resistance", "-50% ice resistance". `key` may be a scope —
+## `all` reads as "all damage", `non_physical` as "non-physical damage".
+func _resistance_bullet(key: String, amount: float) -> String:
+	var what: String
+	match key:
+		"all":
+			what = "all damage"
+		"non_physical":
+			what = "non-physical damage"
+		_:
+			what = DamageType.display_name(key).to_lower()
+	if amount >= Resistance.DECLARED_IMMUNITY:
+		return "Immune to %s" % what
+	return "%+d%% %s resistance" % [int(amount), what]
 
 
 # ============================================

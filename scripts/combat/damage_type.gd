@@ -32,6 +32,18 @@ const CATEGORIES: Array[String] = [
 	"special",   # true, sacrifice: resistance and armour do not apply
 ]
 
+## Keys a STATUS may use in `grants_resistance` / `grants_vulnerability` that
+## name a group of types rather than one. Only statuses take these — a unit's
+## own `resistances` block and aura payloads name one type each.
+##
+##   all           every damage type (Invulnerable)
+##   non_physical  everything that is not force: the elements, white, black
+##                 and poison (Mantric Armor, Praying, Rainbow Cloak)
+##
+## They used to be effect strings with a table in Resistance translating them,
+## `immune_to_all_damage` and friends. See scope_covers() for what each means.
+const RESISTANCE_SCOPES: Array[String] = ["all", "non_physical"]
+
 static var _types: Dictionary = {}
 static var _other: Dictionary = {}
 static var _loaded: bool = false
@@ -85,6 +97,26 @@ static func is_magic(name: String) -> bool:
 ## of its own — "physical" for slashing, "" for everything else.
 static func subtype_of(name: String) -> String:
 	return str(get_type(name).get("subtype_of", ""))
+
+
+## Does a resistance declared against `key` cover a hit of `damage_type`?
+##
+## `key` is what a status wrote in grants_resistance: a type, a scope from
+## RESISTANCE_SCOPES, or `physical`. A key of `physical` covers all three
+## subtypes as well, which is what makes Stone Skin stop a sword and a mace
+## alike — and unlike a unit's own resistances, it ADDS to a subtype key on
+## the same status rather than being replaced by it.
+static func scope_covers(key: String, damage_type: String) -> bool:
+	if key == damage_type:
+		return true
+	match key:
+		"physical":
+			return is_physical(damage_type)
+		"non_physical":
+			return not is_physical(damage_type)
+		"all":
+			return true
+	return false
 
 
 static func is_compound(name: String) -> bool:
