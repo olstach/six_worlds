@@ -100,6 +100,20 @@ var shop_stock: Dictionary = {}
 ## was a sentence rather than a rule. A purse is the rule.
 var shop_purses: Dictionary = {}
 
+## Gold the party has left with a settlement (the Trade 4 `investment` perk),
+## keyed by the same map object as the shop standing in it — one shop per
+## settlement, so one key per place.
+## {object_id: {"amount": int, "payout": int, "due_day": int,
+##              "settlement": String, "announced": bool}}
+##
+## Keyed by map object for the same reason `shop_purses` is, and reset by
+## `reset_for_new_life` for the same reason too: a death regenerates the world,
+## those ids are never issued again, and an investment outstanding when you
+## die dies with you. That is intended — an investment is a bet that you live
+## long enough to come back for it. ShopSystem holds the rules; this holds the
+## ledger, because the ledger has to survive a save.
+var investments: Dictionary = {}
+
 # Tracks which location events have been visited (for first-visit hooks).
 # Format: { "event_id": true, ... }
 var visited_locations: Dictionary = {}
@@ -267,6 +281,7 @@ func reset_for_new_life() -> void:
 	guild_spell_lists = {}
 	shop_stock = {}
 	shop_purses = {}
+	investments = {}
 	active_map_buffs = []
 	active_quests = []
 	overworld_log = []
@@ -745,6 +760,7 @@ func get_save_data() -> Dictionary:
 		"guild_spell_lists": guild_spell_lists.duplicate(true),
 		"shop_stock": shop_stock.duplicate(true),
 		"shop_purses": shop_purses.duplicate(true),
+		"investments": investments.duplicate(true),
 		"visited_locations": visited_locations.duplicate(true),
 		"last_healing_location": last_healing_location.duplicate(true),
 		"flags": flags.duplicate(true),
@@ -769,6 +785,7 @@ func load_save_data(data: Dictionary) -> void:
 	guild_spell_lists = data.get("guild_spell_lists", {})
 	shop_stock = data.get("shop_stock", {})
 	shop_purses = data.get("shop_purses", {})
+	investments = data.get("investments", {})
 	visited_locations = data.get("visited_locations", {})
 	last_healing_location = data.get("last_healing_location", {})
 	flags = data.get("flags", {})

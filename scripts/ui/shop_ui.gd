@@ -38,6 +38,15 @@ var _barter_lines: VBoxContainer = null
 var _barter_confirm: Button = null
 var _barter_toggle: Button = null
 var _location_data: Dictionary = {}
+## The Invest bar (Trade 4 `investment` perk). Built in code like the barter
+## bar, so the shop scene stays as it is.
+var _invest_bar: PanelContainer = null
+var _invest_label: Label = null
+var _invest_spin: SpinBox = null
+var _invest_button: Button = null
+## What happened at the till on the way in ("Collected 300 gold..."), shown
+## at the top of the bar until the shop closes.
+var _invest_message: String = ""
 
 # Item tooltip
 var item_tooltip: Control = null
@@ -85,6 +94,17 @@ func open_shop(shop_data: Dictionary) -> void:
 
 	_ensure_barter_widgets()
 	_reset_barter()
+
+	# Walking into a settlement's shop is how a matured investment is
+	# collected. Do it before the gold display is drawn below.
+	_invest_message = ""
+	var returns: Dictionary = ShopSystem.collect_investment()
+	if returns.collected:
+		_invest_message = "Your investment in %s has matured: collected %d gold." \
+			% [returns.settlement, returns.payout]
+		_update_gold_display()
+	_ensure_invest_widgets()
+	_update_invest_bar()
 
 	# Populate content
 	_populate_items_tab()
@@ -1119,6 +1139,9 @@ func _on_close_pressed() -> void:
 
 func _on_gold_changed(_new_amount: int, _change: int) -> void:
 	_update_gold_display()
+	# The most you can stake is what you are carrying, so the picker follows.
+	if visible:
+		_update_invest_bar()
 
 
 func _on_item_purchased(_item_id: String, _price: int) -> void:
@@ -1154,6 +1177,7 @@ func _refresh_display() -> void:
 	_populate_rest_tab()
 	_populate_inventory()
 	_update_barter_bar()
+	_update_invest_bar()
 
 
 func _on_item_hover(item: Dictionary, control: Control) -> void:
@@ -1381,3 +1405,119 @@ func _on_barter_confirm() -> void:
 	selected_barter_items.clear()
 	barter_wanted.clear()
 	_refresh_display()
+
+
+# ============================================
+# INVESTMENT (Trade 4 perk)
+#
+# A bar above the footer, like the barter bar. It appears only where there is
+# something to say: the party has the perk and is standing in a settlement,
+# or there is already money working here (that is shown even without the
+# perk — whoever learned it may have died, but the money is still owed).
+# ShopSystem holds the rules; this only draws them.
+# ============================================
+
+func _ensure_invest_widgets() -> void:
+	if _invest_bar != null:
+		return
+	var footer: HBoxContainer = close_button.get_parent()
+	var column: VBoxContainer = footer.get_parent()
+
+	_invest_bar = PanelContainer.new()
+	var style := UIStyle.make_stylebox(Color(0.45, 0.38, 0.22), 2, 4, 0)
+	style.bg_color = Color(0.12, 0.10, 0.16, 0.95)
+	_invest_bar.add_theme_stylebox_override("panel", style)
+
+	var margin := MarginContainer.new()
+	for side in ["left", "right", "top", "bottom"]:
+		margin.add_theme_constant_override("margin_" + side, 8)
+	_invest_bar.add_child(margin)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+	margin.add_child(row)
+
+	# The label says what is happening here: a payout, a stake still growing,
+	# or what an investment would return.
+	_invest_label = Label.new()
+	_invest_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_invest_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_invest_label.add_theme_font_size_override("font_size", 12)
+	row.add_child(_invest_label)
+
+	# Amount picker: fixed steps of INVESTMENT_STEP, capped at the gold carried.
+	_invest_spin = SpinBox.new()
+	_invest_spin.step = ShopSystem.INVESTMENT_STEP
+	_invest_spin.min_value = ShopSystem.INVESTMENT_MIN
+	_invest_spin.suffix = "g"
+	_invest_spin.custom_minimum_size = Vector2(110, 0)
+	_invest_spin.value_changed.connect(func(_v: float) -> void: _update_invest_bar())
+	row.add_child(_invest_spin)
+
+	_invest_button = Button.new()
+	_invest_button.text = "Invest"
+	_invest_button.add_theme_font_size_override("font_size", 12)
+	_invest_button.pressed.connect(_on_invest_pressed)
+	row.add_child(_invest_button)
+
+	column.add_child(_invest_bar)
+	column.move_child(_invest_bar, footer.get_index())
+
+
+func _update_invest_bar() -> void:
+	if _invest_bar == null:
+		return
+	var standing: Dictionary = ShopSystem.get_investment_here()
+	var check: Dictionary = ShopSystem.can_invest_here()
+	var in_settlement: bool = ShopSystem.get_settlement_name() != "" \
+		and str(current_shop.get("_object_id", "")) != ""
+	var perk_here: bool = in_settlement and ShopSystem.party_can_invest()
+
+	_invest_bar.visible = _invest_message != "" or not standing.is_empty() or perk_here
+	if not _invest_bar.visible:
+		return
+
+	var lines: Array[String] = []
+	if _invest_message != "":
+		lines.append(_invest_message)
+	if not standing.is_empty():
+		var days_left: int = int(standing.get("due_day", 0)) - GameState.current_day
+		lines.append("%d gold invested here returns %d in %d day%s." % [
+			int(standing.get("amount", 0)), int(standing.get("payout", 0)),
+			days_left, "" if days_left == 1 else "s"])
+
+	# The picker and button only exist for someone who can invest here.
+	_invest_spin.visible = perk_here and standing.is_empty()
+	_invest_button.visible = _invest_spin.visible
+	if _invest_spin.visible:
+		var gold: int = GameState.get_gold()
+		# Round the ceiling down to a whole step so the spinner never offers
+		# an amount the party cannot pay.
+		var top: int = maxi(ShopSystem.INVESTMENT_MIN,
+			gold - gold % ShopSystem.INVESTMENT_STEP)
+		_invest_spin.max_value = top
+		_invest_spin.set_value_no_signal(clampf(_invest_spin.value, _invest_spin.min_value, top))
+		if check.ok:
+			var amount: int = int(_invest_spin.value)
+			lines.append("Invest in %s: %d gold returns %d after %d days." % [
+				ShopSystem.get_settlement_name(), amount,
+				int(round(amount * ShopSystem.INVESTMENT_RETURN)), ShopSystem.INVESTMENT_DAYS])
+			_invest_button.disabled = false
+		else:
+			lines.append(str(check.reason))
+			_invest_button.disabled = true
+
+	_invest_label.text = "\n".join(lines)
+	_invest_label.add_theme_color_override("font_color",
+		GOLD_COLOR if _invest_message != "" else Color(0.8, 0.8, 0.85))
+
+
+func _on_invest_pressed() -> void:
+	var result: Dictionary = ShopSystem.invest(int(_invest_spin.value))
+	if result.get("success", false):
+		_invest_message = "You leave %d gold with the merchants of %s." % [
+			int(result.amount), ShopSystem.get_settlement_name()]
+	else:
+		_invest_message = str(result.get("reason", "The investment fell through."))
+	_update_gold_display()
+	_update_invest_bar()

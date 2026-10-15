@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 38
+const EXPECTED_CHECKS: int = 41
 
 
 func _ready() -> void:
@@ -65,6 +65,11 @@ func _ready() -> void:
 	_check_a_village_caps_a_master()
 	_check_a_capital_teaches_further_than_a_town()
 	_check_a_roadside_shop_is_capped_only_by_its_own_skill()
+
+	# Investment (Trade 4): the first real gold sink, maturing on the day tick.
+	_check_an_investment_matures_and_pays_half_again()
+	_check_an_investment_dies_with_the_life()
+	_check_an_investment_survives_a_save()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -936,4 +941,115 @@ func _check_a_roadside_shop_is_capped_only_by_its_own_skill() -> void:
 			% ShopSystem.get_trainer_skill_cap())
 	if ShopSystem.get_settlement_skill_cap() != CharacterSystem.SKILL_MAX_LEVEL:
 		_fail("a shop in no settlement reported a settlement cap")
+	_done()
+
+
+# ============================================================================
+# INVESTMENT (Trade 4)
+#
+# Gold left with a settlement comes back at 150% after INVESTMENT_DAYS, paid
+# when the party next opens that settlement's shop. The ledger is keyed by map
+# object like the purse, so it dies with the world and rides in the save.
+# ============================================================================
+
+## A shop standing in a settlement, opened by a party whose one member has
+## (or lacks) the Investment perk.
+func _open_invest_shop(object_id: String, with_perk: bool) -> void:
+	CharacterSystem.party.clear()
+	var merchant: Dictionary = CharacterSystem.create_blank_character()
+	merchant["skills"] = {"trade": 4}
+	if with_perk:
+		merchant["perks"] = ["investment"]
+	CharacterSystem.party.append(merchant)
+	ShopSystem._current_shop = {
+		"id": "invest_probe", "type": "general", "price_modifier": 1.0,
+		"_object_id": object_id, "items": {},
+		"settlement": "Probe Village", "settlement_tier": 2,
+	}
+
+
+## Invest, wait out the days, walk back in: 150% comes back, once.
+func _check_an_investment_matures_and_pays_half_again() -> void:
+	GameState.investments.clear()
+	GameState.gold = 1000
+
+	# Without the perk there is nothing to do here.
+	_open_invest_shop("obj_bank", false)
+	if ShopSystem.can_invest_here().ok or ShopSystem.invest(200).get("success", false):
+		_fail("a party without the Investment perk was allowed to invest")
+
+	_open_invest_shop("obj_bank", true)
+	var r: Dictionary = ShopSystem.invest(200)
+	if not r.get("success", false):
+		_fail("investing 200 was refused: %s" % r.get("reason", ""))
+		_done()
+		return
+	if GameState.gold != 800:
+		_fail("investing 200 out of 1000 left %d" % GameState.gold)
+	if ShopSystem.invest(100).get("success", false):
+		_fail("a second investment went in where the first was still outstanding")
+
+	# Not yet: walking back in early pays nothing and keeps the stake.
+	GameState.advance_time(GameState.HOURS_PER_DAY * (ShopSystem.INVESTMENT_DAYS - 1))
+	var early: Dictionary = ShopSystem.collect_investment()
+	if early.collected or GameState.gold != 800:
+		_fail("an investment paid out a day early")
+	if int(early.get("days_left", 0)) != 1:
+		_fail("an early visit reported %d days left, not 1" % int(early.get("days_left", 0)))
+
+	# The day boundary matures it and says so in the log.
+	GameState.advance_time(GameState.HOURS_PER_DAY)
+	if not bool(GameState.investments.get("obj_bank", {}).get("announced", false)):
+		_fail("the day tick did not mark the investment as matured")
+
+	var paid: Dictionary = ShopSystem.collect_investment()
+	if not paid.collected or int(paid.payout) != 300:
+		_fail("a matured 200 paid %d, expected 300" % int(paid.get("payout", 0)))
+	if GameState.gold != 1100:
+		_fail("gold after collecting was %d, expected 1100" % GameState.gold)
+	if not GameState.investments.is_empty():
+		_fail("a collected investment stayed on the ledger")
+	if ShopSystem.collect_investment().collected:
+		_fail("an investment paid out twice")
+	_done()
+
+
+## A death regenerates the world: an outstanding investment dies with it.
+func _check_an_investment_dies_with_the_life() -> void:
+	GameState.investments.clear()
+	GameState.gold = 1000
+	_open_invest_shop("obj_doomed", true)
+	ShopSystem.invest(500)
+	if GameState.investments.is_empty():
+		_fail("the investment to be lost was never placed")
+	GameState.start_new_run("hungry_ghost")
+	if not GameState.investments.is_empty():
+		_fail("an investment survived reincarnation")
+	_done()
+
+
+## An investment survives a save and load, through the JSON a save file is.
+func _check_an_investment_survives_a_save() -> void:
+	GameState.investments.clear()
+	GameState.gold = 1000
+	_open_invest_shop("obj_saved", true)
+	ShopSystem.invest(100)
+	var due: int = int(GameState.investments.get("obj_saved", {}).get("due_day", -1))
+
+	# Through JSON, as SaveManager writes it — ints come back as floats.
+	var text: String = JSON.stringify(GameState.get_save_data())
+	GameState.investments.clear()
+	GameState.load_save_data(JSON.parse_string(text))
+
+	var restored: Dictionary = GameState.investments.get("obj_saved", {})
+	if restored.is_empty():
+		_fail("an investment did not survive a save and load")
+	elif int(restored.get("due_day", -1)) != due or int(restored.get("payout", 0)) != 150:
+		_fail("a reloaded investment came back as %s" % str(restored))
+	else:
+		GameState.advance_time(GameState.HOURS_PER_DAY * ShopSystem.INVESTMENT_DAYS)
+		var paid: Dictionary = ShopSystem.collect_investment()
+		if int(paid.get("payout", 0)) != 150:
+			_fail("a reloaded investment paid %d, expected 150" % int(paid.get("payout", 0)))
+	GameState.investments.clear()
 	_done()

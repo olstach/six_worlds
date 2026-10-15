@@ -100,6 +100,22 @@ const SHOP_PURSE_DEFAULT: int = 800
 const SETTLEMENT_SKILL_CAP: Dictionary = {1: 2, 2: 3, 3: 5}
 const CAPITAL_SKILL_CAP: int = 7
 
+# INVESTMENT (Trade 4): leave gold with a settlement, come back for half again.
+# The perk says "after several in-game days"; seven is a FIRST-PASS BALANCE
+# NUMBER, chosen to match RESTOCK_DAYS so a week is the one rhythm a shop
+# keeps. Revisit once someone has actually played a life with it.
+const INVESTMENT_PERK: String = "investment"
+const INVESTMENT_DAYS: int = 7
+const INVESTMENT_RETURN: float = 1.5     # 150% of the stake comes back
+const INVESTMENT_MIN: int = 50           # smallest stake a place will bother with
+const INVESTMENT_STEP: int = 50          # the amount picker moves in these steps
+# How many investments may be outstanding at once, across the whole world.
+# One, because the next perk in the tree — `diversified_portfolio`, "maintain
+# up to 3 investments simultaneously" — only means something if the base perk
+# allows fewer. One overall is also, necessarily, one per settlement. When
+# diversified_portfolio is built it raises this (and the return to 200%).
+const INVESTMENT_MAX_OUTSTANDING: int = 1
+
 # Current active shop (set when entering a shop)
 var _current_shop: Dictionary = {}
 
@@ -110,6 +126,9 @@ var _shop_types: Dictionary = {}
 
 func _ready() -> void:
 	_load_shop_database()
+	# The day tick is where an investment matures. GameState fires it; the
+	# lunar calendar in the overworld listens to the same signal.
+	GameState.day_changed.connect(_on_day_changed)
 	print("ShopSystem initialized with ", _shop_database.size(), " shops")
 
 
@@ -1001,6 +1020,122 @@ func _adjust_shop_purse(delta: int) -> void:
 	get_shop_purse()  # ensures the entry exists and is fresh
 	var purse: Dictionary = GameState.shop_purses[object_id]
 	purse["gold"] = maxi(0, int(purse.get("gold", 0)) + delta)
+
+
+# ============================================
+# INVESTMENT (the Trade 4 perk)
+#
+# The ledger lives in GameState.investments so it is saved and is wiped by a
+# death; the rules live here, beside the purse, because both are keyed by the
+# shop's map object. A settlement has at most one shop (the generator marks it
+# `has_shop`), so "this shop" and "this settlement" are the same key.
+# ============================================
+
+## Whether anyone in the party has the Investment perk. Party-wide, like the
+## camp activities' `perk_req`: the merchant in the group does the talking.
+func party_can_invest() -> bool:
+	for character in CharacterSystem.get_party():
+		if PerkSystem and PerkSystem.has_perk(character, INVESTMENT_PERK):
+			return true
+	return false
+
+
+## The investment standing at the shop that is open now, or {} if none.
+func get_investment_here() -> Dictionary:
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	if object_id.is_empty():
+		return {}
+	return GameState.investments.get(object_id, {})
+
+
+## An investment is ready once its due day has come. Compared rather than
+## counted down, so skipping several days at once (a long rest, a portal)
+## matures it just the same.
+func is_investment_mature(investment: Dictionary) -> bool:
+	return GameState.current_day >= int(investment.get("due_day", 0))
+
+
+## Whether the party may invest at the shop that is open now.
+## Returns {"ok": bool, "reason": String}; the reason is player-facing.
+func can_invest_here() -> Dictionary:
+	if _current_shop.is_empty():
+		return {"ok": false, "reason": "No shop is open."}
+	# Only a place can be invested in. A shop met on the open road (an event
+	# shop) has no settlement and no map object to come back to.
+	if str(_current_shop.get("_object_id", "")).is_empty() or get_settlement_name().is_empty():
+		return {"ok": false, "reason": "There is no settlement here to invest in."}
+	if not party_can_invest():
+		return {"ok": false, "reason": "Nobody in the party knows how to invest."}
+	if not get_investment_here().is_empty():
+		return {"ok": false, "reason": "You already have money working here."}
+	if GameState.investments.size() >= INVESTMENT_MAX_OUTSTANDING:
+		return {"ok": false, "reason": "Your money is already tied up elsewhere."}
+	if GameState.get_gold() < INVESTMENT_MIN:
+		return {"ok": false, "reason": "You need at least %d gold to invest." % INVESTMENT_MIN}
+	return {"ok": true, "reason": ""}
+
+
+## Leave `amount` gold with this settlement. It comes back as
+## amount * INVESTMENT_RETURN once INVESTMENT_DAYS have passed, collected the
+## next time the party opens this shop.
+func invest(amount: int) -> Dictionary:
+	var check: Dictionary = can_invest_here()
+	if not check.ok:
+		return {"success": false, "reason": check.reason}
+	if amount < INVESTMENT_MIN:
+		return {"success": false, "reason": "The smallest stake is %d gold." % INVESTMENT_MIN}
+	if not GameState.spend_gold(amount):
+		return {"success": false, "reason": "You cannot afford that."}
+
+	var object_id: String = str(_current_shop.get("_object_id", ""))
+	# The payout is fixed when the money goes in, so a later change to
+	# INVESTMENT_RETURN cannot reach back into a bet already placed.
+	var investment: Dictionary = {
+		"amount": amount,
+		"payout": int(round(amount * INVESTMENT_RETURN)),
+		"due_day": GameState.current_day + INVESTMENT_DAYS,
+		"settlement": get_settlement_name(),
+		"announced": false,
+	}
+	GameState.investments[object_id] = investment
+	GameState.append_overworld_log("Invested %d gold in %s. It will return %d in %d days."
+		% [amount, investment.settlement, investment.payout, INVESTMENT_DAYS])
+	return {"success": true, "amount": amount, "payout": investment.payout,
+		"due_day": investment.due_day}
+
+
+## Pay out the investment at the shop that is open now, if it has matured.
+## The shop UI calls this when the shop opens, so walking in is collecting —
+## and collecting needs no perk: the money is owed whoever comes for it.
+## Returns {"collected": bool, "payout": int, "settlement": String,
+##          "days_left": int}. days_left > 0 means it is still growing.
+func collect_investment() -> Dictionary:
+	var investment: Dictionary = get_investment_here()
+	if investment.is_empty():
+		return {"collected": false, "payout": 0, "settlement": "", "days_left": 0}
+	if not is_investment_mature(investment):
+		return {"collected": false, "payout": 0,
+			"settlement": str(investment.get("settlement", "")),
+			"days_left": int(investment.get("due_day", 0)) - GameState.current_day}
+
+	var payout: int = int(investment.get("payout", 0))
+	GameState.investments.erase(str(_current_shop.get("_object_id", "")))
+	GameState.add_gold(payout)
+	var place: String = str(investment.get("settlement", ""))
+	GameState.append_overworld_log("Collected %d gold from your investment in %s." % [payout, place])
+	return {"collected": true, "payout": payout, "settlement": place, "days_left": 0}
+
+
+## Day tick: say once, in the overworld log, that an investment is ready.
+## Nothing is paid here — the party has to go back for it.
+func _on_day_changed(_new_day: int) -> void:
+	for object_id in GameState.investments:
+		var investment: Dictionary = GameState.investments[object_id]
+		if bool(investment.get("announced", false)) or not is_investment_mature(investment):
+			continue
+		investment["announced"] = true
+		GameState.append_overworld_log("Your investment in %s has matured. Return to collect %d gold."
+			% [str(investment.get("settlement", "a settlement")), int(investment.get("payout", 0))])
 
 
 ## Whether any shop's rack is still holding this generated item. `close_shop`

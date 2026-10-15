@@ -814,7 +814,7 @@ timed terrain tiles), `create_images` / `smoke_and_mirrors` (illusion units),
 `the_invisible_hand`, `guard_ally` / `stalwart_guardian`, `choose_one` /
 `improvised_masterpiece`, `attune_charm`, `trap_sense`.
 
-**Need economy/social systems:** `investment` / `trade_empire` (passive income),
+**Need economy/social systems:** `trade_empire` (passive income; `investment` built 2026-10-15),
 `supply_cache` / `extended_march` (supply action), `guided_practice` /
 `the_lineage_continues` (companion spell-teaching), `black_market_contacts` /
 `fence` (black-market tier), `patron_of_the_arts` (renown).
@@ -850,7 +850,7 @@ nearby" had nothing to say it with. And `_resolve_buff_allies_all` buffed the
 whole team whatever radius the skill named, so Improvised Masterpiece's
 "within 3 tiles" was decoration and a bard three rooms away was inspiring.
 
-### The overworld perks: five built, two waiting on economy (2026-09-17)
+### The overworld perks: six built, one waiting on economy (2026-09-17, investment 2026-10-15)
 
 Flagged `non_combat` in b746bc1 so they stopped rendering as dead buttons in
 the combat panel — which did not implement them. Five are camp activities now,
@@ -877,9 +877,10 @@ already gates on a perk (`perk_req`, added 2026-09-16):
   than expiring on a clock. Twice between rests, as the perk says; the count
   resets when the party rests.
 
-**The two left are economy, and each wants a system rather than a wiring.**
+**The two left were economy, and each wanted a system rather than a wiring.**
+Investment is built (2026-10-15); supply_and_demand still waits.
 
-- [ ] **`investment`** (Trade 4) — "Invest gold in a settlement. Returns 150%
+- [x] **`investment`** (Trade 4) — "Invest gold in a settlement. Returns 150%
       of the invested amount after several in-game days." Needs a store of
       outstanding investments (settlement, amount, due day) and a day-boundary
       hook to mature them. TimeSystem already advances days and the lunar
@@ -898,6 +899,26 @@ already gates on a perk (`perk_req`, added 2026-09-16):
       dies with you. That is a feature rather than a loss: an investment is a
       bet that you will live long enough to collect, which is the most
       Buddhist thing in the economy.
+
+      **[x] Built 2026-10-15.** `GameState.investments` is the ledger, copied
+      from `shop_purses` exactly as planned: keyed by the shop's map object
+      (one shop per settlement, so one key per place), cleared by
+      `reset_for_new_life`, carried through the save. The rules sit beside
+      the purse in ShopSystem. A party member with the perk gets an Invest
+      bar in a settlement's shop — a SpinBox in steps of 50, never more than
+      you carry — and the stake comes back at 150% after
+      `INVESTMENT_DAYS = 7`, a first-pass number chosen to match the rack's
+      week. Walking back into that shop is collecting, and collecting needs
+      no perk: if the merchant died the money is still owed. The day tick
+      writes one line to the overworld log when it matures, and pays nothing
+      — you have to go back.
+
+      **One outstanding investment in the whole world, not one per
+      settlement.** `diversified_portfolio` (Trade, after this) promises "up
+      to 3 investments simultaneously", which only means something if the
+      base perk allows fewer; `INVESTMENT_MAX_OUTSTANDING` is the number it
+      will raise, along with the return to 200%. Three checks in
+      `verify_economy_bonuses`: mature-and-collect, death, save.
 - [ ] **`supply_and_demand`** (Trade 5) — "Check available trade goods between
       known settlements. Buying low and selling high grants triple the normal
       gold difference." Needs a trade-goods model: per-settlement prices that
