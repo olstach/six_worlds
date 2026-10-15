@@ -2252,31 +2252,10 @@ func _update_turn_order_display() -> void:
 		turn_order_list.add_child(label)
 
 
-## Build tooltip text for a turn order entry
+## Build tooltip text for a turn order entry: name, HP, initiative and
+## statuses. The text itself is built in TooltipText.
 func _build_turn_order_tooltip(unit: CombatUnit) -> String:
-	var lines: Array[String] = []
-
-	# HP / Mana / Actions
-	lines.append("HP: %d/%d" % [unit.current_hp, unit.max_hp])
-	if unit.max_mana > 0:
-		lines.append("Mana: %d/%d" % [unit.current_mana, unit.max_mana])
-	lines.append("Actions: %d/%d" % [unit.actions_remaining, unit.max_actions])
-
-	# Initiative (explains position in turn order)
-	var initiative = unit.get_initiative() if unit.has_method("get_initiative") else 0
-	if initiative > 0:
-		lines.append("Initiative: %d" % initiative)
-
-	# Active status effects
-	if not unit.status_effects.is_empty():
-		lines.append("")  # blank separator
-		for effect in unit.status_effects:
-			var sname: String = effect.get("status", "?")
-			var dur: int = effect.get("duration", 0)
-			var dur_str = " (%d turn%s)" % [dur, "s" if dur != 1 else ""] if dur > 0 else ""
-			lines.append(sname.replace("_", " ") + dur_str)
-
-	return "\n".join(lines)
+	return TooltipText.turn_order_unit(unit)
 
 
 ## Show unit info panel with colored bars for HP, mana, stamina
@@ -2327,6 +2306,11 @@ func _show_unit_info(unit: CombatUnit) -> void:
 
 			var status_row = HBoxContainer.new()
 			status_row.add_theme_constant_override("separation", 4)
+			# Hover the row for the full story: description, turns left, what
+			# it does and how to cure it. The row must accept the mouse for a
+			# tooltip to show; its two labels pass the hover up to it.
+			status_row.mouse_filter = Control.MOUSE_FILTER_STOP
+			status_row.tooltip_text = TooltipText.status(status_name, effect, def)
 
 			# Status name label (colored by buff/debuff)
 			var name_lbl = Label.new()
@@ -2476,39 +2460,20 @@ func _show_tile_tooltip(grid_pos: Vector2i) -> void:
 	if current_action_mode == ActionMode.MOVE:
 		return
 
-	var parts: Array[String] = []
-
-	# Obstacle info
-	var obs_info = combat_grid.get_obstacle_at(grid_pos)
-	if not obs_info.is_empty():
-		var obs_text = obs_info.name
-		if obs_info.hp > 0:
-			obs_text += " (HP: %d)" % obs_info.hp
-		if obs_info.cover_bonus > 0:
-			obs_text += " — +%d%% cover" % obs_info.cover_bonus
-		parts.append(obs_text)
-
-	# Height info
-	var tile_height = combat_grid.get_tile_height(grid_pos)
-	if tile_height > 0:
-		parts.append("Height %d — +%d%% accuracy, +%d range" % [tile_height, tile_height * 5, tile_height])
-
-	# Terrain effect info
-	var tile = combat_grid.tiles.get(grid_pos)
-	if tile != null and tile.effect != combat_grid.TerrainEffect.NONE:
-		var eff_name = combat_grid.get_effect_name(tile.effect)
-		var eff_text = eff_name
-		if tile.effect_duration > 0:
-			eff_text += " (%d turn%s)" % [tile.effect_duration, "s" if tile.effect_duration != 1 else ""]
-		parts.append(eff_text)
-
-	if parts.is_empty():
+	# Ground, passability, obstacle, height, hazard and zones — built in
+	# TooltipText so the wording can be checked by tools/verify_tooltips.gd.
+	var text: String = TooltipText.tile(combat_grid, grid_pos, CombatManager.zones_at(grid_pos))
+	if text == "":
 		return
 
 	_tile_tooltip = Label.new()
-	_tile_tooltip.text = "\n".join(parts)
+	_tile_tooltip.text = text
 	_tile_tooltip.add_theme_font_size_override("font_size", 11)
 	_tile_tooltip.add_theme_color_override("font_color", Color(0.9, 0.85, 0.6))
+	# A dark outline keeps several lines readable over busy tiles.
+	_tile_tooltip.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	_tile_tooltip.add_theme_constant_override("outline_size", 4)
+	_tile_tooltip.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_tile_tooltip.position = combat_grid.grid_to_world(grid_pos) + Vector2(2, -28)
 	_tile_tooltip.z_index = 100
 	combat_grid.add_child(_tile_tooltip)
@@ -4589,7 +4554,9 @@ func _gather_all_statuses(unit: CombatUnit) -> Array[Dictionary]:
 			"name": status_name.replace("_", " "),
 			"type": stype,
 			"duration": dur_text,
-			"source": "status"
+			"source": "status",
+			# Full hover text — description, turns left, effects, cure.
+			"tooltip": TooltipText.status(status_name, effect, def),
 		})
 
 	# Equipment-granted persistent effects (talisman perks)
@@ -4672,6 +4639,12 @@ func _create_examine_status_row(status_info: Dictionary) -> HBoxContainer:
 	dur_lbl.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 	dur_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	row.add_child(dur_lbl)
+
+	# Combat statuses carry a full tooltip; equipment rows do not need one.
+	var tip: String = str(status_info.get("tooltip", ""))
+	if tip != "":
+		row.mouse_filter = Control.MOUSE_FILTER_STOP
+		row.tooltip_text = tip
 
 	return row
 

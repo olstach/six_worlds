@@ -137,6 +137,20 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		set_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		set_row.add_child(set_label)
 
+	# Ritual coding (ritual implements only). The metal says which element the
+	# implement serves and the form says which practice it is an instrument
+	# of — a Copper Phurba serves Fire magic and Sorcery. TooltipText reads
+	# both from equipment_tables.json; it returns "" for anything else.
+	var ritual_text: String = TooltipText.ritual_coding(item)
+	if ritual_text != "":
+		var ritual_label := Label.new()
+		ritual_label.text = ritual_text
+		ritual_label.add_theme_font_size_override("font_size", 11)
+		ritual_label.add_theme_color_override("font_color", Color(0.95, 0.75, 0.45))
+		ritual_label.custom_minimum_size.x = 240
+		ritual_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		stats_container.add_child(ritual_label)
+
 	# Charm / consumable effects
 	var effect = item.get("effect", {})
 	if not effect.is_empty() and item.get("type", "") == "charm":
