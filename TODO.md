@@ -105,8 +105,19 @@ Each of these is an hour or less and touches one system.
   roll a real birth and apply its modifiers, which makes the inconsistency
   easier to fix and more obviously wrong to leave.
 - [ ] **Projectile sprites** — arrows/bolts/firebombs are a `Line2D` flash.
-- [ ] **Tooltips** — `item_tooltip.gd` covers items; status effects, terrain
-  tiles and turn-order icons have none.
+- [x] ~~**Tooltips**~~ — **done 2026-10-15.** The line was half stale: the
+  unit's status icons, the turn order and the tile hover label all had some
+  text already, but each wrote its own, none read a status's `description`,
+  and the tile label never said what the ground was or what a hazard did.
+  All of it is now built in one place, `scripts/ui/tooltip_text.gd`
+  (`TooltipText`), and used by the status icons over a unit, the status rows
+  in the unit info panel and the examine window, the turn-order names (name,
+  HP, initiative, statuses) and the floating tile label (ground, passability,
+  obstacle, height, hazard with what it does at turn start and which school
+  it feeds, zones — hidden traps excluded). `tools/verify_tooltips.tscn`
+  builds the strings from the real tables and prints samples. The terrain
+  effect wording mirrors `_process_terrain_effects()` by hand — change one,
+  change both.
 - [ ] **Upgrade selection popup** (choose 1 of 4) — no scene or system exists.
 - [ ] **Spell impact sounds** for Air, Water, Earth (fire + generic exist).
 - [ ] **Background/realm music** — none.
@@ -1146,12 +1157,16 @@ but may not be what the game wants.
       longlife caps carry `passive_aura: "longlife_hp"` as of 2026-09-13 with
       no consumer yet — the first thing to wire.
 
-- [ ] **Ritual implement coding is declared but not yet player-facing.** The
-      tables now say copper serves fire and the phurba serves sorcery, and the
-      verifier enforces it — but a tooltip still shows a Copper Phurba without
-      explaining that it is the instrument for a fireball. Reading
-      `ritual_metals` and `ritual_implements` into the item tooltip is the step
-      that makes the system legible to the player rather than only to us.
+- [x] ~~**Ritual implement coding is declared but not yet player-facing.**~~
+      **Done 2026-10-15.** The item tooltip now reads `ritual_metals` and
+      `ritual_implements` and says it in a short gold block: "Copper serves
+      Fire magic. / The phurba is an instrument of Sorcery. / Spells of both,
+      such as Ember, Firebolt and 18 more, draw on each. / Consecration: Plain
+      (1 of 5)". The metal line only appears when the item really carries that
+      metal's skill — the bronze melong does not, so it only says it turns
+      magic aside. The example spells are the lowest-level ones tagged with
+      exactly those two schools, so Fireball itself is not the one named; the
+      wording is Claude's and wants Olaf's pass.
 
 - [ ] **Leadership should touch companion psychology.** `morale_pct` was
       removed 2026-09-12 as a relic: it was an early sketch that grew into
