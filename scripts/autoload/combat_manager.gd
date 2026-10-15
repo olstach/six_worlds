@@ -6405,7 +6405,10 @@ func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: 
 						target.aura_save_passes[aura_id] = passes + 1
 					return
 
-			_apply_status_effect(target, status_name, int(payload.get("duration", 2)))
+			# The aura's owner is the source where there is one (a ground
+			# zone has none, and passes null), so a burning or poisoning aura
+			# scales with its owner's burning_damage_pct / poison_damage_pct.
+			_apply_status_effect(target, status_name, int(payload.get("duration", 2)), 0, source)
 			status_effect_triggered.emit(source, aura["name"], 0, "aura")
 
 		"heal":
@@ -6586,12 +6589,17 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 func _process_status_weapon_enchants(attacker: Node, defender: Node, result: Dictionary) -> void:
 	if not "status_effects" in attacker:
 		return
-	# Map effect strings to their damage element
+	# Map effect strings to the damage TYPE they deal. The keys are named after
+	# schools (air, water, earth), but schools are not damage types: these
+	# dealt `air`, `water` and `earth` until 2026-10-15, which no resistance
+	# matches, so Electrified_Weapon's bonus landed unresisted. The value is
+	# what that school's spells actually deal (damage_types.json), and
+	# validate_data.py checks these literals.
 	var enchant_map = {
 		"adds_fire_damage_to_attacks": "fire",
-		"adds_air_damage_to_attacks": "air",
-		"adds_water_damage_to_attacks": "water",
-		"adds_earth_damage_to_attacks": "earth",
+		"adds_air_damage_to_attacks": "lightning",
+		"adds_water_damage_to_attacks": "ice",
+		"adds_earth_damage_to_attacks": "crushing",
 		"adds_space_damage_to_attacks": "space",
 		"adds_poison_damage_to_attacks": "poison",
 		"adds_black_damage_to_attacks": "black",
@@ -6677,13 +6685,22 @@ func _process_terrain_effects(unit: Node) -> void:
 			terrain_damage.emit(unit, value, effect_name)
 
 		CombatGrid.TerrainEffect.POISON:
-			apply_damage(unit, value, "physical")
+			# Poison ground deals POISON damage, so poison resistance answers it
+			# and armour does not — the same type the Poisoned status ticks as.
+			# (It dealt `physical` until 2026-10-15: armour soaked venom.)
+			apply_damage(unit, value, "poison")
 			if not unit.has_status("Poisoned"):
 				_apply_status_effect(unit, "Poisoned", 3)
 			terrain_damage.emit(unit, value, effect_name)
 
 		CombatGrid.TerrainEffect.ACID:
-			apply_damage(unit, value, "physical")
+			# There is no `acid` damage type (see damage_types.json). The two
+			# candidates were poison and "physical that ignores armour"; poison
+			# wins because the acid bomb and acid flask in items.json already
+			# deal `poison`, and the puddle they leave should be the same stuff
+			# as the splash. It is also not magic, so armour and Yoga's magic
+			# resistance both rightly do nothing against it.
+			apply_damage(unit, value, "poison")
 			terrain_damage.emit(unit, value, effect_name)
 
 		CombatGrid.TerrainEffect.CURSED:
@@ -6704,9 +6721,16 @@ func _process_terrain_effects(unit: Node) -> void:
 				_apply_status_effect(unit, "Slowed", 1)
 
 		CombatGrid.TerrainEffect.WET:
-			# Wet ground slows and makes units vulnerable to ice/air damage
+			# Wet ground slows you and leaves you Soaked: 25% vulnerable to
+			# lightning until your next turn (statuses.json says why lightning
+			# and not ice). The comment here promised the vulnerability for
+			# months while the code only slowed; it goes through the
+			# structured grants_vulnerability on the status, which
+			# Resistance.resolve() already reads, rather than a special case.
 			if not unit.has_status("Slowed"):
 				_apply_status_effect(unit, "Slowed", 1)
+			if not unit.has_status("Soaked"):
+				_apply_status_effect(unit, "Soaked", 1)
 			terrain_damage.emit(unit, 0, effect_name)
 
 		CombatGrid.TerrainEffect.STORMY:
@@ -7277,7 +7301,13 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 			})
 
 		# Apply status effects
-		for status_entry in statuses:
+		for raw_entry in statuses:
+			# A bomb may list a status as a bare name ("Blinded") with one
+			# shared `status_duration`, or as {name, duration, chance}. The
+			# flashbang and acid flask use the bare form, and `.get()` on a
+			# String is a script error, so turn it into the long form first.
+			var status_entry: Dictionary = raw_entry if raw_entry is Dictionary \
+				else {"name": str(raw_entry), "duration": int(effect.get("status_duration", 2))}
 			# The thrower's Ritual makes it land more often.
 			var chance: float = effective_status_chance(
 				user.character_data if "character_data" in user else {},
@@ -7285,7 +7315,10 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 			if randf() * 100.0 <= chance:
 				var status_name = status_entry.get("name", "")
 				var duration = status_entry.get("duration", 2)
-				_apply_status_effect(target, status_name, duration)
+				# The thrower is the source, so their Fire Magic / Alchemy
+				# (burning_damage_pct, poison_damage_pct) scales the burn or
+				# venom a bomb leaves, the same as one from a spell or blade.
+				_apply_status_effect(target, status_name, duration, 0, user)
 				unit_result.effects_applied.append({
 					"type": "status", "status": status_name, "duration": duration
 				})
@@ -10232,12 +10265,16 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	if not talisman_perks.is_empty():
 		var base_damage = result.get("damage", 0)
 
-		# Elemental brands: +X% of base damage as bonus elemental damage
+		# Elemental brands: +X% of base damage as bonus elemental damage.
+		# The second entry is a damage TYPE, not a school — Frost, Stone and
+		# Storm brands dealt `water`, `earth` and `air` until 2026-10-15, which
+		# nothing resists, so the brand's name is the guide: ice, crushing,
+		# lightning. validate_data.py checks these literals.
 		var brand_map = {
 			"fire_brand_minor": ["fire", 0.05], "fire_brand": ["fire", 0.10], "fire_brand_greater": ["fire", 0.15],
-			"water_brand_minor": ["water", 0.05], "water_brand": ["water", 0.10], "water_brand_greater": ["water", 0.15],
-			"earth_brand_minor": ["earth", 0.05], "earth_brand": ["earth", 0.10], "earth_brand_greater": ["earth", 0.15],
-			"air_brand_minor": ["air", 0.05], "air_brand": ["air", 0.10], "air_brand_greater": ["air", 0.15],
+			"water_brand_minor": ["ice", 0.05], "water_brand": ["ice", 0.10], "water_brand_greater": ["ice", 0.15],
+			"earth_brand_minor": ["crushing", 0.05], "earth_brand": ["crushing", 0.10], "earth_brand_greater": ["crushing", 0.15],
+			"air_brand_minor": ["lightning", 0.05], "air_brand": ["lightning", 0.10], "air_brand_greater": ["lightning", 0.15],
 			"space_brand_minor": ["space", 0.05], "space_brand": ["space", 0.10], "space_brand_greater": ["space", 0.15],
 			"phys_brand_minor": ["physical", 0.05], "phys_brand": ["physical", 0.10], "phys_brand_greater": ["physical", 0.15],
 			"poison_brand_minor": ["poison", 0.05], "poison_brand": ["poison", 0.10], "poison_brand_greater": ["poison", 0.15],
@@ -10257,7 +10294,9 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				if element == "poison":
 					var poison_chance = pct  # 5/10/15%
 					if randf() < poison_chance:
-						_apply_status_effect(defender, "Poisoned", 3)
+						# The attacker is the source, so their Alchemy's
+						# poison_damage_pct scales this venom like any other.
+						_apply_status_effect(defender, "Poisoned", 3, 0, attacker)
 
 		# Lifesteal: heal 15% of attack damage dealt (Blood Pact boosts all lifesteal by 25%)
 		if "lifesteal" in talisman_perks:

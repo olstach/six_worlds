@@ -16,7 +16,7 @@ extends Node
 var failures: int = 0
 var checks_run: int = 0
 var grid: CombatGrid
-const EXPECTED_CHECKS: int = 29
+const EXPECTED_CHECKS: int = 34
 
 
 func _ready() -> void:
@@ -62,6 +62,14 @@ func _ready() -> void:
 
 	# Enemies are built from a birth too, and keep what it resists.
 	_check_an_enemy_inherits_its_birth_resistances()
+	_check_an_enemy_inherits_its_birth_traits_resistances()
+
+	# The 2026-10-15 sweep: hazards, retaliation and statuses that named the
+	# wrong damage type, or no source.
+	_check_poison_and_acid_ground_deal_poison()
+	_check_retaliation_names_a_real_damage_type()
+	_check_wet_ground_soaks_you()
+	_check_bombs_auras_and_brands_name_their_source()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -285,11 +293,188 @@ func _check_an_enemy_inherits_its_birth_resistances() -> void:
 			"poison": 25,     # birth only
 			"fire": 0,        # neither
 		}
+		# Plus whatever the birth's TRAITS grant (an undead birth's Undead
+		# trait resists poison 25) — enemies have received those since
+		# 2026-10-15; the next check tests that on its own.
+		var from_traits: Dictionary = TraitSystem.get_resistances(enemy)
+		for key in expected:
+			expected[key] = int(expected[key]) + int(from_traits.get(key, 0))
 		for key in expected:
 			if int(res.get(key, 0)) != int(expected[key]):
 				_fail("enemy birth resistance: %s is %s, expected %d"
 					% [key, res.get(key, 0), expected[key]])
 	_done()
+
+
+## Most racial resistance lives on a birth's TRAITS, not its `resistances`
+## block — Undead resists poison and disease, Incorporeal physical. A player
+## gets them through TraitSystem.get_resistances() in update_derived_stats();
+## EnemySystem never ran that step, so an enemy ghost was as solid as a living
+## one. This gives every hungry-ghost birth the Incorporeal trait for the
+## length of one build, then puts the births back.
+func _check_an_enemy_inherits_its_birth_traits_resistances() -> void:
+	var originals: Dictionary = {}  # birth_id -> its starting_traits before the test
+	for birth_id in CharacterSystem._birth_data:
+		if String(birth_id).begins_with("_"):
+			continue
+		var data: Dictionary = CharacterSystem._birth_data[birth_id]
+		if data.get("realm", "") != "hungry_ghost":
+			continue
+		originals[birth_id] = data.get("starting_traits", [])
+		data["starting_traits"] = ["incorporeal"]
+
+	var enemy: Dictionary = EnemySystem._build_enemy(
+		"hg_skeleton_king", 500, "hungry_ghost", "dry_graveyards", true)
+
+	for birth_id in originals:
+		CharacterSystem._birth_data[birth_id]["starting_traits"] = originals[birth_id]
+
+	if originals.is_empty():
+		_fail("enemy trait resistance: no hungry_ghost births to test with")
+	elif not "incorporeal" in enemy.get("traits", []):
+		_fail("enemy trait resistance: the king did not get its birth's Incorporeal "
+			+ "trait at all, so this check proves nothing")
+	else:
+		# Archetype physical 20, plus whatever the traits it ended up with grant
+		# (Incorporeal's 50 at least).
+		var from_traits: int = int(TraitSystem.get_resistances(enemy).get("physical", 0))
+		var physical: int = int(enemy.get("resistances", {}).get("physical", 0))
+		if from_traits < 50:
+			_fail("enemy trait resistance: Incorporeal no longer grants physical 50 "
+				+ "— update this check")
+		if physical != 20 + from_traits:
+			_fail("enemy trait resistance: an Incorporeal skeleton king has physical "
+				+ "%d, expected archetype 20 + traits %d" % [physical, from_traits])
+	_done()
+
+
+## Poison ground dealt `physical`: armour soaked it and poison resistance did
+## nothing, while the Poisoned status it applies ticked as poison. Acid ground
+## the same. Both are poison now (acid because the acid bomb and flask already
+## dealt poison), so a poison-immune unit stands in either unharmed.
+func _check_poison_and_acid_ground_deal_poison() -> void:
+	var immune := _make_unit(Vector2i(12, 12))
+	var bare := _make_unit(Vector2i(13, 12), 1)
+	immune.resistances = {"poison": 100}
+	for effect in [CombatGrid.TerrainEffect.POISON, CombatGrid.TerrainEffect.ACID]:
+		var label: String = grid.get_effect_name(effect)
+		for unit in [immune, bare]:
+			unit.status_effects.clear()
+			unit.current_hp = unit.max_hp
+			grid.add_terrain_effect(unit.grid_position, effect, 3)
+			CombatManager._process_terrain_effects(unit)
+		if immune.current_hp < immune.max_hp:
+			_fail("a poison-immune unit lost %d HP standing in %s — it is not dealing poison"
+				% [immune.max_hp - immune.current_hp, label])
+		if bare.current_hp >= bare.max_hp:
+			_fail("%s did nothing to a bare unit, so the check above proves nothing" % label)
+		grid.remove_terrain_effect(immune.grid_position)
+		grid.remove_terrain_effect(bare.grid_position)
+	_cleanup([immune, bare])
+	_done()
+
+
+## Every retaliation names a real damage type. Storm_Lord and Lightning_Form
+## struck back with `air` for months after air stopped being one, so the
+## shock landed unresisted and not as magic.
+func _check_retaliation_names_a_real_damage_type() -> void:
+	for status_name in CombatManager._status_effects:
+		var retal: Dictionary = CombatManager._status_effects[status_name].get("retaliation", {})
+		if retal.is_empty() or not retal.has("element"):
+			continue
+		if not DamageType.exists(str(retal["element"])):
+			_fail("%s retaliates with '%s', which is not a damage type"
+				% [status_name, str(retal["element"])])
+	for status_name in ["Storm_Lord", "Lightning_Form"]:
+		var retal: Dictionary = CombatManager.get_status_definition(status_name).get("retaliation", {})
+		if str(retal.get("element", "")) != "lightning":
+			_fail("%s retaliates with '%s', expected lightning"
+				% [status_name, str(retal.get("element", ""))])
+	_done()
+
+
+## Wet ground promised a vulnerability in two comments and only slowed. It
+## Soaks you now: +25% lightning taken, through the status's
+## grants_vulnerability, and nothing else.
+func _check_wet_ground_soaks_you() -> void:
+	var unit := _make_unit(Vector2i(14, 14))
+	if CombatManager.get_status_definition("Soaked").is_empty():
+		_fail("the Soaked status is missing from statuses.json")
+		_cleanup([unit])
+		_done()
+		return
+	grid.add_terrain_effect(unit.grid_position, CombatGrid.TerrainEffect.WET, 3)
+	CombatManager._process_terrain_effects(unit)
+	if not unit.has_status("Soaked"):
+		_fail("standing on wet ground did not Soak the unit")
+	if not unit.has_status("Slowed"):
+		_fail("wet ground no longer slows")
+	if not is_equal_approx(Resistance.total(unit, "lightning"), -25.0):
+		_fail("a Soaked unit's lightning resistance is %.0f, expected -25"
+			% Resistance.total(unit, "lightning"))
+	for other in ["ice", "fire", "physical"]:
+		if Resistance.total(unit, other) != 0.0:
+			_fail("Soaked changed %s resistance to %.0f — it is lightning only"
+				% [other, Resistance.total(unit, other)])
+	grid.remove_terrain_effect(unit.grid_position)
+	_cleanup([unit])
+	_done()
+
+
+## A status applied with no source cannot be scaled by whoever applied it:
+## burning_damage_pct and poison_damage_pct are read off the source entry.
+## Bombs, aura grant_status and the poison talisman brand all passed none.
+func _check_bombs_auras_and_brands_name_their_source() -> void:
+	var thrower := _make_unit(Vector2i(16, 16), 0)
+	thrower.character_data["skills"] = {"alchemy": 5}  # 3+ means no scatter
+	var victim := _make_unit(Vector2i(17, 16), 1)
+
+	# 1. A bomb, in the long status form and the bare-name form (the flashbang
+	#    and acid flask list bare names, and `.get()` on a String was a script
+	#    error that stopped the bomb half-way).
+	var bomb: Dictionary = {"effect": {"damage": 0, "aoe_radius": 1,
+		"statuses": [{"name": "Burning", "duration": 3, "chance": 100}, "Blinded"],
+		"status_duration": 2}}
+	CombatManager._use_bomb(thrower, bomb, victim.grid_position)
+	if _source_of(victim, "Burning") != thrower:
+		_fail("a bomb's Burning does not name the thrower as its source")
+	if not victim.has_status("Blinded"):
+		_fail("a bomb listing a bare status name did not apply it")
+	victim.status_effects.clear()
+
+	# 2. An aura's grant_status, from a unit that owns the aura.
+	var aura: Dictionary = {"id": "_probe", "name": "Probe Aura",
+		"source_kind": "test", "source_id": "probe"}
+	CombatManager._apply_aura_payload(thrower, victim, aura,
+		{"kind": "grant_status", "status": "Poisoned", "duration": 2}, 1.0)
+	if _source_of(victim, "Poisoned") != thrower:
+		_fail("an aura's granted Poisoned does not name the aura's owner as source")
+	victim.status_effects.clear()
+
+	# 3. The poison talisman brand: 15% a hit, so swing until it lands.
+	ItemSystem._runtime_items["_probe_venom_charm"] = {
+		"name": "Probe Charm", "passive": {"perk": "poison_brand_greater"}}
+	thrower.character_data["equipment"]["trinket1"] = "_probe_venom_charm"
+	for _i in 300:
+		CombatManager._process_on_hit_perks(thrower, victim, {"hit": true, "damage": 20})
+		if victim.has_status("Poisoned"):
+			break
+	if not victim.has_status("Poisoned"):
+		_fail("300 hits with a Greater Venom brand never poisoned anyone")
+	elif _source_of(victim, "Poisoned") != thrower:
+		_fail("a poison brand's Poisoned does not name the attacker as its source")
+	thrower.character_data["equipment"]["trinket1"] = ""
+	ItemSystem._runtime_items.erase("_probe_venom_charm")
+	_cleanup([thrower, victim])
+	_done()
+
+
+## The `source` on a unit's entry for `status`, or null.
+func _source_of(unit: CombatUnit, status: String) -> Variant:
+	for effect in unit.status_effects:
+		if str(effect.get("status", "")) == status:
+			return effect.get("source", null)
+	return null
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────

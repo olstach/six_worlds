@@ -248,12 +248,12 @@ static func turn_order_unit(unit: Node) -> String:
 ## `%d` is the tile's effect_value (its damage or healing).
 const TERRAIN_EFFECT_TEXT: Dictionary = {
 	CombatGrid.TerrainEffect.FIRE: "%d fire damage and Burning at turn start",
-	CombatGrid.TerrainEffect.POISON: "%d damage and Poisoned at turn start",
-	CombatGrid.TerrainEffect.ACID: "%d damage at turn start",
+	CombatGrid.TerrainEffect.POISON: "%d poison damage and Poisoned at turn start",
+	CombatGrid.TerrainEffect.ACID: "%d poison damage at turn start",
 	CombatGrid.TerrainEffect.CURSED: "%d black damage at turn start, 30%% chance of Cursed",
 	CombatGrid.TerrainEffect.BLESSED: "Heals %d at turn start",
 	CombatGrid.TerrainEffect.ICE: "Slowed at turn start; costs extra movement",
-	CombatGrid.TerrainEffect.WET: "Slowed at turn start; costs extra movement",
+	CombatGrid.TerrainEffect.WET: "Slowed and Soaked (+25% lightning damage taken) at turn start; costs extra movement",
 	CombatGrid.TerrainEffect.STORMY: "%d lightning damage at turn start, 20%% chance of Stunned",
 	CombatGrid.TerrainEffect.VOID: "%d space damage at turn start",
 	CombatGrid.TerrainEffect.SMOKE: "Blocks line of sight",
