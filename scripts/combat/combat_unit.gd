@@ -393,6 +393,7 @@ func _build_status_tooltip() -> String:
 	return TooltipText.status_list(status_effects)
 
 
+
 # ============================================
 # STAT GETTERS
 # ============================================

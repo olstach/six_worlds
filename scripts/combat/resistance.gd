@@ -40,54 +40,6 @@ const DECLARED_IMMUNITY: float = 100.0
 ## And absorption is capped here, so nothing heals for more than the hit.
 const ABSORPTION_CAP: float = 200.0
 
-## The named status-effect strings that mean "+N% resistance to X", each used
-## by exactly one status. Seven of them are different spellings of "+N%
-## physical".
-##
-## This table is a way station, not a destination: it turns twenty hand-written
-## `if` branches into one lookup so that migrating the statuses to the
-## structured `grants_resistance` they should have been using all along is a
-## DATA change with nothing to rewrite here. `amount` may be overridden by a
-## field on the status definition, which is how Fire_Vulnerable_50 carries its
-## own number.
-const LEGACY_EFFECTS: Dictionary = {
-	# Physical, seven ways.
-	"physical_resist_50":                  {"type": "physical", "amount": 50.0},
-	"physical_damage_negation_50_percent": {"type": "physical", "amount": 50.0},
-	"physical_damage_reduction_25":        {"type": "physical", "amount": 25.0},
-	"physical_damage_reduction_50":        {"type": "physical", "amount": 50.0},
-	"physical_damage_reduction_75":        {"type": "physical", "amount": 75.0},
-	"physical_resistance_plus_25":         {"type": "physical", "amount": 25.0},
-	"physical_resistance_plus_50":         {"type": "physical", "amount": 50.0},
-	"vulnerable_to_physical":              {"type": "physical", "amount": -50.0},
-	"physical_immunity":                   {"type": "physical", "amount": 100.0},
-	"physical_immune":                     {"type": "physical", "amount": 100.0},
-
-	# Elements.
-	"fire_resistance_plus_25":   {"type": "fire",  "amount": 25.0},
-	"fire_resistance_minus_50":  {"type": "fire",  "amount": -50.0},
-	"fire_damage_immunity":      {"type": "fire",  "amount": 100.0},
-	"fire_vulnerability":        {"type": "fire",  "amount": -50.0, "field": "vulnerability_pct", "negated": true},
-	# The four strings below still say `water` and `air` because that is what
-	# the statuses declaring them say. The TYPES those used to name are gone:
-	# water damage was impact, ice and drowning wearing one name, and air
-	# damage was lightning every time it was dealt. Fluid Form's immunity is to
-	# ice and Lightning Form's is to lightning.
-	"water_resistance_minus_25": {"type": "ice",       "amount": -25.0},
-	"water_resistance_minus_50": {"type": "ice",       "amount": -50.0},
-	"water_damage_immunity":     {"type": "ice",       "amount": 100.0},
-	"air_damage_immunity":       {"type": "lightning", "amount": 100.0},
-	"air_immune":                {"type": "lightning", "amount": 100.0},
-
-	# Everything that is not force.
-	"elemental_resistance_25": {"scope": "non_physical", "amount": 25.0},
-	"all_element_resistance":  {"scope": "non_physical", "amount": 25.0, "field": "resistance_pct"},
-	"magic_resistance_bonus":  {"scope": "non_physical", "amount": 15.0},
-
-	# And everything.
-	"immune_to_all_damage": {"scope": "all", "amount": 100.0},
-}
-
 ## Afflictions a unit can resist the ONSET of, rather than the damage. These are
 ## things that happen to you: you resist catching them, not the harm once
 ## caught. `disease` and `poison` are read by WoundSystem; `bleed` is read by
@@ -125,6 +77,23 @@ static func resists_affliction(unit: Node, affliction: String) -> bool:
 	if pct <= 0.0:
 		return false
 	return randf() < clampf(pct / 100.0, 0.0, AFFLICTION_CAP)
+
+
+## Resistance to HOW a hit arrived rather than what it is made of. `ranged` is
+## the only one so far: Silk armour turns arrows whatever their heads are made
+## of. It is not a damage type — it sits in damage_types.json's
+## `other_resistances` beside the afflictions — so total() never sees it, and
+## the attack path reads it here, next to Air_Shield's ranged_damage_reduction,
+## which is the same axis.
+##
+## Read from the unit's own resistances only (race, traits, equipment and
+## material, perks). Clamped like any summed resistance: nothing turns every
+## arrow, and a vulnerability at most doubles the hit.
+static func delivery(unit: Node, how: String) -> float:
+	if unit == null or not is_instance_valid(unit):
+		return 0.0
+	return clampf(float(_own_resistances(unit).get(how, 0.0)),
+		VULNERABILITY_FLOOR, REDUCTION_CAP)
 
 
 ## Resolve a hit of `damage_type` for `damage` points against this unit.
@@ -256,7 +225,14 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 		if fallback != "" and own.has(fallback):
 			_add(acc, float(own[fallback]), "innate (%s)" % fallback)
 
-	# 2. Statuses, structured first.
+	# 2. Statuses. Each key in grants_resistance / grants_vulnerability is a
+	#    type, `physical` (which covers its subtypes), or a scope such as `all`
+	#    — DamageType.scope_covers() decides which hits it reaches. Every key
+	#    that covers this hit is its own declaration.
+	#
+	#    These were twenty named effect strings ("physical_immunity",
+	#    "fire_resistance_minus_50", ...) translated by a table in this file
+	#    until 2026-10-15. They are data on the statuses now.
 	var physical: bool = DamageType.is_physical(damage_type)
 	if "status_effects" in unit:
 		for effect in unit.status_effects:
@@ -266,33 +242,21 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 				continue
 
 			var grants: Dictionary = def.get("grants_resistance", {})
-			if grants.has(damage_type):
-				_add(acc, float(grants[damage_type]), status_name)
+			for key in grants:
+				if DamageType.scope_covers(str(key), damage_type):
+					_add(acc, float(grants[key]), status_name)
 			var vuln: Dictionary = def.get("grants_vulnerability", {})
-			if vuln.has(damage_type):
-				_add(acc, -float(vuln[damage_type]), status_name)
+			for key in vuln:
+				if DamageType.scope_covers(str(key), damage_type):
+					_add(acc, -float(vuln[key]), status_name)
 
-			# 3. And the named strings, through one table rather than twenty ifs.
-			for name in def.get("effects", []):
-				var rule: Dictionary = LEGACY_EFFECTS.get(str(name), {})
-				if rule.is_empty():
-					continue
-				if not _rule_applies(rule, damage_type, physical):
-					continue
-				var amount: float = float(rule.get("amount", 0.0))
-				if rule.has("field") and def.has(rule["field"]):
-					amount = float(def[rule["field"]])
-					if bool(rule.get("negated", false)):
-						amount = -amount
-				_add(acc, amount, "%s (%s)" % [status_name, str(name)])
-
-	# 4. Mantras, which only ever covered magic.
+	# 3. Mantras, which only ever covered magic.
 	if not physical and "mantra_stat_bonuses" in unit:
 		var mantra: float = float(unit.mantra_stat_bonuses.get("magic_resist", 0))
 		if mantra != 0.0:
 			_add(acc, mantra, "mantra")
 
-	# 5. Auras and the ground underfoot. A `resistance` payload is continuous
+	# 4. Auras and the ground underfoot. A `resistance` payload is continuous
 	#    like `stat` and `damage_taken_pct`: it has to be READ where it applies,
 	#    which is here, or it does nothing at all.
 	if CombatManager != null and "grid_position" in unit:
@@ -326,18 +290,3 @@ static func _own_resistances(unit: Node) -> Dictionary:
 	if "character_data" in unit:
 		return unit.character_data.get("derived", {}).get("resistances", {})
 	return {}
-
-
-static func _rule_applies(rule: Dictionary, damage_type: String, physical: bool) -> bool:
-	if rule.has("type"):
-		var target: String = str(rule["type"])
-		# A rule about "physical" covers its subtypes, which is what made
-		# Petrified stop a sword and a mace alike.
-		return target == damage_type \
-			or (target == "physical" and physical)
-	match str(rule.get("scope", "")):
-		"all":
-			return true
-		"non_physical":
-			return not physical
-	return false

@@ -16,7 +16,7 @@ extends Node
 var failures: int = 0
 var checks_run: int = 0
 var grid: CombatGrid
-const EXPECTED_CHECKS: int = 27
+const EXPECTED_CHECKS: int = 28
 
 
 func _ready() -> void:
@@ -37,7 +37,8 @@ func _ready() -> void:
 	# The resolver: where a resistance comes from, and what bounds it.
 	_check_innate_resistance_reduces_damage()
 	_check_a_status_can_grant_and_take_away()
-	_check_the_legacy_effect_strings_still_work()
+	_check_statuses_declare_their_resistances()
+	_check_silk_turns_arrows()
 	_check_you_cannot_buff_your_way_into_absorption()
 	_check_a_single_declaration_grants_immunity()
 	_check_absorption_heals()
@@ -324,50 +325,157 @@ func _check_a_status_can_grant_and_take_away() -> void:
 	_done()
 
 
-## The twenty hand-written strings became one table. Each one still has to
-## reach the number.
-func _check_the_legacy_effect_strings_still_work() -> void:
+## Twenty hand-written effect strings became a table, and then the table
+## became data: every status that resists or fears something says so in
+## `grants_resistance` / `grants_vulnerability`. These are statuses that
+## carried the strings, with the numbers the strings meant.
+func _check_statuses_declare_their_resistances() -> void:
 	var unit := _make_unit()
-	for entry in [["Stone_Skin", "physical", true], ["Bark_Skin", "physical", true],
-			["Frozen", "physical", false]]:
+	# [status, damage type, expected total]. One row per shape the old table
+	# had: physical covering its subtypes, a vulnerability, an element under a
+	# school's old name, the non_physical scope, and `all`.
+	for entry in [
+			["Frozen", "piercing", -50.0],
+			["Petrified", "slashing", 100.0],
+			["Armored_Supreme", "crushing", 75.0],
+			["Lightning_Form", "lightning", 100.0],
+			["Lightning_Form", "slashing", 50.0],
+			["Water_Vulnerable_25", "ice", -25.0],
+			["Fire_Vulnerable_50", "fire", -50.0],
+			["Praying", "white", 15.0],
+			["Praying", "piercing", 0.0],
+			["Rainbow_Cloak", "poison", 15.0],
+			["Mantric_Armor", "black", 25.0],
+			["Mantric_Armor", "physical", 0.0],
+			["Invulnerable", "fire", 100.0],
+			["Invulnerable", "crushing", 100.0]]:
 		var status: String = str(entry[0])
 		if CombatManager.get_status_definition(status).is_empty():
-			continue   # the status was renamed; the table check below still holds
+			_fail("status '%s' is gone — update this table" % status)
+			continue
 		unit.status_effects.clear()
-		CombatManager._apply_status_effect(unit, status, 5)
+		unit.status_effects.append({"status": status, "duration": 5})
 		var value: float = Resistance.total(unit, str(entry[1]))
-		if bool(entry[2]) and value <= 0.0:
-			_fail("%s gave %.0f%% %s resistance" % [status, value, str(entry[1])])
-		if not bool(entry[2]) and value >= 0.0:
-			_fail("%s left %s resistance at %.0f, expected a vulnerability"
-				% [status, str(entry[1]), value])
-	# A rule about "physical" covers its subtypes, which is what makes Stone
-	# Skin stop a sword and a mace alike.
+		if not is_equal_approx(value, float(entry[2])):
+			_fail("%s gave %.0f%% against %s, expected %.0f"
+				% [status, value, str(entry[1]), float(entry[2])])
+
+	# A key of "physical" covers its subtypes, which is what makes Petrified
+	# stop a sword and a mace alike.
 	unit.status_effects.clear()
 	unit.status_effects.append({"status": "_probe_phys", "duration": 5})
 	CombatManager._status_effects["_probe_phys"] = {
-		"name": "_probe_phys", "effects": ["physical_damage_reduction_50"]}
+		"name": "_probe_phys", "grants_resistance": {"physical": 50}}
 	for subtype in ["slashing", "crushing", "piercing", "physical"]:
 		if Resistance.total(unit, subtype) != 50.0:
-			_fail("a physical_damage_reduction_50 status gave %.0f%% against %s"
+			_fail("a physical 50 status gave %.0f%% against %s"
 				% [Resistance.total(unit, subtype), subtype])
 	if Resistance.total(unit, "fire") != 0.0:
-		_fail("a physical rule reached fire damage")
+		_fail("a physical key reached fire damage")
 	CombatManager._status_effects.erase("_probe_phys")
 	unit.status_effects.clear()
 
-	# Every string in the table has to be one some status actually declares,
-	# or it is a branch for a status that does not exist.
-	var declared: Dictionary = {}
+	# The strings themselves are gone, and must stay gone: a status carrying
+	# one now resists nothing, because nothing translates it any more.
 	for status_name in CombatManager._status_effects:
 		for name in CombatManager._status_effects[status_name].get("effects", []):
-			declared[str(name)] = true
-	for name in Resistance.LEGACY_EFFECTS:
-		if not declared.has(str(name)):
-			_fail("Resistance.LEGACY_EFFECTS handles '%s', which no status "
-				% str(name) + "declares — a branch for nothing")
+			if str(name) in RETIRED_RESISTANCE_STRINGS:
+				_fail("status '%s' declares '%s', a retired resistance string — "
+					% [status_name, str(name)] + "nothing reads it; write "
+					+ "grants_resistance / grants_vulnerability instead")
 	_cleanup([unit])
 	_done()
+
+
+## The effect strings the old Resistance.LEGACY_EFFECTS table translated, kept
+## so a status copied from an old draft cannot bring one back silently.
+const RETIRED_RESISTANCE_STRINGS: Array[String] = [
+	"physical_resist_50", "physical_damage_negation_50_percent",
+	"physical_damage_reduction_25", "physical_damage_reduction_50",
+	"physical_damage_reduction_75", "physical_resistance_plus_25",
+	"physical_resistance_plus_50", "vulnerable_to_physical",
+	"physical_immunity", "physical_immune", "fire_resistance_plus_25",
+	"fire_resistance_minus_50", "fire_damage_immunity", "fire_vulnerability",
+	"water_resistance_minus_25", "water_resistance_minus_50",
+	"water_damage_immunity", "air_damage_immunity", "air_immune",
+	"elemental_resistance_25", "all_element_resistance",
+	"magic_resistance_bonus", "immune_to_all_damage",
+]
+
+
+## Silk armour's `ranged` resistance: from the material, into the character's
+## standing resistances, and read in the attack path beside Air_Shield. It sat
+## in equipment_tables.json reaching nothing until 2026-10-15.
+func _check_silk_turns_arrows() -> void:
+	# 1. The material reaches derived.resistances through the worn item.
+	var robed: Dictionary = CharacterSystem.create_blank_character()
+	robed["equipment"]["chest"] = "perfected_sages_robe"
+	CharacterSystem.update_derived_stats(robed)
+	var from_silk: int = int(robed["derived"].get("resistances", {}).get("ranged", 0))
+	if from_silk != 10:
+		_fail("a silk robe gave %d ranged resistance, expected the material's 10"
+			% from_silk)
+
+	# 2. And the attack path reads it: the same arrow, under the same dice,
+	#    lands for less on a unit that resists `ranged`.
+	var archer := _make_unit(Vector2i(10, 10), 0)
+	archer.character_data["equipped_weapon"] = {
+		"name": "Probe Bow", "type": "bow", "stats": {"range": 6, "damage": 30}}
+	CharacterSystem.update_derived_stats(archer.character_data)
+	archer.character_data["derived"]["accuracy"] = 999
+	var mark := _make_unit(Vector2i(13, 10), 1)
+	mark.character_data["derived"]["dodge"] = 0
+	if not archer.is_ranged_weapon():
+		_fail("the probe bow does not count as ranged, so this check proves nothing")
+
+	var plain: Dictionary = {}
+	var silked: Dictionary = {}
+	for attempt in 20:
+		mark.resistances.erase("ranged")
+		plain = _seeded_attack(archer, mark, 9000 + attempt)
+		mark.resistances["ranged"] = 10
+		silked = _seeded_attack(archer, mark, 9000 + attempt)
+		if bool(plain.get("hit", false)) and bool(silked.get("hit", false)):
+			break
+	var before: int = int(plain.get("damage", 0))
+	var after: int = int(silked.get("damage", 0))
+	if before <= 0:
+		_fail("the probe arrow never landed (%s)" % str(plain))
+	elif after != maxi(1, int(before * 0.9)):
+		_fail("10%% ranged resistance turned a %d arrow into %d, expected %d"
+			% [before, after, maxi(1, int(before * 0.9))])
+
+	# 3. It is a resistance to arrows, not to swords.
+	archer.character_data["equipped_weapon"] = {
+		"name": "Probe Sword", "type": "sword", "stats": {"damage": 30}}
+	grid.unit_positions.erase(mark.grid_position)
+	mark.grid_position = Vector2i(11, 10)
+	grid.unit_positions[mark.grid_position] = mark
+	for attempt in 20:
+		mark.resistances.erase("ranged")
+		plain = _seeded_attack(archer, mark, 9100 + attempt)
+		mark.resistances["ranged"] = 10
+		silked = _seeded_attack(archer, mark, 9100 + attempt)
+		if bool(plain.get("hit", false)):
+			break
+	if int(plain.get("damage", 0)) <= 0:
+		_fail("the probe sword never landed (%s)" % str(plain))
+	elif int(plain.get("damage", 0)) != int(silked.get("damage", 0)):
+		_fail("ranged resistance turned a sword: %d became %d"
+			% [int(plain.get("damage", 0)), int(silked.get("damage", 0))])
+	_cleanup([archer, mark])
+	_done()
+
+
+## One attack under a fixed seed, so two calls differ only in what the test
+## changed between them.
+func _seeded_attack(attacker: CombatUnit, defender: CombatUnit, rng_seed: int) -> Dictionary:
+	defender.current_hp = defender.max_hp
+	attacker.actions_remaining = 9
+	CombatManager.turn_order = [attacker]
+	CombatManager.current_unit_index = 0
+	seed(rng_seed)
+	return CombatManager.attack_unit(attacker, defender)
 
 
 ## The rule that makes absorption safe: contributions SUM but the sum is capped
@@ -411,12 +519,11 @@ func _check_a_single_declaration_grants_immunity() -> void:
 	if _taken(unit, 100, "fire") <= 0:
 		_fail("ice immunity also stopped fire")
 
-	# And a status may declare it too — Solar Form's fire immunity, through the
-	# legacy table.
+	# And a status may declare it too — Solar Form's fire immunity.
 	var burned := _make_unit(Vector2i(7, 5))
 	burned.status_effects.append({"status": "_probe_immune", "duration": 5})
 	CombatManager._status_effects["_probe_immune"] = {
-		"name": "_probe_immune", "effects": ["fire_damage_immunity"]}
+		"name": "_probe_immune", "grants_resistance": {"fire": 100}}
 	if _taken(burned, 200, "fire") != 0:
 		_fail("a fire-immune status let %d damage through"
 			% _taken(burned, 200, "fire"))

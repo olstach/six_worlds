@@ -4490,6 +4490,11 @@ func _show_examine_window(unit: CombatUnit) -> void:
 				res_pairs.append([label, "immune"])
 			else:
 				res_pairs.append([label, "%d%% taken" % int(round(taken))])
+		# And arrows: `ranged` is a resistance to how a hit arrives (Silk
+		# armour), not a damage type, so the loop above never reaches it.
+		var vs_ranged: float = Resistance.delivery(unit, "ranged")
+		if vs_ranged != 0.0:
+			res_pairs.append(["Ranged", "%d%% taken" % int(round(100.0 - vs_ranged))])
 		if not res_pairs.is_empty():
 			_add_examine_separator()
 			var res_header = _create_examine_section_header("Resistances")

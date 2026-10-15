@@ -49,9 +49,6 @@ const EFFECT_LABELS: Dictionary = {
 	"speed_bonus": "+2 movement",
 	"initiative_bonus": "+10 initiative",
 	"movement_reduced_50": "Movement halved",
-	"vulnerable_to_physical": "Vulnerable to physical damage",
-	"physical_immunity": "Immune to physical damage",
-	"fire_resistance_minus_50": "-50% fire resistance",
 	"melee_hit_chance_halved": "Melee accuracy halved",
 	"ranged_hit_chance_halved": "Ranged accuracy halved",
 	"armor_reduced_50": "Armor reduced by 50%",
@@ -181,7 +178,31 @@ static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[
 				label = "%d %s" % [amount, label]
 		if not label in bullets:
 			bullets.append(label)
+	# Resistances the status grants or takes away. These were effect strings
+	# with a label each ("Immune to physical"); they are structured data on
+	# the status now, so one line per key covers them all.
+	for key in def.get("grants_resistance", {}):
+		bullets.append(_resistance_bullet(str(key), float(def["grants_resistance"][key])))
+	for key in def.get("grants_vulnerability", {}):
+		bullets.append(_resistance_bullet(str(key), -float(def["grants_vulnerability"][key])))
 	return bullets
+
+
+## One tooltip line for a status's resistance key: "Immune to fire",
+## "+25% physical resistance", "-50% ice resistance". `key` may be a scope —
+## `all` reads as "all damage", `non_physical` as "non-physical damage".
+static func _resistance_bullet(key: String, amount: float) -> String:
+	var what: String
+	match key:
+		"all":
+			what = "all damage"
+		"non_physical":
+			what = "non-physical damage"
+		_:
+			what = DamageType.display_name(key).to_lower()
+	if amount >= Resistance.DECLARED_IMMUNITY:
+		return "Immune to %s" % what
+	return "%+d%% %s resistance" % [int(amount), what]
 
 
 # ============================================

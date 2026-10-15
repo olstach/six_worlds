@@ -5,9 +5,11 @@
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
-		"skip_turn",
-        "vulnerable_to_physical"
+		"skip_turn"
 	  ],
+	  "grants_vulnerability": {
+		"physical": 50
+	  },
 	  "duration_type": "turns",
 	  "default_duration": 1,
 	  "dispellable": true,
@@ -109,9 +111,11 @@
 	  "category": "cc",
 	  "effects": [
 		"skip_turn",
-		"cannot_act",
-        "physical_immunity"
+		"cannot_act"
 	  ],
+	  "grants_resistance": {
+		"physical": 100
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -257,9 +261,10 @@
 	  "name": "Fire_Vulnerable",
 	  "type": "debuff",
 	  "category": "vulnerability",
-	  "effects": [
-        "fire_resistance_minus_50"
-	  ],
+	  "effects": [],
+	  "grants_vulnerability": {
+		"fire": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -505,9 +510,10 @@
 	  "name": "Water_Vulnerable_25",
 	  "type": "debuff",
 	  "category": "vulnerability",
-	  "effects": [
-        "water_resistance_minus_25"
-	  ],
+	  "effects": [],
+	  "grants_vulnerability": {
+		"ice": 25
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -672,10 +678,12 @@
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
-		"air_immune",
-		"physical_resist_50",
         "grants_flight"
 	  ],
+	  "grants_resistance": {
+		"lightning": 100,
+		"physical": 50
+	  },
 	  "grants_vulnerability": {
 		"ice": 50
 	  },
@@ -698,10 +706,12 @@
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
-		"physical_immune",
 		"cannot_deal_physical",
         "major_speed_boost"
 	  ],
+	  "grants_resistance": {
+		"physical": 100
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -728,9 +738,10 @@
 	  "name": "Physical_Resist_50",
 	  "type": "buff",
 	  "category": "resistance",
-	  "effects": [
-        "physical_resistance_plus_50"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"physical": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -741,9 +752,10 @@
 	  "name": "Water_Vulnerable_50",
 	  "type": "debuff",
 	  "category": "vulnerability",
-	  "effects": [
-        "water_resistance_minus_50"
-	  ],
+	  "effects": [],
+	  "grants_vulnerability": {
+		"ice": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -754,9 +766,10 @@
 	  "name": "Air_Immune",
 	  "type": "buff",
 	  "category": "immunity",
-	  "effects": [
-        "air_damage_immunity"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"lightning": 100
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -888,9 +901,11 @@
 	  "type": "buff",
 	  "category": "shield",
 	  "effects": [
-		"hp_shield",
-        "elemental_resistance_25"
+		"hp_shield"
 	  ],
+	  "grants_resistance": {
+		"non_physical": 25
+	  },
 	  "duration_type": "until_destroyed",
 	  "dispellable": false
 	},
@@ -898,9 +913,10 @@
 	  "name": "Phasing",
 	  "type": "buff",
 	  "category": "buff",
-	  "effects": [
-        "physical_damage_negation_50_percent"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"physical": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -987,9 +1003,10 @@
 	  "name": "Invulnerable",
 	  "type": "buff",
 	  "category": "immunity",
-	  "effects": [
-        "immune_to_all_damage"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"all": 100
+	  },
 	  "duration_type": "turns",
 	  "default_duration": 3,
 	  "dispellable": false
@@ -1069,9 +1086,11 @@
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
-		"defense_bonus",
-        "magic_resistance_bonus"
+		"defense_bonus"
 	  ],
+	  "grants_resistance": {
+		"non_physical": 15
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1300,9 +1319,10 @@
 	  "name": "Armored_Minor",
 	  "type": "buff",
 	  "category": "buff",
-	  "effects": [
-        "physical_damage_reduction_25"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"physical": 25
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1313,9 +1333,10 @@
 	  "name": "Armored_Major",
 	  "type": "buff",
 	  "category": "buff",
-	  "effects": [
-        "physical_damage_reduction_50"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"physical": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1326,9 +1347,10 @@
 	  "name": "Armored_Supreme",
 	  "type": "buff",
 	  "category": "buff",
-	  "effects": [
-        "physical_damage_reduction_75"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"physical": 75
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1484,9 +1506,10 @@
 	  "name": "Fire_Immune",
 	  "type": "buff",
 	  "category": "immunity",
-	  "effects": [
-        "fire_damage_immunity"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"fire": 100
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1497,9 +1520,10 @@
 	  "name": "Fire_Resistance_25",
 	  "type": "buff",
 	  "category": "resistance",
-	  "effects": [
-        "fire_resistance_plus_25"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"fire": 25
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1524,9 +1548,11 @@
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
-		"defense_bonus",
-        "physical_resistance_plus_25"
+		"defense_bonus"
 	  ],
+	  "grants_resistance": {
+		"physical": 25
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1538,9 +1564,11 @@
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
-		"physical_resistance_plus_50",
         "spell_damage_reduction"
 	  ],
+	  "grants_resistance": {
+		"physical": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1689,9 +1717,10 @@
 	  "name": "Physical_Immune",
 	  "type": "buff",
 	  "category": "immunity",
-	  "effects": [
-        "physical_immunity"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"physical": 100
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1780,9 +1809,11 @@
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
-		"fire_damage_immunity",
         "adds_fire_damage_to_attacks"
 	  ],
+	  "grants_resistance": {
+		"fire": 100
+	  },
 	  "grants_vulnerability": {
 		"ice": 50
 	  },
@@ -1858,9 +1889,10 @@
 	  "name": "Water_Immune",
 	  "type": "buff",
 	  "category": "immunity",
-	  "effects": [
-        "water_damage_immunity"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"ice": 100
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -1871,9 +1903,10 @@
 	  "name": "Water_Vulnerable",
 	  "type": "debuff",
 	  "category": "vulnerability",
-	  "effects": [
-        "water_resistance_minus_50"
-	  ],
+	  "effects": [],
+	  "grants_vulnerability": {
+		"ice": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -2185,10 +2218,10 @@
 	  "name": "Fire_Vulnerable_50",
 	  "type": "debuff",
 	  "category": "debuff",
-	  "effects": [
-        "fire_vulnerability"
-	  ],
-	  "vulnerability_pct": 50,
+	  "effects": [],
+	  "grants_vulnerability": {
+		"fire": 50
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -2219,10 +2252,11 @@
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
-		"all_element_resistance",
         "dodge_bonus"
 	  ],
-	  "resistance_pct": 15,
+	  "grants_resistance": {
+		"non_physical": 15
+	  },
 	  "duration_type": "spellpower",
 	  "dispellable": true,
 	  "dispel_methods": [
@@ -2754,9 +2788,10 @@
 	  "name": "Guarding",
 	  "type": "buff",
 	  "category": "stance",
-	  "effects": [
-	    "physical_damage_reduction_25"
-	  ],
+	  "effects": [],
+	  "grants_resistance": {
+		"physical": 25
+	  },
 	  "duration_type": "turns",
 	  "default_duration": 1,
 	  "dispellable": true,
