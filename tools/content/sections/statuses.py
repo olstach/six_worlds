@@ -2,8 +2,8 @@
 index; the ident is the status name (unique today). Description is writing;
 type, duration and effects are context.
 
-Only 39 statuses have a description key today. A status without one gets no
-description field (the JSON key does not exist to point at)."""
+Only 39 statuses have a description key today; the rest show (empty) and the
+key is created when someone fills it in."""
 from ..model import Entry, Field, Group
 from ._util import clean
 
@@ -39,10 +39,10 @@ def build(ds) -> Group:
     for cat, items in by_cat.items():
         g = Group(cat.replace("_", " ").capitalize(), 2, cat)
         for i, ident, s in items:
-            fields = []
-            if "description" in s:
-                fields.append(Field("desc", s["description"], "text",
-                                    (FILE, "statuses", i, "description")))
+            # Always emit the field: an absent key shows as (empty) and the
+            # sync creates the key when the owner writes text there.
+            fields = [Field("desc", s.get("description", ""), "text",
+                            (FILE, "statuses", i, "description"))]
             g.entries.append(Entry(
                 key=f"statuses:{i}", title=s.get("name", ident), ident=ident,
                 title_path=(FILE, "statuses", i, "name"),
