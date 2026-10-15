@@ -8,10 +8,16 @@ from content.sections import SECTIONS
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def walk_entry(e):
+    """An entry and all its descendants, at any depth."""
+    yield e
+    for c in e.children:
+        yield from walk_entry(c)
+
+
 def walk(group):
     for e in group.entries:
-        yield e
-        yield from e.children
+        yield from walk_entry(e)
     for g in group.groups:
         yield from walk(g)
 
