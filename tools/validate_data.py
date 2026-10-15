@@ -531,13 +531,25 @@ def check_vocabulary(label, values, patterns=None):
     reading one character's table.
     """
     accepted = set(_baseline.get(label, {}).get("values", []))
-    for value in sorted(values):
-        if value in accepted:
-            continue
+    for value in sorted(values | accepted):
         if patterns:
             found = any((p % value) in _gd_source for p in patterns)
         else:
             found = _read_by_code(value)
+        if value in accepted:
+            # The baseline may only shrink. An entry that has gained a reader,
+            # or whose value no longer appears in the data at all, is a stale
+            # line — and a stale line would silently excuse the value if its
+            # reader were later removed again. Fail so it gets deleted.
+            if found:
+                err("data->code", f"{label} '{value}' is listed in "
+                    "vocabulary_baseline.json but code now reads it — "
+                    "remove it from the baseline")
+            elif value not in values:
+                err("data->code", f"{label} '{value}' is listed in "
+                    "vocabulary_baseline.json but no data declares it any "
+                    "more — remove it from the baseline")
+            continue
         if not found:
             err("data->code", f"{label} '{value}' is declared in data but no code reads it")
 
@@ -567,6 +579,33 @@ for _s in load("resources/data/statuses.json")["statuses"]:
     if _s.get("name"):
         _status_names.add(str(_s["name"]))
 check_vocabulary("status effect", _status_effects)
+
+# ── Perk special requirements ────────────────────────────────────────────────
+#
+# PerkSystem._check_special_requirement understands exactly two shapes and
+# returns false for anything else, so a misspelt or unsupported requirement
+# makes the perk silently impossible to take. Mirror its parser here.
+_SPECIAL_CATEGORIES = {"weapon_skills", "weapon_skill", "different_weapon_skills",
+                       "elemental_magics", "elemental_magic",
+                       "magic_school", "magic_schools"}
+_ELEMENTS = {"space", "air", "fire", "water", "earth"}
+for _group in ("skill_perks", "cross_perks"):
+    for _pid, _perk in perks_data.get(_group, {}).items():
+        if _pid.startswith("_") or not isinstance(_perk, dict):
+            continue
+        _req = _perk.get("special_requirement")
+        if not _req:
+            continue
+        _m_aff = re.fullmatch(r"([a-z]+)_affinity_(\d+)", _req)
+        _m_any = re.fullmatch(r"any_(?:\d+_)?([a-z_]+)_at_(\d+)", _req)
+        if _m_aff and _m_aff.group(1) in _ELEMENTS:
+            continue
+        if _m_any and _m_any.group(1) in _SPECIAL_CATEGORIES:
+            continue
+        err("data->code", f"perk '{_pid}' has special_requirement '{_req}', "
+            "which PerkSystem._check_special_requirement does not understand — "
+            "the perk could never be taken")
+
 
 # ── Spell damage and saves ───────────────────────────────────────────────────
 #
