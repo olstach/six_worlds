@@ -76,10 +76,17 @@ Worth watching for specifically:
 - **First-pass balance numbers** — summoning terrain +25%, pack bonus,
   shield/mirror-image pools, reflect chances, wound-healing prices. All guessed,
   none played.
-- ~~**Difficulty multipliers** (easy 0.75× … boss 1.6×) now apply to every event
-  fight for the first time.~~ **Not true (found 2026-10-15):** no multiplier
-  exists in the code, and `EnemySystem.generate_encounter` never reads its
-  `difficulty` argument. See §15.
+- **Fight difficulty** — live for the first time since September (built
+  2026-10-15, §15). The `easy`/`normal`/`hard`/`very_hard`/`boss` word on
+  event fights and map mobs multiplies the enemy party's XP budget: easy
+  0.75×, hard 1.2×, very_hard 1.4×; boss is boss-priced with no rolled band
+  (all four boss fights already used boss-tier enemies, so no extra
+  multiplier). Tune it in the `difficulty` block of
+  `resources/data/enemies/encounter_budgets.json`. Watch for: **`hard` is the
+  most common word in the data** (103 of 203 fights), so the average fight
+  just got about 10% bigger; and extra XP shows up more as skills than HP
+  (very_hard is +87% XP over easy but only ~+9% HP in aggregate), so if `hard`
+  does not *feel* hard, raise the multipliers before adding any new lever.
 - **The wounds and psychology panels** — first look at whether those systems are
   tuned sanely now that they are visible.
 - **Active perks.** 75 of them became usable in 2026-09; before that every one
@@ -795,8 +802,9 @@ the Earth/Black plant line — so the work went where the gaps were:
 
 - [x] ~~**`skeleton_king_duel`** stops at 10% HP~~ — **checked 2026-10-15, and
       it was half-broken.** The threshold survives the build (the archetype
-      carries it, and `difficulty: boss` scales nothing, so 10% is of the HP
-      the unit really has). But `_check_combat_end` only ran on a death or at
+      carries it, and `difficulty: boss` scales only the XP the king is built
+      from — never HP after the build — so 10% is of the HP the unit really
+      has). But `_check_combat_end` only ran on a death or at
       the start of a round, so the king fought on below 10% — took his own
       turn, and could simply be killed. Damage to a duelling enemy now checks
       at once, and he yields on the blow that crosses the line.
@@ -1766,11 +1774,24 @@ were accurate on 2026-10-15 and drift.
 
 ### Bugs — real, small, worth fixing first
 
-- [ ] **Event fight difficulty does nothing.** `EnemySystem.generate_encounter`
-      (`enemy_system.gd:~551`) takes `difficulty` and never reads it, so
-      `"boss"`, `"easy"` and the rest in event outcomes are inert, and the
-      easy 0.75× … boss 1.6× multipliers "Where to pick up" described do not
-      exist anywhere. Build them, or drop the field.
+- [x] ~~**Event fight difficulty does nothing.**~~ — **built 2026-10-15.**
+      The old `DIFFICULTY_MULTIPLIERS` went in September's enemy-XP rewrite
+      (the spec retired it as a power scalar, superseded by tier and band),
+      and nothing took over the word, so 203 authored fights ignored it. It
+      now multiplies the party XP budget from a `difficulty` table in
+      `encounter_budgets.json` — through the budget rather than HP on top,
+      because gear, breadth, spells and the victory reward all follow the
+      budget already. `boss` adds `min_tier: boss` and a fixed `band`
+      instead of a multiplier: every boss fight already resolved to boss
+      tier, and 2.0 × 1.6 would have counted it twice. Unknown words fall
+      back to normal with a warning (roll words like `difficult` map
+      across); `validate_data.py` rejects them in data. Found alongside:
+      `_build_enemy` still fed raw XP into the potion/bomb roll and the
+      crude fallback weapon against thresholds tuned for the old
+      party-power number (~80 = mid-game), so every animal-realm enemy
+      saturated them; both read the kit-budget scale now. `verify_enemy_xp`
+      checks normal is the unchanged formula and each tier builds stronger
+      parties than the one below.
 - [x] ~~**Timed buffs and debuffs last half their stated duration.**~~ —
       **fixed 2026-10-15; decided: the data is right, the clock was wrong.**
       Worse than "half": the second tick only happened when the unit carried a

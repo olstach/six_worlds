@@ -369,10 +369,10 @@ func _make_duel_king() -> CombatUnit:
 
 
 ## The threshold travels from the archetype onto the built enemy, and is
-## measured against the HP the unit actually has. "difficulty: boss" is passed
-## all the way down but nothing scales HP with it, so the unit's max_hp must be
-## the built max_hp — if a multiplier ever lands after the build, this catches
-## the threshold reading the wrong maximum.
+## measured against the HP the unit actually has. "difficulty: boss" scales the
+## XP budget the king is BUILT from (encounter_budgets.json), never HP after the
+## build, so the unit's max_hp must be the built max_hp — if a multiplier ever
+## lands after the build, this catches the threshold reading the wrong maximum.
 func _check_duel_stop_survives_the_encounter_build() -> void:
 	var king := _make_duel_king()
 	if king == null:
