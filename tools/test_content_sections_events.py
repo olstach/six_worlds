@@ -5,7 +5,25 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from content import jsonio, mdformat
 from content.model import Doc
 from content.sections import events, quests
-from test_content_sections import walk, walk_entry, check_entry   # reuse the helpers
+from test_content_sections import walk   # reuse the walk helper
+
+
+def json_value(ds, path):
+    """The value at a JSON path; an absent final key counts as "" (a gap the
+    owner can fill). The parent dict must exist."""
+    parent = ds.get_at(path[:-1])
+    return parent.get(path[-1], "") if isinstance(parent, dict) else parent[path[-1]]
+
+
+def check_entry(test, ds, entry, parsed):
+    for f in entry.fields:
+        if f.kind == "context":
+            continue
+        test.assertEqual(parsed.fields[f.name], f.value, (entry.key, f.name))
+        test.assertEqual(json_value(ds, f.path), f.value, (entry.key, f.name))
+    test.assertEqual(len(parsed.children), len(entry.children), entry.key)
+    for ce, cp in zip(entry.children, parsed.children):
+        check_entry(test, ds, ce, cp)
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -61,7 +79,7 @@ class EventQuestRoundTrip(unittest.TestCase):
                     continue
                 for i, c in enumerate(e.get("choices", [])):
                     for b, _l in events.BRANCHES:
-                        if isinstance(c.get(b), dict) and 'text' in c[b]:
+                        if isinstance(c, dict) and isinstance(c.get(b), dict):
                             self.assertIn((file, "events", eid, "choices", i, b, "text"), paths)
 
     def test_idless_choices_use_position_and_odd_events_survive(self):
@@ -78,6 +96,36 @@ class EventQuestRoundTrip(unittest.TestCase):
         self.assertEqual(len(entries), len(data))
         steps = sum(1 for e in entries for f in e.fields if f.name.startswith("step_"))
         self.assertEqual(steps, sum(len(q.get("steps", [])) for q in data.values()))
+
+
+class FillGap(unittest.TestCase):
+    def test_filling_a_textless_outcome_creates_the_key(self):
+        import json, shutil, tempfile
+        from content import sync
+        from content import sections as pkg
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        shutil.copytree(ROOT / "resources/data", tmp / "resources/data")
+        (tmp / "tools").mkdir()
+        old = pkg.SECTIONS
+        pkg.SECTIONS = [events, quests]
+        self.addCleanup(setattr, pkg, "SECTIONS", old)
+        self.assertEqual(sync.run(tmp, write=True).exit_code, 0)
+        rel = "resources/data/events/hell_events.json"
+        data = json.loads((tmp / rel).read_text(encoding="utf-8"))
+        self.assertNotIn("text", data["events"]["hell_demon_patrol"]["choices"][0]["outcome"])
+        doc = tmp / "CONTENT.md"
+        lines = doc.read_text(encoding="utf-8").split("\n")
+        # the first "result: (empty)" line after the demon patrol event
+        start = next(i for i, l in enumerate(lines) if "`hell_demon_patrol`" in l)
+        i = next(i for i in range(start, len(lines)) if lines[i].strip() == "- result: (empty)")
+        lines[i] = lines[i].replace("(empty)", "Steel rings in the ash.")
+        doc.write_text("\n".join(lines), encoding="utf-8")
+        r = sync.run(tmp, write=True)
+        self.assertEqual(r.exit_code, 0)
+        data = json.loads((tmp / rel).read_text(encoding="utf-8"))
+        ch = data["events"]["hell_demon_patrol"]["choices"]
+        self.assertTrue(any(c.get("outcome", {}).get("text") == "Steel rings in the ash." for c in ch))
 
 
 if __name__ == "__main__":

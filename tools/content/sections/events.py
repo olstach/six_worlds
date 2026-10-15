@@ -74,7 +74,7 @@ def _one_line(text: str) -> str:
     return text.replace("\r", " ").replace("\n", " ").replace("`", "'")
 
 
-def _event_context(realm_name: str, e: dict) -> str:
+def _event_context(e: dict) -> str:
     parts = [f"realm: {e.get('realm', '?')}"]
     for k in ("zone", "trigger", "requires_trait", "requires_band", "rarity"):
         if e.get(k):
@@ -103,10 +103,10 @@ def _choice_entry(ekey: str, file: str, eid: str, index: int, c: dict) -> Entry:
     fields = []
     for branch, label in BRANCHES:
         o = c.get(branch)
-        # Combat/shop/recruit outcomes carry no prose ("text" key absent): there
-        # is nothing to write, so they get no field (the export showed an empty
-        # anchor there; an edit would only have created the key).
-        if isinstance(o, dict) and "text" in o:
+        # A combat/shop/recruit outcome may have no "text" key yet. The field
+        # is still shown, as (empty), so the gap is visible and fillable: the
+        # sync creates the key when text is written there.
+        if isinstance(o, dict):
             fields.append(Field(label, o.get("text", ""), "text", base + (branch, "text")))
     return Entry(
         key=f"{ekey}/{cid}", title=c.get("text", ""), ident=cid,
@@ -117,14 +117,23 @@ def _choice_entry(ekey: str, file: str, eid: str, index: int, c: dict) -> Entry:
 
 def _event_entry(file: str, realm_id: str, eid: str, e: dict) -> Entry:
     ekey = f"events:{realm_id}:{eid}"
-    body_key = "text" if "text" in e else "description"
+    # The body lives in "text", or "description" when only that exists. An
+    # event with neither gets an empty "text" field to fill in.
+    body_key = "description" if ("text" not in e and "description" in e) else "text"
     choices = [_choice_entry(ekey, file, eid, i, c)
                for i, c in enumerate(e.get("choices") or []) if isinstance(c, dict)]
+    fields = [Field("text", e.get(body_key, ""), "text", (file, "events", eid, body_key))]
+    has_title = "title" in e
+    if not has_title:
+        # No title in the data: the entry line shows the event key (a title
+        # cannot be empty there, so it is not editable), and a separate
+        # "title" field, empty, lets the owner write one.
+        fields.insert(0, Field("title", "", "text", (file, "events", eid, "title")))
     return Entry(
-        key=ekey, title=e.get("title", eid) if "title" in e else eid, ident=eid,
-        title_path=(file, "events", eid, "title") if "title" in e else (),
-        context=_event_context(realm_id, e),
-        fields=[Field("text", e.get(body_key, ""), "text", (file, "events", eid, body_key))],
+        key=ekey, title=e["title"] if has_title else eid, ident=eid,
+        title_path=(file, "events", eid, "title") if has_title else (),
+        context=_event_context(e),
+        fields=fields,
         children=choices, children_label="choices")
 
 
