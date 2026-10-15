@@ -984,9 +984,11 @@ func _update_wounds(character: Dictionary) -> void:
 		if loc != "":
 			info_parts.append(loc.replace("_", " "))
 		var escalates: String = wdef.get("escalates_to", "")
-		if escalates != "":
-			var rests_left: int = maxi(0,
-					int(wdef.get("escalation_rests", 2)) - int(entry.get("rests_untreated", 0)))
+		# Ask WoundSystem for the threshold rather than reading escalation_rests
+		# directly, so Stubborn Body's extra rest shows in the countdown too.
+		var threshold: int = WoundSystem.get_escalation_threshold(character, wid)
+		if escalates != "" and threshold > 0:
+			var rests_left: int = maxi(0, threshold - int(entry.get("rests_untreated", 0)))
 			info_parts.append("worsens in %d rest%s" % [rests_left, "" if rests_left == 1 else "s"])
 		var info_lbl := Label.new()
 		info_lbl.text = "  ·  ".join(info_parts)

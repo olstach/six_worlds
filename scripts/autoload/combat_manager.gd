@@ -1503,6 +1503,43 @@ func _find_chain_redirect_target(attacker: Node) -> Node:
 	return best
 
 
+## Chance (0–100) that arm `arm_number` fires in a multi-arm attack chain.
+##
+## Arm 1 is the ordinary attack and always fires. Later arms use BodySystem's
+## Finesse formula, plus 20 for Akimbo. Iron Cortex makes arm 2 a certainty —
+## so "arms 1 and 2 always fire" — while arms 3+ keep rolling as before.
+##
+## The same number also scales the wound and disease chance of that arm's hit
+## (see _execute_arm_chain_attack), so a guaranteed arm hits as hard as arm 1.
+func arm_chain_fire_chance(char_data: Dictionary, arm_number: int) -> float:
+	if arm_number <= 1:
+		return 100.0
+	if arm_number == 2 and PerkSystem.has_perk(char_data, "iron_cortex"):
+		return 100.0
+	var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
+	var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
+	return clampf(BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus, 0.0, 100.0)
+
+
+## Hardened: "50% chance to negate an incoming crit wound."
+##
+## Call this at the moment a crit has already rolled a wound and before
+## WoundSystem applies it. Returns true when the wound is shrugged off (and logs
+## it). Every crit-wound path goes through here — the main attack and each arm
+## of a multi-arm chain — so the perk cannot cover one and miss the other.
+## `roll` is for the verifier; leave it at -1 to roll for real.
+func _crit_wound_negated(defender: Node, roll: float = -1.0) -> bool:
+	var char_data: Dictionary = defender.character_data if "character_data" in defender else {}
+	if not PerkSystem.has_perk(char_data, "hardened"):
+		return false
+	if roll < 0.0:
+		roll = randf()
+	if roll < 0.5:
+		combat_log.emit("%s is Hardened — the blow leaves no lasting wound." % defender.unit_name)
+		return true
+	return false
+
+
 func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
 	var weapon_dmg_type: String = "crushing"
 	if attacker.has_method("get_weapon_damage_type"):
@@ -1530,7 +1567,8 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
 		var scale: float = chain_chance / 100.0
 		if WoundSystem and defender.team == Team.PLAYER:
-			if result.get("crit", false) and randf() < 0.20 * scale:
+			if result.get("crit", false) and randf() < 0.20 * scale \
+					and not _crit_wound_negated(defender):
 				var char_data = defender.character_data
 				var wound_id = WoundSystem.apply_random_crit_wound(char_data)
 				if wound_id != "":
@@ -1541,7 +1579,10 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 					result["persistent_wound"] = wound_id
 			if attacker.team == Team.ENEMY:
 				var attacker_tags: Array = attacker.character_data.get("tags", []) if "character_data" in attacker else []
-				if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * scale:
+				# Same immunity gate as the main attack (Undead Hunter, Diamond
+				# Body) — a second arm must not carry in what the first could not.
+				if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * scale \
+						and not _check_perk_status_immunity(defender, "diseased", attacker):
 					var tag_source: String = "undead" if "undead" in attacker_tags else "diseased"
 					var disease_id = WoundSystem.apply_random_disease(defender.character_data, tag_source)
 					if disease_id != "":
@@ -1928,23 +1969,16 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				var primary_nw: Dictionary = BodySystem.get_natural_weapon(char_data, "hand_r")
 				should_chain = primary_nw.get("locked", false)
 			if should_chain:
-				var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
-				var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
 				# Coordinated Strikes: when an arm's blow kills, the chain resets —
 				# the remaining arms redirect to a fresh target instead of stopping.
 				var has_coordinated: bool = PerkSystem.has_perk(char_data, "coordinated_strikes")
 				var chain_target: Node = defender
-				# Iron Cortex: the second arm skips its roll entirely and always fires.
-				var iron_cortex: bool = PerkSystem.has_perk(char_data, "iron_cortex")
 				for arm_index in range(1, arm_count):
 					var arm_number: int = arm_index + 1
-					# iron_cortex: arms 1-2 always fire (arm_number 1 is always primary, arm_number 2 is guaranteed)
-					var guaranteed: bool = iron_cortex and arm_number == 2
-					var fire_chance: float = clampf(
-						BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus,
-						0.0, 100.0
-					)
-					if guaranteed or randf() * 100.0 <= fire_chance:
+					# Finesse formula + Akimbo, or a flat 100 for Iron Cortex's
+					# second arm. randf() never exceeds 1.0, so 100 always fires.
+					var fire_chance: float = arm_chain_fire_chance(char_data, arm_number)
+					if randf() * 100.0 <= fire_chance:
 						if chain_target != null and chain_target.is_alive():
 							var extra := _execute_arm_chain_attack(attacker, chain_target, arm_number, fire_chance)
 							extra_arm_results.append(extra)
@@ -4816,7 +4850,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		return
 
 	# --- Character perk immunity/resistance checks ---
-	if _check_perk_status_immunity(unit, status):
+	if _check_perk_status_immunity(unit, status, source):
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
 		return
@@ -9130,7 +9164,10 @@ func _unit_has_talisman_perk(unit: Node, perk_id: String) -> bool:
 
 ## Check if a character perk grants immunity or resistance to a status effect.
 ## Returns true if the status should be blocked.
-func _check_perk_status_immunity(unit: Node, status: String) -> bool:
+## `source` is the unit applying it, when there is one — a few immunities
+## depend on WHO is doing it (Undead Hunter only refuses undead and diseased
+## attackers), not just what is being done.
+func _check_perk_status_immunity(unit: Node, status: String, source: Node = null) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
 	var status_lower = status.to_lower()
 
@@ -9139,8 +9176,12 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 		if status_lower in ["poisoned", "diseased"]:
 			return true
 
-	# Undead Hunter: immune to the diseases undead and diseased enemies carry
-	if status_lower == "diseased" and PerkSystem.has_perk(char_data, "undead_hunter"):
+	# Undead Hunter: immune to the diseases undead and diseased enemies carry.
+	# Only from those enemies — a plague spell from a living caster, or a
+	# disease from an event, still lands. Covers both the Diseased status and
+	# the persistent disease an undead hit can leave (the on-hit procs ask here).
+	if status_lower == "diseased" and PerkSystem.has_perk(char_data, "undead_hunter") \
+			and _is_undead_or_diseased(source):
 		return true
 
 	# Empty Center: +20% resistance to mental effects
@@ -9218,8 +9259,6 @@ func _check_perk_status_immunity(unit: Node, status: String) -> bool:
 	return false
 
 
-## Check if a unit is unarmored or wearing only light armor (robe/hat/cloth).
-## Used by unarmored perks like Flowing Footwork and Diamond Body.
 ## Returns true if the unit is tagged as biological (affected by anatomy_knowledge, pressure_points).
 ## Non-biological: constructs, elementals, undead, ethereals.
 func _unit_is_biological(unit: Node) -> bool:
@@ -9227,6 +9266,18 @@ func _unit_is_biological(unit: Node) -> bool:
 	return "biological" in char_data.get("tags", [])
 
 
+## True when `unit` is an undead or diseased enemy — the attackers whose hits
+## can leave a disease, and the ones Undead Hunter is immune to. A null unit
+## (a status with no source, e.g. from terrain or an event) is neither.
+func _is_undead_or_diseased(unit: Node) -> bool:
+	if unit == null or not "character_data" in unit:
+		return false
+	var tags: Array = unit.character_data.get("tags", [])
+	return "undead" in tags or "diseased" in tags
+
+
+## Check if a unit is unarmored or wearing only light armor (robe/hat/cloth).
+## Used by unarmored perks like Flowing Footwork and Diamond Body.
 func _unit_is_unarmored(unit: Node) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
 	var equipment = char_data.get("equipment", {})
@@ -9498,12 +9549,11 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 			_apply_status_effect(defender, on_crit_status, 1)
 			result["on_crit_status"] = on_crit_status
 		# 20% chance a crit inflicts a persistent wound on player characters.
-		# "hardened" perk gives 50% chance to negate the wound entirely.
+		# Hardened gives a 50% chance to negate it — see _crit_wound_negated.
 		# Ranged weapons (skill_tag: "ranged") draw from the ranged wound pool.
 		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
 			var char_data = defender.character_data
-			var negated := PerkSystem and PerkSystem.has_perk(char_data, "hardened") and randf() < 0.5
-			if not negated:
+			if not _crit_wound_negated(defender):
 				var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
 				var wound_id: String
 				if is_ranged:
@@ -9528,7 +9578,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		# _check_perk_status_immunity keeps its "while unarmored" condition,
 		# which a trait-granted resistance could not express.
 		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 \
-				and not _check_perk_status_immunity(defender, "diseased"):
+				and not _check_perk_status_immunity(defender, "diseased", attacker):
 			var tag_source = "undead" if "undead" in attacker_tags else "diseased"
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_disease(char_data, tag_source)

@@ -351,6 +351,33 @@ func cure_wounds_field_surgery(performer: Dictionary, party: Array, override_all
 	return {"cured": cured_names, "messages": messages}
 
 
+## Extra untreated rests this character's wounds get before they escalate.
+##
+## Two sources add up:
+##   - `character.wound_escalation_delay` — a plain number on the character, so
+##     a future trait, item or event can grant a delay without touching this file.
+##   - the Stubborn Body perk, which adds +1. It is checked here by id (the same
+##     way every hand-implemented perk is) rather than written into the field
+##     when the perk is learned, so the two can never drift out of step.
+func get_wound_escalation_delay(character: Dictionary) -> int:
+	var delay: int = int(character.get("wound_escalation_delay", 0))
+	if PerkSystem and PerkSystem.has_perk(character, "stubborn_body"):
+		delay += 1
+	return delay
+
+
+## How many untreated rests the wound `wound_id` takes to escalate for THIS
+## character. Returns 0 for a wound that never escalates (its base
+## escalation_rests is 0) — a delay must not turn "never" into "after 1 rest".
+## Used by tick_wounds and by the party screen's "worsens in N rests" label, so
+## the countdown the player sees is the one that actually runs.
+func get_escalation_threshold(character: Dictionary, wound_id: String) -> int:
+	var base: int = int(WOUND_TYPES.get(wound_id, {}).get("escalation_rests", 0))
+	if base <= 0:
+		return 0
+	return base + get_wound_escalation_delay(character)
+
+
 ## Tick all wounds at rest. Increments counters, escalates if threshold reached.
 ## Returns an array of narrative messages about any escalations.
 func tick_wounds(character: Dictionary) -> Array[String]:
@@ -364,13 +391,12 @@ func tick_wounds(character: Dictionary) -> Array[String]:
 		if wdef.is_empty():
 			i += 1
 			continue
-		var threshold: int = wdef.get("escalation_rests", 0)
+		# 0 means "never escalates"; anything else includes the character's
+		# escalation delay (Stubborn Body and friends) — see get_escalation_threshold.
+		var threshold: int = get_escalation_threshold(character, wid)
 		if threshold <= 0:
 			i += 1
 			continue
-		# stubborn_body perk: wounds take 1 extra rest to escalate
-		if PerkSystem and PerkSystem.has_perk(character, "stubborn_body"):
-			threshold += 1
 		entry["rests_untreated"] = entry.get("rests_untreated", 0) + 1
 		if entry["rests_untreated"] >= threshold:
 			var escalation_id: String = wdef.get("escalates_to", "")
