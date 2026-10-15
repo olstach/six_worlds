@@ -696,9 +696,36 @@ the Earth/Black plant line — so the work went where the gaps were:
       - **`max_companions`** — done 2026-09-12 as `party_max_companions`. Two
         companions come free; Leadership adds one at 3, 6 and 9, topping out at
         a party of six.
-- [ ] **Needs a proc site, not a consumer** (4 keys): `stun_chance_pct` (maces
-      on-hit), `burning_damage_pct` (fire DoT), `status_effect_chance_pct`
-      (status application), `luck_pct`. Each is its own small integration.
+- [x] ~~**Needs a proc site, not a consumer** (4 keys)~~ — **stale; wired
+      2026-09-12 in `f4f54e6`, finished 2026-10-15.** This line outlived the
+      commit that answered it by a month, and the baseline had already
+      dropped all four. Looking again turned up two halves that were wired
+      in name only:
+      - `burning_damage_pct` (Fire Magic) and `stun_chance_pct` (Maces) were
+        done properly — the DoT tick reads the burn off whoever set the fire,
+        and Alchemy's `poison_damage_pct` sits beside it on the same pattern,
+        so there was nothing to converge.
+      - **`status_effect_chance_pct` (Ritual) had one reader: oils.** Spells,
+        bombs and weapon procs — where statuses mostly come from — rolled
+        their chance raw. All four go through `effective_status_chance()`
+        now, which works in floats so a 7.5% proc is not rounded before
+        Ritual touches it. Statuses that land on a **failed save** have no
+        percentage to multiply, so Ritual goes on the DC at SaveSystem's own
+        rate, five points per d20 point (`status_save_dc_bonus()`): Ritual 10
+        is +6 to the DC, the same coin Yoga's mental resistance pays out in.
+        Every `_skill_save` caller gates a status or a debuff so all of them
+        take it; a spell save takes it only when its failed branch lands a
+        status (`_save_gates_status`) — a ritualist is no better at Deathfog's
+        instant kill than anyone else.
+      - **`luck_pct` (Comedy) fed `loot_chance_pct`, which nothing read** —
+        and neither did the Shivering Cairn shrine's +15%, whose whole effect
+        that was. It multiplies the Luck jackpot now
+        (`luck_jackpot_chance()`), after the Luck cap so the luckiest party
+        still gains, best member not sum. The crit half stays flat points:
+        Luck's own crit term is Luck/6, a percentage of which rounds to
+        nothing, and the map "luck" buff already pays one crit per point.
+      verify_combat_procs is seven checks, and fails when either half is
+      unwired.
 - [ ] **`effect_duration_pct` is a DUPLICATE, not a gap.** Enchantment's
       duration bonus already works, computed straight from the skill level in
       `_calculate_status_duration` (+1 turn per 2 levels). Wiring the table key
@@ -1871,6 +1898,13 @@ Setting Sun (copper construct), Matriarch of All Longing (yidag).
 ---
 
 # Part III — Per-level skill bonuses with no consumer
+
+> **Stale — cleared, kept as history (2026-10-15).** Every key in the table
+> below has been renamed, wired, merged or removed; the live state is §6
+> above. Only `crafting_quality_pct` is still unread, and the Enchantment
+> duration question (now spelt `effect_duration_turns`) waits on a decision.
+> Read what follows as the July snapshot it is: the names, the "13 of 40"
+> count and the suggested target systems are all out of date.
 
 Found 2026-07-27. Kept in full because it is the largest actionable gap.
 

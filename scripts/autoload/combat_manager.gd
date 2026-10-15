@@ -572,8 +572,7 @@ func _calculate_combat_rewards() -> Dictionary:
 
 	var jackpot_triggered := false
 	var jackpot_amount := 0
-	# Base 3% chance, +0.5% per Luck above 10 (capped at 10%)
-	var jackpot_chance := clampf(0.03 + (best_luck - 10) * 0.005, 0.03, 0.10)
+	var jackpot_chance := luck_jackpot_chance(best_luck, CharacterSystem.get_party())
 	if randf() < jackpot_chance:
 		jackpot_triggered = true
 		# Jackpot: 3x to 5x the normal gold
@@ -605,6 +604,28 @@ func _calculate_combat_rewards() -> Dictionary:
 
 	return rewards
 
+
+
+## The chance a won fight pays a gold jackpot, as 0.0-1.0.
+##
+## Base 3%, +0.5% per point of the party's best Luck above 10, capped at 10% —
+## that part is Luck's own contribution. On top of it, the party's best
+## `loot_chance_pct` multiplies the result: Comedy's luck_pct lands there (see
+## CharacterSystem.update_derived_stats), and so does the Shivering Cairn
+## shrine's +15% for one fight. Both wrote loot_chance_pct for months with
+## nothing reading it.
+##
+## It multiplies AFTER the Luck cap on purpose. A boost swallowed by the cap
+## would do nothing for exactly the luckiest party, which is the one that
+## went looking for it. Best member, not sum, like every party-wide bonus.
+func luck_jackpot_chance(best_luck: int, party: Array) -> float:
+	var chance: float = clampf(0.03 + (best_luck - 10) * 0.005, 0.03, 0.10)
+	var best_boost: float = 0.0
+	for member in party:
+		var boost: float = float(member.get("derived", {}).get("loot_chance_pct", 0.0))
+		if boost > best_boost:
+			best_boost = boost
+	return chance * (1.0 + best_boost / 100.0)
 
 
 ## Generate supply, reagent, and boss guaranteed drops.
@@ -4213,8 +4234,9 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		if side_branch.has("save_type"):
 			var side_spell: Dictionary = spell.duplicate()
 			side_spell["save_tier"] = side_branch.get("save_tier", spell.get("save_tier", "normal"))
+			# Everything a side branch carries is statuses, so Ritual applies.
 			side_passed = _spell_save(caster, target, side_spell,
-				String(side_branch["save_type"]).to_lower()).success
+				String(side_branch["save_type"]).to_lower(), true).success
 		if not side_passed:
 			for side_status in side_branch.get("statuses", []):
 				_apply_status_effect(target, side_status, side_duration, 0, caster)
@@ -4310,7 +4332,10 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			"status":
 				var status = effect.get("status", "")
 				var duration = effect.get("duration", 1)
-				var chance = effect.get("chance", 100)
+				# The caster's Ritual makes it land more often.
+				var chance: float = effective_status_chance(
+					caster.character_data if "character_data" in caster else {},
+					float(effect.get("chance", 100)))
 				if randf() * 100 <= chance:
 					_apply_status_effect(target, status, duration, effect.get("value", 0), caster)
 					effect_result = {"type": "status", "status": status, "applied": true}
@@ -6095,8 +6120,10 @@ func _resolve_collapse_terrain(user: Node, combat_data: Dictionary,
 		apply_damage(unit, damage, element)
 		effects.append({"type": "damage", "target": unit, "amount": damage})
 		if give != "":
+			# A fixed DC from data, raised by the user's Ritual because a
+			# status is what rides on it.
 			var roll: Dictionary = SaveSystem.roll(unit, save_attr,
-				int(combat_data.get("save_dc", 13)))
+				int(combat_data.get("save_dc", 13)) + status_save_dc_bonus(user))
 			if not roll.success:
 				_apply_status_effect(unit, give, int(combat_data.get("status_duration", 1)), 0, user)
 	combat_log.emit("%s brings the stone down." % user.unit_name)
@@ -7160,7 +7187,10 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 
 		# Apply status effects
 		for status_entry in statuses:
-			var chance = status_entry.get("chance", 100)
+			# The thrower's Ritual makes it land more often.
+			var chance: float = effective_status_chance(
+				user.character_data if "character_data" in user else {},
+				float(status_entry.get("chance", 100)))
 			if randf() * 100.0 <= chance:
 				var status_name = status_entry.get("name", "")
 				var duration = status_entry.get("duration", 2)
@@ -7389,11 +7419,39 @@ const IMPLEMENTED_SKILL_EFFECTS: Array[String] = [
 ## Takes a character dict rather than a unit so non-combat callers can use it
 ## too. A zero chance stays zero — an effect with no chance to apply is saying
 ## it does not apply, not that it is unlikely — and nothing exceeds 100.
-func effective_status_chance(character: Dictionary, base_chance: int) -> int:
-	if base_chance <= 0:
+##
+## Works in floats (0-100) because weapon procs carry fractional chances like
+## 7.5, and rounding those to whole numbers before the roll would quietly
+## change the base. Every chance-to-apply site calls this: spell `status`
+## effects, bombs, weapon procs and oils.
+func effective_status_chance(character: Dictionary, base_chance: float) -> float:
+	if base_chance <= 0.0:
 		return base_chance
-	var bonus: float = character.get("derived", {}).get("status_effect_chance_pct", 0.0)
-	return clampi(int(round(base_chance * (1.0 + bonus / 100.0))), 0, 100)
+	var bonus: float = float(character.get("derived", {}).get("status_effect_chance_pct", 0.0))
+	return clampf(base_chance * (1.0 + bonus / 100.0), 0.0, 100.0)
+
+
+## The same Ritual bonus, for a status that lands on a FAILED SAVE instead of
+## on a percentage roll.
+##
+## A save has no percentage to multiply, so the bonus goes onto the DC through
+## the conversion SaveSystem already uses for percentages — one d20 point is
+## five percentage points (SaveSystem.PERCENT_PER_ROLL_POINT). That is the same
+## rule that turns Yoga's mental_resistance_pct into save points, so a
+## ritualist's +DC and a yogi's +save are measured in the same coin and meet on
+## equal terms: Ritual 10 (30%) is +6 to the DC, Yoga 10 (40%) is +8 to resist.
+##
+## Note the two routes are not identical in size: on a roll the bonus is a
+## multiplier (a 50% chance becomes 65% at Ritual 10), on a save it is flat
+## points (+30 percentage points on the d20). Additive is what the save system
+## does with every other percentage, so this follows it rather than inventing
+## a third conversion.
+func status_save_dc_bonus(applier: Node) -> int:
+	if applier == null or not is_instance_valid(applier) or not "character_data" in applier:
+		return 0
+	var pct: float = float(applier.character_data.get("derived", {}).get(
+		"status_effect_chance_pct", 0.0))
+	return int(pct / SaveSystem.PERCENT_PER_ROLL_POINT)
 
 
 ## True when an effect string resolves to something that actually happens.
@@ -8166,6 +8224,16 @@ func get_skill_targeting(combat_data: Dictionary) -> String:
 #  dispel_and_invert, aggro_aura, share_buffs, double_buffs, restore_armor)
 # ============================================
 
+## True when a failed save on this spell would land a status — which is when
+## the caster's Ritual raises the DC. Deathfog killing outright or Midas Touch
+## turning someone to gold is not a status, and a ritualist should not be
+## better at executions than an executioner.
+func _save_gates_status(spell: Dictionary) -> bool:
+	var failed_branch: Dictionary = spell.get("on_failed_save", {})
+	return not failed_branch.get("statuses", []).is_empty() \
+		or not failed_branch.get("random_one_of", []).is_empty()
+
+
 ## Roll a save against a spell. The caster's Focus sets the DC unless the spell
 ## names another attribute; `save_tier` and `save_dc_modifier` let one spell be
 ## harder to shrug off than another.
@@ -8187,7 +8255,8 @@ func get_skill_targeting(combat_data: Dictionary) -> String:
 func _apply_save_gated(caster: Node, target: Node, spell: Dictionary,
 		bonus: int, result: Dictionary) -> void:
 	var save_attr: String = String(spell.get("save_type", "constitution")).to_lower()
-	var roll: Dictionary = _spell_save(caster, target, spell, save_attr)
+	var roll: Dictionary = _spell_save(caster, target, spell, save_attr,
+		_save_gates_status(spell))
 	var branch: Dictionary = spell.get(
 		"on_passed_save" if roll.success else "on_failed_save", {})
 	result.effects_applied.append({"type": "save", "passed": roll.success,
@@ -8302,26 +8371,36 @@ func _apply_resource_op(caster: Node, target: Node, spec: Dictionary,
 				"amount": moved, "landed": landed})
 
 
+## `gates_status` is true when what rides on the save is a status — then the
+## caster's Ritual raises the DC (see status_save_dc_bonus). A save that only
+## halves damage or stands between the target and an instant kill is not a
+## status landing, and Ritual stays out of it.
 func _spell_save(caster: Node, target: Node, spell: Dictionary,
-		save_type: String) -> Dictionary:
+		save_type: String, gates_status: bool = false) -> Dictionary:
+	var modifier: int = int(spell.get("save_dc_modifier", 0))
+	if gates_status:
+		modifier += status_save_dc_bonus(caster)
 	var dc: int = SaveSystem.dc_for(
 		caster,
 		String(spell.get("dc_stat", "focus")).to_lower(),
 		String(spell.get("save_tier", "normal")),
-		int(spell.get("save_dc_modifier", 0)))
+		modifier)
 	return SaveSystem.roll(target, save_type, dc)
 
 
 ## Roll a save against an active skill, reading the same fields out of its
 ## combat_data. Weapon skills default their DC to Strength; a skill that is
 ## really a mental effect says `"dc_stat": "focus"`.
+##
+## Every caller gates a status or a stat debuff on this save, so the user's
+## Ritual always raises the DC here (see status_save_dc_bonus).
 func _skill_save(user: Node, target: Node, combat_data: Dictionary,
 		save_type: String) -> Dictionary:
 	var dc: int = SaveSystem.dc_for(
 		user,
 		String(combat_data.get("dc_stat", "strength")).to_lower(),
 		String(combat_data.get("save_tier", "normal")),
-		int(combat_data.get("save_dc_modifier", 0)))
+		int(combat_data.get("save_dc_modifier", 0)) + status_save_dc_bonus(user))
 	return SaveSystem.roll(target, save_type, dc)
 
 
@@ -9613,8 +9692,11 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		"freeze_chance":  "Chilled",
 		"silence_chance": "Silenced",
 	}
+	var wielder_data: Dictionary = attacker.character_data if "character_data" in attacker else {}
 	for key in status_procs:
-		if key in passive and randf() * 100.0 <= passive[key]:
+		# The wielder's Ritual makes the proc land more often.
+		if key in passive and randf() * 100.0 <= effective_status_chance(
+				wielder_data, float(passive[key])):
 			# The attacker is the source, so a burn or a venom applied by a
 			# weapon scales with the skill of whoever swung it — the same way
 			# one applied by a spell already did.

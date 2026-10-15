@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 4
+const EXPECTED_CHECKS: int = 7
 
 
 func _ready() -> void:
@@ -18,6 +18,9 @@ func _ready() -> void:
 	_check_status_chance_scales_with_ritual()
 	_check_mace_stun_chance()
 	_check_luck_feeds_crit_and_loot()
+	_check_status_chance_reaches_every_roll_site()
+	_check_ritual_raises_status_save_dc()
+	_check_loot_chance_reaches_the_jackpot()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -78,15 +81,20 @@ func _check_status_chance_scales_with_ritual() -> void:
 	if pct <= 0.0:
 		_fail("Ritual 10 produced no status_effect_chance_pct")
 
-	var base_chance: int = 20
-	var boosted: int = CombatManager.effective_status_chance(ritualist, base_chance)
+	var base_chance: float = 20.0
+	var boosted: float = CombatManager.effective_status_chance(ritualist, base_chance)
 	if boosted <= base_chance:
-		_fail("Ritual 10 turned a %d%% status chance into %d%%" % [base_chance, boosted])
-	if CombatManager.effective_status_chance(ritualist, 0) != 0:
+		_fail("Ritual 10 turned a %.1f%% status chance into %.1f%%" % [base_chance, boosted])
+	if CombatManager.effective_status_chance(ritualist, 0.0) != 0.0:
 		_fail("a zero status chance was raised above zero — an effect with no "
 			+ "chance to apply must stay that way")
-	if CombatManager.effective_status_chance(ritualist, 100) > 100:
+	if CombatManager.effective_status_chance(ritualist, 100.0) > 100.0:
 		_fail("status chance exceeded 100%")
+	# Weapon procs carry fractional chances; the helper must not round them
+	# away before Ritual has had its say.
+	var unskilled: float = CombatManager.effective_status_chance(_char({}), 7.5)
+	if not is_equal_approx(unskilled, 7.5):
+		_fail("a 7.5%% proc with no Ritual came out as %.2f%%" % unskilled)
 	_done()
 
 
@@ -112,3 +120,107 @@ func _check_luck_feeds_crit_and_loot() -> void:
 	if lucky["derived"].get("loot_chance_pct", 0.0) <= 0.0:
 		_fail("Comedy 10 gave no loot_chance_pct")
 	_done()
+
+
+## The helper existing proves nothing if only one site calls it — which was the
+## state of things for a month: oils read Ritual, and spells, bombs and weapon
+## procs, the three places statuses mostly come from, did not.
+func _check_status_chance_reaches_every_roll_site() -> void:
+	var f := FileAccess.open("res://scripts/autoload/combat_manager.gd", FileAccess.READ)
+	if f == null:
+		_fail("cannot read combat_manager.gd")
+		_done()
+		return
+	var src := f.get_as_text()
+	f.close()
+	# One definition plus oils, spell `status` effects, bombs and weapon procs.
+	var sites: int = src.count("effective_status_chance(") - 1
+	if sites < 4:
+		_fail("effective_status_chance is called from %d place(s), expected at least "
+			% sites + "4 (oils, spell status effects, bombs, weapon procs)")
+	if not src.contains("wielder_data, float(passive[key])"):
+		_fail("weapon status procs do not go through effective_status_chance")
+	_done()
+
+
+## A status that lands on a failed save has no percentage to multiply. Ritual
+## goes onto the DC instead, at SaveSystem's own rate of five percentage points
+## per d20 point — the same rate Yoga's mental resistance comes off it at.
+## Driven through the real _skill_save and _spell_save so the DC is the one a
+## target would actually roll against.
+func _check_ritual_raises_status_save_dc() -> void:
+	var ritualist := _unit({"ritual": 10})
+	var plain := _unit({})
+	var target := _unit({})
+
+	var pct: float = ritualist.character_data["derived"].get("status_effect_chance_pct", 0.0)
+	var expected: int = int(pct / SaveSystem.PERCENT_PER_ROLL_POINT)
+	if expected <= 0:
+		_fail("Ritual 10 (%.1f%%) converts to no DC points at all" % pct)
+	if CombatManager.status_save_dc_bonus(ritualist) != expected:
+		_fail("status_save_dc_bonus = %d, expected %d (%.1f%% / %.0f)"
+			% [CombatManager.status_save_dc_bonus(ritualist), expected,
+			   pct, SaveSystem.PERCENT_PER_ROLL_POINT])
+	if CombatManager.status_save_dc_bonus(plain) != 0:
+		_fail("a character with no Ritual raises status DCs")
+
+	# Active skills: every caller gates a status or a debuff, so always.
+	var skill_gap: int = int(CombatManager._skill_save(ritualist, target, {}, "focus").dc) \
+		- int(CombatManager._skill_save(plain, target, {}, "focus").dc)
+	if skill_gap != expected:
+		_fail("Ritual moved an active skill's status DC by %d, expected %d"
+			% [skill_gap, expected])
+
+	# Spells: only when the save gates a status.
+	var spell: Dictionary = {"dc_stat": "focus"}
+	var gated_gap: int = int(CombatManager._spell_save(ritualist, target, spell, "focus", true).dc) \
+		- int(CombatManager._spell_save(plain, target, spell, "focus", true).dc)
+	if gated_gap != expected:
+		_fail("Ritual moved a status-gating spell save by %d, expected %d"
+			% [gated_gap, expected])
+	var plain_gap: int = int(CombatManager._spell_save(ritualist, target, spell, "focus").dc) \
+		- int(CombatManager._spell_save(plain, target, spell, "focus").dc)
+	if plain_gap != 0:
+		_fail("Ritual moved a save with no status riding on it by %d" % plain_gap)
+
+	# And the decision of which spells count.
+	if not CombatManager._save_gates_status({"on_failed_save": {"statuses": ["Silenced"]}}):
+		_fail("a save that silences on failure is not treated as gating a status")
+	if not CombatManager._save_gates_status({"on_failed_save": {"random_one_of": ["Feared"]}}):
+		_fail("a save that draws a random status is not treated as gating one")
+	if CombatManager._save_gates_status({"on_failed_save": {"instant_kill": true}}):
+		_fail("an instant-kill save counts as a status — Ritual would make executions easier")
+
+	for u in [ritualist, plain, target]:
+		u.free()
+	_done()
+
+
+## Comedy's other half. loot_chance_pct was written by Comedy and by the
+## Shivering Cairn shrine and read by nothing — this asserts the jackpot reads it.
+func _check_loot_chance_reaches_the_jackpot() -> void:
+	var plain: Dictionary = _char({"swords": 10})
+	var lucky: Dictionary = _char({"comedy": 10})
+	var base: float = CombatManager.luck_jackpot_chance(10, [plain])
+	var boosted: float = CombatManager.luck_jackpot_chance(10, [plain, lucky])
+	if boosted <= base:
+		_fail("Comedy 10 in the party left the jackpot at %.4f (without: %.4f)"
+			% [boosted, base])
+	var pct: float = lucky["derived"].get("loot_chance_pct", 0.0)
+	if not is_equal_approx(boosted, base * (1.0 + pct / 100.0)):
+		_fail("jackpot %.4f is not %.4f boosted by %.1f%%" % [boosted, base, pct])
+	# Best member, not the sum.
+	if not is_equal_approx(CombatManager.luck_jackpot_chance(10, [lucky, lucky]), boosted):
+		_fail("two comedians stacked their loot_chance_pct")
+	# The boost lands after the Luck cap, so the luckiest party still gains.
+	if CombatManager.luck_jackpot_chance(40, [lucky]) <= CombatManager.luck_jackpot_chance(40, [plain]):
+		_fail("the Luck cap swallowed Comedy's boost for a high-Luck party")
+	_done()
+
+
+func _unit(skills: Dictionary) -> CombatUnit:
+	var u := CombatUnit.new()
+	u.unit_name = "Probe"
+	u.character_data = _char(skills)
+	add_child(u)
+	return u
