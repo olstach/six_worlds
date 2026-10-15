@@ -1902,21 +1902,52 @@ adding one a single line when it is wanted.
 
 ### UI and legibility
 
-- [ ] **The tile hover label is hidden in move mode** (`combat_arena.gd:~2460`)
+- [x] **The tile hover label is hidden in move mode** (`combat_arena.gd:~2460`)
       — exactly when hazards matter. Merge it with the cover label.
-- [ ] **A main-hit crit has no visual marker** (`combat_unit.gd:~1151`), while
+      *Done 2026-10-15:* one label now. `TooltipText.move_tile()` puts the
+      cover line on top of everything `tile()` says; the separate cover label
+      is gone.
+- [x] **A main-hit crit has no visual marker** (`combat_unit.gd:~1151`), while
       extra arms now say "crit!".
-- [ ] **Popup labels have no width but centred text** — they probably start at
+      *Done 2026-10-15:* `attack_unit` flags the defender
+      (`next_damage_is_crit`) around the main hit's `apply_damage`, so the
+      number reads "12 crit!" in the arms' crit orange. Oil and enchant damage
+      after it stay plain. Spell crits still show a plain number.
+- [x] **Popup labels have no width but centred text** — they probably start at
       the unit's centre and run right. Check on screen.
-- [ ] **Status icons are a hard-coded emoji `match`** (`combat_unit.gd:~327`);
+      *Done 2026-10-15:* they did — every popup sat 80px right of centre once
+      measured. All of them go through `_make_popup_label()`, which gives the
+      label a width and shifts it left by half; the struck-through "expired"
+      label was 60px wide and wrapped long names, and is 160 now too.
+- [x] **Status icons are a hard-coded emoji `match`** (`combat_unit.gd:~327`);
       most of 187 statuses show "•". An `icon` field in statuses.json scales.
-- [ ] **The summoning terrain bonus is never shown** before casting
+      *Done 2026-10-15:* all 187 have an `icon`; `CombatUnit.status_icon()`
+      reads it and falls back to "•". A few pair a glyph with an arrow
+      (🔥↓ for fire vulnerability), so the row is space-separated now.
+- [x] **The summoning terrain bonus is never shown** before casting
       (`combat_manager.gd:~3566`).
-- [ ] **The status tooltip omits `retaliation`, `aura` and `spread`.**
-- [ ] **Tooltip hazard lines hand-copy `_process_terrain_effects()`** — change
+      *Done 2026-10-15:* the spell tooltip says "The spirits of the living
+      water answer readily here: +25% spellpower". The rule moved into
+      `CombatManager.summon_terrain_affinity_for()`, which the cast and the
+      tooltip both ask.
+- [x] **The status tooltip omits `retaliation`, `aura` and `spread`.**
+      *Done 2026-10-15:* a line for each — "Hits back at melee attackers…",
+      "Aura: Soothing Presence (allies within 2): heals 5 each turn" (read
+      through auras.json), "Can spread to an adjacent unit (15% chance…)".
+- [x] **Tooltip hazard lines hand-copy `_process_terrain_effects()`** — change
       one, change the other (`TooltipText.tile`).
-- [ ] **Dorje + Drilbu set text is hard-coded** in `item_tooltip.gd:~133`,
+      *Done 2026-10-15:* both read `CombatGrid.TERRAIN_HAZARDS`. The match in
+      `_process_terrain_effects()` is gone. Two small behaviour changes came
+      with it: wet ground no longer logs "takes 0 damage", and the tooltip
+      now says poison and acid do *physical* damage, which is what they
+      always did.
+- [x] **Dorje + Drilbu set text is hard-coded** in `item_tooltip.gd:~133`,
       duplicating `item_system.gd:~557-560` and omitting the opener bonus.
+      *Done 2026-10-15:* `ItemSystem.SET_BONUSES` holds the numbers and
+      `TooltipText.set_bonus()` builds the text from it. There was no opener
+      to show: `active_set_bonus` was stored "for future combat opener
+      hooks" in April and nothing has ever read it. The opener is unbuilt,
+      not just unmentioned.
 
 ### Data and tooling hygiene
 

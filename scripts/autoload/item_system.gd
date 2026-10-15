@@ -32,6 +32,20 @@ var ammo_types: Dictionary = {}  # ammo_id -> ammo definition from ammo.json
 # Maximum inventory size (can be expanded via upgrades later)
 var max_inventory_size: int = 60
 
+## Paired-item set bonuses. When the main-hand and off-hand items carry the
+## same `set_pair` id (items.json), the stats here are added on top of both
+## items' own. calculate_equipment_stats() applies them and the item tooltip
+## (TooltipText.set_bonus) describes them, both from this one table — the
+## tooltip used to hard-code its own copy of the numbers.
+const SET_BONUSES: Dictionary = {
+	"dorje_drilbu": {
+		"name": "Vajra & Bell",
+		# Method and wisdom in harmony: the sceptre in the right hand, the bell
+		# in the left.
+		"stats": {"spellpower": 3, "max_mana": 3, "initiative": 2},
+	},
+}
+
 func _ready() -> void:
 	_load_item_database()
 	_load_ammo()
@@ -555,11 +569,13 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 		var main_set = main_item.get("set_pair", "")
 		var off_set = off_item.get("set_pair", "")
 		if main_set != "" and main_set == off_set:
-			# Bonus: +3 spellpower, +3 max_mana, +2 initiative (Vajra and Bell in harmony)
-			bonuses["spellpower"] += 3
-			bonuses["max_mana"] += 3
-			bonuses["initiative"] += 2
-			# Store the active set name for combat effects (e.g. opener bonus)
+			# The numbers live in SET_BONUSES (top of this file), shared with
+			# the tooltip so the two can never disagree.
+			var set_stats: Dictionary = SET_BONUSES.get(main_set, {}).get("stats", {})
+			for stat_key in set_stats:
+				bonuses[stat_key] = bonuses.get(stat_key, 0) + set_stats[stat_key]
+			# Remembers which set is active. Meant for a combat opener effect
+			# that was planned with the set and never built — nothing reads it.
 			bonuses["active_set_bonus"] = main_set
 
 	return bonuses

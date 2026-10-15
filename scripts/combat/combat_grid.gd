@@ -93,6 +93,42 @@ enum TileType { FLOOR, WALL, PIT, WATER, DIFFICULT }
 # Terrain effects (hazards that can be on tiles)
 enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED, WET, STORMY, VOID, SMOKE }
 
+## What each terrain effect does to a unit standing on it at the start of
+## that unit's turn. This ONE table is read by two places:
+##   - CombatManager._process_terrain_effects() — which applies it, and
+##   - TooltipText.tile() — which describes it on hover.
+## They used to be two hand-written copies, so a change to one silently made
+## the other lie. Now changing a number here changes both.
+##
+## Keys (all optional):
+##   damage_type    — deals the tile's effect_value as this damage type
+##   heals          — true: heals the tile's effect_value instead
+##   status         — status applied (only if the unit does not have it yet)
+##   status_turns   — how long that status lasts
+##   status_chance  — 0.0-1.0, chance per turn (default 1.0 = always)
+##   status_blocked_by — other statuses that also stop it being applied
+##   water          — true: Water Walking ("immune_to_water_terrain") ignores it
+##   blocks_sight   — true: no effect on units, but blocks line of sight
+## Blessed ground is the one benign effect: levitators and ground-immune
+## statuses still receive its healing. Flyers ignore every effect.
+const TERRAIN_HAZARDS: Dictionary = {
+	TerrainEffect.FIRE: {"damage_type": "fire", "status": "Burning", "status_turns": 2},
+	# Poison ground deals POISON, so poison resistance answers it and armour
+	# does not. There is no `acid` damage type: acid is poison too, because the
+	# acid bomb and flask already deal poison and the puddle is the same stuff.
+	TerrainEffect.POISON: {"damage_type": "poison", "status": "Poisoned", "status_turns": 3},
+	TerrainEffect.ACID: {"damage_type": "poison"},
+	TerrainEffect.CURSED: {"damage_type": "black", "status": "Cursed", "status_turns": 2, "status_chance": 0.3},
+	TerrainEffect.BLESSED: {"heals": true},
+	TerrainEffect.ICE: {"status": "Slowed", "status_turns": 1, "status_blocked_by": ["Frozen"], "water": true},
+	# Wet ground slows you AND leaves you Soaked: +25% lightning damage taken
+	# (statuses.json says why lightning and not ice).
+	TerrainEffect.WET: {"status": "Slowed", "status_turns": 1, "also_status": "Soaked", "water": true},
+	TerrainEffect.STORMY: {"damage_type": "lightning", "status": "Stunned", "status_turns": 1, "status_chance": 0.2},
+	TerrainEffect.VOID: {"damage_type": "space"},
+	TerrainEffect.SMOKE: {"blocks_sight": true},
+}
+
 # Obstacle types (objects sitting on tiles that provide cover)
 enum ObstacleType { NONE, TREE, ROCK, PILLAR, BARRICADE, FALLEN_TREE }
 

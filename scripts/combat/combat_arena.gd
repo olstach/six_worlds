@@ -713,12 +713,6 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	else:
 		combat_grid.clear_aoe_preview()
 
-	# Show cover info when hovering movement destinations
-	if current_action_mode == ActionMode.MOVE:
-		_show_cover_tooltip(grid_pos)
-	else:
-		_hide_cover_tooltip()
-
 	# Show hit% when hovering an enemy target in attack mode
 	if current_action_mode == ActionMode.ATTACK:
 		var current_unit := CombatManager.get_current_unit()
@@ -731,7 +725,8 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	else:
 		_hide_hit_chance_tooltip()
 
-	# Show floating tile info tooltip (obstacle, height, terrain effect)
+	# Show floating tile info tooltip (obstacle, height, terrain effect — and
+	# in move mode the cover the tile would give, in the same label)
 	_show_tile_tooltip(grid_pos)
 
 	# Update unit info if hovering over a unit
@@ -795,7 +790,6 @@ func _cancel_action_mode() -> void:
 	selected_skill = {}
 	combat_grid.clear_highlights()
 	combat_grid.clear_aoe_preview()
-	_hide_cover_tooltip()
 	_hide_tile_tooltip()
 	_hide_hit_chance_tooltip()
 	spell_panel.hide()
@@ -1116,6 +1110,11 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 	var summon_id = spell.get("summon", "")
 	if summon_id != "":
 		lines.append("Summons: " + summon_id.replace("_", " "))
+
+	# Summoning terrain bonus — shown before casting, not only in the log after.
+	var affinity_line: String = TooltipText.summon_terrain_line(spell, CombatManager.battlefield_overworld_terrain)
+	if affinity_line != "":
+		lines.append(affinity_line)
 
 	# Description
 	var desc = spell.get("description", "")
@@ -2401,68 +2400,32 @@ func _update_action_circles(remaining: int, total: int) -> void:
 
 
 # ============================================
-# COVER TOOLTIP
+# TILE TOOLTIP (terrain, hazards, zones — and cover while moving)
 # ============================================
 
-## Floating label shown when hovering over movement tiles near cover
-var _cover_tooltip: Label = null
-
-## Floating label shown when hovering any tile with noteworthy terrain info
+## Floating label shown when hovering any tile with noteworthy terrain info.
+## In move mode it also carries the cover the tile would give. Those were two
+## labels once, and the terrain one hid itself in move mode to make room —
+## so a fire tile said nothing at the one moment you were deciding whether to
+## step on it.
 var _tile_tooltip: Label = null
 
-## Show cover tooltip at a tile position when in movement mode
-func _show_cover_tooltip(grid_pos: Vector2i) -> void:
-	_hide_cover_tooltip()
-
-	# Only show for valid movement destinations
-	if not grid_pos in combat_grid.highlighted_tiles:
-		return
-
-	var current_unit = CombatManager.get_current_unit()
-	if current_unit == null:
-		return
-
-	# Check what cover this position would provide
-	var cover_info = combat_grid.get_cover_info_at(grid_pos, current_unit.team)
-	if not cover_info.has_cover:
-		return
-
-	# Also check height advantage at this position
-	var height = combat_grid.get_tile_height(grid_pos)
-
-	# Build tooltip text
-	var tooltip_text = "+%d%% dodge (cover: %s)" % [cover_info.dodge_bonus, cover_info.obstacle_name]
-	if height > 0:
-		tooltip_text += "\nHeight %d (+%d%% accuracy)" % [height, height * 5]
-
-	# Create floating label above the tile
-	_cover_tooltip = Label.new()
-	_cover_tooltip.text = tooltip_text
-	_cover_tooltip.add_theme_font_size_override("font_size", 11)
-	_cover_tooltip.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
-	_cover_tooltip.position = combat_grid.grid_to_world(grid_pos) + Vector2(0, -20)
-	_cover_tooltip.z_index = 100
-	combat_grid.add_child(_cover_tooltip)
-
-
-## Hide the cover tooltip
-func _hide_cover_tooltip() -> void:
-	if _cover_tooltip != null:
-		_cover_tooltip.queue_free()
-		_cover_tooltip = null
-
-
-## Show a floating tooltip with obstacle, height, and terrain effect info for a tile
+## Show a floating tooltip with obstacle, height, terrain effect info — and,
+## while choosing where to move, the cover the tile would give.
 func _show_tile_tooltip(grid_pos: Vector2i) -> void:
 	_hide_tile_tooltip()
 
-	# Don't show when cover tooltip is already providing info in movement mode
-	if current_action_mode == ActionMode.MOVE:
-		return
+	# Cover only matters for a tile you can actually move to this turn.
+	var cover_info: Dictionary = {}
+	if current_action_mode == ActionMode.MOVE and grid_pos in combat_grid.highlighted_tiles:
+		var current_unit = CombatManager.get_current_unit()
+		if current_unit != null:
+			cover_info = combat_grid.get_cover_info_at(grid_pos, current_unit.team)
 
-	# Ground, passability, obstacle, height, hazard and zones — built in
-	# TooltipText so the wording can be checked by tools/verify_tooltips.gd.
-	var text: String = TooltipText.tile(combat_grid, grid_pos, CombatManager.zones_at(grid_pos))
+	# Cover, ground, passability, obstacle, height, hazard and zones — built
+	# in TooltipText so the wording can be checked by tools/verify_tooltips.gd.
+	var text: String = TooltipText.move_tile(combat_grid, grid_pos,
+		CombatManager.zones_at(grid_pos), cover_info)
 	if text == "":
 		return
 

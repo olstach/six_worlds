@@ -2,6 +2,7 @@
   "statuses": [
 	{
 	  "name": "Frozen",
+	  "icon": "❄",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -20,6 +21,7 @@
 	},
 	{
 	  "name": "Burning",
+	  "icon": "🔥",
 	  "type": "debuff",
 	  "category": "dot",
 	  "effects": [
@@ -43,6 +45,7 @@
 	},
 	{
 	  "name": "Poisoned",
+	  "icon": "☠",
 	  "affliction": "poison",
 	  "type": "debuff",
 	  "category": "dot",
@@ -60,6 +63,7 @@
 	},
 	{
 	  "name": "Bleeding",
+	  "icon": "🩸",
 	  "affliction": "bleed",
 	  "type": "debuff",
 	  "category": "dot",
@@ -78,6 +82,7 @@
 	},
 	{
 	  "name": "Rooted",
+	  "icon": "🌿",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -92,6 +97,7 @@
 	},
 	{
 	  "name": "Slowed",
+	  "icon": "🐌",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -107,6 +113,7 @@
 	},
 	{
 	  "name": "Soaked",
+	  "icon": "💧⚡",
 	  "_comment": "What standing in water does to you: lightning finds you more easily. Applied by wet ground at the start of each turn you begin on it (CombatManager._process_terrain_effects), so it lasts through the round in which an enemy could exploit it and lapses a turn after you step out. Lightning only, not ice: water conducts, and that makes wet ground a set-up an Air caster can cash in, rather than a Water caster's own combo with itself. 25% is a first-pass balance number — modest because the ground already slows you.",
 	  "type": "debuff",
 	  "category": "debuff",
@@ -123,6 +130,7 @@
 	},
 	{
 	  "name": "Petrified",
+	  "icon": "🗿",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -141,6 +149,7 @@
 	},
 	{
 	  "name": "Silenced",
+	  "icon": "🤐",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -154,6 +163,7 @@
 	},
 	{
 	  "name": "Confused",
+	  "icon": "❓",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -173,6 +183,7 @@
 	},
 	{
 	  "name": "Feared",
+	  "icon": "😨",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -189,6 +200,7 @@
 	},
 	{
 	  "name": "Prone",
+	  "icon": "⬇",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -200,6 +212,7 @@
 	},
 	{
 	  "name": "Held",
+	  "icon": "✋",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -216,6 +229,7 @@
 	},
 	{
 	  "name": "Drowning",
+	  "icon": "🌊",
 	  "type": "debuff",
 	  "category": "dot_cc",
 	  "effects": [
@@ -231,6 +245,7 @@
 	},
 	{
 	  "name": "Infected",
+	  "icon": "🦠",
 	  "type": "debuff",
 	  "category": "delayed",
 	  "effects": [
@@ -247,6 +262,7 @@
 	},
 	{
 	  "name": "Swarmed",
+	  "icon": "🐝",
 	  "type": "debuff",
 	  "category": "dot_disruption",
 	  "effects": [
@@ -262,6 +278,7 @@
 	},
 	{
 	  "name": "Doomed",
+	  "icon": "⏳",
 	  "type": "debuff",
 	  "category": "delayed",
 	  "effects": [
@@ -275,6 +292,7 @@
 	},
 	{
 	  "name": "Fire_Vulnerable",
+	  "icon": "🔥↓",
 	  "type": "debuff",
 	  "category": "vulnerability",
 	  "effects": [],
@@ -289,6 +307,7 @@
 	},
 	{
 	  "name": "Blessed",
+	  "icon": "✨",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -304,6 +323,7 @@
 	},
 	{
 	  "name": "Hasted",
+	  "icon": "⏩",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -319,6 +339,7 @@
 	},
 	{
 	  "name": "Regenerating",
+	  "icon": "💚",
 	  "type": "buff",
 	  "category": "hot",
 	  "effects": [
@@ -333,6 +354,7 @@
 	},
 	{
 	  "name": "Invisible",
+	  "icon": "👻",
 	  "type": "buff",
 	  "category": "stealth",
 	  "effects": [
@@ -348,6 +370,7 @@
 	},
 	{
 	  "name": "Death_Immunity",
+	  "icon": "♾",
 	  "type": "buff",
 	  "category": "divine",
 	  "effects": [
@@ -360,6 +383,7 @@
 	},
 	{
 	  "name": "Sanctuary",
+	  "icon": "🕊",
 	  "type": "buff",
 	  "category": "protection",
 	  "effects": [
@@ -375,6 +399,7 @@
 	},
 	{
 	  "name": "Forgetful",
+	  "icon": "💭",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -392,6 +417,7 @@
 	},
 	{
 	  "name": "Charmed",
+	  "icon": "💕",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -408,6 +434,7 @@
 	},
 	{
 	  "name": "Berserk",
+	  "icon": "😡",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -423,6 +450,7 @@
 	},
 	{
 	  "name": "Bloodlust",
+	  "icon": "🩸↑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -436,6 +464,7 @@
 	},
 	{
 	  "name": "Blinded",
+	  "icon": "🙈",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -452,6 +481,7 @@
 	},
 	{
 	  "name": "Fireshield",
+	  "icon": "🛡🔥",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -468,6 +498,7 @@
 	},
 	{
 	  "name": "Boiling_Blood",
+	  "icon": "♨",
 	  "type": "debuff",
 	  "category": "dot",
 	  "effects": [
@@ -482,6 +513,7 @@
 	},
 	{
 	  "name": "Dominated",
+	  "icon": "🎭",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -493,6 +525,7 @@
 	},
 	{
 	  "name": "Fan_the_Flames",
+	  "icon": "🔥↑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -506,6 +539,7 @@
 	},
 	{
 	  "name": "Smoke_Form",
+	  "icon": "💨",
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
@@ -524,6 +558,7 @@
 	},
 	{
 	  "name": "Water_Vulnerable_25",
+	  "icon": "💧↓",
 	  "type": "debuff",
 	  "category": "vulnerability",
 	  "effects": [],
@@ -538,6 +573,7 @@
 	},
 	{
 	  "name": "Stunned",
+	  "icon": "⚡",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -555,6 +591,7 @@
 	},
 	{
 	  "name": "Magnetizing_Aura",
+	  "icon": "🧲",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [
@@ -568,6 +605,7 @@
 	},
 	{
 	  "name": "Electrified_Weapon",
+	  "icon": "⚡⚔",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -582,6 +620,7 @@
 	},
 	{
 	  "name": "Levitating",
+	  "icon": "🎈",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -597,6 +636,7 @@
 	},
 	{
 	  "name": "Precision",
+	  "icon": "🎯",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -612,6 +652,7 @@
 	},
 	{
 	  "name": "Air_Shield",
+	  "icon": "🌀",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -625,6 +666,7 @@
 	},
 	{
 	  "name": "Favorable_Wind",
+	  "icon": "🍃",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [],
@@ -637,6 +679,7 @@
 	},
 	{
 	  "name": "Flying",
+	  "icon": "🪽",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -656,6 +699,7 @@
 	},
 	{
 	  "name": "Storm_Lord",
+	  "icon": "⛈",
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
@@ -675,6 +719,7 @@
 	},
 	{
 	  "name": "Blessed_Shot",
+	  "icon": "🏹",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -691,6 +736,7 @@
 	},
 	{
 	  "name": "Lightning_Form",
+	  "icon": "🌩",
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
@@ -719,6 +765,7 @@
 	},
 	{
 	  "name": "Thin_Air",
+	  "icon": "〰",
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
@@ -736,6 +783,7 @@
 	},
 	{
 	  "name": "Suffocating",
+	  "icon": "😶",
 	  "type": "debuff",
 	  "category": "dot_cc",
 	  "effects": [
@@ -752,6 +800,7 @@
 	},
 	{
 	  "name": "Physical_Resist_50",
+	  "icon": "🛡",
 	  "type": "buff",
 	  "category": "resistance",
 	  "effects": [],
@@ -766,6 +815,7 @@
 	},
 	{
 	  "name": "Water_Vulnerable_50",
+	  "icon": "💧↓",
 	  "type": "debuff",
 	  "category": "vulnerability",
 	  "effects": [],
@@ -780,6 +830,7 @@
 	},
 	{
 	  "name": "Air_Immune",
+	  "icon": "🌀✓",
 	  "type": "buff",
 	  "category": "immunity",
 	  "effects": [],
@@ -794,6 +845,7 @@
 	},
 	{
 	  "name": "Poison_Skin",
+	  "icon": "🐸",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -810,6 +862,7 @@
 	},
 	{
 	  "name": "Festering",
+	  "icon": "🦠",
 	  "affliction": "poison",
 	  "type": "debuff",
 	  "category": "dot",
@@ -828,6 +881,7 @@
 	},
 	{
 	  "name": "Diseased",
+	  "icon": "🤢",
 	  "affliction": "disease",
 	  "type": "debuff",
 	  "category": "dot_debuff",
@@ -847,6 +901,7 @@
 	},
 	{
 	  "name": "Chameleon",
+	  "icon": "🦎",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -860,6 +915,7 @@
 	},
 	{
 	  "name": "Blurred",
+	  "icon": "〰",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -874,6 +930,7 @@
 	},
 	{
 	  "name": "Mirror_Images",
+	  "icon": "👥",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -888,6 +945,7 @@
 	},
 	{
 	  "name": "Magic_Shield",
+	  "icon": "🔮",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -901,6 +959,7 @@
 	},
 	{
 	  "name": "Magic_Mirror",
+	  "icon": "🪞",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -914,6 +973,7 @@
 	},
 	{
 	  "name": "Mantric_Armor",
+	  "icon": "🕉",
 	  "type": "buff",
 	  "category": "shield",
 	  "effects": [
@@ -927,6 +987,7 @@
 	},
 	{
 	  "name": "Phasing",
+	  "icon": "👻",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -941,6 +1002,7 @@
 	},
 	{
 	  "name": "Shadow_Pinned",
+	  "icon": "📌",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -956,6 +1018,7 @@
 	},
 	{
 	  "name": "Wrathfully_Bound",
+	  "icon": "⛓",
 	  "type": "debuff",
 	  "category": "cc_dot",
 	  "effects": [
@@ -972,6 +1035,7 @@
 	},
 	{
 	  "name": "Shimmering",
+	  "icon": "✧",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -985,6 +1049,7 @@
 	},
 	{
 	  "name": "Chaotic",
+	  "icon": "🌀",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1001,6 +1066,7 @@
 	},
 	{
 	  "name": "Paralyzed",
+	  "icon": "⚡",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1017,6 +1083,7 @@
 	},
 	{
 	  "name": "Invulnerable",
+	  "icon": "💎",
 	  "type": "buff",
 	  "category": "immunity",
 	  "effects": [],
@@ -1029,6 +1096,7 @@
 	},
 	{
 	  "name": "Encouraged",
+	  "icon": "👍",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1042,6 +1110,7 @@
 	},
 	{
 	  "name": "Friendly",
+	  "icon": "🙂",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1055,6 +1124,7 @@
 	},
 	{
 	  "name": "Soothing_Presence",
+	  "icon": "🕊",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [],
@@ -1069,6 +1139,7 @@
 	},
 	{
 	  "name": "Pacified",
+	  "icon": "☮",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1084,6 +1155,7 @@
 	},
 	{
 	  "name": "Mirthful",
+	  "icon": "😄",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1099,6 +1171,7 @@
 	},
 	{
 	  "name": "Praying",
+	  "icon": "🙏",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1115,6 +1188,7 @@
 	},
 	{
 	  "name": "Divinely_Inspired",
+	  "icon": "🌟",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1128,6 +1202,7 @@
 	},
 	{
 	  "name": "Aura_of_Blessing",
+	  "icon": "☀",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [],
@@ -1140,6 +1215,7 @@
 	},
 	{
 	  "name": "Divine_Champion",
+	  "icon": "👑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1153,6 +1229,7 @@
 	},
 	{
 	  "name": "Lifelink",
+	  "icon": "❤",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1166,6 +1243,7 @@
 	},
 	{
 	  "name": "Pain_Mirror",
+	  "icon": "🪞",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -1182,6 +1260,7 @@
 	},
 	{
 	  "name": "Ancestral_Guidance",
+	  "icon": "👣",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1196,6 +1275,7 @@
 	},
 	{
 	  "name": "Ancestral_Vengeance",
+	  "icon": "⚔",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1209,6 +1289,7 @@
 	},
 	{
 	  "name": "Karmic_Bond",
+	  "icon": "🔗",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1223,6 +1304,7 @@
 	},
 	{
 	  "name": "Eternal_Vow",
+	  "icon": "♾",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1234,6 +1316,7 @@
 	},
 	{
 	  "name": "Ancestors_Blessing",
+	  "icon": "🙏",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1248,6 +1331,7 @@
 	},
 	{
 	  "name": "Gloomy",
+	  "icon": "🌧",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1262,6 +1346,7 @@
 	},
 	{
 	  "name": "Blood_Hunger",
+	  "icon": "🧛",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1275,6 +1360,7 @@
 	},
 	{
 	  "name": "Cursed",
+	  "icon": "💀",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1289,6 +1375,7 @@
 	},
 	{
 	  "name": "Suffering",
+	  "icon": "😣",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1304,6 +1391,7 @@
 	},
 	{
 	  "name": "Shadow_Cloaked",
+	  "icon": "🌑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1318,6 +1406,7 @@
 	},
 	{
 	  "name": "Rotting",
+	  "icon": "🦴",
 	  "type": "debuff",
 	  "category": "debuff_dot",
 	  "effects": [
@@ -1333,6 +1422,7 @@
 	},
 	{
 	  "name": "Armored_Minor",
+	  "icon": "🛡",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -1347,6 +1437,7 @@
 	},
 	{
 	  "name": "Armored_Major",
+	  "icon": "🛡",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -1361,6 +1452,7 @@
 	},
 	{
 	  "name": "Armored_Supreme",
+	  "icon": "🛡",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -1375,6 +1467,7 @@
 	},
 	{
 	  "name": "Armor_Debuff_50",
+	  "icon": "🛡↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1388,6 +1481,7 @@
 	},
 	{
 	  "name": "Armor_Reduced",
+	  "icon": "🛡↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1401,6 +1495,7 @@
 	},
 	{
 	  "name": "Awareness_Buff",
+	  "icon": "👁↑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1414,6 +1509,7 @@
 	},
 	{
 	  "name": "Burning_Weapon",
+	  "icon": "🔥⚔",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1427,6 +1523,7 @@
 	},
 	{
 	  "name": "Caged",
+	  "icon": "⛓",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1442,6 +1539,7 @@
 	},
 	{
 	  "name": "Constitution_Buff",
+	  "icon": "❤↑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1455,6 +1553,7 @@
 	},
 	{
 	  "name": "Damage_Debuff",
+	  "icon": "⚔↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1468,6 +1567,7 @@
 	},
 	{
 	  "name": "Dampening_Aura",
+	  "icon": "🔇",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [],
@@ -1480,6 +1580,7 @@
 	},
 	{
 	  "name": "Dodge_Debuff",
+	  "icon": "💨↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1493,6 +1594,7 @@
 	},
 	{
 	  "name": "Entangled",
+	  "icon": "🌿",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1509,6 +1611,7 @@
 	},
 	{
 	  "name": "Extra_Action",
+	  "icon": "➕",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1520,6 +1623,7 @@
 	},
 	{
 	  "name": "Fire_Immune",
+	  "icon": "🔥✓",
 	  "type": "buff",
 	  "category": "immunity",
 	  "effects": [],
@@ -1534,6 +1638,7 @@
 	},
 	{
 	  "name": "Fire_Resistance_25",
+	  "icon": "🔥🛡",
 	  "type": "buff",
 	  "category": "resistance",
 	  "effects": [],
@@ -1548,6 +1653,7 @@
 	},
 	{
 	  "name": "Focus_Buff_Major",
+	  "icon": "🧠↑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1561,6 +1667,7 @@
 	},
 	{
 	  "name": "Fortified",
+	  "icon": "🏰",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1577,6 +1684,7 @@
 	},
 	{
 	  "name": "Golden_Defense",
+	  "icon": "🔰",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1593,6 +1701,7 @@
 	},
 	{
 	  "name": "Grounded",
+	  "icon": "⬇",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1607,6 +1716,7 @@
 	},
 	{
 	  "name": "Immobilized",
+	  "icon": "⛓",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1622,6 +1732,7 @@
 	},
 	{
 	  "name": "Initiative_Buff",
+	  "icon": "⏩",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1635,6 +1746,7 @@
 	},
 	{
 	  "name": "Keen_Weapon",
+	  "icon": "🗡",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1649,6 +1761,7 @@
 	},
 	{
 	  "name": "Lucky",
+	  "icon": "🍀",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1663,6 +1776,7 @@
 	},
 	{
 	  "name": "Lured",
+	  "icon": "🪝",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1678,6 +1792,7 @@
 	},
 	{
 	  "name": "Major_Dodge",
+	  "icon": "💨",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1691,6 +1806,7 @@
 	},
 	{
 	  "name": "Melee_Attack_Debuff_50",
+	  "icon": "⚔↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1704,6 +1820,7 @@
 	},
 	{
 	  "name": "Movement_Debuff",
+	  "icon": "🐌",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1717,6 +1834,7 @@
 	},
 	{
 	  "name": "Phase_Wind",
+	  "icon": "🌬",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1731,6 +1849,7 @@
 	},
 	{
 	  "name": "Physical_Immune",
+	  "icon": "🛡✓",
 	  "type": "buff",
 	  "category": "immunity",
 	  "effects": [],
@@ -1745,6 +1864,7 @@
 	},
 	{
 	  "name": "Pushed",
+	  "icon": "↗",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1755,6 +1875,7 @@
 	},
 	{
 	  "name": "Range_Debuff",
+	  "icon": "🏹↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1768,6 +1889,7 @@
 	},
 	{
 	  "name": "Ranged_Attack_Debuff_50",
+	  "icon": "🏹↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1781,6 +1903,7 @@
 	},
 	{
 	  "name": "Ranged_Damage_Debuff_50",
+	  "icon": "🏹↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1794,6 +1917,7 @@
 	},
 	{
 	  "name": "Slippery_Terrain",
+	  "icon": "🧊",
 	  "type": "debuff",
 	  "category": "terrain",
 	  "effects": [
@@ -1807,6 +1931,7 @@
 	},
 	{
 	  "name": "Slowed_After_Escape",
+	  "icon": "🐌",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1822,6 +1947,7 @@
 	},
 	{
 	  "name": "Solar_Form",
+	  "icon": "☀",
 	  "type": "buff",
 	  "category": "transformation",
 	  "effects": [
@@ -1843,6 +1969,7 @@
 	},
 	{
 	  "name": "Soul_Burning",
+	  "icon": "🕯",
 	  "type": "debuff",
 	  "category": "dot",
 	  "effects": [
@@ -1857,6 +1984,7 @@
 	},
 	{
 	  "name": "Strength_Buff",
+	  "icon": "💪",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1870,6 +1998,7 @@
 	},
 	{
 	  "name": "Tongues_of_Fire",
+	  "icon": "🔥",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1888,6 +2017,7 @@
 	},
 	{
 	  "name": "Trapped",
+	  "icon": "🪤",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1903,6 +2033,7 @@
 	},
 	{
 	  "name": "Water_Immune",
+	  "icon": "💧✓",
 	  "type": "buff",
 	  "category": "immunity",
 	  "effects": [],
@@ -1917,6 +2048,7 @@
 	},
 	{
 	  "name": "Water_Vulnerable",
+	  "icon": "💧↓",
 	  "type": "debuff",
 	  "category": "vulnerability",
 	  "effects": [],
@@ -1931,6 +2063,7 @@
 	},
 	{
 	  "name": "Water_Walking",
+	  "icon": "🌊",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1946,6 +2079,7 @@
 	},
 	{
 	  "name": "Yaksha_Strength",
+	  "icon": "👹",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -1960,6 +2094,7 @@
 	},
 	{
 	  "name": "Grappled",
+	  "icon": "🤼",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -1977,6 +2112,7 @@
 	},
 	{
 	  "name": "Force_Miss",
+	  "icon": "✗",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -1989,6 +2125,7 @@
 	},
 	{
 	  "name": "Taunt",
+	  "icon": "📢",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -2004,6 +2141,7 @@
 	},
 	{
 	  "name": "Demoralized",
+	  "icon": "😞",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2020,6 +2158,7 @@
 	},
 	{
 	  "name": "Disarmed",
+	  "icon": "🚫",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -2035,6 +2174,7 @@
 	},
 	{
 	  "name": "Mindmucked",
+	  "icon": "🧠↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2051,6 +2191,7 @@
 	},
 	{
 	  "name": "Glass_Globe",
+	  "icon": "🔮",
 	  "type": "buff",
 	  "category": "shield",
 	  "effects": [
@@ -2077,6 +2218,7 @@
 	},
 	{
 	  "name": "Crystal_Diadem",
+	  "icon": "💠",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2095,6 +2237,7 @@
 	},
 	{
 	  "name": "Strength_Plus_2",
+	  "icon": "💪",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2110,6 +2253,7 @@
 	},
 	{
 	  "name": "Finesse_Plus_2",
+	  "icon": "🤸",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2125,6 +2269,7 @@
 	},
 	{
 	  "name": "Focus_Plus_3",
+	  "icon": "🧠↑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2140,6 +2285,7 @@
 	},
 	{
 	  "name": "Awareness_Plus_3",
+	  "icon": "👁↑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2155,6 +2301,7 @@
 	},
 	{
 	  "name": "Constitution_Minus_2",
+	  "icon": "❤↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2171,6 +2318,7 @@
 	},
 	{
 	  "name": "Focus_Minus_2",
+	  "icon": "🧠↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2187,6 +2335,7 @@
 	},
 	{
 	  "name": "Initiative_Debuff",
+	  "icon": "⏪",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2202,6 +2351,7 @@
 	},
 	{
 	  "name": "Cleansed",
+	  "icon": "💧✨",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2216,6 +2366,7 @@
 	},
 	{
 	  "name": "Mental_Immunity",
+	  "icon": "🧠✓",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2232,6 +2383,7 @@
 	},
 	{
 	  "name": "Fire_Vulnerable_50",
+	  "icon": "🔥↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [],
@@ -2248,6 +2400,7 @@
 	},
 	{
 	  "name": "Marked_for_Death",
+	  "icon": "🎯",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2265,6 +2418,7 @@
 	},
 	{
 	  "name": "Rainbow_Cloak",
+	  "icon": "🌈",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2282,6 +2436,7 @@
 	},
 	{
 	  "name": "Pinned",
+	  "icon": "📌",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -2298,6 +2453,7 @@
 	},
 	{
 	  "name": "Subjugated",
+	  "icon": "⛓",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -2315,6 +2471,7 @@
 	},
 	{
 	  "name": "Weakened",
+	  "icon": "⚔↓",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2331,6 +2488,7 @@
 	},
 	{
 	  "name": "Strengthened",
+	  "icon": "💪",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2345,6 +2503,7 @@
 	},
 	{
 	  "name": "Hastened",
+	  "icon": "⏩",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2360,6 +2519,7 @@
 	},
 	{
 	  "name": "Shielded",
+	  "icon": "🛡",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2374,6 +2534,7 @@
 	},
 	{
 	  "name": "Inspired",
+	  "icon": "🌟",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2388,6 +2549,7 @@
 	},
 	{
 	  "name": "Dodge_Buff",
+	  "icon": "💨",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2402,6 +2564,7 @@
 	},
 	{
 	  "name": "Dazed",
+	  "icon": "💫",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -2417,6 +2580,7 @@
 	},
 	{
 	  "name": "Knocked_Down",
+	  "icon": "⬇",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -2429,6 +2593,7 @@
 	},
 	{
 	  "name": "Rage",
+	  "icon": "😡",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2441,6 +2606,7 @@
 	},
 	{
 	  "name": "Invincible",
+	  "icon": "💎",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2452,6 +2618,7 @@
 	},
 	{
 	  "name": "Resolute",
+	  "icon": "🧠✓",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2465,6 +2632,7 @@
 	},
 	{
 	  "name": "Riposte_Ready",
+	  "icon": "🤺",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2477,6 +2645,7 @@
 	},
 	{
 	  "name": "Reflect",
+	  "icon": "🪞",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [
@@ -2489,6 +2658,7 @@
 	},
 	{
 	  "name": "Radiance",
+	  "icon": "☀",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [],
@@ -2505,6 +2675,7 @@
 	},
 	{
 	  "name": "Radiant_Visage",
+	  "icon": "🌞",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [],
@@ -2520,6 +2691,7 @@
 	},
 	{
 	  "name": "Anchored",
+	  "icon": "⚓",
 	  "type": "debuff",
 	  "category": "control",
 	  "effects": [
@@ -2534,6 +2706,7 @@
 	},
 	{
 	  "name": "Inner_Flame",
+	  "icon": "🔥",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -2555,6 +2728,7 @@
 	},
 	{
 	  "name": "Shining_Mirage",
+	  "icon": "🌫",
 	  "type": "buff",
 	  "category": "aura",
 	  "effects": [],
@@ -2568,6 +2742,7 @@
 	},
 	{
 	  "name": "Time_Stopped",
+	  "icon": "⌛",
 	  "type": "debuff",
 	  "category": "cc",
 	  "effects": [
@@ -2582,6 +2757,7 @@
 	},
 	{
 	  "name": "Disoriented",
+	  "icon": "💫",
 	  "type": "debuff",
 	  "category": "debuff",
 	  "effects": [
@@ -2597,6 +2773,7 @@
 	},
 	{
 	  "name": "Lava_Walking",
+	  "icon": "🌋",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -2610,6 +2787,7 @@
 	},
 	{
 	  "name": "Marshtread",
+	  "icon": "🐸",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -2626,6 +2804,7 @@
 	},
 	{
 	  "name": "Camels_Blessing",
+	  "icon": "🐪",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -2642,6 +2821,7 @@
 	},
 	{
 	  "name": "Following_Wind",
+	  "icon": "🍃",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -2655,6 +2835,7 @@
 	},
 	{
 	  "name": "Rahulas_Cloak",
+	  "icon": "🌑",
 	  "type": "buff",
 	  "category": "buff",
 	  "effects": [],
@@ -2668,6 +2849,7 @@
 	},
 	{
 	  "name": "Counterstance",
+	  "icon": "🤺",
 	  "type": "buff",
 	  "category": "stance",
 	  "effects": [],
@@ -2689,6 +2871,7 @@
 	},
 	{
 	  "name": "Guarding_The_Gap",
+	  "icon": "🚧",
 	  "type": "buff",
 	  "category": "stance",
 	  "effects": [],
@@ -2710,6 +2893,7 @@
 	},
 	{
 	  "name": "Set_For_Charge",
+	  "icon": "🔱",
 	  "type": "buff",
 	  "category": "stance",
 	  "effects": [],
@@ -2732,6 +2916,7 @@
 	},
 	{
 	  "name": "Kill_Zone",
+	  "icon": "🎯",
 	  "type": "buff",
 	  "category": "stance",
 	  "effects": [],
@@ -2753,6 +2938,7 @@
 	},
 	{
 	  "name": "Heavenly_Counterflow",
+	  "icon": "☯",
 	  "type": "buff",
 	  "category": "stance",
 	  "effects": [],
@@ -2778,6 +2964,7 @@
 	},
 	{
 	  "name": "None_Shall_Pass",
+	  "icon": "🚧",
 	  "type": "buff",
 	  "category": "stance",
 	  "effects": [],
@@ -2802,6 +2989,7 @@
 	},
 	{
 	  "name": "Guarding",
+	  "icon": "🛡",
 	  "type": "buff",
 	  "category": "stance",
 	  "effects": [],
