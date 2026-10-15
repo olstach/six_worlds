@@ -48,6 +48,7 @@ class Report:
     doc_changed: bool = False
     check: bool = False
     message: str = ""                               # a fatal problem, if any
+    notice: str = ""                                # worth saying, not fatal
     first_run: bool = False
 
     @property
@@ -66,6 +67,8 @@ class Report:
         if self.message:             # a refusal: nothing was compared
             print(self.message)
             return
+        if self.notice:
+            print(self.notice)
         if self.imported:
             print("IMPORTED")
             for key, name, old, new in self.imported:
@@ -167,6 +170,11 @@ def _base_fields(doc: Doc, text: str) -> dict:
     return out
 
 
+def _has_notes(pe) -> bool:
+    """True if a parsed entry, or any child below it, has notes."""
+    return bool(pe.notes) or any(_has_notes(c) for c in pe.children)
+
+
 def _field_text(name: str, value: str) -> str:
     """A field line (or block) for text moved to the Inbox."""
     if "\n" not in value:
@@ -184,6 +192,33 @@ class _Merge:
         self.ds, self.base, self.owner, self.report = ds, base, owner, report
         self.notes: dict = {}        # the doc's notes, which always win
         self.moved: list = []        # text blocks for the Inbox
+        self._base_kids: dict = {}   # cache for base_children()
+
+    def base_children(self, top: str) -> dict:
+        """{location below the top entry: raw} for every child the last sync
+        rendered inside the top-level entry at location `top`."""
+        if top not in self._base_kids:
+            # entry lines only parse under a heading, so give it one
+            parsed = mdformat.parse("# x\n" + self.base["rendered"].get(top, ""))
+            out = {}
+            for pe in parsed.entries.values():
+                stack = list(pe.children)
+                while stack:
+                    c = stack.pop()
+                    out[c.location[len(pe.location):]] = c.raw
+                    stack.extend(c.children)
+            self._base_kids[top] = out
+        return self._base_kids[top]
+
+    def gone(self, location: str, pe, untouched: bool) -> None:
+        """A doc entry with no record in the data. Dropped silently only
+        when it is exactly what the last sync wrote (the record was deleted
+        from the JSON) and nothing in it carries notes; otherwise its text
+        goes to the Inbox, because owner text is never lost."""
+        if not untouched:
+            self.move(location, "not in the data", pe.raw)
+        elif _has_notes(pe):
+            self.move(location, "record deleted from the data; it had notes", pe.raw)
 
     def move(self, location: str, reason: str, raw: str) -> None:
         self.moved.append(
@@ -201,6 +236,8 @@ class _Merge:
             if hasattr(section, "import_field"):
                 section.import_field(self.ds, entry.key, f, d)
             else:
+                # set_at writes the doc's str (or list[str] for a list field);
+                # a section whose JSON holds other types needs import_field
                 self.ds.set_at(f.path, d)
             self.report.imported.append((entry.key, f.name, j, d))
         elif key in self.base["fields"] and d == b:
@@ -239,13 +276,19 @@ class _Merge:
         if pe.notes:
             self.notes[e.key] = pe.notes
         built, current = _by_ident(e.children), _by_ident(cur.children)
+        seen = set()
         for pc in pe.children:
+            if pc.ident in seen:     # a copy would overwrite the original
+                self.move(pc.location, "duplicate id", pc.raw)
+                continue
+            seen.add(pc.ident)
             if pc.ident in built and pc.ident in current:
                 self.entry(built[pc.ident], pc, current[pc.ident], top)
-            # a child deleted from the JSON and untouched in the doc is still
-            # inside the text the last sync rendered for its top-level entry
-            elif pc.raw not in self.base["rendered"].get(top, ""):
-                self.move(pc.location, "not in the data", pc.raw)
+            else:
+                # untouched = the same text the last sync wrote for this child
+                below = pc.location[len(top):]
+                self.gone(pc.location, pc,
+                          self.base_children(top).get(below) == pc.raw)
 
 
 # ===========================================================================
@@ -297,17 +340,21 @@ def run(root: Path, write: bool, check: bool = False) -> Report:
     current, owner = _build(ds, "", base["notes"])
     current_index = mdformat.location_index(current)
     current_view = _doc_view_index(mdformat.render(current))
-    on_disk = doc_path.read_text(encoding="utf-8")
-    parsed = mdformat.parse(on_disk)
+    on_disk = doc_path.read_text(encoding="utf-8") if doc_path.exists() else None
+    parsed = mdformat.parse(on_disk or "")
 
     # 3-5. merge every parsed entry; move what has no home to the Inbox
     merge = _Merge(ds, base, owner, report)
+    if on_disk is None:
+        # nothing to merge: rebuild the doc from the data and the saved notes
+        report.notice = ("CONTENT.md is missing — regenerated from the data and "
+                         "the notes in content_base.json, with an empty Inbox.")
+        merge.notes = dict(base["notes"])
     for loc, pe in parsed.entries.items():
         if loc in current_index and loc in current_view:
             merge.entry(current_index[loc], pe, current_view[loc], loc)
-        elif pe.raw != base["rendered"].get(loc):
-            merge.move(loc, "not in the data", pe.raw)
-        # else: deleted from the JSON and untouched in the doc -> drop
+        else:
+            merge.gone(loc, pe, pe.raw == base["rendered"].get(loc))
     for loc, raw in parsed.stray:
         merge.move(loc, "unrecognised line", raw)
 

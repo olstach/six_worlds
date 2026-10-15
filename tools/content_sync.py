@@ -16,8 +16,9 @@ from content import sync
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--write", action="store_true")
-    ap.add_argument("--check", action="store_true")
+    mode = ap.add_mutually_exclusive_group()   # one or the other, not both
+    mode.add_argument("--write", action="store_true")
+    mode.add_argument("--check", action="store_true")
     a = ap.parse_args()
     report = sync.run(Path(__file__).resolve().parent.parent, write=a.write, check=a.check)
     report.print()

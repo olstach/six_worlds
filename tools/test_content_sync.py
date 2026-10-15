@@ -1,5 +1,5 @@
 # tools/test_content_sync.py
-import json, os, shutil, sys, tempfile, types, unittest
+import json, os, shutil, subprocess, sys, tempfile, types, unittest
 from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from content import sync
@@ -117,6 +117,47 @@ class SyncTests(unittest.TestCase):
         self.assertEqual(r.to_inbox, [])
         self.assertNotIn("`strong`", self.doc.read_text(encoding="utf-8"))
 
+    def add_note(self, ident, note):
+        """Insert a notes line after the last line of a top-level entry."""
+        lines = self.doc.read_text(encoding="utf-8").split("\n")
+        i = next(n for n, l in enumerate(lines) if f"`{ident}`" in l) + 1
+        while i < len(lines) and lines[i].startswith("  "):
+            i += 1
+        lines.insert(i, f"  - notes: {note}")
+        self.doc.write_text("\n".join(lines), encoding="utf-8")
+
+    def test_deleted_record_with_notes_goes_to_inbox(self):
+        self.add_note("strong", "keep this thought")
+        sync.run(self.tmp, write=True)
+        d = self.traits(); del d["strong"]
+        (self.tmp / TRAITS).write_text(json.dumps(d, indent=2, ensure_ascii=False) + "\n")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual([why for _, why in r.to_inbox],
+                         ["record deleted from the data; it had notes"])
+        inbox = self.doc.read_text(encoding="utf-8").split("\n# Traits")[0]
+        self.assertIn("keep this thought", inbox)
+
+    def test_missing_doc_is_regenerated_with_notes(self):
+        self.add_note("strong", "survives a lost doc")
+        sync.run(self.tmp, write=True)
+        self.doc.unlink()
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.exit_code, 0)
+        self.assertIn("regenerated", r.notice)
+        self.assertIn("survives a lost doc", self.doc.read_text(encoding="utf-8"))
+        self.assertEqual(sync.run(self.tmp, write=False, check=True).exit_code, 0)
+
+    def test_cli_check_and_write_are_exclusive(self):
+        # run a copy of the CLI inside the temp root, so that even a broken
+        # CLI that ignores the flags could never write to the real project
+        shutil.copy(ROOT / "tools/content_sync.py", self.tmp / "tools")
+        shutil.copytree(ROOT / "tools/content", self.tmp / "tools/content",
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        p = subprocess.run([sys.executable, str(self.tmp / "tools/content_sync.py"),
+                            "--check", "--write"], capture_output=True, text=True)
+        self.assertEqual(p.returncode, 2)
+        self.assertIn("not allowed with", p.stderr)
+
     def test_stray_line_goes_to_inbox(self):
         self.edit_doc("# Traits\n", "# Traits\n\nsome loose thought\n")
         r = sync.run(self.tmp, write=True)
@@ -201,6 +242,27 @@ class ChildSyncTests(unittest.TestCase):
         self.assertEqual([loc for loc, _ in r.to_inbox], ["Fakes › goat/pett"])
         inbox = self.doc.read_text(encoding="utf-8").split("\n# Fakes")[0]
         self.assertIn("Pett `pett`", inbox)
+
+    def test_duplicate_child_id_goes_to_inbox(self):
+        self.edit_doc("    - [grey] Pet `pet`\n      - result: It bites.\n",
+                      "    - [grey] Pet `pet`\n      - result: It bites.\n"
+                      "    - [grey] Pet `pet`\n      - result: A copy.\n")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.to_inbox, [("Fakes › goat/pet", "duplicate id")])
+        self.assertEqual(r.imported, [])
+        self.assertEqual(self.load()["goat"]["choices"][1]["result"], "It bites.")
+        self.assertIn("A copy.", self.doc.read_text(encoding="utf-8").split("\n# Fakes")[0])
+
+    def test_deleted_child_with_notes_goes_to_inbox(self):
+        self.edit_doc("      - result: It bites.\n",
+                      "      - result: It bites.\n      - notes: a cat?\n")
+        sync.run(self.tmp, write=True)
+        self.data["goat"]["choices"].pop()
+        self.save(self.data)
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.to_inbox, [("Fakes › goat/pet",
+                                       "record deleted from the data; it had notes")])
+        self.assertIn("a cat?", self.doc.read_text(encoding="utf-8").split("\n# Fakes")[0])
 
     def test_child_deleted_from_json_drops_silently(self):
         self.data["goat"]["choices"].pop()
