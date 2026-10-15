@@ -1518,11 +1518,25 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 		"damage": 0,
 		"crit": false,
 		"damage_type": weapon_dmg_type,
+		# Who this arm struck. Usually the attack's defender, but Coordinated
+		# Strikes can redirect the chain after a kill — the combat UI needs to
+		# know whose head to put the "Arm N" popup over.
+		"target": defender,
+		"damage_taken": 0,
 	}
 	if hit:
 		var damage_result := calculate_physical_damage(attacker, defender, weapon_dmg_type)
 		result.merge(damage_result, true)
+		# Hold back the defender's plain damage number while this arm's blow
+		# lands: the arena shows it as a labelled, staggered "Arm N: X" popup
+		# instead, so it doesn't stack on top of the primary hit's number.
+		# damage_taken is the HP actually lost, after armour and resistance.
+		var holds: bool = defender.has_method("begin_held_damage")
+		if holds:
+			defender.begin_held_damage()
 		apply_damage(defender, result.damage, weapon_dmg_type)
+		if holds:
+			result["damage_taken"] = defender.end_held_damage()
 		_process_on_hit_perks(attacker, defender, result)
 		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
 

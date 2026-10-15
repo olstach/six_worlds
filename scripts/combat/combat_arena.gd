@@ -2729,16 +2729,23 @@ func _on_unit_moved(unit: Node, from: Vector2i, to: Vector2i) -> void:
 
 
 func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> void:
-	# Multi-arm chain: show each extra arm's outcome in the combat log
+	# Multi-arm chain: show each extra arm's outcome in the combat log...
 	for extra in result.get("extra_arm_results", []):
 		var arm_num: int = extra.get("arm_number", 0)
+		# The arm's own target — Coordinated Strikes can move the chain on to
+		# someone else after a kill, so this isn't always `defender`.
+		var struck = extra.get("target", defender)
+		var struck_name: String = struck.unit_name if is_instance_valid(struck) else defender.unit_name
 		if extra.get("hit", false):
 			var crit_str: String = " CRIT!" if extra.get("crit", false) else ""
 			_log_message("  Arm %d: %d %s damage to %s%s" % [
 				arm_num, extra.get("damage", 0), extra.get("damage_type", ""),
-				defender.unit_name, crit_str])
+				struck_name, crit_str])
 		else:
-			_log_message("  Arm %d: misses %s" % [arm_num, defender.unit_name])
+			_log_message("  Arm %d: misses %s" % [arm_num, struck_name])
+	# ...and as floating popups over whoever each arm struck ("Arm 2: 12",
+	# "Arm 3: miss"), staggered so they don't overlap the primary hit's number.
+	CombatUnit.show_arm_chain_popups(attacker, defender, result)
 	_update_action_buttons()
 
 
@@ -4180,13 +4187,10 @@ func _grid_distance(a: Vector2i, b: Vector2i) -> int:
 
 ## Show appropriate miss text based on what caused the miss
 ## Block = defender has a shield, Dodge = dodge stat high, Miss = generic
+## (The choice itself lives on CombatUnit, so extra-arm misses use the same words.)
 func _show_miss_text(attacker: Node, defender: Node) -> void:
-	if _has_shield_equipped(defender):
-		defender.show_combat_text("Block!", Color(0.9, 0.75, 0.3))
-	elif defender.get_dodge() > attacker.get_accuracy():
-		defender.show_combat_text("Dodge!", Color(0.6, 0.85, 1.0))
-	else:
-		defender.show_combat_text("Miss!", Color(0.8, 0.8, 0.8))
+	var miss: Array = defender.miss_text_against(attacker)
+	defender.show_combat_text(miss[0], miss[1])
 
 
 ## Return the AudioManager sound name for a unit's equipped weapon.
@@ -4228,19 +4232,6 @@ func _fade_and_goto(scene_path: String) -> void:
 
 
 ## Check if a unit has a shield equipped in the off-hand slot
-func _has_shield_equipped(unit: Node) -> bool:
-	var char_data = unit.character_data
-	if not ItemSystem:
-		return false
-	if not char_data.has("equipment"):
-		return false
-	var off_hand_id = ItemSystem.get_equipped_item(char_data, "weapon_off")
-	if off_hand_id == "":
-		return false
-	var item = ItemSystem.get_item(off_hand_id)
-	return item.get("type", "") == "shield"
-
-
 # ============================================
 # RIGHT-CLICK CONTEXT MENU & EXAMINE WINDOW
 # ============================================

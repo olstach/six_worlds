@@ -129,9 +129,22 @@ Each of these is an hour or less and touches one system.
 - [ ] **`sever_part` doesn't handle `arm_l2`/`arm_r2`** — four-armed species have
   equip slots `hand_l2`/`hand_r2` but no `weapon_main2`/`weapon_off2`, so
   severing an extra arm doesn't drop its weapon.
-- [ ] **`extra_arm_results` isn't shown in the combat UI** — the multi-arm chain
-  writes per-arm hit/damage into the result dict and the combat log prints it,
-  but the unit frames don't (no "Arm 2: 12 dmg" popup).
+- [x] ~~**`extra_arm_results` isn't shown in the combat UI**~~ — **done
+  2026-10-15.** It was worse than the line said: each extra arm's hit already
+  raised the plain red damage number, but on the same spot at the same moment
+  as the primary hit's, so four arms read as one number, and a missed arm
+  showed nothing at all. Now the arm's blow is applied with the defender's
+  number held back (`CombatUnit.begin_held_damage()` / `end_held_damage()`,
+  recorded as `damage_taken` — HP actually lost, the same figure the primary
+  popup shows), and the arena's `unit_attacked` handler calls
+  `CombatUnit.show_arm_chain_popups()`: "Arm 2: 12", "Arm 3: 30 crit!" (orange),
+  "Arm 4: dodge", each 0.25s after the last and nudged sideways. Misses use the
+  same Block/Dodge/Miss choice as the primary hit, which moved from the arena
+  to `CombatUnit.miss_text_against()`. Each arm result now carries its
+  `target`, so a Coordinated Strikes redirect puts the popup — and the log
+  line, which used to name the original defender — on the right unit.
+  Statuses an arm inflicts already floated on their own. `tools/verify_arm_popups.tscn`
+  swings a real four-armed unit and counts one popup per arm.
 - [ ] **Combat-UI wound icons** — wounds render in the character sheet; unit
   frames need sprite work.
 - [ ] **No race defines any resistance at all.** All 47 carry

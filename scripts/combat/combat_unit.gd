@@ -24,6 +24,13 @@ var facing: Vector2i = Vector2i(1, 0)
 var current_hp: int = 100
 var max_hp: int = 100
 var temp_hp: int = 0    # Absorbed before real HP; granted by rest overheal
+
+# Multi-arm attacks: while an extra arm's blow is being applied, the plain red
+# damage number is held back and the amount tallied here instead. The arena
+# then shows it as "Arm 2: 12", staggered so it doesn't land on top of the
+# primary hit's number. See begin_held_damage() / end_held_damage().
+var _holding_damage_number: bool = false
+var _held_damage: int = 0
 var current_mana: int = 50
 var max_mana: int = 50
 var current_stamina: int = 50
@@ -1101,8 +1108,27 @@ func take_damage(amount: int) -> void:
 	derived_hp["temp_hp"]    = temp_hp
 	_update_visuals()
 
-	# Show damage number
-	_show_damage_number(amount)
+	# Show damage number — unless an extra arm's blow is being applied, in
+	# which case the arena shows it later as a labelled "Arm N" popup.
+	if _holding_damage_number:
+		_held_damage += amount
+	else:
+		_show_damage_number(amount)
+
+
+## Start holding back damage numbers (see _holding_damage_number above).
+## Always pair with end_held_damage().
+func begin_held_damage() -> void:
+	_holding_damage_number = true
+	_held_damage = 0
+
+
+## Stop holding damage numbers and return the HP lost while they were held.
+func end_held_damage() -> int:
+	_holding_damage_number = false
+	var total: int = _held_damage
+	_held_damage = 0
+	return total
 
 
 ## Heal HP
@@ -1186,20 +1212,105 @@ func play_turn_start_bounce() -> void:
 
 
 ## Show floating combat text (miss, dodge, block, etc.)
-func show_combat_text(text: String, color: Color = Color(0.9, 0.9, 0.9)) -> void:
+## `delay` (seconds) holds the text back before it appears, and `offset` nudges
+## its starting position — both are used to stagger several popups that would
+## otherwise land on the same spot at the same moment (multi-arm attacks).
+func show_combat_text(text: String, color: Color = Color(0.9, 0.9, 0.9),
+		delay: float = 0.0, offset: Vector2 = Vector2.ZERO) -> void:
 	var label = Label.new()
 	label.text = text
-	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 20)
+	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 20) + offset
 	label.add_theme_font_size_override("font_size", 14)
 	label.add_theme_color_override("font_color", color)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(label)
 
-	# Animate: float up and fade out
 	var tween = create_tween()
+	if delay > 0.0:
+		# Hidden until its turn comes, then it floats like any other popup
+		label.visible = false
+		tween.tween_interval(delay)
+		tween.tween_callback(label.show)
+	# Animate: float up and fade out
 	tween.tween_property(label, "position:y", label.position.y - 30, 0.9)
 	tween.parallel().tween_property(label, "modulate:a", 0, 0.9)
 	tween.tween_callback(label.queue_free)
+
+
+## Which word a missed blow earns, and its colour: a shield means "Block",
+## being nimbler than the attacker is accurate means "Dodge", otherwise "Miss".
+## Returns [text, color]. Shared by the primary hit and every extra arm, so
+## both describe a miss the same way.
+func miss_text_against(attacker: Node) -> Array:
+	if _has_shield_equipped():
+		return ["Block!", Color(0.9, 0.75, 0.3)]
+	if attacker != null and attacker.has_method("get_accuracy") and get_dodge() > attacker.get_accuracy():
+		return ["Dodge!", Color(0.6, 0.85, 1.0)]
+	return ["Miss!", Color(0.8, 0.8, 0.8)]
+
+
+## True if this unit holds a shield in its off hand.
+func _has_shield_equipped() -> bool:
+	if not ItemSystem or not character_data.has("equipment"):
+		return false
+	var off_hand_id = ItemSystem.get_equipped_item(character_data, "weapon_off")
+	if off_hand_id == "":
+		return false
+	return ItemSystem.get_item(off_hand_id).get("type", "") == "shield"
+
+
+# Colours for the "Arm N" popups. A hit uses the ordinary damage-number red; a
+# critical is brighter orange so it stands out the way a crit should.
+const COLOR_ARM_HIT = Color(1, 0.3, 0.3)
+const COLOR_ARM_CRIT = Color(1, 0.6, 0.15)
+const ARM_POPUP_DELAY = 0.25   # seconds between one arm's popup and the next
+const ARM_POPUP_NUDGE = 10.0   # pixels sideways, alternating left/right
+
+
+## Show one extra arm's outcome as its own popup: "Arm 2: 12", "Arm 3: 8 crit!"
+## or "Arm 4: dodge". `stagger` is the arm's place in the chain (0 = first
+## extra arm) and spaces the popups out in time and position so they don't
+## overlap the primary hit's number or each other.
+func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> void:
+	var arm_num: int = extra.get("arm_number", 0)
+	var text: String
+	var color: Color
+	if extra.get("hit", false):
+		# damage_taken is the HP actually lost (after armour/resistance) — the
+		# same number the primary hit's popup shows. Fall back to the raw
+		# damage for results made before that field existed.
+		var dmg: int = extra.get("damage_taken", extra.get("damage", 0))
+		text = "Arm %d: %d" % [arm_num, dmg]
+		color = COLOR_ARM_HIT
+		if extra.get("crit", false):
+			text += " crit!"
+			color = COLOR_ARM_CRIT
+	else:
+		var miss: Array = miss_text_against(attacker)
+		# "Miss!" → "miss", so it reads "Arm 3: miss"
+		text = "Arm %d: %s" % [arm_num, str(miss[0]).trim_suffix("!").to_lower()]
+		color = miss[1]
+	var side: float = -1.0 if stagger % 2 == 0 else 1.0
+	show_combat_text(text, color, ARM_POPUP_DELAY * (stagger + 1),
+		Vector2(side * ARM_POPUP_NUDGE, -6.0 * stagger))
+
+
+## Show a popup for every extra arm in an attack result (the multi-arm chain
+## in CombatManager.attack_unit writes them to result["extra_arm_results"]).
+## Each popup goes on the unit that arm actually struck — with Coordinated
+## Strikes the chain can move on to a new target after a kill.
+## Returns how many popups were spawned.
+static func show_arm_chain_popups(attacker: Node, fallback_target: Node, result: Dictionary) -> int:
+	var shown: int = 0
+	var extras: Array = result.get("extra_arm_results", [])
+	for i in extras.size():
+		var extra: Dictionary = extras[i]
+		var target = extra.get("target", fallback_target)
+		if target == null or not is_instance_valid(target) or not target.has_method("show_arm_result"):
+			continue
+		target.show_arm_result(attacker, extra, i)
+		shown += 1
+	return shown
 
 
 # ============================================
