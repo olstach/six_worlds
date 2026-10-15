@@ -507,7 +507,9 @@ should take a road while you are two zones away.
    makes trainer rarity structural.
 3. **Trade goods and the price index** — layers 2 and 3, unblocked by the
    decision above.
-4. **Investment**, as the first real sink, maturing on the day tick.
+4. ~~**Investment**, as the first real sink, maturing on the day tick.~~
+   **Built 2026-10-15** — `GameState.investments`, collected at the
+   settlement's shop. Three checks in `verify_economy_bonuses`.
 5. **Drift and shocks** — layer 4.
 
 And from the sections above, slotted where they belong rather than as a second
