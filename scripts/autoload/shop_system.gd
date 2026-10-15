@@ -635,6 +635,11 @@ func buy_item(item_id: String) -> Dictionary:
 	if not GameState.spend_gold(price):
 		return {"success": false, "reason": "Transaction failed"}
 
+	# The gold goes into the shop's purse straight away — before the supply
+	# branch below returns early. (It used to sit at the bottom, so food and
+	# herbs bought here never paid the shopkeeper.)
+	_adjust_shop_purse(price)
+
 	# Only now that it's paid for does it leave the shop. The decrement is for
 	# this visit's UI; the rack is what the next visit reads (barter_buy_item
 	# already did this — plain gold purchases didn't, so racks never emptied).
@@ -658,7 +663,6 @@ func buy_item(item_id: String) -> Dictionary:
 				"supply_gained": supply_amount, "supply_type": supply_type}
 
 	ItemSystem.add_to_inventory(item_id)
-	_adjust_shop_purse(price)
 	item_purchased.emit(item_id, price)
 
 	return {"success": true, "item_name": item.get("name", item_id), "price": price}

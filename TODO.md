@@ -1801,15 +1801,38 @@ were accurate on 2026-10-15 and drift.
       `grants_vulnerability: {lightning: 25}`, for a turn. Lightning only —
       water conducts, and it makes wet ground a set-up an Air caster cashes
       in rather than a Water caster's combo with itself. 25 is first-pass.
-- [ ] **Supply purchases never pay the shop's purse** — `buy_item` returns
+- [x] **Supply purchases never pay the shop's purse** — `buy_item` returns
       before `_adjust_shop_purse(price)` for supply items
-      (`shop_system.gd:~643-653`).
-- [ ] **`reset_for_new_life` keeps `last_healing_location`**
+      (`shop_system.gd:~643-653`). Fixed 2026-10-15: the till is paid right
+      after `spend_gold`, before either branch. `verify_economy_bonuses`
+      buys rations into an empty till.
+- [x] **`reset_for_new_life` keeps `last_healing_location`**
       (`game_state.gd:~272`), so Cloud Gate can target a spot on the previous
       life's map. `flags` also carry over — maybe deliberately; decide.
-- [ ] **A multi-day `advance_time` fires `day_changed` once**
+      Fixed 2026-10-15: it clears `last_healing_location` and `planar_return`
+      (a Shift begun before a death would pull the new life "home"), and calls
+      a new `MapManager.reset_for_new_life()`. That last one was the big one:
+      `visited_maps` was never cleared, so reincarnating into a realm you had
+      been to restored the OLD life's map — same terrain, same dead mobs,
+      same looted chests. While there: a stashed map carried its own nested
+      copy of `visited_maps`, and restoring it replaced the live stash with
+      that older copy, so A → B → A forgot B. The stash drops the nested copy
+      now. Checks in `verify_economy_bonuses` and `verify_overworld_spells`.
+      **Still open — decide:** `flags` and `completed_quest_ids` survive a
+      death (only New Game clears them). Every flag the data sets today is
+      per-world quest/event state (`mantra_scroll_found`,
+      `cold_prisoner_freed`, `hg_king_safe_conduct`…) plus camp scratch
+      flags (`sermon_stacks`, `herb_prep_bonus`); none is karma or
+      reincarnation. So a regenerated world can find a quest already
+      half-done, or never offer one again. Clearing both in
+      `reset_for_new_life` is two lines once you say so.
+- [x] **A multi-day `advance_time` fires `day_changed` once**
       (`game_state.gd:~315`), so the lunar listener (`overworld.gd:~1883`) can
-      miss a full or new moon across a long rest.
+      miss a full or new moon across a long rest. Fixed 2026-10-15: one emit
+      per day crossed, in order; `get_lunar_day`/`is_full_moon`/`is_new_moon`
+      take an optional day and the overworld listener reads `new_day`. The
+      investment tick is idempotent, so it copes. Latent today (the longest
+      advance is an 8-hour rest). Check in `verify_economy_bonuses`.
 - [ ] **Severing a primary arm drops only the ACTIVE weapon set's weapon**
       (`body_system.gd:~444`); the other set's stays in the lost hand. And
       with a full inventory the force-clear deletes the item (`~433`).
@@ -1820,10 +1843,20 @@ were accurate on 2026-10-15 and drift.
       way: the flashbang and acid flask list bare status names, and `_use_bomb`
       called `.get()` on them — a script error that stopped the throw. Bare
       names now take the bomb's `status_duration`.
-- [ ] **Luck's loot weighting is dead code.** `_get_modified_rarity_weights()`
+- [x] **Luck's loot weighting is dead code.** `_get_modified_rarity_weights()`
       (`combat_manager.gd:~787`) is never called, `_generate_loot_drops`
       (`~634`) ignores its `_best_luck`, and the jackpot reads raw
       `attributes.luck` (`~569`), so Luck from buffs and gear counts for nothing.
+      Fixed 2026-10-15: `derived["luck"]` is the effective number (attribute +
+      gear + traits + Luck map buffs) and `best_party_luck()` reads it. A won
+      fight now also rolls a **lucky find** — one piece of equipment nobody
+      was carrying — at exactly the jackpot's odds (same Luck term, cap and
+      `loot_chance_pct` boost, separate roll), its rarity from
+      `_get_modified_rarity_weights(fight size, Luck)`. Thievery's
+      `loot_quality_pct` stays where it was (the share of carried gear you
+      take) and does not touch the find, so nothing counts twice. The numbers
+      are the old dead function's: worth a look in play. Checks in
+      `verify_combat_procs`.
 - [ ] **`unbroken` (perks.json `~8458`) is description-only** — "wounds
       inflicted on you are downgraded one severity"; there is no downgrade step.
 - [ ] **`every_opening_is_an_invitation` counts buffs** (`combat_manager.gd:~2091,
@@ -1833,9 +1866,13 @@ were accurate on 2026-10-15 and drift.
       once as a 1-turn buff.
 - [ ] **On-hit procs don't check `defender.is_alive()`** before applying
       statuses (mace stun `combat_manager.gd:~9915` and others).
-- [ ] **`duel_stop_hp_pct` on an encounter is ignored** — only the archetype's
+- [x] **`duel_stop_hp_pct` on an encounter is ignored** — only the archetype's
       copy is read (`hungry_ghost_encounters.json:~603`, `enemy_system.gd:~928`).
-      And the duel threshold moves with in-combat max-HP changes.
+      And the duel threshold moves with in-combat max-HP changes. Fixed
+      2026-10-15: the encounter's value overrides the archetype's, on every
+      enemy it builds; the yield line is a share of the max HP noted on
+      `combat_started` (`CombatManager.duel_stop_hp`). Checks in
+      `verify_combat_systems`.
 - [x] **Enemies don't get their birth TRAITS' resistances**
       (`enemy_system.gd:~723`); players do, through `TraitSystem.get_resistances`.
       *Fixed 2026-10-15:* the same call, added after the racial block. An

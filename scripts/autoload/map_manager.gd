@@ -455,7 +455,27 @@ var visited_maps: Dictionary = {}
 ## Put the current map away before leaving it, so returning finds it as it was.
 func stash_current_map() -> void:
 	if current_map_id != "":
-		visited_maps[current_map_id] = get_save_data()
+		var snapshot: Dictionary = get_save_data()
+		# get_save_data() includes the whole stash (it is also the save-file
+		# format). A stashed map must not carry its own copy: restoring it would
+		# replace the live stash with that older copy and forget every map
+		# visited since — and each stash would nest all the ones before it.
+		snapshot.erase("visited_maps")
+		visited_maps[current_map_id] = snapshot
+
+
+## Forget every map of this life. Called from GameState.reset_for_new_life:
+## a new life rolls a new world, so a realm you return to must be generated
+## fresh rather than restored from the stash of the life that just ended.
+func reset_for_new_life() -> void:
+	stop_movement()
+	current_map_id = ""
+	visited_maps.clear()
+	visited_tiles.clear()
+	collected_objects.clear()
+	defeated_mobs.clear()
+	searched_tiles.clear()
+	movement_abilities.clear()
 
 
 func load_map(map_id: String) -> bool:

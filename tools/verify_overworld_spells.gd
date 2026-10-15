@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 38
+const EXPECTED_CHECKS: int = 39
 
 var _menu: Node
 var _saved_party: Array = []
@@ -69,6 +69,7 @@ func _ready() -> void:
 	_check_teleport_steps_to_the_chosen_tile()
 	_check_intervention_finds_the_nearest_refuge()
 	_check_a_visited_map_comes_back_as_it_was()
+	_check_a_round_trip_remembers_both_maps()
 	_check_planar_shift_crosses_without_unlocking()
 	_check_planar_gate_unlocks_what_it_opens()
 	_check_the_gate_goes_where_it_is_told()
@@ -848,6 +849,27 @@ func _check_a_visited_map_comes_back_as_it_was() -> void:
 			+ "than restored")
 	elif not MapManager.is_tile_visited(Vector2i(7, 7)):
 		_fail("the fog came back — what the party had explored was lost")
+	_done()
+
+
+## A → B → A must still remember B. A stashed map used to carry its own copy of
+## `visited_maps`, and restoring it replaced the live stash with that older
+## copy — so the map you had just left was forgotten the moment you arrived.
+func _check_a_round_trip_remembers_both_maps() -> void:
+	_party(1)
+	_stage_map()
+	_open_ground()
+	MapManager.visited_maps.clear()
+	MapManager.current_map_id = "trip_a"
+	MapManager.stash_current_map()
+	MapManager.current_map_id = "trip_b"
+	MapManager.load_map("trip_a")   # stashes trip_b on the way out
+	if not MapManager.visited_maps.has("trip_b"):
+		_fail("coming back to trip_a forgot trip_b (stash has %s)"
+			% str(MapManager.visited_maps.keys()))
+	elif MapManager.visited_maps["trip_a"].has("visited_maps"):
+		_fail("a stashed map carries a nested copy of every other stash")
+	MapManager.visited_maps.clear()
 	_done()
 
 
