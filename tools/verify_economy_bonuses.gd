@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 43
+const EXPECTED_CHECKS: int = 44
 
 
 func _ready() -> void:
@@ -71,6 +71,7 @@ func _ready() -> void:
 	_check_an_investment_matures_and_pays_half_again()
 	_check_an_investment_dies_with_the_life()
 	_check_an_investment_survives_a_save()
+	_check_life_state_resets_and_saves()
 
 	# The calendar: one day_changed per day crossed.
 	_check_a_long_rest_fires_every_day()
@@ -1088,6 +1089,40 @@ func _check_an_investment_survives_a_save() -> void:
 		if int(paid.get("payout", 0)) != 150:
 			_fail("a reloaded investment paid %d, expected 150" % int(paid.get("payout", 0)))
 	GameState.investments.clear()
+	_done()
+
+
+## Round 2 life/save state: the fallen and a planar return are saved, a new life
+## clears the fallen, reincarnation gold is the bardo's, and a new map forgets
+## the old map's searched tiles.
+func _check_life_state_resets_and_saves() -> void:
+	CharacterSystem.fallen.clear()
+	CharacterSystem.fallen.append({"name": "Ghost of Lives Past"})
+	GameState.planar_return = {"world": "hell", "steps_left": 7}
+	var text: String = JSON.stringify(GameState.get_save_data())
+	var ctext: String = JSON.stringify(CharacterSystem.get_save_data())
+	CharacterSystem.fallen.clear()
+	GameState.planar_return = {}
+	GameState.load_save_data(JSON.parse_string(text))
+	CharacterSystem.load_save_data(JSON.parse_string(ctext))
+	if CharacterSystem.fallen.size() != 1:
+		_fail("the fallen did not survive a save and load")
+	if int(GameState.planar_return.get("steps_left", 0)) != 7:
+		_fail("planar_return did not survive a save and load")
+
+	GameState.start_new_run("hungry_ghost", 50)
+	if not CharacterSystem.fallen.is_empty():
+		_fail("the fallen survived into a new life")
+	if GameState.gold != 50:
+		_fail("reincarnation gold was %d, expected 50" % GameState.gold)
+	GameState.reset_for_new_life()
+	if GameState.gold != 100:
+		_fail("New Game gold was %d, expected 100" % GameState.gold)
+
+	MapManager.searched_tiles[Vector2i(1, 1)] = true
+	MapManager.load_map("hell_01")
+	if not MapManager.searched_tiles.is_empty():
+		_fail("a brand-new map kept the old map's searched tiles")
 	_done()
 
 

@@ -659,6 +659,9 @@ func create_player_character(char_name: String, birth: String, background: Strin
 	# Add to party at index 0 (player always first)
 	if party.is_empty():
 		party.append(character)
+	fallen.clear()
+	for f in data.get("fallen", []):
+		fallen.append((f as Dictionary).duplicate(true))
 	else:
 		party[0] = character
 
@@ -1601,7 +1604,8 @@ func get_save_data() -> Dictionary:
 	for character in party:
 		party_copy.append(character.duplicate(true))
 	return {
-		"party": party_copy
+		"party": party_copy,
+		"fallen": fallen.duplicate(true),
 	}
 
 
