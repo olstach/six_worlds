@@ -2210,6 +2210,21 @@ And still no race uses the plan.
 - [ ] **Oil damage on an extra arm shows as a separate plain number.**
 - [ ] **Spell crits show a plain damage number** (`combat_manager.gd:~7956/~8042`).
 
+### CONTENT.md — left open (2026-10-16)
+
+- [ ] **A blank line inside a `>` quote block loses the paragraph break.**
+      Typing an empty line between quoted paragraphs, instead of a lone `>`,
+      joins them in the JSON — no text lost, but the break is. The parser
+      should read a blank line between two `>` lines as `>`.
+- [ ] **`tools/wire_active_perks.py` still holds `DESCRIPTION_FIXES`**, a
+      second source for `host_of_the_winds`'s description. Re-running it
+      would quietly overwrite a CONTENT.md edit to that one perk (code
+      edits to the JSON win by design). Drop the description from the
+      script, or make it skip descriptions that differ from its old value.
+- [ ] **`content_base.json` is ~3 MB and rewritten on every sync** — expect
+      merge conflicts in it when two branches both sync. Regenerate it
+      (`content_sync.py --write`) rather than hand-merging.
+
 ### Perks the engine can now express (§13)
 
 Authorable in full: `aim_at_the_vitals`; `one_line_one_breath` except "cannot
