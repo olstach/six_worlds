@@ -1367,13 +1367,17 @@ func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> bool:
 		# same number the primary hit's popup shows. Fall back to the raw
 		# damage for results made before that field existed.
 		var dmg: int = extra.get("damage_taken", extra.get("damage", 0))
-		if dmg <= 0:
+		# Oil damage on this arm's blow is part of the same hit: shown inline.
+		var oil_taken: int = int(extra.get("oil_damage_taken", 0))
+		if dmg <= 0 and oil_taken <= 0:
 			return false
 		text = "Arm %d: %d" % [arm_num, dmg]
 		color = COLOR_ARM_HIT
 		if extra.get("crit", false):
 			text += " crit!"
 			color = COLOR_ARM_CRIT
+		if oil_taken > 0:
+			text += " +%d %s" % [oil_taken, str(extra.get("oil_damage_type", "oil"))]
 	else:
 		var miss: Array = miss_text_against(attacker)
 		# "Miss!" → "miss", so it reads "Arm 3: miss"

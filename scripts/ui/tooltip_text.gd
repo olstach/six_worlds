@@ -287,12 +287,12 @@ static func _aura_payload_text(payload: Dictionary) -> String:
 
 
 ## "Can spread to an adjacent unit (15% chance each turn)". The chance words
-## are turned into numbers by CombatManager._spread_chance_to_float(), the
+## are turned into numbers by CombatManager.spread_chance_to_float(), the
 ## same function _process_status_spread() uses.
 static func _status_spread_line(spread: Dictionary) -> String:
 	if spread.is_empty():
 		return ""
-	var chance: float = CombatManager._spread_chance_to_float(str(spread.get("chance", "none")))
+	var chance: float = CombatManager.spread_chance_to_float(str(spread.get("chance", "none")))
 	if chance <= 0.0:
 		return ""
 	var declared_range = spread.get("range", "melee")

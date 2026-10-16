@@ -1711,6 +1711,16 @@ func _apply_hit_damage(attacker: Node, defender: Node, result: Dictionary) -> vo
 	result["damage_taken"] = (defender.damage_taken_total - before) if tracked else int(result.damage)
 
 
+## apply_damage() for a combat-skill hit, flagging the target first so its
+## floating number reads "12 crit!" like an ordinary weapon crit does.
+func _apply_damage_flagging_crit(target: Node, damage: int, dmg_type: String, crit: bool) -> void:
+	if "next_damage_is_crit" in target:
+		target.next_damage_is_crit = crit
+	apply_damage(target, damage, dmg_type)
+	if "next_damage_is_crit" in target:
+		target.next_damage_is_crit = false
+
+
 ## Weapon oil on a landed blow: bonus damage of the oil's type, and a chance
 ## of its status. Each blow that lands spends one of the oil's charges — so a
 ## four-armed swing that lands with every arm uses four.
@@ -1836,7 +1846,13 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 		_apply_hit_damage(attacker, defender, result)
 		if holds:
 			defender.end_held_damage()
+		# Oil damage is held back the same way, so the arm's popup can fold it
+		# in ("Arm 2: 12 +4 fire") instead of a plain number floating beside it.
+		if holds:
+			defender.begin_held_damage()
 		_apply_weapon_oil(attacker, defender, result)
+		if holds:
+			result["oil_damage_taken"] = defender.end_held_damage()
 		_resolve_hit_procs(attacker, defender, result, chain_chance / 100.0, true)
 	_count_weapon_attack(attacker)
 	return result
@@ -4654,6 +4670,11 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 	var scaled_accuracy = template.get("base_accuracy", 0)
 
 	# Build character_data dict matching what init_as_enemy() and CombatUnit getters expect
+	# What the creature's attack deals. `special.attack_damage_type` names it
+	# explicitly (the Domain Crystal's laser); otherwise the template's own type.
+	var attack_dtype: String = str(template.get("special", {}).get("attack_damage_type",
+			template.get("damage_type", "physical")))
+
 	var summon_data: Dictionary = {
 		"name": template.get("display_name", summon_id.replace("_", " ")),
 		"archetype_name": "Summon",
@@ -4680,12 +4701,12 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 			"crit_chance": scaled_crit,
 			"accuracy": scaled_accuracy,
 			"damage": scaled_damage,
-			"damage_type": template.get("damage_type", "physical"),
+			"damage_type": attack_dtype,
 		},
 		"equipped_weapon": {
 			"name": "Natural Attack",
 			"damage": scaled_damage,
-			"damage_type": template.get("damage_type", "physical"),
+			"damage_type": attack_dtype,
 			"range": 1
 		}
 	}
@@ -6475,7 +6496,7 @@ func _process_status_spread(unit: Node) -> void:
 		if spread.is_empty():
 			continue
 
-		var chance = _spread_chance_to_float(spread.get("chance", "none"))
+		var chance = spread_chance_to_float(spread.get("chance", "none"))
 		if chance <= 0.0 or randf() > chance:
 			continue
 
@@ -6497,7 +6518,7 @@ func _process_status_spread(unit: Node) -> void:
 
 
 ## Convert spread chance string to float probability
-func _spread_chance_to_float(chance_str: String) -> float:
+func spread_chance_to_float(chance_str: String) -> float:
 	match chance_str:
 		"low":
 			return 0.15
@@ -8129,7 +8150,7 @@ func _resolve_attack_skill(user: Node, combat_data: Dictionary, target_pos: Vect
 		damage += armor_reduced  # Add back the armor that was subtracted
 
 	# Apply damage
-	apply_damage(target, damage, dmg_type)
+	_apply_damage_flagging_crit(target, damage, dmg_type, bool(dmg_result.crit))
 	_check_immediate_combat_end()
 
 	var result = {
@@ -8214,7 +8235,7 @@ func _resolve_dash_attack(user: Node, combat_data: Dictionary, target_pos: Vecto
 	var dmg_result = calculate_physical_damage(user, target, dmg_type)
 	var damage = int(dmg_result.damage * (1.0 + damage_bonus_pct / 100.0))
 
-	apply_damage(target, damage, dmg_type)
+	_apply_damage_flagging_crit(target, damage, dmg_type, bool(dmg_result.crit))
 	_check_immediate_combat_end()
 
 	return {

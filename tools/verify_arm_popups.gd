@@ -18,7 +18,7 @@ const EXPECTED_CHECKS: int = 4
 var grid: CombatGrid
 
 # What a popup for an extra arm must look like
-var _hit_re := RegEx.create_from_string("^Arm (\\d+): (\\d+)( crit!)?$")
+var _hit_re := RegEx.create_from_string("^Arm (\\d+): (\\d+)( crit!)?( \\+\\d+ \\w+)?$")
 var _miss_re := RegEx.create_from_string("^Arm (\\d+): (miss|dodge|block)$")
 
 
@@ -225,6 +225,9 @@ func _check_crits_and_misses_read_like_the_primary_hit() -> void:
 		[{"arm_number": 2, "hit": true, "crit": false, "damage_taken": 12}, "Arm 2: 12"],
 		[{"arm_number": 3, "hit": true, "crit": true, "damage_taken": 30}, "Arm 3: 30 crit!"],
 		[{"arm_number": 4, "hit": false}, "Arm 4: %s" % miss_word],
+		# Oil damage on the arm folds into the same popup
+		[{"arm_number": 2, "hit": true, "damage_taken": 12, "oil_damage_taken": 4,
+			"oil_damage_type": "fire"}, "Arm 2: 12 +4 fire"],
 	]
 	var extras: Array = []
 	for c in cases:
