@@ -2093,12 +2093,13 @@ And still no race uses the plan.
   shop's purse — revisit when settlements have wealth.
 - ~~**Iron Cortex no longer requires Akimbo**~~ — **confirmed by Olaf
   2026-10-15.**
-- **Luck's "lucky find"** — a won fight rolls for one extra piece of
+- ~~**Luck's "lucky find"**~~ — **kept, Olaf 2026-10-16.** A won fight rolls for one extra piece of
   equipment at the jackpot's odds, rarity tilted by Luck. It is the agent's
   design (the old rarity weighting had nothing left to weigh), untuned.
 - ~~**Flags and finished quests survive a death**~~ — **decided by Olaf
   2026-10-16: they don't.** `reset_for_new_life` clears both.
-- **Unbroken shrugs off a light wound entirely** — the reading of
+- ~~**Unbroken shrugs off a light wound entirely**~~ — **confirmed by Olaf
+  2026-10-16** (Armor 10 may be strong). The reading of
   "downgraded one severity" at the bottom of the scale.
 - ~~**Difficulty tiers**~~ — **accepted by Olaf 2026-10-16:** easy 0.75 / normal 1.0 / hard 1.2 / very_hard 1.4 XP,
   boss = boss tier with a fixed band. "hard" is the commonest word in the
