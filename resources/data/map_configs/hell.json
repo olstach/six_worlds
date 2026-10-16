@@ -2447,6 +2447,16 @@
         "speed": 0.3,
         "event_id": "hell_burning_prisoner",
         "weight": 3
+      },
+      {
+        "name": "Powder Train",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.5,
+        "enemy_group": "yellow_devil_powder_train",
+        "difficulty": "hard",
+        "weight": 2
       }
     ]
   },

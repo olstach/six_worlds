@@ -9972,6 +9972,9 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Yellow Devil Caravan Guard** `hell_yellow_devil_caravan_guard` — devil · frontline · biological, devil
 - **Yellow Devil Extortionist** `hell_yellow_devil_extortionist` — devil · frontline · biological, devil
 - **Yellow Devil Transmuter** `hell_yellow_devil_transmuter` — devil · caster/support · biological, devil
+- **Yellow Devil Grenadier** `hell_yellow_devil_grenadier` — devil · ranged · biological, devil
+  - design:
+    > Yellow devils trade in everything, powder included. Spends over half its kit on bombs (consumable_share) instead of armour; the AI throws them when 2+ party members are clustered. Hell kits are small (realm_base 200), so the list starts with the cheap bombs (ghost pepper, bone dust) and only reaches fire bombs on harder fights.
 - **Green Devil Hunter** `hell_green_devil_hunter` — devil · ranged · biological, devil
 - **Green Devil Sniper** `hell_green_devil_sniper` — devil · ranged · biological, devil
 - **Green Devil Backstabber** `hell_green_devil_backstabber` — devil · frontline · biological, devil
@@ -9997,6 +10000,8 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Black devil ritual** `black_devil_ritual` — hell_black_devil_sorcerer x1, hell_black_devil_mindbender x1
 - **White devil court** `white_devil_court` — hell_white_devil_tempter x1, hell_white_devil_medicus x1, hell_white_devil_illusionist x1
 - **Yellow devil caravan** `yellow_devil_caravan` — hell_yellow_devil_caravan_guard x2, hell_yellow_devil_extortionist x1, hell_yellow_devil_transmuter x1
+- **Yellow devil powder train** `yellow_devil_powder_train` — hell_yellow_devil_grenadier x2, hell_yellow_devil_caravan_guard x1
+  - design: The caravan's powder cart: two grenadiers behind one guard
 - **Green devil hunters** `green_devil_hunters` — hell_green_devil_sniper x1, hell_green_devil_hunter x1, hell_green_devil_backstabber x1
 - **Demon sentinel** `demon_sentinel` — devil · 2 frontline
 - **Lost souls** `lost_souls` — shade · 1 caster, 1 support
@@ -10253,6 +10258,8 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Bhramara Soldier** `animal_bhramara_soldier` — shade · frontline · biological, animal, flying
 - **Bhramara Drone** `animal_bhramara_drone` — imp · support · biological, animal, flying
   - design: Support caster that calls reinforcements; weak alone but dangerous when it completes a summon
+- **Bhramara Honey-Keeper** `animal_bhramara_honey_keeper` — shade · support · biological, animal, flying
+  - design: Honey-Keeper background. Heals allies with spells and carries potions/flasks (consumable_share); poison bomb is the 'poisoned batch'.
 - **Patanga Ascetic** `animal_patanga_ascetic` — shade · support/caster · biological, animal, flying
 - **Patanga Flame Seeker** `animal_patanga_seeker` — shade · frontline · biological, animal, flying
   - design: Moves unpredictably before striking — impossible to anticipate.
@@ -10271,6 +10278,8 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Animal bhramara cloud** `animal_bhramara_cloud` — shade · 3 skirmisher, 1 support
 - **Animal bhramara with soldier** `animal_bhramara_with_soldier` — mixed: devil 1 frontline; shade 3 skirmisher
   - design: Soldier anchors while drones swarm
+- **Animal bhramara honeycomb** `animal_bhramara_honeycomb` — animal_bhramara_honey_keeper x1, animal_bhramara_soldier x1, animal_bhramara_drone x2
+  - design: A honey-keeper behind a soldier and drones: heals and throws flasks while the soldier anchors
 - **Animal patanga flock** `animal_patanga_flock` — shade · 3 skirmisher, 1 caster
 - **Animal patanga ascetic encounter** `animal_patanga_ascetic_encounter` — animal_patanga_ascetic x1, animal_patanga_seeker x2
   - design: Ascetic with a seeker escort — the ascetic may be neutral depending on approach
@@ -10322,6 +10331,8 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - design: Pack support; enchantment perks buff allies and weaken party members
 - **Vanara Skirmisher** `animal_vanara_skirmisher` — shade · ranged · biological, animal
   - design: Throws rocks and alchemical bombs; taunt forces party member to attack it; TODO: confuse special attack
+- **Vanara Tinkerer** `animal_vanara_tinkerer` — shade · support · biological, animal
+  - design: Jugaad background. items.json has no gadget/trap consumables, so the tinkerer carries improvised bombs and oils; smithing/guile stand for the tools.
 - **Vanara Elder** `animal_vanara_elder` — shade · support · biological, animal
   - design: Troop director; leadership perks give formation bonuses to nearby vanara
 
@@ -10347,6 +10358,8 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Animal vanara troop** `animal_vanara_troop` — shade · 3 skirmisher, 1 support
 - **Animal vanara elder encounter** `animal_vanara_elder_encounter` — animal_vanara_elder x1, animal_vanara_skirmisher x2
   - design: Elder holds back, skirmishers pressure — elder uses white/earth magic if engaged
+- **Animal vanara workshop** `animal_vanara_workshop` — animal_vanara_tinkerer x2, animal_vanara_skirmisher x1
+  - design: Two tinkerers and a skirmisher: bombs and oils on a cobbled-together ambush
 - **Animal forest mixed** `animal_forest_mixed` — mixed: devil 1 skirmisher; devil 1 skirmisher
   - design: Cross-zone predator encounter — rakshasa and marjara sharing territory briefly
 - **Animal shyena dive** `animal_shyena_dive` — animal_shyena_stooper x2
