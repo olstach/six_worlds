@@ -684,6 +684,60 @@
       ],
       "realm": "animal"
     },
+    "animal_bhramara_honey_keeper": {
+      "_comment": "Honey-Keeper background. Heals allies with spells and carries potions/flasks (consumable_share); poison bomb is the 'poisoned batch'.",
+      "name": "Bhramara Honey-Keeper",
+      "tier": "shade",
+      "roles": [
+        "support"
+      ],
+      "region": "meadow",
+      "attribute_weights": {
+        "strength": 0,
+        "constitution": 2,
+        "finesse": 2,
+        "awareness": 3,
+        "focus": 3,
+        "charm": 0,
+        "luck": 0
+      },
+      "skill_priorities": [
+        "alchemy",
+        "medicine",
+        "white_magic"
+      ],
+      "guaranteed_spells": [
+        "lesser_heal"
+      ],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "unarmed",
+          "base_damage": 4,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "none"
+      },
+      "resistances": {
+        "lightning": 10,
+        "poison": 20
+      },
+      "consumable_share": 0.5,
+      "consumables": [
+        "health_potion",
+        "poison_bomb",
+        "stamina_tonic",
+        "antidote"
+      ],
+      "threat_multiplier": 0.9,
+      "tags": [
+        "biological",
+        "animal",
+        "flying"
+      ],
+      "realm": "animal"
+    },
     "animal_patanga_ascetic": {
       "name": "Patanga Ascetic",
       "tier": "shade",
@@ -1519,6 +1573,54 @@
       },
       "resistances": {},
       "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "animal"
+      ],
+      "realm": "animal"
+    },
+    "animal_vanara_tinkerer": {
+      "_comment": "Jugaad background. items.json has no gadget/trap consumables, so the tinkerer carries improvised bombs and oils; smithing/guile stand for the tools.",
+      "name": "Vanara Tinkerer",
+      "tier": "shade",
+      "roles": [
+        "support"
+      ],
+      "region": "forest",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 3,
+        "focus": 1,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "smithing",
+        "guile",
+        "ranged"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "mace",
+          "base_damage": 6,
+          "base_accuracy": 4,
+          "range": 1
+        },
+        "armor_type": "light"
+      },
+      "resistances": {},
+      "consumable_share": 0.5,
+      "consumables": [
+        "fire_bomb",
+        "flashbang",
+        "flame_oil",
+        "whetstone_oil"
+      ],
+      "threat_multiplier": 0.9,
       "tags": [
         "biological",
         "animal"

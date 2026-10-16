@@ -270,6 +270,25 @@
         }
       ]
     },
+    "animal_bhramara_honeycomb": {
+      "_comment": "A honey-keeper behind a soldier and drones: heals and throws flasks while the soldier anchors",
+      "region": "meadow",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "animal_bhramara_honey_keeper",
+          "count": 1
+        },
+        {
+          "archetype": "animal_bhramara_soldier",
+          "count": 1
+        },
+        {
+          "archetype": "animal_bhramara_drone",
+          "count": 2
+        }
+      ]
+    },
     "animal_patanga_flock": {
       "region": "meadow",
       "tier": "shade",
@@ -480,6 +499,21 @@
         {
           "archetype": "animal_vanara_skirmisher",
           "count": 2
+        }
+      ]
+    },
+    "animal_vanara_workshop": {
+      "_comment": "Two tinkerers and a skirmisher: bombs and oils on a cobbled-together ambush",
+      "region": "forest",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "animal_vanara_tinkerer",
+          "count": 2
+        },
+        {
+          "archetype": "animal_vanara_skirmisher",
+          "count": 1
         }
       ]
     },

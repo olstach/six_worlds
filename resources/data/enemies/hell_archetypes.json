@@ -1483,6 +1483,55 @@
       ],
       "realm": "hell"
     },
+    "hell_yellow_devil_grenadier": {
+      "_comment": "Yellow devils trade in everything, powder included. Spends over half its kit on bombs (consumable_share) instead of armour; the AI throws them when 2+ party members are clustered. Hell kits are small (realm_base 200), so the list starts with the cheap bombs (ghost pepper, bone dust) and only reaches fire bombs on harder fights.",
+      "name": "Yellow Devil Grenadier",
+      "tier": "devil",
+      "roles": [
+        "ranged"
+      ],
+      "region": "any",
+      "attribute_weights": {
+        "strength": 1,
+        "constitution": 1,
+        "finesse": 3,
+        "awareness": 3,
+        "focus": 0,
+        "charm": 0,
+        "luck": 2
+      },
+      "skill_priorities": [
+        "ranged",
+        "alchemy"
+      ],
+      "guaranteed_spells": [],
+      "guaranteed_perks": [],
+      "equipment_template": {
+        "weapon": {
+          "type": "thrown",
+          "base_damage": 6,
+          "base_accuracy": 5,
+          "range": 3
+        },
+        "armor_type": "light"
+      },
+      "resistances": {
+        "fire": 20
+      },
+      "consumable_share": 0.6,
+      "consumables": [
+        "ghost_pepper",
+        "bone_dust",
+        "smoke_bomb",
+        "fire_bomb"
+      ],
+      "threat_multiplier": 1.0,
+      "tags": [
+        "biological",
+        "devil"
+      ],
+      "realm": "hell"
+    },
     "_comment_green_devils": "=== GREEN DEVIL RACE — any region, air/finesse affinity, swift hunters ===",
     "hell_green_devil_hunter": {
       "name": "Green Devil Hunter",

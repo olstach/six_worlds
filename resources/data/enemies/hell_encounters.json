@@ -231,6 +231,21 @@
         }
       ]
     },
+    "yellow_devil_powder_train": {
+      "_comment": "The caravan's powder cart: two grenadiers behind one guard",
+      "region": "any",
+      "fixed": true,
+      "enemies": [
+        {
+          "archetype": "hell_yellow_devil_grenadier",
+          "count": 2
+        },
+        {
+          "archetype": "hell_yellow_devil_caravan_guard",
+          "count": 1
+        }
+      ]
+    },
     "green_devil_hunters": {
       "region": "any",
       "fixed": true,

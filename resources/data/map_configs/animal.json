@@ -2613,6 +2613,16 @@
         "event_id": "animal_forest_jungle_merchant",
         "weight": 2,
         "tag": "shop"
+      },
+      {
+        "name": "Vanara Workshop",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.5,
+        "enemy_group": "animal_vanara_workshop",
+        "difficulty": "normal",
+        "weight": 2
       }
     ],
     "meadow": [
@@ -2718,6 +2728,16 @@
         "event_id": "animal_meadow_merchant",
         "weight": 2,
         "tag": "shop"
+      },
+      {
+        "name": "Honeycomb Guard",
+        "icon": "enemy",
+        "mode": 2,
+        "attitude": 1,
+        "speed": 0.5,
+        "enemy_group": "animal_bhramara_honeycomb",
+        "difficulty": "normal",
+        "weight": 2
       }
     ]
   },
