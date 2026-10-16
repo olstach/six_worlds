@@ -2245,7 +2245,7 @@
           "requirements": {
             "roll": {
               "attribute": "luck",
-              "difficulty": "moderate"
+              "difficulty": "normal"
             }
           },
           "outcome_success": {
@@ -2445,7 +2445,7 @@
           "requirements": {
             "roll": {
               "attribute": "charm",
-              "difficulty": "moderate"
+              "difficulty": "normal"
             }
           },
           "outcome_success": {

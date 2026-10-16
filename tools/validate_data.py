@@ -230,6 +230,13 @@ def check_outcome(outcome, ctx, depth=0):
                 f"(known: {', '.join(sorted(GOLD_REWARD_TOKENS))})")
 
 
+_em_src = open(os.path.join(ROOT, "scripts/autoload/event_manager.gd"), encoding="utf-8").read()
+_dc_block = re.search(r"const DC_TIER_MODIFIERS: Dictionary = \{(.*?)\n\}", _em_src, re.S)
+ROLL_DIFFICULTIES = set(re.findall(r'"(\w+)":', _dc_block.group(1))) if _dc_block else set()
+if not ROLL_DIFFICULTIES:
+    raise SystemExit("validate_data: could not read DC_TIER_MODIFIERS from event_manager.gd")
+
+
 def check_requirements(reqs, ctx):
     if not isinstance(reqs, dict):
         return
@@ -240,6 +247,13 @@ def check_requirements(reqs, ctx):
         if "difficulty" not in roll:
             err("event->roll_shape",
                 f"{ctx}: roll requirement has no 'difficulty' key (found {sorted(roll)})")
+        # A word must be one of EventManager.DC_TIER_MODIFIERS; an unknown word
+        # silently falls back to "normal". An integer is a legacy absolute DC.
+        _dw = roll.get("difficulty")
+        if isinstance(_dw, str) and _dw not in ROLL_DIFFICULTIES:
+            err("event->roll_difficulty",
+                f"{ctx}: roll difficulty {_dw!r} is not one of "
+                f"{sorted(ROLL_DIFFICULTIES)} (EventManager.DC_TIER_MODIFIERS)")
         if "attribute" not in roll and "skill" not in roll:
             err("event->roll_shape",
                 f"{ctx}: roll requirement names neither 'attribute' nor 'skill'")
@@ -556,7 +570,15 @@ def _read_by_code(value):
     reliably is the common case: data declares a key and no source file ever
     mentions it.
     """
-    return f'"{value}"' in _gd_source
+    if f'"{value}"' in _gd_source:
+        return True
+    # Names CombatManager assembles at runtime. `_dot_element` reads any
+    # `<damage type>_damage_per_turn` by trimming the suffix off the effect
+    # string, so the full name never appears as a literal.
+    if value.endswith("_damage_per_turn") and \
+            'trim_suffix("_damage_per_turn")' in _gd_source:
+        return True
+    return False
 
 
 def check_vocabulary(label, values, patterns=None):
@@ -1361,6 +1383,47 @@ for _aid, _adef in _auras.items():
     if _adef.get("affects", "allies") not in ("allies", "enemies", "all", "self"):
         err("data->code", f"aura '{_aid}' affects '{_adef.get('affects')}', "
             "which AuraSystem.reaches() does not recognise — it will reach nobody")
+
+# ── item types and item status names ────────────────────────────────────────
+# ItemSystem only treats an item as equippable / consumable / stackable through
+# its entry in item_types; a type with no entry quietly behaves as nothing
+# (herbs and medicine could not be used at all). Status names are case-sensitive:
+# on_crit_status "pinned" matched no status and silently did nothing.
+# (`statuses_removed` is skipped: it is read by length, not by name.)
+_items_file = load("resources/data/items.json")
+_item_types = {k for k in _items_file.get("item_types", {}) if not k.startswith("_")}
+_ITEM_STATUS_KEYS = ("on_crit_status", "on_hit_status", "on_kill_status",
+                     "applies_status", "status")
+
+
+def _item_status_names(node):
+    """Yield (key, name) for every status an item's effect block names."""
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k in _ITEM_STATUS_KEYS and isinstance(v, str) and v:
+                yield k, v
+            elif k == "statuses" and isinstance(v, list):
+                for e in v:
+                    n = e.get("name") if isinstance(e, dict) else e
+                    if isinstance(n, str):
+                        yield k, n
+            else:
+                yield from _item_status_names(v)
+    elif isinstance(node, list):
+        for v in node:
+            yield from _item_status_names(v)
+
+
+for _iid, _it in _items_file["items"].items():
+    if _iid.startswith("_") or not isinstance(_it, dict):
+        continue
+    if _it.get("type") not in _item_types:
+        err("item->type", f"item '{_iid}' has type {_it.get('type')!r}, which is not "
+            "in items.json item_types")
+    for _key, _nm in _item_status_names(_it):
+        if _nm not in statuses:
+            err("item->status", f"item '{_iid}': {_key} names status {_nm!r}, "
+                "which is not in statuses.json (names are case-sensitive)")
 
 # Every source that names an aura must name one that exists.
 for _iid, _it in load("resources/data/items.json")["items"].items():

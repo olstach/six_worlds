@@ -1174,7 +1174,7 @@
         "damage": 7,
         "accuracy": 8
       },
-      "on_crit_status": "pinned",
+      "on_crit_status": "Pinned",
       "on_crit_duration": 1,
       "abilities": [],
       "durability": 85,
@@ -1202,7 +1202,7 @@
         "damage": 11,
         "accuracy": 10
       },
-      "on_crit_status": "pinned",
+      "on_crit_status": "Pinned",
       "on_crit_duration": 1,
       "abilities": [],
       "durability": 110,
@@ -1868,7 +1868,7 @@
       "description": "Grants temporary resistance to flames.",
       "effect": {
         "type": "buff",
-        "status": "Fire_Resistant",
+        "status": "Fire_Resistance_25",
         "resistance": "fire",
         "value": 25,
         "duration": 3,
@@ -2596,7 +2596,7 @@
         "range": 4,
         "statuses": [
           {
-            "name": "Chilled",
+            "name": "Slowed",
             "duration": 2,
             "chance": 100
           }
@@ -2701,7 +2701,7 @@
         "range": 4,
         "statuses": [
           {
-            "name": "Corroded",
+            "name": "Armor_Reduced",
             "duration": 3,
             "chance": 100
           }
@@ -2759,7 +2759,7 @@
         "bonus_damage": 5,
         "bonus_damage_type": "ice",
         "attacks": 3,
-        "status": "Chilled",
+        "status": "Slowed",
         "status_chance": 30,
         "status_duration": 2
       },
@@ -3003,9 +3003,12 @@
         "aoe_radius": 1,
         "range": 4,
         "statuses": [
-          "Corroded"
-        ],
-        "armor_reduction": 5
+          {
+            "name": "Armor_Reduced",
+            "duration": 3,
+            "chance": 100
+          }
+        ]
       },
       "slot": "inventory"
     },
@@ -19349,6 +19352,31 @@
         "legs",
         "feet"
       ]
+    },
+    "cape": {
+      "category": "armor",
+      "slots": ["back"]
+    },
+    "eyewear": {
+      "category": "armor",
+      "slots": ["face"]
+    },
+    "face_cloth": {
+      "category": "armor",
+      "slots": ["face"]
+    },
+    "tool": {
+      "category": "weapon",
+      "slots": ["weapon_main"],
+      "ranged": false
+    },
+    "herb": {
+      "category": "consumable",
+      "subcategory": "herb"
+    },
+    "medicine": {
+      "category": "consumable",
+      "subcategory": "medicine"
     },
     "focus": {
       "category": "weapon",

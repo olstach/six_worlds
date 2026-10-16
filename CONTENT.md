@@ -7816,6 +7816,89 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Iron Shield** `iron_shield` — uncommon · iron · weapon_off · value 80
   - description: A sturdy iron shield with a boss.
 
+#### Tool `tool`
+
+- **Plain Medicine Bag** `plain_medicine_bag` — common · cloth · weapon_main · value 35
+  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
+- **Fine Medicine Bag** `fine_medicine_bag` — common · cloth · weapon_main · value 120
+  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
+- **Masterwork Medicine Bag** `masterwork_medicine_bag` — uncommon · cloth · weapon_main · value 340
+  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
+- **Storied Medicine Bag** `storied_medicine_bag` — rare · cloth · weapon_main · value 850
+  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
+- **Legendary Medicine Bag** `legendary_medicine_bag` — epic · cloth · weapon_main · value 2000
+  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
+- **Plain Lute** `plain_lute` — common · wood · weapon_main · value 35
+  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
+- **Fine Lute** `fine_lute` — common · wood · weapon_main · value 120
+  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
+- **Masterwork Lute** `masterwork_lute` — uncommon · wood · weapon_main · value 340
+  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
+- **Storied Lute** `storied_lute` — rare · wood · weapon_main · value 850
+  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
+- **Legendary Lute** `legendary_lute` — epic · wood · weapon_main · value 2000
+  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
+- **Plain Thieving Tools** `plain_thieving_tools` — common · steel · weapon_main · value 35
+  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
+- **Fine Thieving Tools** `fine_thieving_tools` — common · steel · weapon_main · value 120
+  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
+- **Masterwork Thieving Tools** `masterwork_thieving_tools` — uncommon · steel · weapon_main · value 340
+  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
+- **Storied Thieving Tools** `storied_thieving_tools` — rare · steel · weapon_main · value 850
+  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
+- **Legendary Thieving Tools** `legendary_thieving_tools` — epic · steel · weapon_main · value 2000
+  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
+- **Plain Alchemist's Kit** `plain_alchemists_kit` — common · copper · weapon_main · value 35
+  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
+- **Fine Alchemist's Kit** `fine_alchemists_kit` — common · copper · weapon_main · value 120
+  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
+- **Masterwork Alchemist's Kit** `masterwork_alchemists_kit` — uncommon · copper · weapon_main · value 340
+  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
+- **Storied Alchemist's Kit** `storied_alchemists_kit` — rare · copper · weapon_main · value 850
+  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
+- **Legendary Alchemist's Kit** `legendary_alchemists_kit` — epic · copper · weapon_main · value 2000
+  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
+- **Plain Merchant's Scales** `plain_merchants_scales` — common · scale · weapon_main · value 35
+  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
+- **Fine Merchant's Scales** `fine_merchants_scales` — common · scale · weapon_main · value 120
+  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
+- **Masterwork Merchant's Scales** `masterwork_merchants_scales` — uncommon · scale · weapon_main · value 340
+  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
+- **Storied Merchant's Scales** `storied_merchants_scales` — rare · scale · weapon_main · value 850
+  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
+- **Legendary Merchant's Scales** `legendary_merchants_scales` — epic · scale · weapon_main · value 2000
+  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
+- **Plain Smith's Hammer** `plain_smiths_hammer` — common · steel · weapon_main · value 35
+  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
+- **Fine Smith's Hammer** `fine_smiths_hammer` — common · steel · weapon_main · value 120
+  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
+- **Masterwork Smith's Hammer** `masterwork_smiths_hammer` — uncommon · steel · weapon_main · value 340
+  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
+- **Storied Smith's Hammer** `storied_smiths_hammer` — rare · steel · weapon_main · value 850
+  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
+- **Legendary Smith's Hammer** `legendary_smiths_hammer` — epic · steel · weapon_main · value 2000
+  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
+- **Plain Quartermaster's Ledger** `plain_quartermasters_ledger` — common · cloth · weapon_main · value 35
+  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
+- **Fine Quartermaster's Ledger** `fine_quartermasters_ledger` — common · cloth · weapon_main · value 120
+  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
+- **Masterwork Quartermaster's Ledger** `masterwork_quartermasters_ledger` — uncommon · cloth · weapon_main · value 340
+  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
+- **Storied Quartermaster's Ledger** `storied_quartermasters_ledger` — rare · cloth · weapon_main · value 850
+  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
+- **Legendary Quartermaster's Ledger** `legendary_quartermasters_ledger` — epic · cloth · weapon_main · value 2000
+  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
+- **Plain War Standard** `plain_war_standard` — common · cloth · weapon_main · value 35
+  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
+- **Fine War Standard** `fine_war_standard` — common · cloth · weapon_main · value 120
+  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
+- **Masterwork War Standard** `masterwork_war_standard` — uncommon · cloth · weapon_main · value 340
+  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
+- **Storied War Standard** `storied_war_standard` — rare · cloth · weapon_main · value 850
+  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
+- **Legendary War Standard** `legendary_war_standard` — epic · cloth · weapon_main · value 2000
+  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
+
 #### Focus `focus`
 
 - **Plain Copper Dorje** `plain_copper_dorje` — common · copper · weapon_main · value 60
@@ -8970,6 +9053,31 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Traveler's Boots** `travelers_boots` — uncommon · leather · feet · value 60
   - description: Light boots made for long journeys.
 
+#### Cape `cape`
+
+- **Travel Cape** `travel_cape` — common · cloth · back · value 18
+  - description: Worn and practical. Keeps the wind off and the dust out. The fringe tells the story of every road.
+- **Wool Cloak** `wool_cloak` — common · cloth · back · value 30
+  - description: Heavy wool, oiled against the rain. The kind of thing passed down rather than bought.
+- **Silk Cape** `silk_cape` — uncommon · silk · back · value 90
+  - description: Woven from fine silk, it catches the light in a way that unsettles people. Possibly intentional.
+- **Shadowcloak** `shadowcloak` — rare · cloth · back · value 220
+  - description: Dark and close-fitted. Those who wear it learn to move with intention.
+- **Pilgrim's Mantle** `pilgrim_mantle` — uncommon · cloth · back · value 65
+  - description: Worn by those who walk the long roads between shrines. The road is the practice.
+- **Backpack** `backpack` — common · cloth · back · value 35
+  - description: More room for more things. Less room to move.
+
+#### Eyewear `eyewear`
+
+- **Smoked Glass Lenses** `smoked_lenses` — uncommon · copper · face · value 75
+  - description: Ground from dark volcanic glass, set in a copper frame. Dimmer, but nothing can dazzle you.
+
+#### Face cloth `face_cloth`
+
+- **Face Cloth** `face_cloth` — common · cloth · face · value 8
+  - description: A strip of cloth wound across the nose and mouth. Standard equipment for anyone who travels through the ash fields or charnel grounds.
+
 ### Accessory `accessory`
 
 #### Ring `ring`
@@ -9224,6 +9332,20 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Sovereign Oil** `sovereign_oil` — legendary · inventory · value 350
   - description: The pinnacle of applied alchemy. Deals fire, frost, and void damage simultaneously, bypassing all resistances.
 
+#### Herb `herb`
+
+- **Healing Herb** `healing_herb` — common · inventory · value 10
+  - description: A bitter-tasting leaf with mild restorative properties.
+- **Healing Moss** `healing_moss` — common · inventory · value 14
+  - description: Grey-green, slow-growing, scraped from the north face of stones. Keeps for years.
+
+#### Medicine `medicine`
+
+- **Smelling Salts** `smelling_salts` — common · inventory · value 15
+  - description: Sharp-smelling crystals. Revives a stunned or dazed ally.
+- **Spirit Salt** `spirit_salt` — common · inventory · value 20
+  - description: Coarse salt charged with purifying energy. Disrupts spirit possession and curses.
+
 ### Supply `supply`
 
 #### Supply `supply`
@@ -9377,130 +9499,6 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - description: A hinged foot with a proper heel and toe break. Your gait comes back within a month.
 - **Fine Prosthetic Foot** `prosthetic_fine_foot` — rare · leather · feet · value 420
   - description: A light articulated foot that reads the ground through the sole. You are surer on bad footing than you were before.
-
-### Other `Other`
-
-#### Cape `cape`
-
-- **Travel Cape** `travel_cape` — common · cloth · back · value 18
-  - description: Worn and practical. Keeps the wind off and the dust out. The fringe tells the story of every road.
-- **Wool Cloak** `wool_cloak` — common · cloth · back · value 30
-  - description: Heavy wool, oiled against the rain. The kind of thing passed down rather than bought.
-- **Silk Cape** `silk_cape` — uncommon · silk · back · value 90
-  - description: Woven from fine silk, it catches the light in a way that unsettles people. Possibly intentional.
-- **Shadowcloak** `shadowcloak` — rare · cloth · back · value 220
-  - description: Dark and close-fitted. Those who wear it learn to move with intention.
-- **Pilgrim's Mantle** `pilgrim_mantle` — uncommon · cloth · back · value 65
-  - description: Worn by those who walk the long roads between shrines. The road is the practice.
-- **Backpack** `backpack` — common · cloth · back · value 35
-  - description: More room for more things. Less room to move.
-
-#### Face cloth `face_cloth`
-
-- **Face Cloth** `face_cloth` — common · cloth · face · value 8
-  - description: A strip of cloth wound across the nose and mouth. Standard equipment for anyone who travels through the ash fields or charnel grounds.
-
-#### Eyewear `eyewear`
-
-- **Smoked Glass Lenses** `smoked_lenses` — uncommon · copper · face · value 75
-  - description: Ground from dark volcanic glass, set in a copper frame. Dimmer, but nothing can dazzle you.
-
-#### Medicine `medicine`
-
-- **Smelling Salts** `smelling_salts` — common · inventory · value 15
-  - description: Sharp-smelling crystals. Revives a stunned or dazed ally.
-- **Spirit Salt** `spirit_salt` — common · inventory · value 20
-  - description: Coarse salt charged with purifying energy. Disrupts spirit possession and curses.
-
-#### Herb `herb`
-
-- **Healing Herb** `healing_herb` — common · inventory · value 10
-  - description: A bitter-tasting leaf with mild restorative properties.
-- **Healing Moss** `healing_moss` — common · inventory · value 14
-  - description: Grey-green, slow-growing, scraped from the north face of stones. Keeps for years.
-
-#### Tool `tool`
-
-- **Plain Medicine Bag** `plain_medicine_bag` — common · cloth · weapon_main · value 35
-  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
-- **Fine Medicine Bag** `fine_medicine_bag` — common · cloth · weapon_main · value 120
-  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
-- **Masterwork Medicine Bag** `masterwork_medicine_bag` — uncommon · cloth · weapon_main · value 340
-  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
-- **Storied Medicine Bag** `storied_medicine_bag` — rare · cloth · weapon_main · value 850
-  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
-- **Legendary Medicine Bag** `legendary_medicine_bag` — epic · cloth · weapon_main · value 2000
-  - description: Needles, catgut, tincture bottles and a bone saw, rolled in waxed cloth. Heavy at the shoulder. Heavier when it is needed and not there.
-- **Plain Lute** `plain_lute` — common · wood · weapon_main · value 35
-  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
-- **Fine Lute** `fine_lute` — common · wood · weapon_main · value 120
-  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
-- **Masterwork Lute** `masterwork_lute` — uncommon · wood · weapon_main · value 340
-  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
-- **Storied Lute** `storied_lute` — rare · wood · weapon_main · value 850
-  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
-- **Legendary Lute** `legendary_lute` — epic · wood · weapon_main · value 2000
-  - description: Pear-bellied, gut-strung, never quite in tune in cold weather. A crowd that is listening is a crowd that is not deciding anything else.
-- **Plain Thieving Tools** `plain_thieving_tools` — common · steel · weapon_main · value 35
-  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
-- **Fine Thieving Tools** `fine_thieving_tools` — common · steel · weapon_main · value 120
-  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
-- **Masterwork Thieving Tools** `masterwork_thieving_tools` — uncommon · steel · weapon_main · value 340
-  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
-- **Storied Thieving Tools** `storied_thieving_tools` — rare · steel · weapon_main · value 850
-  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
-- **Legendary Thieving Tools** `legendary_thieving_tools` — epic · steel · weapon_main · value 2000
-  - description: Picks, tension wrenches, a mirror on a wire, a strip of shim brass. Rolls up small. Explains poorly.
-- **Plain Alchemist's Kit** `plain_alchemists_kit` — common · copper · weapon_main · value 35
-  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
-- **Fine Alchemist's Kit** `fine_alchemists_kit` — common · copper · weapon_main · value 120
-  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
-- **Masterwork Alchemist's Kit** `masterwork_alchemists_kit` — uncommon · copper · weapon_main · value 340
-  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
-- **Storied Alchemist's Kit** `storied_alchemists_kit` — rare · copper · weapon_main · value 850
-  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
-- **Legendary Alchemist's Kit** `legendary_alchemists_kit` — epic · copper · weapon_main · value 2000
-  - description: A folding brass frame, three retorts, and a burner that has scorched every table it ever sat on. Smells of sulphur through the case.
-- **Plain Merchant's Scales** `plain_merchants_scales` — common · scale · weapon_main · value 35
-  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
-- **Fine Merchant's Scales** `fine_merchants_scales` — common · scale · weapon_main · value 120
-  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
-- **Masterwork Merchant's Scales** `masterwork_merchants_scales` — uncommon · scale · weapon_main · value 340
-  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
-- **Storied Merchant's Scales** `storied_merchants_scales` — rare · scale · weapon_main · value 850
-  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
-- **Legendary Merchant's Scales** `legendary_merchants_scales` — epic · scale · weapon_main · value 2000
-  - description: Brass pans on a folding beam, with a set of true weights and a set of the other kind. Which is which depends on the day.
-- **Plain Smith's Hammer** `plain_smiths_hammer` — common · steel · weapon_main · value 35
-  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
-- **Fine Smith's Hammer** `fine_smiths_hammer` — common · steel · weapon_main · value 120
-  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
-- **Masterwork Smith's Hammer** `masterwork_smiths_hammer` — uncommon · steel · weapon_main · value 340
-  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
-- **Storied Smith's Hammer** `storied_smiths_hammer` — rare · steel · weapon_main · value 850
-  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
-- **Legendary Smith's Hammer** `legendary_smiths_hammer` — epic · steel · weapon_main · value 2000
-  - description: Two pounds of forged steel on a hickory haft, the face polished mirror-bright by work. Not made as a weapon. Perfectly willing.
-- **Plain Quartermaster's Ledger** `plain_quartermasters_ledger` — common · cloth · weapon_main · value 35
-  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
-- **Fine Quartermaster's Ledger** `fine_quartermasters_ledger` — common · cloth · weapon_main · value 120
-  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
-- **Masterwork Quartermaster's Ledger** `masterwork_quartermasters_ledger` — uncommon · cloth · weapon_main · value 340
-  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
-- **Storied Quartermaster's Ledger** `storied_quartermasters_ledger` — rare · cloth · weapon_main · value 850
-  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
-- **Legendary Quartermaster's Ledger** `legendary_quartermasters_ledger` — epic · cloth · weapon_main · value 2000
-  - description: Every ration, every arrow, every mile, in a hand so small it needs holding to the light. An army eats before it fights.
-- **Plain War Standard** `plain_war_standard` — common · cloth · weapon_main · value 35
-  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
-- **Fine War Standard** `fine_war_standard` — common · cloth · weapon_main · value 120
-  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
-- **Masterwork War Standard** `masterwork_war_standard` — uncommon · cloth · weapon_main · value 340
-  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
-- **Storied War Standard** `storied_war_standard` — rare · cloth · weapon_main · value 850
-  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
-- **Legendary War Standard** `legendary_war_standard` — epic · cloth · weapon_main · value 2000
-  - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
 
 ## Ammo `ammo`
 
@@ -17652,7 +17650,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
     - [blue] Let {a} play, but set a limit before they go. `play_it_safe` — requires persuasion 3 · result: xp: 15 · gold: small
       - result:
         > {a} agrees to the limit with the easy sincerity of someone who has agreed to limits before. This time, remarkably, they keep it — and come back with more than they left with, and with the name of a man who buys things quietly.
-    - [yellow] Let it run. {a} knows what they are doing. `play_deep` — requires roll luck vs moderate · success: xp: 20 · gold: moderate · failure: pressure: earth-10
+    - [yellow] Let it run. {a} knows what they are doing. `play_deep` — requires roll luck vs normal · success: xp: 20 · gold: moderate · failure: pressure: earth-10
       - success:
         > It goes late. It goes badly, and then very well, and then the other fire goes quiet in the way fires do when the stranger is winning.
         >
@@ -17706,7 +17704,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - choices:
     - [grey] Pretend not to have heard. `let_it_go`
       - result: You let it lie. {a} is grateful in the particular way of someone who has just been spared, and sits a little closer to the fire afterwards.
-    - [yellow] Ask gently. Some things want carrying together. `draw_it_out` — requires roll charm vs moderate · success: xp: 25 · pressure: water+20 · failure: pressure: space-5
+    - [yellow] Ask gently. Some things want carrying together. `draw_it_out` — requires roll charm vs normal · success: xp: 25 · pressure: water+20 · failure: pressure: space-5
       - success:
         > It takes an hour and it costs them something.
         >
