@@ -371,6 +371,15 @@ for aid, (arch, src) in archetypes.items():
     for iid in arch.get("guaranteed_drops", []):
         if not item_ok(iid):
             err("archetype->item", f"{src}:{aid}: guaranteed_drop '{iid}' unknown")
+    # A grenadier/alchemist/tinkerer archetype: what it buys first, and how
+    # much of its kit it sets aside for that (EnemySystem._generate_skill_consumables).
+    for iid in arch.get("consumables", []):
+        if not item_ok(iid):
+            err("archetype->item", f"{src}:{aid}: consumable '{iid}' unknown")
+    if "consumable_share" in arch:
+        share = arch["consumable_share"]
+        if not isinstance(share, (int, float)) or not 0 <= share <= 1:
+            err("archetype->value", f"{src}:{aid}: consumable_share {share!r} is not 0.0-1.0")
 
 # ── companions ───────────────────────────────────────────────────────────────
 for cid, comp in companions.items():

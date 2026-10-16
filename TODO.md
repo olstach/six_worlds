@@ -1041,6 +1041,15 @@ Investment is built (2026-10-15); supply_and_demand still waits.
 
 ## 11. Things to ponder
 
+### Should spells crit? (2026-10-16)
+
+Today no spell can crit: there is no crit roll on spell damage at all, so the
+crit marker never shows on one. Weapon and combat-skill hits crit. Open
+questions if they should: which stat drives it (Awareness/Luck like weapons,
+or Focus), whether Ritual or the school skill adds to it, and whether a spell
+crit doubles damage or extends/strengthens the status instead.
+
+
 ### External events — the world moving without you
 
 *2026-09-20, out of the economy design.* The trade design wants "shocks": a
@@ -2117,6 +2126,26 @@ And still no race uses the plan.
   cover magic types only. Poison is not magic.
   - [ ] Idea from Olaf: a Yoga and/or Might perk that resists poison.
 
+### Round 2 decisions (Olaf, 2026-10-16)
+
+- Frost bomb/oil apply `Slowed` — kept; no Chilled status.
+- Heavy armour = any heavy piece worn — kept for now (one iron helmet turns
+  on Living Fortress / Armored Skin; revisit if that plays wrong).
+- Rousing Display: +2 Initiative is enough; no morale (the psychology system
+  replaced it).
+- Borrowed Force/Opening last until the next attack or the end of your next
+  turn; Opening needs you unarmed when you dodge. A dorje, mala or tool in
+  the hand does not stop you being unarmed — done: `CombatUnit.NON_COMBAT_HELD_TYPES`,
+  and you hit with your natural weapon while holding one.
+- Unbroken's doubled Armor lasts to the end of the turn it fired — fine.
+- Enemy consumables: done — an archetype may set `consumable_share` (set
+  aside before gear) and a `consumables` list it buys first, round-robin, up
+  to 6. For grenadier / alchemist / tinkerer enemies.
+  - [ ] Write those archetypes (grenadier, alchemist, tinkerer), matching
+        the backgrounds that exist for them.
+- Vajra & Bell `active_set_bonus` opener — not needed with the current set
+  bonuses; left unbuilt (the stored key is still unread).
+
 ### Round 3 — found during Round 2 (2026-10-16)
 
 - [ ] `generate_armor` ignores which item types a material allows ("Iron
@@ -2220,7 +2249,9 @@ was really combat-skill hits; those now show the crit marker. The
       have types missing from `item_types`** — 40 tools, 6 capes, 2 herbs, 2
       medicines, 1 eyewear, 1 face cloth. Found building `CONTENT.md`
       (2026-10-16).
-- [ ] **Three duplicated JSON keys**, found normalising the data
+- [x] **Three duplicated JSON keys** — decided by Olaf 2026-10-16 and
+      restored: Karka Guardian `piercing: 15`, centipede `piercing: 10`,
+      Ice_Sheet `ice: 100` (immune). Found normalising the data
       (2026-10-16). Only the last value was ever read, so normalising dropped
       the dead first one and nothing changed in play — but each looks like a
       typo for a different key: Karka Crusher `crushing: 15` then `-10`

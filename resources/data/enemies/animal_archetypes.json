@@ -121,6 +121,7 @@
       },
       "resistances": {
         "physical": 20,
+        "piercing": 15,
         "crushing": -10
       },
       "threat_multiplier": 1.1,

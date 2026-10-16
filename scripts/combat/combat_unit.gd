@@ -609,6 +609,11 @@ func get_max_actions() -> int:
 	return max_actions
 
 
+## Item types that sit in a weapon slot without being a weapon. Holding one
+## leaves you fighting with your natural weapon, and unarmed for every perk.
+const NON_COMBAT_HELD_TYPES: Array[String] = ["focus", "tool"]
+
+
 ## Get the equipped main-hand weapon data
 func get_equipped_weapon() -> Dictionary:
 	# For enemies, check if weapon data is in character_data
@@ -619,7 +624,11 @@ func get_equipped_weapon() -> Dictionary:
 	if ItemSystem and character_data.has("equipment"):
 		var weapon_id = ItemSystem.get_equipped_item(character_data, "weapon_main")
 		if weapon_id != "":
-			return ItemSystem.get_item(weapon_id)
+			var held: Dictionary = ItemSystem.get_item(weapon_id)
+			# A dorje, mala or tool in the hand is not something you hit with:
+			# you fight with your fists, and count as unarmed (Olaf, 2026-10-16).
+			if not str(held.get("type", "")) in NON_COMBAT_HELD_TYPES:
+				return held
 
 	# No equipped weapon — fall back to natural weapon (e.g. fists)
 	if BodySystem:

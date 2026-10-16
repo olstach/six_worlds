@@ -32,6 +32,7 @@ func _ready() -> void:
 	_check_reward()
 	_check_equipment()
 	_check_difficulty()
+	_check_own_consumables()
 	_dump_table()
 	if failures > 0:
 		printerr("VERIFY FAILED: %d problem(s)" % failures)
@@ -467,6 +468,27 @@ func _check_reward() -> void:
 		var total := int(round(float(xp) * fraction))
 		print("   %s common (%d XP): party gains %d — solo %d, each of four %d"
 			% [pair[0], xp, total, total, int(total / 4.0)])
+
+
+## A grenadier-type archetype names what it carries (`consumables`) and how
+## much of its kit it sets aside for them (`consumable_share`). The list is
+## bought first, round-robin, and capped at EnemySystem.MAX_OWN_CONSUMABLES.
+func _check_own_consumables() -> void:
+	print("-- own consumables --")
+	var grenadier := {"roles": [], "consumables": ["fire_bomb", "smoke_bomb"]}
+	var bag: Array = EnemySystem._generate_skill_consumables({}, 0, grenadier, 1.0, 100000)
+	var counts := {}
+	var total := 0
+	for entry in bag:
+		counts[entry["item_id"]] = int(entry["quantity"])
+	for id in ["fire_bomb", "smoke_bomb"]:
+		expect(int(counts.get(id, 0)) > 0, "a rich grenadier bought no %s" % id)
+		total += int(counts.get(id, 0))
+	expect(total == EnemySystem.MAX_OWN_CONSUMABLES,
+		"a rich grenadier bought %d from its list, expected the cap of %d"
+		% [total, EnemySystem.MAX_OWN_CONSUMABLES])
+	var broke: Array = EnemySystem._generate_skill_consumables({}, 0, grenadier, 1.0, 0)
+	expect(broke.is_empty(), "a grenadier with no money still bought %s" % [broke])
 
 
 func _check_equipment() -> void:

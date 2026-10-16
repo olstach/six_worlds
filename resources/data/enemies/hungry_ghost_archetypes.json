@@ -221,6 +221,7 @@
         "armor_type": "none"
       },
       "resistances": {
+        "piercing": 10,
         "crushing": -10
       },
       "threat_multiplier": 0.35,

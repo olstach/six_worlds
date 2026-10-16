@@ -43,6 +43,7 @@ func _ready() -> void:
 	_check_downed_and_actionless_units_tick()
 	_check_avatar_of_the_wind_reaches_every_ally()
 	_check_borrowed_opening_waits_for_the_attack()
+	_check_a_held_focus_is_still_unarmed()
 	_check_every_opening_wants_a_debuff()
 	_teardown_field()
 
@@ -846,6 +847,22 @@ func _check_borrowed_opening_waits_for_the_attack() -> void:
 	if _mod(monk, "crit_chance") != 0:
 		_fail("Borrowed Opening's crit was not spent by the attack")
 	CombatManager.turn_order.clear()
+
+
+## A dorje, mala or tool in the hand is not a weapon: the holder fights with
+## fists and counts as unarmed for every unarmed perk (Olaf, 2026-10-16).
+func _check_a_held_focus_is_still_unarmed() -> void:
+	var monk := _make_unit(Vector2i(6, 13), 0)
+	monk.character_data.erase("equipped_weapon")   # read equipment, like a party member
+	monk.character_data["equipment"] = {"weapon_set_1": {"main": "plain_copper_dorje"}}
+	monk.character_data["active_weapon_set"] = 1
+	if not monk._perk_condition_met("unarmed"):
+		_fail("holding a dorje stopped the monk counting as unarmed")
+	if str(monk.get_equipped_weapon().get("name", "")) == "":
+		_fail("holding a dorje left the monk with no natural weapon to hit with")
+	monk.character_data["equipment"] = {"weapon_set_1": {"main": "iron_sword"}}
+	if monk._perk_condition_met("unarmed"):
+		_fail("a monk holding an iron sword counts as unarmed")
 
 
 ## Every Opening Is an Invitation: "+15% Attack and +10% crit against enemies

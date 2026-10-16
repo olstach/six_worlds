@@ -206,6 +206,9 @@ const NON_BIRTH_REALMS: Array[String] = ["domain"]
 
 ## Skill -> consumables that skill's owner would plausibly be carrying, for
 ## their own use in a fight and as loot afterwards.
+## Most items an archetype's own `consumables` list can buy, however rich it is.
+const MAX_OWN_CONSUMABLES: int = 6
+
 const SKILL_TO_CONSUMABLES: Dictionary = {
 	"medicine": ["healing_herb", "health_potion"],
 	"alchemy": ["raw_reagents", "health_potion"],
@@ -314,12 +317,35 @@ func _weapon_types_for_skills(skills: Dictionary) -> Array[Dictionary]:
 ## (This replaces a separate free-of-charge role pass that also handed out
 ## potions, so enemies were paid twice.)
 func _generate_skill_consumables(skills: Dictionary, kit_budget: int,
-		archetype: Dictionary = {}, power_scale: float = 1.0) -> Array:
+		archetype: Dictionary = {}, power_scale: float = 1.0, reserve: int = 0) -> Array:
 	var cfg: Dictionary = budgets.get("equipment", {})
-	var spend: int = int(round(float(kit_budget) * float(cfg.get("consumable_share", 0.25))))
+	# `reserve` is money an archetype set aside for consumables before it
+	# bought any gear (its own `consumable_share`, see generate_enemy); the
+	# default share of whatever the gear left over is added on top.
+	var spend: int = reserve + int(round(float(kit_budget) * float(cfg.get("consumable_share", 0.25))))
 	var out: Array = []
 	if spend <= 0:
 		return out
+
+	# Pass 0: an archetype's own `consumables` list — what a grenadier,
+	# alchemist or tinkerer is FOR. Bought round-robin, one at a time, so a
+	# list of three bombs comes out as a mix rather than six of the first.
+	var own: Array = archetype.get("consumables", [])
+	var bought: Dictionary = {}   # item_id -> quantity
+	var own_count: int = 0
+	var progress: bool = not own.is_empty()
+	while progress and own_count < MAX_OWN_CONSUMABLES:
+		progress = false
+		for own_id in own:
+			var own_cost: int = maxi(1, int(ItemSystem.get_item(String(own_id)).get("value", 10)))
+			if own_cost > spend or own_count >= MAX_OWN_CONSUMABLES:
+				continue
+			bought[String(own_id)] = int(bought.get(String(own_id), 0)) + 1
+			spend -= own_cost
+			own_count += 1
+			progress = true
+	for own_id in bought:
+		out.append({"item_id": own_id, "quantity": bought[own_id]})
 
 	# Rank the skills that imply a consumable, best first.
 	var ranked: Array[Dictionary] = []
@@ -840,6 +866,16 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	# per 80 XP. They now read this scale instead.
 	var kit_budget: int = equipment_budget_for_xp(xp_budget)
 	var power_scale: float = float(kit_budget) / 180.0
+	# An archetype with its own `consumable_share` (0.0-1.0) sets that part of
+	# its kit aside for consumables BEFORE buying gear — a grenadier, alchemist
+	# or tinkerer carries bombs and flasks instead of the best armour it could
+	# afford. Without the key, consumables get the default share of what the
+	# gear leaves over, as before.
+	var consumable_reserve: int = 0
+	if archetype.has("consumable_share"):
+		consumable_reserve = int(round(float(kit_budget)
+			* clampf(float(archetype["consumable_share"]), 0.0, 1.0)))
+		kit_budget -= consumable_reserve
 
 	# Birth and background first — the same two steps a player character takes.
 	# "domain" is a content bucket (realm-agnostic guardian encounters), not a
@@ -1033,7 +1069,8 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 				inventory.append({"item_id": tali_id, "quantity": 1})
 
 	# Consumables come last, out of whatever the kit did not spend on gear.
-	for consumable in _generate_skill_consumables(skills, kit_budget, archetype, power_scale):
+	for consumable in _generate_skill_consumables(skills, kit_budget, archetype,
+			power_scale, consumable_reserve):
 		inventory.append(consumable)
 
 	# Generate a procedural name from realm/region/tags, unless this is a named boss.
