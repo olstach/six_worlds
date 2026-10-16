@@ -10,7 +10,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 41
+const EXPECTED_CHECKS: int = 43
 
 
 func _ready() -> void:
@@ -57,6 +57,7 @@ func _ready() -> void:
 	_check_a_shop_pays_only_what_it_has()
 	_check_a_town_outbids_a_teahouse()
 	_check_buying_puts_money_back_in_the_till()
+	_check_buying_supplies_pays_the_till_too()
 	_check_barter_settles_in_goods_before_gold()
 	_check_a_shortfall_needs_confirming()
 	_check_a_new_life_keeps_nothing_of_the_old_world()
@@ -70,6 +71,9 @@ func _ready() -> void:
 	_check_an_investment_matures_and_pays_half_again()
 	_check_an_investment_dies_with_the_life()
 	_check_an_investment_survives_a_save()
+
+	# The calendar: one day_changed per day crossed.
+	_check_a_long_rest_fires_every_day()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -822,6 +826,25 @@ func _check_buying_puts_money_back_in_the_till() -> void:
 	_done()
 
 
+## Food and herbs go straight into the party's stores instead of the bag —
+## but the shopkeeper still gets paid. (The supply branch used to return
+## before the purse was touched.)
+func _check_buying_supplies_pays_the_till_too() -> void:
+	GameState.shop_purses.clear()
+	_open_purse_shop("obj_rations", "general")
+	ShopSystem._current_shop["items"] = {"rations": 1}
+	GameState.shop_purses["obj_rations"] = {"gold": 0, "day": GameState.current_day}
+	GameState.gold = 1000000
+	var price: int = ShopSystem.get_buy_price("rations")
+	var result: Dictionary = ShopSystem.buy_item("rations")
+	if not result.get("success", false) or not result.has("supply_gained"):
+		_fail("rations did not go through the supply branch: %s" % str(result))
+	elif ShopSystem.get_shop_purse() != price:
+		_fail("buying rations for %d left %d in the till"
+			% [price, ShopSystem.get_shop_purse()])
+	_done()
+
+
 ## Goods against goods first: an even swap needs no gold from either side, so
 ## a shop with an empty till can still make the trade.
 func _check_barter_settles_in_goods_before_gold() -> void:
@@ -879,7 +902,20 @@ func _check_a_new_life_keeps_nothing_of_the_old_world() -> void:
 	GameState.shop_purses["ghost_purse"] = {"gold": 99, "day": 0}
 	GameState.guild_spell_lists["ghost_guild"] = ["spell"]
 	GameState.gold = 99999
+	# Places on the old map: Cloud Gate's target, a Planar Shift's way home,
+	# and the stash of maps that a portal would hand back unchanged.
+	GameState.last_healing_location = {"map_id": "hell_01", "x": 3, "y": 4, "name": "Old Inn"}
+	GameState.planar_return = {"world": "hell", "map_id": "hell_01", "x": 1, "y": 1,
+		"steps_left": 5}
+	MapManager.visited_maps["ghost_map"] = {"current_map_id": "ghost_map"}
 	GameState.start_new_run("hungry_ghost")
+	if not GameState.last_healing_location.is_empty():
+		_fail("Cloud Gate still points at the previous life's map")
+	if not GameState.planar_return.is_empty():
+		_fail("a Planar Shift from the previous life would still pull you home")
+	if MapManager.visited_maps.has("ghost_map"):
+		_fail("a map from the previous life is still stashed — walking into "
+			+ "that realm again would restore it rather than roll a new one")
 	if not GameState.shop_stock.is_empty():
 		_fail("a rack from the previous world survived reincarnation")
 	if not GameState.shop_purses.is_empty():
@@ -1052,4 +1088,31 @@ func _check_an_investment_survives_a_save() -> void:
 		if int(paid.get("payout", 0)) != 150:
 			_fail("a reloaded investment paid %d, expected 150" % int(paid.get("payout", 0)))
 	GameState.investments.clear()
+	_done()
+
+
+# ============================================================================
+# THE CALENDAR
+# ============================================================================
+
+## A long stretch of time fires day_changed once for every day it crosses, in
+## order — so a rest across the 14th still sees the full moon, even though the
+## clock has moved on to the 15th by the time anyone is told.
+func _check_a_long_rest_fires_every_day() -> void:
+	GameState.hours_elapsed = 12 * GameState.HOURS_PER_DAY + 20   # day 12, 20:00
+	var seen: Array[int] = []
+	var full_moons: Array[int] = []
+	var listener := func(day: int) -> void:
+		seen.append(day)
+		if GameState.is_full_moon(day):
+			full_moons.append(day)
+	GameState.day_changed.connect(listener)
+	GameState.advance_time(2 * GameState.HOURS_PER_DAY)   # to day 14, 20:00
+	GameState.day_changed.disconnect(listener)
+	if seen != [13, 14]:
+		_fail("crossing two days fired day_changed for %s, expected [13, 14]" % str(seen))
+	elif full_moons != [13]:
+		# Day 13 is the 14th lunar day: get_lunar_day is (day % 28) + 1.
+		_fail("the full moon was seen on %s, expected [13]" % str(full_moons))
+	GameState.hours_elapsed = 0
 	_done()

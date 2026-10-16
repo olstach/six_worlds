@@ -195,6 +195,10 @@ const BASE_CHARACTER: Dictionary = {
 		"chest": "",
 		"hand_l": "",
 		"hand_r": "",
+		# A four-armed body's second pair of hands. Empty and unused on any
+		# other body (ItemSystem.equip_item refuses them there).
+		"hand_l2": "",
+		"hand_r2": "",
 		"legs": "",
 		"feet": "",
 		"weapon_set_1": {"main": "", "off": ""},
@@ -1233,6 +1237,13 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Weight limit from Strength + equipment (e.g. backpack)
 	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10 + equip_bonus.get("weight_limit", 0)
 
+	# Effective Luck: the attribute plus gear and traits (a Luck map buff adds
+	# to it further down). Luck has no single derived stat the way Focus has
+	# spellpower, so the number itself is kept — the loot rolls after a fight
+	# read THIS, not attributes.luck, so a talisman "of Fortune" or a shrine's
+	# blessing actually changes what you find (CombatManager.best_party_luck).
+	derived["luck"] = effective_attrs.luck
+
 	# Combat stats from equipment + earth affinity
 	derived.damage = equip_bonus.get("damage", 0)
 	derived.armor = equip_bonus.get("armor", 0) + affinity_bonus.get("armor", 0)
@@ -1443,6 +1454,7 @@ func update_derived_stats(character: Dictionary) -> void:
 					pass  # future: social/event roll bonuses
 				"luck":
 					derived["crit_chance"] = derived.get("crit_chance", 0.0) + amount
+					derived["luck"] = derived.get("luck", 10) + amount
 				"spellpower":
 					derived["spellpower"] = derived.get("spellpower", 0) + amount
 				"dodge":

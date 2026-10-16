@@ -256,22 +256,19 @@ func _check_perk_prerequisites(perk: Dictionary, owned: Array[String]) -> bool:
 
 func _check_special_requirement(character: Dictionary, special: String) -> bool:
 	## Check special requirements like "any_3_weapon_skills_at_3" or "fire_affinity_25".
+	## Those two shapes are the only ones understood; anything else returns false
+	## and the perk can never be taken. validate_data.py rejects other shapes.
+	## (An attribute-threshold shape, "constitution_14", was removed 2026-10-15:
+	## no perk used it, and it read base attributes rather than effective ones.)
 	var skills = character.get("skills", {})
 
-	# Affinity requirements: "space_affinity_40" (threshold raised to 40 for 10-level scale)
+	# Affinity requirements: "space_affinity_25"
 	var affinity_match := special.split("_affinity_")
 	if affinity_match.size() == 2:
 		var element = affinity_match[0]
 		var required = int(affinity_match[1])
 		var total = calculate_element_affinity(character, element)
 		return total >= required
-
-	# Attribute thresholds: "constitution_14", "finesse_16", etc.
-	const ATTRIBUTE_NAMES := ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"]
-	for attr in ATTRIBUTE_NAMES:
-		if special.begins_with(attr + "_"):
-			var threshold := int(special.substr(attr.length() + 1))
-			return character.get("attributes", {}).get(attr, 0) >= threshold
 
 	# "any_X_category_at_Y" patterns
 	# Examples: any_3_weapon_skills_at_3, any_weapon_skill_at_3, any_3_elemental_magics_at_2
@@ -508,11 +505,12 @@ func get_perk_data(perk_id: String) -> Dictionary:
 #     ]
 #   }
 #
-# 164 perks are instead wired by id directly in combat code, because their
-# effects are reactive or too specific to describe in data. Those must NOT also
-# carry an `effects` array or the perk would fire twice; tools/wire_passive_
-# perks.py refuses to write one for any perk id it finds referenced in
-# scripts/.
+# Many perks (176 on 2026-10-15) are instead wired by id directly in combat
+# code, because their effects are reactive or too specific to describe in data.
+# The number drifts; tools/wire_passive_perks.py computes the live set. Those
+# must NOT also carry an `effects` array or the perk would fire twice;
+# tools/wire_passive_perks.py refuses to write one for any perk id it finds
+# referenced in scripts/.
 #
 # Where each effect type is consumed:
 #

@@ -120,6 +120,30 @@ Perk mechanics are authored through `tools/wire_active_perks.py` and
 `tools/wire_passive_perks.py`, which regenerate `perks.json` and refuse data the
 engine cannot consume.
 
+### How to tune fight difficulty
+
+Every number that decides how strong enemies are lives in one file,
+`resources/data/enemies/encounter_budgets.json`. An enemy party is built from
+an XP budget:
+
+    realm_base  ×  encounter tier  ×  rolled band  ×  fight difficulty
+
+- `realm_base` — how dangerous each world is. Fixed; it does not follow the
+  player's strength.
+- `tier_multipliers` — imp, shade, devil, boss, from the enemies in the fight.
+- `bands` — the common/uncommon/rare roll and how often each comes up.
+- `difficulty` — what the `easy` / `normal` / `hard` / `very_hard` / `boss`
+  word on an event fight or map mob does. `xp_multiplier` is the main knob;
+  `min_tier` and `band` are explained in the file's `_comment_difficulty`.
+  Leave `normal` at 1.0 — every fight without a difficulty uses it.
+
+More XP makes enemies stronger the way a stronger character is stronger (better
+attributes, skills, gear, spells), and the party's reward is a fraction of it,
+so a harder fight also pays more without a separate rule. After a change, run
+`tools/verify_all.sh`: the validator rejects difficulty words the table does not
+know, and `verify_enemy_xp` checks each tier still builds stronger parties than
+the one below it.
+
 ---
 
 ## Design decisions that shape everything

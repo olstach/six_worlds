@@ -13,8 +13,8 @@ Run:
 
 The load-bearing rule
 ---------------------
-164 perks are already implemented by hand in `scripts/`, checked by id with
-`PerkSystem.has_perk()` at the moment they matter. Giving one of those an
+Many perks (176 on 2026-10-15) are already implemented by hand in `scripts/`,
+checked by id with `PerkSystem.has_perk()` at the moment they matter. Giving one of those an
 `effects` array would make it fire twice — once from its hand-written branch
 and once from the engine. So this script derives the hardcoded set by scanning
 `scripts/` for each perk id and REFUSES to write effects for any of them. The

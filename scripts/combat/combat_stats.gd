@@ -129,10 +129,11 @@ const PERK_TRIGGERS: Array[String] = [
 	                  # standing; context.attacker (may be absent), damage
 	"ally_damaged",   # apply_damage, every living teammate of the hurt unit;
 	                  # context.ally, context.attacker (may be absent), damage
-	"combat_start",   # _apply_combat_start_perks, every unit, once per fight.
-	                  # Fires BEFORE the unit's first turn start, which ticks
-	                  # stat modifiers down — so a buff meant to last through
-	                  # that first turn needs a duration of 3, not 1.
+	"combat_start",   # _apply_combat_start_perks, every unit, once per fight,
+	                  # before round 1's turn order is sorted (so initiative
+	                  # buffs count). Fires BEFORE the unit's first turn start,
+	                  # which ticks stat modifiers down once — so a buff meant
+	                  # to last through that first turn needs a duration of 2.
 	"turn_start",     # _start_current_turn, the unit whose turn it is, after
 	                  # the turn-start ticks: a duration-1 buff lasts this turn
 ]
@@ -149,7 +150,7 @@ const PERK_CONDITIONS: Array[String] = [
 	"not_flanked", "did_not_move", "moved_this_turn", "from_stealth",
 	"below_half_hp", "above_half_hp",
 	"wearing_heavy_armor",   # body armour with a Strength requirement
-	"unarmored_or_light",    # CombatManager._unit_is_unarmored()
+	"unarmored_or_light",    # CombatManager._unit_is_unarmored(unit, true)
 	"first_attack_combat",   # no weapon attack made yet this fight
 	"first_attack_turn",     # no weapon attack made yet this turn
 	"from_behind",           # attacker stands in the target's rear arc

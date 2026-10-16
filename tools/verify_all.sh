@@ -3,9 +3,9 @@
 #
 # Four layers, because each catches what the one before it cannot:
 #
-#   1. parse      — every .gd compiles. A parse error in one scene is invisible
-#                   until something loads it; combat_arena.gd was broken for six
-#                   days this way.
+#   1. parse      — every .gd compiles (tools/parse_check.gd loads each one).
+#                   A parse error in one scene is invisible until something
+#                   loads it; combat_arena.gd was broken for six days this way.
 #   2. boot       — autoloads actually initialise, and load the counts they
 #                   should. A clean parse does not mean a clean boot.
 #   3. data       — cross-references between JSON files, and the reverse check:
@@ -79,9 +79,26 @@ restore_tree() {
 
 if [ "$QUICK" -eq 0 ]; then
     log "1. parse — every script compiles"
+    # The editor pass refreshes the class_name cache, so it runs first. It is
+    # NOT a compile of every script: the editor's scan only reads far enough to
+    # find each class_name, so a duplicate function or undeclared name in a
+    # script nothing loads (a tools/verify_*.gd, say) passed this layer and
+    # surfaced only when its scene ran. parse_check.gd then loads every .gd
+    # for real, which runs the full parser and analyzer.
     parse_out=$(timeout 300 "$GODOT" --headless --editor --quit 2>&1 \
         | grep -E "SCRIPT ERROR|Failed to load script" || true)
     restore_tree
+    parse_log=$(mktemp)
+    # Redirect, not pipe — same buffered-stdout reason as the boot layer below.
+    timeout 300 "$GODOT" --headless -s tools/parse_check.gd > "$parse_log" 2>&1
+    restore_tree
+    nl=$'\n'
+    broken=$(grep -E "SCRIPT ERROR: Parse Error|Failed to load script|PARSE BROKEN" "$parse_log" || true)
+    grep -q "^PARSE CHECK:" "$parse_log" \
+        || broken+="${broken:+$nl}parse_check.gd never reported — it crashed or timed out"
+    [ -n "$broken" ] && parse_out+="${parse_out:+$nl}$broken"
+    grep -E "^PARSE CHECK:" "$parse_log" | sed 's/^/        /'
+    rm -f "$parse_log"
     if [ -n "$parse_out" ]; then
         bad "parse errors:"; echo "$parse_out" | sed 's/^/        /'
     else

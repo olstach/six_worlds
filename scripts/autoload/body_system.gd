@@ -241,6 +241,30 @@ func get_equipment_slots(character: Dictionary) -> Array[String]:
 	return slots
 
 
+## Does `slot` belong to a body part on THIS character's plan?
+##
+## Only meaningful for slots that come from body parts (hand_l2, legs, …).
+## Accessory slots (rings, trinkets, face, back) and weapon slots are always
+## available and answer true. A missing (severed) part still answers true —
+## equip_item rejects those separately so that a prosthetic can fill the gap.
+## Used by ItemSystem.equip_item so a two-armed human cannot put gloves on a
+## third hand just because hand_l2 is in the gloves' slot list.
+func body_has_slot(character: Dictionary, slot: String) -> bool:
+	if slot in ACCESSORY_SLOTS:
+		return true
+	var on_some_plan := false
+	for plan_id in BODY_PLANS:
+		for part in BODY_PLANS[plan_id].parts:
+			if part.get("equip_slot", "") == slot:
+				on_some_plan = true
+				break
+		if on_some_plan:
+			break
+	if not on_some_plan:
+		return true  # not a body-part slot at all (weapon_main, ring1, …)
+	return not get_part_for_slot(character, slot).is_empty()
+
+
 ## All arm equip slots for this character (used by _find_slot_for_item and UI).
 func get_arm_slots(character: Dictionary) -> Array[String]:
 	var plan := get_body_plan_def(character)
@@ -429,10 +453,7 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 			if part.id == pid:
 				var slot: String = part.get("equip_slot", "")
 				if slot != "" and ItemSystem:
-					# If inventory is full, unequip_item returns false and warns.
-					# Force-clear the slot anyway so the item isn't stuck in limbo.
-					if not ItemSystem.unequip_item(character, slot):
-						character.get("equipment", {})[slot] = ""
+					_drop_from_lost_part(character, slot)
 				# Arms also unequip the weapon they were holding, if any.
 				# ARM_WEAPON_SLOTS says which weapon slot belongs to which arm.
 				# The extra arms (arm_l2/arm_r2) are deliberately absent from it:
@@ -443,12 +464,7 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 				if part.get("category") == "arm" and ItemSystem:
 					var weapon_slot: String = ARM_WEAPON_SLOTS.get(pid, "")
 					if weapon_slot != "":
-						if not ItemSystem.unequip_item(character, weapon_slot):
-							# weapon_main/weapon_off live inside the active
-							# weapon set, so clear them through ItemSystem's
-							# own helper rather than writing a top-level key
-							# that nothing reads.
-							ItemSystem._set_equipped_item(character, weapon_slot, "")
+						_drop_from_lost_part(character, weapon_slot)
 				break
 
 	# Losing a limb is permanent enough to become part of who they are.
@@ -458,6 +474,40 @@ func sever_part(character: Dictionary, part_id: String) -> Array[String]:
 	if CharacterSystem:
 		CharacterSystem.update_derived_stats(character)
 	return to_sever
+
+
+## Take whatever a lost body part was holding or wearing in `slot` off the
+## character, and put it in the party's pack.
+##
+## Two things this has to get right:
+##   * weapon_main / weapon_off exist once PER WEAPON SET. A severed right arm
+##     drops the main-hand weapon of set 1 AND set 2 — a hand that is gone
+##     cannot hold the sword you would swap to either.
+##   * Nothing is ever destroyed. The game has no stash or ground to drop
+##     things on, so a full pack takes it anyway (force) and is over-full
+##     until the player sorts it out. This used to clear the slot and lose
+##     the item.
+func _drop_from_lost_part(character: Dictionary, slot: String) -> void:
+	var who: String = character.get("name", "?")
+	if slot == "weapon_main" or slot == "weapon_off":
+		var hand: String = "main" if slot == "weapon_main" else "off"
+		var equipment: Dictionary = character.get("equipment", {})
+		for set_num in [1, 2]:
+			var weapon_set: Dictionary = equipment.get("weapon_set_%d" % set_num, {})
+			var item_id: String = str(weapon_set.get(hand, ""))
+			if item_id == "":
+				continue
+			weapon_set[hand] = ""
+			ItemSystem.add_to_inventory(item_id, 1, true)
+			print("BodySystem: %s's %s (weapon set %d) falls with the lost limb — returned to the pack."
+				% [who, ItemSystem.get_item(item_id).get("name", item_id), set_num])
+		return
+	var worn: String = ItemSystem.get_equipped_item(character, slot)
+	if worn == "":
+		return
+	ItemSystem.unequip_item(character, slot, true)
+	print("BodySystem: %s's %s comes off with the lost limb — returned to the pack."
+		% [who, ItemSystem.get_item(worn).get("name", worn)])
 
 
 ## Restores a severed part and all its descendants (removes the whole subtree from missing_parts).

@@ -1377,7 +1377,6 @@
         "Fire_Vulnerable"
       ],
       "special": {
-        "fire_vulnerability": 50,
         "cumulative": true
       },
       "target": {
@@ -3078,7 +3077,7 @@
         "size": 2,
         "origin": "target"
       },
-      "description": "A circle of orbiting vajras. Allies inside take a third less magic damage and cast with +3 spellpower from the consecrated circle; enemies pay water damage and a chance of freezing every time they cross the line.",
+      "description": "A circle of orbiting vajras. Allies inside take a third less magic damage and cast with +3 spellpower from the consecrated circle; enemies pay crushing damage and a chance of freezing every time they cross the line.",
       "zone": "vajra_mandala"
     },
     "vajra_gate": {
@@ -4753,9 +4752,6 @@
       "statuses_caused": [
         "Air_Shield"
       ],
-      "special": {
-        "ranged_damage_reduction": true
-      },
       "target": {
         "type": "single",
         "eligible": "ally",
@@ -5415,11 +5411,6 @@
       "statuses_caused": [
         "Thin_Air"
       ],
-      "special": {
-        "physical_immunity": true,
-        "cannot_deal_physical": true,
-        "major_speed_boost": true
-      },
       "target": {
         "type": "single",
         "eligible": "ally",
@@ -7040,10 +7031,6 @@
       "statuses_caused": [
         "Invulnerable"
       ],
-      "special": {
-        "immune_to_all_damage": true,
-        "short_duration": true
-      },
       "target": {
         "type": "single",
         "eligible": "ally"
@@ -7431,10 +7418,6 @@
       "statuses_caused": [
         "Praying"
       ],
-      "special": {
-        "defense_bonus": true,
-        "magic_resistance_bonus": true
-      },
       "target": {
         "type": "single",
         "eligible": "ally",

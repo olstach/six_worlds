@@ -1880,16 +1880,18 @@ func _show_toast(msg: String) -> void:
 
 
 ## Fires whenever the calendar day rolls over. Handles full moon and new moon effects.
-func _on_day_changed(_new_day: int) -> void:
+## Fires once per day crossed, so read `new_day` rather than today: a long
+## rest can cross a full moon and land on the day after it.
+func _on_day_changed(new_day: int) -> void:
 	_update_time_label()
-	if GameState.is_full_moon():
-		# Full Moon (15th lunar day): restore 20% mana to all party members
+	if GameState.is_full_moon(new_day):
+		# Full Moon (14th lunar day): restore 20% mana to all party members
 		for char in CharacterSystem.party:
 			var derived: Dictionary = char.get("derived", {})
 			var max_mana: int = int(derived.get("max_mana", 50))
 			derived["current_mana"] = mini(max_mana, int(derived.get("current_mana", max_mana)) + floori(max_mana * 0.2))
 		_show_toast("Full moon — the dharma light shines. The party's mana is partially restored.")
-	elif GameState.is_new_moon():
+	elif GameState.is_new_moon(new_day):
 		_show_toast("New moon — the realm grows darker. Spirits are restless tonight.")
 
 

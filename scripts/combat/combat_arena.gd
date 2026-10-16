@@ -397,10 +397,13 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 	var enemy_group = mob_inner.get("enemy_group", "demon_patrol")
 	# Region can be on the mob dict (from MapManager) or in its inner data
 	var region = mob_data.get("region", mob_inner.get("region", ""))
-	# Difficulty tier can be on the mob dict (map mobs) or inner data (event combats)
-	var difficulty = mob_data.get("difficulty", mob_inner.get("difficulty", "normal"))
+	# Difficulty tier can be on the mob dict or its inner data (map mobs and
+	# event fights both put it in the inner data). str() so a null in a save
+	# cannot crash the typed call; EnemySystem turns anything unknown into
+	# "normal" with a warning. What each tier does: encounter_budgets.json.
+	var difficulty: String = str(mob_data.get("difficulty", mob_inner.get("difficulty", "normal")))
 
-	# Generate scaled enemies from EnemySystem
+	# Build the enemies from the realm's XP budget, scaled by the difficulty
 	var enemy_defs = EnemySystem.generate_encounter(enemy_group, region, GameState.current_world, difficulty)
 
 	# Get party characters for deployment
@@ -713,12 +716,6 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	else:
 		combat_grid.clear_aoe_preview()
 
-	# Show cover info when hovering movement destinations
-	if current_action_mode == ActionMode.MOVE:
-		_show_cover_tooltip(grid_pos)
-	else:
-		_hide_cover_tooltip()
-
 	# Show hit% when hovering an enemy target in attack mode
 	if current_action_mode == ActionMode.ATTACK:
 		var current_unit := CombatManager.get_current_unit()
@@ -731,7 +728,8 @@ func _on_tile_hovered(grid_pos: Vector2i) -> void:
 	else:
 		_hide_hit_chance_tooltip()
 
-	# Show floating tile info tooltip (obstacle, height, terrain effect)
+	# Show floating tile info tooltip (obstacle, height, terrain effect — and
+	# in move mode the cover the tile would give, in the same label)
 	_show_tile_tooltip(grid_pos)
 
 	# Update unit info if hovering over a unit
@@ -795,7 +793,6 @@ func _cancel_action_mode() -> void:
 	selected_skill = {}
 	combat_grid.clear_highlights()
 	combat_grid.clear_aoe_preview()
-	_hide_cover_tooltip()
 	_hide_tile_tooltip()
 	_hide_hit_chance_tooltip()
 	spell_panel.hide()
@@ -1116,6 +1113,11 @@ func _build_spell_tooltip(spell: Dictionary) -> String:
 	var summon_id = spell.get("summon", "")
 	if summon_id != "":
 		lines.append("Summons: " + summon_id.replace("_", " "))
+
+	# Summoning terrain bonus — shown before casting, not only in the log after.
+	var affinity_line: String = TooltipText.summon_terrain_line(spell, CombatManager.battlefield_overworld_terrain)
+	if affinity_line != "":
+		lines.append(affinity_line)
 
 	# Description
 	var desc = spell.get("description", "")
@@ -2132,8 +2134,8 @@ func _try_attack_at(grid_pos: Vector2i) -> void:
 
 		if result.hit:
 			var crit_text = " CRITICAL!" if result.crit else ""
-			_log_message("%s attacks %s for %d damage!%s" % [
-				attacker.unit_name, defender.unit_name, result.damage, crit_text
+			_log_message("%s attacks %s for %s damage!%s" % [
+				attacker.unit_name, defender.unit_name, CombatUnit.hit_damage_text(result), crit_text
 			])
 			AudioManager.play(_get_attack_sound(attacker))
 			if result.crit:
@@ -2401,68 +2403,32 @@ func _update_action_circles(remaining: int, total: int) -> void:
 
 
 # ============================================
-# COVER TOOLTIP
+# TILE TOOLTIP (terrain, hazards, zones — and cover while moving)
 # ============================================
 
-## Floating label shown when hovering over movement tiles near cover
-var _cover_tooltip: Label = null
-
-## Floating label shown when hovering any tile with noteworthy terrain info
+## Floating label shown when hovering any tile with noteworthy terrain info.
+## In move mode it also carries the cover the tile would give. Those were two
+## labels once, and the terrain one hid itself in move mode to make room —
+## so a fire tile said nothing at the one moment you were deciding whether to
+## step on it.
 var _tile_tooltip: Label = null
 
-## Show cover tooltip at a tile position when in movement mode
-func _show_cover_tooltip(grid_pos: Vector2i) -> void:
-	_hide_cover_tooltip()
-
-	# Only show for valid movement destinations
-	if not grid_pos in combat_grid.highlighted_tiles:
-		return
-
-	var current_unit = CombatManager.get_current_unit()
-	if current_unit == null:
-		return
-
-	# Check what cover this position would provide
-	var cover_info = combat_grid.get_cover_info_at(grid_pos, current_unit.team)
-	if not cover_info.has_cover:
-		return
-
-	# Also check height advantage at this position
-	var height = combat_grid.get_tile_height(grid_pos)
-
-	# Build tooltip text
-	var tooltip_text = "+%d%% dodge (cover: %s)" % [cover_info.dodge_bonus, cover_info.obstacle_name]
-	if height > 0:
-		tooltip_text += "\nHeight %d (+%d%% accuracy)" % [height, height * 5]
-
-	# Create floating label above the tile
-	_cover_tooltip = Label.new()
-	_cover_tooltip.text = tooltip_text
-	_cover_tooltip.add_theme_font_size_override("font_size", 11)
-	_cover_tooltip.add_theme_color_override("font_color", Color(0.4, 0.9, 0.4))
-	_cover_tooltip.position = combat_grid.grid_to_world(grid_pos) + Vector2(0, -20)
-	_cover_tooltip.z_index = 100
-	combat_grid.add_child(_cover_tooltip)
-
-
-## Hide the cover tooltip
-func _hide_cover_tooltip() -> void:
-	if _cover_tooltip != null:
-		_cover_tooltip.queue_free()
-		_cover_tooltip = null
-
-
-## Show a floating tooltip with obstacle, height, and terrain effect info for a tile
+## Show a floating tooltip with obstacle, height, terrain effect info — and,
+## while choosing where to move, the cover the tile would give.
 func _show_tile_tooltip(grid_pos: Vector2i) -> void:
 	_hide_tile_tooltip()
 
-	# Don't show when cover tooltip is already providing info in movement mode
-	if current_action_mode == ActionMode.MOVE:
-		return
+	# Cover only matters for a tile you can actually move to this turn.
+	var cover_info: Dictionary = {}
+	if current_action_mode == ActionMode.MOVE and grid_pos in combat_grid.highlighted_tiles:
+		var current_unit = CombatManager.get_current_unit()
+		if current_unit != null:
+			cover_info = combat_grid.get_cover_info_at(grid_pos, current_unit.team)
 
-	# Ground, passability, obstacle, height, hazard and zones — built in
-	# TooltipText so the wording can be checked by tools/verify_tooltips.gd.
-	var text: String = TooltipText.tile(combat_grid, grid_pos, CombatManager.zones_at(grid_pos))
+	# Cover, ground, passability, obstacle, height, hazard and zones — built
+	# in TooltipText so the wording can be checked by tools/verify_tooltips.gd.
+	var text: String = TooltipText.move_tile(combat_grid, grid_pos,
+		CombatManager.zones_at(grid_pos), cover_info)
 	if text == "":
 		return
 
@@ -2736,11 +2702,24 @@ func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> vo
 		# someone else after a kill, so this isn't always `defender`.
 		var struck = extra.get("target", defender)
 		var struck_name: String = struck.unit_name if is_instance_valid(struck) else defender.unit_name
+		# This is the ONLY place an arm is logged — CombatManager used to
+		# write its own line for each arm as well, in another format.
 		if extra.get("hit", false):
 			var crit_str: String = " CRIT!" if extra.get("crit", false) else ""
-			_log_message("  Arm %d: %d %s damage to %s%s" % [
-				arm_num, extra.get("damage", 0), extra.get("damage_type", ""),
-				struck_name, crit_str])
+			if int(extra.get("damage_taken", extra.get("damage", 0))) <= 0:
+				# Landed but cost nothing — no popup either (see show_arm_result).
+				_log_message("  Arm %d: hits %s for no damage%s" % [arm_num, struck_name, crit_str])
+			else:
+				_log_message("  Arm %d: %s %s damage to %s%s" % [
+					arm_num, CombatUnit.hit_damage_text(extra), extra.get("damage_type", ""),
+					struck_name, crit_str])
+			if extra.has("oil_damage"):
+				_log_message("    +%d %s damage (oil)!" % [
+					extra.oil_damage, str(extra.get("oil_damage_type", "")).capitalize()])
+			# The primary hit's crit sting plays where it is logged; an
+			# arm's crit deserves the same.
+			if extra.get("crit", false):
+				AudioManager.play("hit_crit", -3.0)
 		else:
 			_log_message("  Arm %d: misses %s" % [arm_num, struck_name])
 	# ...and as floating popups over whoever each arm struck ("Arm 2: 12",
@@ -3329,8 +3308,8 @@ func _do_confused_turn(unit: CombatUnit) -> void:
 				var result = CombatManager.attack_unit(unit, random_target)
 				if result.success:
 					if result.hit:
-						_log_message("%s lashes out at %s for %d damage!" % [
-							unit.unit_name, random_target.unit_name, result.damage])
+						_log_message("%s lashes out at %s for %s damage!" % [
+							unit.unit_name, random_target.unit_name, CombatUnit.hit_damage_text(result)])
 					else:
 						_show_miss_text(unit, random_target)
 						_log_message("%s swings wildly at %s - MISS!" % [
@@ -3375,8 +3354,8 @@ func _do_berserk_turn(unit: CombatUnit) -> void:
 			if result.success:
 				var ally_text = " (ally!)" if nearest.team == unit.team else ""
 				if result.hit:
-					_log_message("%s attacks %s%s in a blind rage for %d damage!" % [
-						unit.unit_name, nearest.unit_name, ally_text, result.damage])
+					_log_message("%s attacks %s%s in a blind rage for %s damage!" % [
+						unit.unit_name, nearest.unit_name, ally_text, CombatUnit.hit_damage_text(result)])
 				else:
 					_show_miss_text(unit, nearest)
 					_log_message("%s rages at %s%s - MISS!" % [
@@ -3552,7 +3531,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			if result.success:
 				if result.hit:
 					var ranged_text = " from range" if dist > 1 else ""
-					_log_message("%s attacks %s%s for %d damage!" % [unit.unit_name, nearest.unit_name, ranged_text, result.damage])
+					_log_message("%s attacks %s%s for %s damage!" % [unit.unit_name, nearest.unit_name, ranged_text, CombatUnit.hit_damage_text(result)])
 					AudioManager.play(_get_attack_sound(unit))
 					if result.crit:
 						AudioManager.play("hit_crit", -3.0)
@@ -4160,7 +4139,7 @@ func _run_bonus_turn(unit: CombatUnit) -> void:
 			if result.get("success", true):
 				unit.actions_remaining -= 1
 				if result.get("hit", false):
-					_log_message("%s attacks %s for %d damage!" % [unit.unit_name, nearest.unit_name, result.get("damage", 0)])
+					_log_message("%s attacks %s for %s damage!" % [unit.unit_name, nearest.unit_name, CombatUnit.hit_damage_text(result)])
 				else:
 					_show_miss_text(unit, nearest)
 			else:

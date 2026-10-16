@@ -54,6 +54,12 @@ for path in glob.glob(os.path.join(ROOT, "resources/data/enemies/*_encounters.js
         if not k.startswith("_"):
             encounters[k] = (v, os.path.basename(path))
 
+# Fight difficulty tiers: the `difficulty` table in encounter_budgets.json is
+# the only vocabulary EnemySystem understands. Anything else in data falls back
+# to "normal" at runtime with a warning — so here it is an error instead.
+budgets_data = load("resources/data/enemies/encounter_budgets.json")
+FIGHT_DIFFICULTIES = {k for k in budgets_data.get("difficulty", {}) if not k.startswith("_")}
+
 events = {}
 for path in glob.glob(os.path.join(ROOT, "resources/data/events/*_events.json")):
     for k, v in json.load(open(path, encoding="utf-8"))["events"].items():
@@ -139,6 +145,10 @@ def check_outcome(outcome, ctx, depth=0):
 
     if otype == "combat" and outcome.get("enemy_group", "") not in encounters:
         err("event->enemy_group", f"{ctx}: enemy_group '{outcome.get('enemy_group', '')}' unknown")
+    if "difficulty" in outcome and outcome["difficulty"] not in FIGHT_DIFFICULTIES:
+        err("event->difficulty",
+            f"{ctx}: fight difficulty {outcome['difficulty']!r} is not one of "
+            f"{sorted(FIGHT_DIFFICULTIES)} (encounter_budgets.json 'difficulty')")
     if otype == "shop" and outcome.get("shop_id", "") not in shops:
         err("event->shop", f"{ctx}: shop_id '{outcome.get('shop_id', '')}' unknown")
     if otype == "recruit_companion":
@@ -471,6 +481,38 @@ for path in sorted(glob.glob(os.path.join(ROOT, "resources/data/map_configs/*.js
             group = mob.get("enemy_group", "")
             if group and group not in encounters:
                 err("map->enemy_group", f"{base}:{zone}: enemy_group '{group}' unknown")
+            if "difficulty" in mob and mob["difficulty"] not in FIGHT_DIFFICULTIES:
+                err("map->difficulty",
+                    f"{base}:{zone}: mob '{mob.get('name', group)}' difficulty "
+                    f"{mob['difficulty']!r} is not one of {sorted(FIGHT_DIFFICULTIES)}")
+
+# ── fight difficulty table ───────────────────────────────────────────────────
+# The knobs themselves must point at things that exist, and "normal" must stay
+# the identity: every fight without a difficulty gets it, so changing it would
+# silently re-tune the whole game.
+_diff_table = budgets_data.get("difficulty", {})
+_tier_ids = {k for k in budgets_data.get("tier_multipliers", {}) if not k.startswith("_")}
+_band_ids = {b.get("id") for b in budgets_data.get("bands", [])}
+if _diff_table.get("normal") != {"xp_multiplier": 1.0}:
+    err("budgets->difficulty", f"'normal' must be exactly {{'xp_multiplier': 1.0}}, found {_diff_table.get('normal')!r}")
+for _dk in sorted(FIGHT_DIFFICULTIES):
+    _dv = _diff_table[_dk]
+    if not isinstance(_dv, dict):
+        err("budgets->difficulty", f"'{_dk}' should be a dict of knobs")
+        continue
+    for _knob in _dv:
+        if _knob not in ("xp_multiplier", "min_tier", "band") and not _knob.startswith("_"):
+            err("budgets->difficulty", f"'{_dk}': knob '{_knob}' is not read by EnemySystem")
+    _mult = _dv.get("xp_multiplier")
+    if not isinstance(_mult, (int, float)) or _mult <= 0:
+        err("budgets->difficulty", f"'{_dk}': xp_multiplier must be a positive number, found {_mult!r}")
+    if "min_tier" in _dv and _dv["min_tier"] not in _tier_ids:
+        err("budgets->difficulty", f"'{_dk}': min_tier '{_dv['min_tier']}' is not in tier_multipliers")
+    if "band" in _dv and _dv["band"] not in _band_ids:
+        err("budgets->difficulty", f"'{_dk}': band '{_dv['band']}' is not one of the bands")
+for _alias, _target in budgets_data.get("difficulty_aliases", {}).items():
+    if not _alias.startswith("_") and _target not in FIGHT_DIFFICULTIES:
+        err("budgets->difficulty", f"alias '{_alias}' points at unknown tier '{_target}'")
 
 # ── code -> data ─────────────────────────────────────────────────────────────
 perks_data = load("resources/data/perks.json")
@@ -531,13 +573,25 @@ def check_vocabulary(label, values, patterns=None):
     reading one character's table.
     """
     accepted = set(_baseline.get(label, {}).get("values", []))
-    for value in sorted(values):
-        if value in accepted:
-            continue
+    for value in sorted(values | accepted):
         if patterns:
             found = any((p % value) in _gd_source for p in patterns)
         else:
             found = _read_by_code(value)
+        if value in accepted:
+            # The baseline may only shrink. An entry that has gained a reader,
+            # or whose value no longer appears in the data at all, is a stale
+            # line — and a stale line would silently excuse the value if its
+            # reader were later removed again. Fail so it gets deleted.
+            if found:
+                err("data->code", f"{label} '{value}' is listed in "
+                    "vocabulary_baseline.json but code now reads it — "
+                    "remove it from the baseline")
+            elif value not in values:
+                err("data->code", f"{label} '{value}' is listed in "
+                    "vocabulary_baseline.json but no data declares it any "
+                    "more — remove it from the baseline")
+            continue
         if not found:
             err("data->code", f"{label} '{value}' is declared in data but no code reads it")
 
@@ -567,6 +621,33 @@ for _s in load("resources/data/statuses.json")["statuses"]:
     if _s.get("name"):
         _status_names.add(str(_s["name"]))
 check_vocabulary("status effect", _status_effects)
+
+# ── Perk special requirements ────────────────────────────────────────────────
+#
+# PerkSystem._check_special_requirement understands exactly two shapes and
+# returns false for anything else, so a misspelt or unsupported requirement
+# makes the perk silently impossible to take. Mirror its parser here.
+_SPECIAL_CATEGORIES = {"weapon_skills", "weapon_skill", "different_weapon_skills",
+                       "elemental_magics", "elemental_magic",
+                       "magic_school", "magic_schools"}
+_ELEMENTS = {"space", "air", "fire", "water", "earth"}
+for _group in ("skill_perks", "cross_perks"):
+    for _pid, _perk in perks_data.get(_group, {}).items():
+        if _pid.startswith("_") or not isinstance(_perk, dict):
+            continue
+        _req = _perk.get("special_requirement")
+        if not _req:
+            continue
+        _m_aff = re.fullmatch(r"([a-z]+)_affinity_(\d+)", _req)
+        _m_any = re.fullmatch(r"any_(?:\d+_)?([a-z_]+)_at_(\d+)", _req)
+        if _m_aff and _m_aff.group(1) in _ELEMENTS:
+            continue
+        if _m_any and _m_any.group(1) in _SPECIAL_CATEGORIES:
+            continue
+        err("data->code", f"perk '{_pid}' has special_requirement '{_req}', "
+            "which PerkSystem._check_special_requirement does not understand — "
+            "the perk could never be taken")
+
 
 # ── Spell damage and saves ───────────────────────────────────────────────────
 #
@@ -1003,11 +1084,27 @@ for _name in sorted(_damage_types):
             "is not a damage type")
 
 
+# Keys that name a damage type, whatever file they are in. `damage_element` is
+# a perk's combat_data (Drowning Pressure); `attack_damage_type` a summon's;
+# `retaliation_damage` an old spell `special` flag.
+_DT_KEYS = ("damage_type", "bonus_damage_type", "element_damage_type",
+            "damage_element", "attack_damage_type", "retaliation_damage")
+# `element` is the awkward one. In items.json, skills.json and the equipment
+# tables it names a SKILL element (earth, air, water — not damage types), but
+# in these files it is what a retaliation, a zone payload or an ammo burst
+# DEALS. Storm_Lord and Lightning_Form retaliated with `"element": "air"` for
+# months after air stopped being a damage type, and the tornado and vajra
+# mandala zones dealt `air` and `water`: all unresisted, all invisible to this
+# check, because it only looked at `damage_type`.
+_ELEMENT_IS_DAMAGE_IN = ("statuses.json", "zones.json", "auras.json",
+                         "ammo.json", "spells.json", "summon_templates.json")
+
+
 def _walk_damage_types(node, where):
     """Every damage_type field and resistance key under `node`."""
     if isinstance(node, dict):
         for k, v in node.items():
-            if k in ("damage_type", "bonus_damage_type", "element_damage_type") \
+            if (k in _DT_KEYS or (k == "element" and where in _ELEMENT_IS_DAMAGE_IN)) \
                     and isinstance(v, str) and v not in ("", "none"):
                 # A `resistance` effect reuses the `damage_type` field to name
                 # what is resisted, and some of those are afflictions rather
@@ -1068,6 +1165,19 @@ for _gd in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
         if _m.group(1) not in _damage_types:
             err("code->data", f"{_rel}: apply_damage deals '{_m.group(1)}', which "
                 "is not in damage_types.json")
+    # And the two lookup tables that feed apply_damage a VARIABLE, which the
+    # regex above cannot see: the talisman brands ("air_brand": ["air", 0.10])
+    # and the status weapon enchants ("adds_air_damage_to_attacks": "air").
+    # Storm, Frost and Stone brands and Electrified_Weapon dealt air, water and
+    # earth — no resistance in the game matched them — until 2026-10-15.
+    for _m in re.finditer(r'"[a-z_]*brand[a-z_]*":\s*\["([a-z_]+)"', _src):
+        if _m.group(1) not in _damage_types:
+            err("code->data", f"{_rel}: a talisman brand deals '{_m.group(1)}', "
+                "which is not in damage_types.json")
+    for _m in re.finditer(r'"adds_[a-z_]+_damage_to_attacks":\s*"([a-z_]+)"', _src):
+        if _m.group(1) not in _damage_types:
+            err("code->data", f"{_rel}: a weapon enchant deals '{_m.group(1)}', "
+                "which is not in damage_types.json")
 
 
 # ── Reaction stances ────────────────────────────────────────────────────────

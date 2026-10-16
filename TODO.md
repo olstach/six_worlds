@@ -76,10 +76,17 @@ Worth watching for specifically:
 - **First-pass balance numbers** — summoning terrain +25%, pack bonus,
   shield/mirror-image pools, reflect chances, wound-healing prices. All guessed,
   none played.
-- ~~**Difficulty multipliers** (easy 0.75× … boss 1.6×) now apply to every event
-  fight for the first time.~~ **Not true (found 2026-10-15):** no multiplier
-  exists in the code, and `EnemySystem.generate_encounter` never reads its
-  `difficulty` argument. See §15.
+- **Fight difficulty** — live for the first time since September (built
+  2026-10-15, §15). The `easy`/`normal`/`hard`/`very_hard`/`boss` word on
+  event fights and map mobs multiplies the enemy party's XP budget: easy
+  0.75×, hard 1.2×, very_hard 1.4×; boss is boss-priced with no rolled band
+  (all four boss fights already used boss-tier enemies, so no extra
+  multiplier). Tune it in the `difficulty` block of
+  `resources/data/enemies/encounter_budgets.json`. Watch for: **`hard` is the
+  most common word in the data** (103 of 203 fights), so the average fight
+  just got about 10% bigger; and extra XP shows up more as skills than HP
+  (very_hard is +87% XP over easy but only ~+9% HP in aggregate), so if `hard`
+  does not *feel* hard, raise the multipliers before adding any new lever.
 - **The wounds and psychology panels** — first look at whether those systems are
   tuned sanely now that they are visible.
 - **Active perks.** 75 of them became usable in 2026-09; before that every one
@@ -728,11 +735,17 @@ the Earth/Black plant line — so the work went where the gaps were:
         nothing, and the map "luck" buff already pays one crit per point.
       verify_combat_procs is seven checks, and fails when either half is
       unwired.
-- [ ] **`effect_duration_pct` is a DUPLICATE, not a gap.** Enchantment's
-      duration bonus already works, computed straight from the skill level in
-      `_calculate_status_duration` (+1 turn per 2 levels). Wiring the table key
-      would double-count it. Decide which one is the truth and delete the other
-      — do not wire this.
+- [x] **Enchantment's status duration is stated once** (re-checked
+      2026-10-15; this entry used to call it `effect_duration_pct`). The
+      per-level table key is `effect_duration_turns` — 0,1,1,2,2,3,3,4,4,5 at
+      Enchantment 1–10, i.e. +1 turn per 2 levels — and
+      `_calculate_status_duration` reads only that (`derived.
+      effect_duration_turns`); the old `int(level / 2)` formula in the
+      function is gone. Not a double count: a spellpower-duration status lasts
+      2 + table + SP/15 turns, so Enchantment 10 at SP 0 gives 7.
+      `verify_combat_procs` pins the 1–10 curve and fails if the formula comes
+      back beside the table. Lingering Touch and Weakening Gaze add their own
+      +level/3 on top, but those are perks, chosen, not the skill paying twice.
 - [ ] **Original design notes:** They behave
       like equipment bonuses — another additive source folded into `derived` —
       except the source is a different character's skill. No ordering problem
@@ -789,8 +802,9 @@ the Earth/Black plant line — so the work went where the gaps were:
 
 - [x] ~~**`skeleton_king_duel`** stops at 10% HP~~ — **checked 2026-10-15, and
       it was half-broken.** The threshold survives the build (the archetype
-      carries it, and `difficulty: boss` scales nothing, so 10% is of the HP
-      the unit really has). But `_check_combat_end` only ran on a death or at
+      carries it, and `difficulty: boss` scales only the XP the king is built
+      from — never HP after the build — so 10% is of the HP the unit really
+      has). But `_check_combat_end` only ran on a death or at
       the start of a round, so the king fought on below 10% — took his own
       turn, and could simply be killed. Damage to a duelling enemy now checks
       at once, and he yields on the blow that crosses the line.
@@ -1674,9 +1688,10 @@ Working effect types: `stat_bonus` (conditional and not), `stat_conversion`,
         they were accepted by the tooling and ignored by the engine.
       - **Re-entrancy:** while one trigger's payload resolves, no trigger
         fires. The answer to an answer is silence, never a loop.
-      - **Durations:** stat modifiers tick at turn start (twice — see below),
-        so a `combat_start` buff needs duration 3 to survive the first turn; a
-        `turn_start` one fires after the ticks and lasts its turn at 1.
+      - **Durations:** stat modifiers tick at turn start — twice, until §15
+        fixed it the same day; once now — so a `combat_start` buff needs
+        duration 2 to survive the first turn; a `turn_start` one fires after
+        the tick and lasts its turn at 1.
       - The deployment path into combat never called
         `_apply_combat_start_perks`, so Rousing Display did nothing in any
         fight with a deployment phase. It does now.
@@ -1759,64 +1774,182 @@ were accurate on 2026-10-15 and drift.
 
 ### Bugs — real, small, worth fixing first
 
-- [ ] **Event fight difficulty does nothing.** `EnemySystem.generate_encounter`
-      (`enemy_system.gd:~551`) takes `difficulty` and never reads it, so
-      `"boss"`, `"easy"` and the rest in event outcomes are inert, and the
-      easy 0.75× … boss 1.6× multipliers "Where to pick up" described do not
-      exist anywhere. Build them, or drop the field.
-- [ ] **Timed buffs and debuffs last half their stated duration.** Stat
-      modifiers tick twice at each turn start — once in
-      `_process_status_effects` (`combat_manager.gd:~5324`) and again at
-      `~10160`. Fixing it doubles every active skill's buff, so it is a balance
-      change as much as a bug fix: decide deliberately.
-- [ ] **`_unit_is_unarmored` reads a `hands` slot that does not exist**
-      (`combat_manager.gd:~9290`; the slots are `hand_l`/`hand_r`). Gauntlets
-      never count as armour, while trousers make you armoured. Affects Diamond
-      Body, Bare Chest, Flowing Footwork and the new `unarmored_or_light`.
-- [ ] **Poison and acid ground deal `physical` damage**
+- [x] ~~**Event fight difficulty does nothing.**~~ — **built 2026-10-15.**
+      The old `DIFFICULTY_MULTIPLIERS` went in September's enemy-XP rewrite
+      (the spec retired it as a power scalar, superseded by tier and band),
+      and nothing took over the word, so 203 authored fights ignored it. It
+      now multiplies the party XP budget from a `difficulty` table in
+      `encounter_budgets.json` — through the budget rather than HP on top,
+      because gear, breadth, spells and the victory reward all follow the
+      budget already. `boss` adds `min_tier: boss` and a fixed `band`
+      instead of a multiplier: every boss fight already resolved to boss
+      tier, and 2.0 × 1.6 would have counted it twice. Unknown words fall
+      back to normal with a warning (roll words like `difficult` map
+      across); `validate_data.py` rejects them in data. Found alongside:
+      `_build_enemy` still fed raw XP into the potion/bomb roll and the
+      crude fallback weapon against thresholds tuned for the old
+      party-power number (~80 = mid-game), so every animal-realm enemy
+      saturated them; both read the kit-budget scale now. `verify_enemy_xp`
+      checks normal is the unchanged formula and each tier builds stronger
+      parties than the one below.
+- [x] ~~**Timed buffs and debuffs last half their stated duration.**~~ —
+      **fixed 2026-10-15; decided: the data is right, the clock was wrong.**
+      Worse than "half": the second tick only happened when the unit carried a
+      status (with none, `_process_status_effects` returned early), so the same
+      buff lasted one length or the other depending on whether someone was
+      Blessed. Both ticks are gone; `_start_current_turn` ticks stat modifiers
+      once, right after the statuses, stunned turns included. A duration now
+      means: counts down at the start of its owner's turn, gone at 0 — 1 lasts
+      until your next turn begins, 2 lasts through it. Nothing retuned. Things
+      that look tuned around the old clock, left for a balance pass:
+      `shield_wall` (duration 2, says "until next turn" — now lasts a turn
+      longer); `shield_bash` (−10% accuracy "for 1 turn" on an ENEMY at
+      duration 1 — ticks off at the enemy's turn start, before it attacks, and
+      always did); `borrowed_opening` and Borrowed Force (a buff at duration 1
+      from a dodge on the enemy's turn — gone at your turn start, before your
+      attack). Statuses, taunt, cooldowns, mantras and the overworld's
+      `combats_remaining` buffs were checked and already ticked once.
+- [x] ~~**`_unit_is_unarmored` reads a `hands` slot that does not exist**~~
+      — **fixed 2026-10-15.** The perks say two things and now get two
+      answers from one helper. "While unarmored" (Diamond Body, Iron Shirt):
+      no armour piece at all — but clothing is not armour, so robe, hat,
+      trousers, boots, sandals, gloves and prosthetics are fine
+      (`CLOTHING_TYPES`). "Unarmored or in light armor" (Flowing Footwork,
+      Bare Chest, `unarmored_or_light`): armour allowed so long as no piece is
+      heavy, and heavy is a Strength requirement, the `wearing_heavy_armor`
+      rule. Every hand slot is read, `hand_l2`/`hand_r2` included. So a leather
+      vest now keeps Flowing Footwork (it did not before — the old helper
+      called it armour and the verifier asserted so); iron gauntlets now break
+      it. Note: generated gauntlets and helmets never carry a Strength
+      requirement (`generate_armor` only adds one at base armour ≥ 3), so they
+      count as light.
+- [x] **Poison and acid ground deal `physical` damage**
       (`combat_manager.gd:~6531/~6537`), so armour reduces them and poison
       resistance does nothing, while the Poisoned status deals poison.
-- [ ] **Storm_Lord and Lightning_Form retaliate with `"element": "air"`**
+      *Fixed 2026-10-15:* both deal `poison`. Acid could have been "physical
+      that ignores armour", but the acid bomb and flask already deal poison
+      and the puddle should be the same stuff as the splash.
+- [x] **Storm_Lord and Lightning_Form retaliate with `"element": "air"`**
       (`statuses.json:~657/~698`). Air stopped being a damage type in the
       resistance rebuild, so it lands unresisted and not as magic — should be
       `lightning`. `validate_data.py`'s `_walk_damage_types` (`~1013`) checks
       `damage_type` keys but not `element`, which is why nothing caught it.
-- [ ] **Wet ground only slows.** Comments at `combat_manager.gd:~6558` and in
+      *Fixed 2026-10-15:* lightning. The validator now checks `element` in
+      the files where it means damage (statuses, zones, auras, ammo, spells,
+      summons — elsewhere it is a skill element), plus `damage_element`,
+      `attack_damage_type`, `retaliation_damage`, and the brand and weapon
+      enchant tables in combat_manager.gd. That turned up five more of the
+      same: the tornado zone dealt `air` (now physical, like its spell), the
+      vajra mandala's toll and Drowning Pressure dealt `water` (now crushing,
+      what water spells deal), Frost/Stone/Storm brands dealt water/earth/air
+      (now ice/crushing/lightning) and Electrified_Weapon's bonus was `air`
+      (now lightning).
+- [x] **Wet ground only slows.** Comments at `combat_manager.gd:~6558` and in
       `CombatGrid.add_terrain_effect` promise an ice/air (or water)
       vulnerability that the code never grants.
-- [ ] **Supply purchases never pay the shop's purse** — `buy_item` returns
+      *Fixed 2026-10-15:* wet ground also applies a new **Soaked** status,
+      `grants_vulnerability: {lightning: 25}`, for a turn. Lightning only —
+      water conducts, and it makes wet ground a set-up an Air caster cashes
+      in rather than a Water caster's combo with itself. 25 is first-pass.
+- [x] **Supply purchases never pay the shop's purse** — `buy_item` returns
       before `_adjust_shop_purse(price)` for supply items
-      (`shop_system.gd:~643-653`).
-- [ ] **`reset_for_new_life` keeps `last_healing_location`**
+      (`shop_system.gd:~643-653`). Fixed 2026-10-15: the till is paid right
+      after `spend_gold`, before either branch. `verify_economy_bonuses`
+      buys rations into an empty till.
+- [x] **`reset_for_new_life` keeps `last_healing_location`**
       (`game_state.gd:~272`), so Cloud Gate can target a spot on the previous
       life's map. `flags` also carry over — maybe deliberately; decide.
-- [ ] **A multi-day `advance_time` fires `day_changed` once**
+      Fixed 2026-10-15: it clears `last_healing_location` and `planar_return`
+      (a Shift begun before a death would pull the new life "home"), and calls
+      a new `MapManager.reset_for_new_life()`. That last one was the big one:
+      `visited_maps` was never cleared, so reincarnating into a realm you had
+      been to restored the OLD life's map — same terrain, same dead mobs,
+      same looted chests. While there: a stashed map carried its own nested
+      copy of `visited_maps`, and restoring it replaced the live stash with
+      that older copy, so A → B → A forgot B. The stash drops the nested copy
+      now. Checks in `verify_economy_bonuses` and `verify_overworld_spells`.
+      **Still open — decide:** `flags` and `completed_quest_ids` survive a
+      death (only New Game clears them). Every flag the data sets today is
+      per-world quest/event state (`mantra_scroll_found`,
+      `cold_prisoner_freed`, `hg_king_safe_conduct`…) plus camp scratch
+      flags (`sermon_stacks`, `herb_prep_bonus`); none is karma or
+      reincarnation. So a regenerated world can find a quest already
+      half-done, or never offer one again. Clearing both in
+      `reset_for_new_life` is two lines once you say so.
+- [x] **A multi-day `advance_time` fires `day_changed` once**
       (`game_state.gd:~315`), so the lunar listener (`overworld.gd:~1883`) can
-      miss a full or new moon across a long rest.
-- [ ] **Severing a primary arm drops only the ACTIVE weapon set's weapon**
+      miss a full or new moon across a long rest. Fixed 2026-10-15: one emit
+      per day crossed, in order; `get_lunar_day`/`is_full_moon`/`is_new_moon`
+      take an optional day and the overworld listener reads `new_day`. The
+      investment tick is idempotent, so it copes. Latent today (the longest
+      advance is an 8-hour rest). Check in `verify_economy_bonuses`.
+- [x] ~~**Severing a primary arm drops only the ACTIVE weapon set's weapon**
       (`body_system.gd:~444`); the other set's stays in the lost hand. And
-      with a full inventory the force-clear deletes the item (`~433`).
-- [ ] **Bombs and the poison talisman brand apply statuses with no source**
+      with a full inventory the force-clear deletes the item (`~433`).~~
+      **Fixed 2026-10-15.** `BodySystem._drop_from_lost_part` empties that
+      hand in both weapon sets. There is no stash or ground to drop onto, so
+      a full pack now takes the item anyway (`unequip_item`/`add_to_inventory`
+      grew a `force` flag) and stays over-full until sorted — nothing is
+      destroyed. The drop is printed, as the event's sever already is.
+- [x] **Bombs and the poison talisman brand apply statuses with no source**
       (`combat_manager.gd:~7174`, `~10060`), so the thrower's
       `burning_damage_pct` / `poison_damage_pct` never scale them.
-- [ ] **Luck's loot weighting is dead code.** `_get_modified_rarity_weights()`
+      *Fixed 2026-10-15,* and aura `grant_status` passes its owner too. On the
+      way: the flashbang and acid flask list bare status names, and `_use_bomb`
+      called `.get()` on them — a script error that stopped the throw. Bare
+      names now take the bomb's `status_duration`.
+- [x] **Luck's loot weighting is dead code.** `_get_modified_rarity_weights()`
       (`combat_manager.gd:~787`) is never called, `_generate_loot_drops`
       (`~634`) ignores its `_best_luck`, and the jackpot reads raw
       `attributes.luck` (`~569`), so Luck from buffs and gear counts for nothing.
-- [ ] **`unbroken` (perks.json `~8458`) is description-only** — "wounds
-      inflicted on you are downgraded one severity"; there is no downgrade step.
-- [ ] **`every_opening_is_an_invitation` counts buffs** (`combat_manager.gd:~2091,
-      ~2232`) — "any status" includes Blessed. `unit_has_debuff()` exists now.
-- [ ] **Rousing Display's +5 initiative never affects round 1** — applied after
-      turn order is built (`combat_manager.gd:~367/~997`) and ticked away at
-      once as a 1-turn buff.
-- [ ] **On-hit procs don't check `defender.is_alive()`** before applying
-      statuses (mace stun `combat_manager.gd:~9915` and others).
-- [ ] **`duel_stop_hp_pct` on an encounter is ignored** — only the archetype's
+      Fixed 2026-10-15: `derived["luck"]` is the effective number (attribute +
+      gear + traits + Luck map buffs) and `best_party_luck()` reads it. A won
+      fight now also rolls a **lucky find** — one piece of equipment nobody
+      was carrying — at exactly the jackpot's odds (same Luck term, cap and
+      `loot_chance_pct` boost, separate roll), its rarity from
+      `_get_modified_rarity_weights(fight size, Luck)`. Thievery's
+      `loot_quality_pct` stays where it was (the share of carried gear you
+      take) and does not touch the find, so nothing counts twice. The numbers
+      are the old dead function's: worth a look in play. Checks in
+      `verify_combat_procs`.
+- [x] ~~**`unbroken` (perks.json `~8458`) is description-only** — "wounds
+      inflicted on you are downgraded one severity"; there is no downgrade step.~~
+      **Built 2026-10-15** in `WoundSystem.apply_wound`: physical wounds only
+      (a disease is not a wound). Severe counts as moderate, moderate as
+      light, and a light wound is shrugged off. The entry keeps its id and
+      carries `downgraded`, read through `get_entry_severity()` by the
+      penalties, Scarred and the wounds panel — it stays one step lighter
+      through escalation. **Still open:** the perk's FIRST sentence (stop at
+      25% HP once per combat, armour doubled) is not built either.
+- [x] ~~**`every_opening_is_an_invitation` counts buffs**~~ — **fixed
+      2026-10-15.** Both halves (accuracy and crit) ask one helper,
+      `_opening_is_an_invitation`, which asks `unit_has_debuff()`.
+- [x] ~~**Rousing Display's +5 initiative never affects round 1**~~ — **fixed
+      2026-10-15.** Both ways into a fight now go through `_begin_first_round`:
+      combat-start perks, THEN the round-1 sort, then the first turn. Duration
+      1 is right once the order is: sorted in, ticked off at the ally's own
+      first turn, gone before round 2 is sorted. Still open: the perk's text
+      says "+5% morale and +2 Initiative"; the code gives +5 and no morale.
+- [x] ~~**On-hit procs don't check `defender.is_alive()`**~~ — **fixed
+      2026-10-15.** `_apply_on_hit_status` is `_apply_status_effect` that
+      refuses a fallen defender; every status in `_process_on_hit_perks`, the
+      weapon and ammo procs, the weapon oil and the spell-perk riders (Measured
+      Radiance, Tremor, Scattering Gust, Riptide, the Black fear) goes through
+      it. It mattered more than it looks: a bleeding-out unit keeps its
+      statuses through a revive, so the stun waited for whoever picked them
+      up. Persistent wounds and diseases from a killing blow still land — that
+      reads as intended.
+- [x] **`duel_stop_hp_pct` on an encounter is ignored** — only the archetype's
       copy is read (`hungry_ghost_encounters.json:~603`, `enemy_system.gd:~928`).
-      And the duel threshold moves with in-combat max-HP changes.
-- [ ] **Enemies don't get their birth TRAITS' resistances**
+      And the duel threshold moves with in-combat max-HP changes. Fixed
+      2026-10-15: the encounter's value overrides the archetype's, on every
+      enemy it builds; the yield line is a share of the max HP noted on
+      `combat_started` (`CombatManager.duel_stop_hp`). Checks in
+      `verify_combat_systems`.
+- [x] **Enemies don't get their birth TRAITS' resistances**
       (`enemy_system.gd:~723`); players do, through `TraitSystem.get_resistances`.
+      *Fixed 2026-10-15:* the same call, added after the racial block. An
+      undead enemy now resists poison 25 and disease 50 like an undead player.
 
 ### Multi-arm attacks drift from the main hit
 
@@ -1832,6 +1965,23 @@ show HP lost (the main hit too); a 0-damage arm shows "Arm N: 0" where the main
 hit shows nothing; and `_has_shield_equipped` (`combat_unit.gd:~1256`, plus
 `combat_manager.gd:~2081/~2207`) reads only `weapon_off`, never weapon set 2.
 
+**Done 2026-10-15.** One path now: `_apply_hit_damage`, `_apply_weapon_oil`,
+`_resolve_hit_procs` (on-hit perks, on_hit/on_crit/on_kill triggers, weapon
+procs) and `_count_weapon_attack`, called by the primary hit and by
+`_execute_arm_chain_attack` alike. Arms hit at full strength, as before; the
+arm's fire chance still scales only the *persistent* afflictions (crit wounds,
+diseases, poisoned blood). Each landed arm spends an oil charge. Chakram
+`pass_through` is skipped for arms on purpose (it is the thrown ring's one
+flight; arms are melee-only anyway). Arms are logged once, by the arena; every
+attack log shows HP lost ("12 (18 before armour)"), from a new
+`result.damage_taken`. A blow that costs no HP shows no popup, arm or main.
+Arm crits play the crit sting. The shield half was wrong: `_has_shield_equipped`
+goes through `ItemSystem.get_equipped_item`, which already reads the active
+set. The real bug was the three `combat_manager` reads of a top-level
+`equipment["weapon_off"]` that does not exist — so **a two-armed dual-wielder
+never chained an extra arm at all**, and Offhand Jab never fired. All three
+read the active set now. `tools/verify_multi_arm` covers it.
+
 ### Four-armed bodies are half-built
 
 No race uses the `four_armed` body plan. Its `hand_l2`/`hand_r2` slots cannot be
@@ -1840,60 +1990,140 @@ filled — gloves, gauntlets and bracers list only `hand_l`/`hand_r` in items.js
 There is no `weapon_main2`/`weapon_off2`; `BodySystem.ARM_WEAPON_SLOTS` makes
 adding one a single line when it is wanted.
 
+**Slots done 2026-10-15:** gloves, gauntlets and bracers list `hand_l2`/`hand_r2`,
+the default equipment dict has them, and `equip_item` now refuses a slot the
+body does not have (`BodySystem.body_has_slot`), so a human can't glove a third
+hand. Still missing: the paper doll in `main_menu.gd` (`~2662`) has no
+hand_l2/hand_r2 boxes, so the player can only fill them through starting gear.
+And still no race uses the plan.
+
 ### UI and legibility
 
-- [ ] **The tile hover label is hidden in move mode** (`combat_arena.gd:~2460`)
+- [x] **The tile hover label is hidden in move mode** (`combat_arena.gd:~2460`)
       — exactly when hazards matter. Merge it with the cover label.
-- [ ] **A main-hit crit has no visual marker** (`combat_unit.gd:~1151`), while
+      *Done 2026-10-15:* one label now. `TooltipText.move_tile()` puts the
+      cover line on top of everything `tile()` says; the separate cover label
+      is gone.
+- [x] **A main-hit crit has no visual marker** (`combat_unit.gd:~1151`), while
       extra arms now say "crit!".
-- [ ] **Popup labels have no width but centred text** — they probably start at
+      *Done 2026-10-15:* `attack_unit` flags the defender
+      (`next_damage_is_crit`) around the main hit's `apply_damage`, so the
+      number reads "12 crit!" in the arms' crit orange. Oil and enchant damage
+      after it stay plain. Spell crits still show a plain number.
+- [x] **Popup labels have no width but centred text** — they probably start at
       the unit's centre and run right. Check on screen.
-- [ ] **Status icons are a hard-coded emoji `match`** (`combat_unit.gd:~327`);
+      *Done 2026-10-15:* they did — every popup sat 80px right of centre once
+      measured. All of them go through `_make_popup_label()`, which gives the
+      label a width and shifts it left by half; the struck-through "expired"
+      label was 60px wide and wrapped long names, and is 160 now too.
+- [x] **Status icons are a hard-coded emoji `match`** (`combat_unit.gd:~327`);
       most of 187 statuses show "•". An `icon` field in statuses.json scales.
-- [ ] **The summoning terrain bonus is never shown** before casting
+      *Done 2026-10-15:* all 187 have an `icon`; `CombatUnit.status_icon()`
+      reads it and falls back to "•". A few pair a glyph with an arrow
+      (🔥↓ for fire vulnerability), so the row is space-separated now.
+- [x] **The summoning terrain bonus is never shown** before casting
       (`combat_manager.gd:~3566`).
-- [ ] **The status tooltip omits `retaliation`, `aura` and `spread`.**
-- [ ] **Tooltip hazard lines hand-copy `_process_terrain_effects()`** — change
+      *Done 2026-10-15:* the spell tooltip says "The spirits of the living
+      water answer readily here: +25% spellpower". The rule moved into
+      `CombatManager.summon_terrain_affinity_for()`, which the cast and the
+      tooltip both ask.
+- [x] **The status tooltip omits `retaliation`, `aura` and `spread`.**
+      *Done 2026-10-15:* a line for each — "Hits back at melee attackers…",
+      "Aura: Soothing Presence (allies within 2): heals 5 each turn" (read
+      through auras.json), "Can spread to an adjacent unit (15% chance…)".
+- [x] **Tooltip hazard lines hand-copy `_process_terrain_effects()`** — change
       one, change the other (`TooltipText.tile`).
-- [ ] **Dorje + Drilbu set text is hard-coded** in `item_tooltip.gd:~133`,
+      *Done 2026-10-15:* both read `CombatGrid.TERRAIN_HAZARDS`. The match in
+      `_process_terrain_effects()` is gone. Two small behaviour changes came
+      with it: wet ground no longer logs "takes 0 damage", and the tooltip
+      now says poison and acid do *physical* damage, which is what they
+      always did.
+- [x] **Dorje + Drilbu set text is hard-coded** in `item_tooltip.gd:~133`,
       duplicating `item_system.gd:~557-560` and omitting the opener bonus.
+      *Done 2026-10-15:* `ItemSystem.SET_BONUSES` holds the numbers and
+      `TooltipText.set_bonus()` builds the text from it. There was no opener
+      to show: `active_set_bonus` was stored "for future combat opener
+      hooks" in April and nothing has ever read it. The opener is unbuilt,
+      not just unmentioned.
 
 ### Data and tooling hygiene
 
-- [ ] **`vocabulary_baseline.json` has stale entries** — `crafting_yield_pct`,
+- [x] **`vocabulary_baseline.json` has stale entries** — `crafting_yield_pct`,
       `loot_quality_pct`, `trap_detection_pct` are wired but still listed. The
       validator should fail on a baseline entry that has gained a reader.
-- [ ] **The `effect_duration_pct` entry in §6 uses an old name.** perks.json
+      Done 2026-10-15: validate_data.py now fails on a baseline line whose
+      value has gained a reader *or* left the data, so the file only shrinks.
+      It found two more — `black_damage_per_turn` (read by `_dot_element`'s
+      suffix parse) and `spreads_on_contact` (no status carries it any more).
+      All five removed; `crafting_quality_pct` is the last skill payout left.
+- [x] **The `effect_duration_pct` entry in §6 uses an old name.** perks.json
       has 16 `effect_duration_turns` and no `effect_duration_pct`. Re-check
       whether `_calculate_status_duration` and `derived.effect_duration_turns`
-      actually double-count before deciding anything.
-- [ ] **Unread flags in spell `special` blocks** duplicate what their statuses
+      actually double-count before deciding anything. Re-checked 2026-10-15:
+      they do not — the function reads the table and nothing else. §6 entry
+      rewritten and ticked; `verify_combat_procs` now guards it.
+- [x] **Unread flags in spell `special` blocks** duplicate what their statuses
       do: `spells.json:~5419` `physical_immunity`, `~7044`
       `immune_to_all_damage`, `~7436` `magic_resistance_bonus`, `~1380`
       `fire_vulnerability`, `~4757` `ranged_damage_reduction`. Delete them.
-- [ ] **The disease-on-hit and crit-wound code exists twice**
-      (`combat_manager.gd:~1566-1594` and `~9549-9600`) — see the multi-arm note.
-- [ ] **`_check_special_requirement`'s attribute branch has no users**
-      (`perk_system.gd:~269`) and reads base attributes. Remove it.
-- [ ] **Small stale comments:** `perk_system.gd:~511` says 164 hand-wired perks
+      *Done 2026-10-15,* with their unread siblings that also only restated
+      the status (`cannot_deal_physical`, `major_speed_boost`, `defense_bonus`,
+      `short_duration`). Oily Skin keeps `cumulative: true` — see below.
+- [ ] **Oily Skin says `cumulative: true`** (`spells.json:~1380`) and nothing
+      reads it; Fire_Vulnerable is not `stackable`, so a second cast only
+      refreshes. Make the status stack, or drop the flag.
+- [ ] **The acid bomb and flask apply `Corroded`, which is not a status**
+      (`items.json:~2690/~2993`), and the flask's `armor_reduction: 5` has no
+      reader. "Eats through armour" is the item's whole point and does nothing
+      beyond poison damage. Needs a Corroded status (armour down) to exist.
+- [x] ~~**The disease-on-hit and crit-wound code exists twice**
+      (`combat_manager.gd:~1566-1594` and `~9549-9600`) — see the multi-arm note.~~
+      **Fixed 2026-10-15** — only the `_process_weapon_on_hit_procs` copy is
+      left; see below.
+- [x] **`_check_special_requirement`'s attribute branch has no users**
+      (`perk_system.gd:~269`) and reads base attributes. Remove it. Removed
+      2026-10-15. Every `special_requirement` in perks.json is an
+      `<element>_affinity_N` or `any_[N_]<category>_at_N`, and validate_data.py
+      now rejects any other shape — the function returns false for it, so the
+      perk could never be taken.
+- [x] **Small stale comments:** `perk_system.gd:~511` says 164 hand-wired perks
       (176 now); `combat_manager.gd:~9571` on Undead Hunter; `_spell_save`'s
-      doc comment is fused into `_apply_save_gated`'s (`~8214`).
+      doc comment is fused into `_apply_save_gated`'s (`~8214`). Fixed
+      2026-10-15, plus the same 164 in wire_passive_perks.py's docstring, and
+      a second fused pair: `_process_status_effects`'s doc had landed on
+      `_dot_element`.
 - [ ] **Air_Shield's 25% is still a hard-coded effect string**
       (`combat_manager.gd:~1710`). It could become a status `ranged`
       resistance, which would change its stacking from multiplicative to
       additive.
-- [ ] **A verifier's own parse errors were invisible.** Fixed 2026-10-15:
+- [x] **A verifier's own parse errors were invisible.** Fixed 2026-10-15:
       `verify_all.sh` now fails a scene that prints `SCRIPT ERROR` and shows
       the line. Worth remembering when a verifier "fails" with no message.
+      The root cause was layer 1: `godot --editor --quit` does not compile
+      scripts nothing loads — tried with a duplicate function and an
+      undeclared name, in both `scripts/` and `tools/`, and it reported none
+      of the four. Layer 1 now also runs `tools/parse_check.gd`, which loads
+      every .gd for real and caught all four.
 
 ### Decisions for Olaf
 
-- **Investment:** one open stake in the whole world, not one per settlement,
-  so `diversified_portfolio` ("up to 3") means something. One constant,
-  `INVESTMENT_MAX_OUTSTANDING`. Its payout comes from nowhere rather than the
+- ~~**Investment:** one open stake in the whole world~~ — **confirmed by
+  Olaf 2026-10-15.** Its payout still comes from nowhere rather than the
   shop's purse — revisit when settlements have wealth.
-- **Iron Cortex no longer requires Akimbo** — behind Akimbo it added almost
-  nothing. Put it back if the tree should read that way.
+- ~~**Iron Cortex no longer requires Akimbo**~~ — **confirmed by Olaf
+  2026-10-15.**
+- **Luck's "lucky find"** — a won fight rolls for one extra piece of
+  equipment at the jackpot's odds, rarity tilted by Luck. It is the agent's
+  design (the old rarity weighting had nothing left to weigh), untuned.
+- **Flags and finished quests survive a death.** Every flag today is
+  per-world quest/event state, so a regenerated world can find a quest
+  half-done. Two lines in `reset_for_new_life` once decided.
+- **Unbroken shrugs off a light wound entirely** — the reading of
+  "downgraded one severity" at the bottom of the scale.
+- **Difficulty tiers:** easy 0.75 / normal 1.0 / hard 1.2 / very_hard 1.4 XP,
+  boss = boss tier with a fixed band. "hard" is the commonest word in the
+  data (103 of 203 fights), so the average fight grew ~11%. Tune in
+  `encounter_budgets.json` → `difficulty`.
 - **`status_effect_chance_pct` scales two ways:** ×1.3 on a chance roll, but
   +30 percentage points (as DC) on a save. Consistent with how SaveSystem
   treats every other percentage, inconsistent with itself.
@@ -1904,6 +2134,88 @@ adding one a single line when it is wanted.
   `magic_resist`, while Yoga's equanimity excludes it. Probably unintended.
 - **Investment payouts, ritual tooltip wording and the parry definition**
   (a melee miss against someone holding a melee weapon) are all first drafts.
+
+### Round 2 — found while fixing the above (2026-10-15)
+
+**Bugs**
+
+- [ ] **`fallen` is never cleared on a new life or New Game, and not saved**
+      (`character_system.gd:29`) — a previous life's companions can be
+      raised, and the list is lost on load.
+- [ ] **`planar_return` is not saved** (`game_state.gd` `get_save_data`) —
+      loading mid-Planar-Shift strands the party in the other realm.
+- [ ] **`load_map` keeps `searched_tiles`** (`map_manager.gd:~479`), so a
+      searched spot carries over to the same coordinates on another map.
+- [ ] **The bardo screen's "less gold than the first run" never happens** —
+      `GameState.gold = 50` (`bardo_screen.gd:~312`) is overwritten by
+      `start_new_run()`'s 100.
+- [ ] **Trishula's `on_crit_status: "pinned"` is lowercase**
+      (`items.json:~1177/~1205`); the status is `Pinned`. Probably never applies.
+- [ ] **The acid bomb and flask apply `Corroded`, which is not a status**,
+      and the flask's `armor_reduction` has no reader — "eats through armour"
+      does nothing.
+- [ ] **`domain_events.json` uses the roll word `"moderate"`** twice; the DC
+      table does not know it (silently normal) and the validator misses it.
+- [ ] **Imbued arrows still apply their spell to a defender the arrow just
+      dropped** (`combat_manager.gd:~1902`); Touch of Gloom's stat penalties
+      likewise land on a downed target (`~4685`).
+- [ ] **Downed and actionless units (bleeding out, decoys) never tick
+      statuses or stat modifiers**, so a buff on a downed ally rides into
+      later rounds.
+- [ ] **Avatar of the Wind's 1-turn ally buffs expire at each ally's own turn
+      start** (`_process_turn_start_perks`), so allies acting after the perk
+      holder never benefit.
+- [ ] **Buffs tuned around the old double tick** — `shield_wall` (2, "until
+      next turn": now a turn longer), `shield_bash` (1-turn debuff on an enemy
+      ticks off before it attacks; always did), `borrowed_opening` / Borrowed
+      Force (gone before your attack). `borrowed_opening` also says "+20%
+      crit" and gives +20 damage. Rousing Display says "+5% morale and +2
+      Initiative" and gives +5 Initiative, no morale.
+- [ ] **Heavy armour means only the chest** (`combat_unit.gd:~1023`
+      `is_wearing_heavy_armor`), and `generate_armor` (`item_system.gd:~1522`)
+      gives a Strength requirement only at base armour ≥ 3 — generated
+      gauntlets and helmets are always "light".
+- [ ] **`unbroken`'s first half** (stop at 25% HP once per combat, armour
+      doubled) is not built.
+- [ ] **Weakening Gaze and Lingering Touch read raw Enchantment**
+      (`combat_manager.gd:~4785/~5020`), ignoring item and race bonuses.
+
+**Loose ends and dead code**
+
+- [ ] `shop_system.gd:498` `barter_buy_item` is never called, and would not
+      pay the purse or stock supplies if it were. Delete or fix.
+- [ ] `_pick_item_from_types`' fixed-item branch ignores realm, so a lucky
+      find can be another realm's item.
+- [ ] `_get_modified_rarity_weights` rounds to whole numbers — legendary
+      weight does not move until Luck ~17; its "difficulty_ratio" is really
+      fight size.
+- [ ] `_generate_enemy_inventory` (free, by role) and
+      `_generate_skill_consumables` (paid from the kit budget) both hand
+      enemies consumables — double-dipping.
+- [ ] `combat_manager.gd:~4676-4765` still compares `element` with
+      `"air"`/`"water"`/`"earth"`, which can no longer match.
+- [ ] Unread: `summon_templates.json:~1963` `attack_damage_type`, Fireshield's
+      `special.retaliation_damage` (`spells.json:~3277`), Oily Skin's
+      `cumulative`, and `item_system.gd` `active_set_bonus` (the Vajra & Bell
+      opener was never built).
+- [ ] `combat_grid.gd` `add_terrain_effect` (~845), `get_effect_name` (~935)
+      and the effect colours (~990) are still hand-written beside
+      `TERRAIN_HAZARDS`; fold them in.
+- [ ] `tooltip_text.gd` calls the private `CombatManager._spread_chance_to_float()`.
+- [ ] The baseline lists `space_damage_per_turn`, which `_dot_element` probably
+      reads by name — the validator's text search cannot see that.
+- [ ] Poison's `_check_perk_status_immunity` call (`~9822`) passes no attacker.
+- [ ] Every `verify_enemy_xp` run prints ~165 "no births defined for realm
+      'domain'" warnings (`character_system.gd:~554`).
+
+**UI**
+
+- [ ] **The equipment screen has no `hand_l2`/`hand_r2` boxes**
+      (`main_menu.gd:~2662`) — the slots exist but only starting gear fills them.
+- [ ] **Arm lines are logged above the main hit** — the `unit_attacked`
+      handler runs before the arena logs "X attacks Y" (`combat_arena.gd:~2733`).
+- [ ] **Oil damage on an extra arm shows as a separate plain number.**
+- [ ] **Spell crits show a plain damage number** (`combat_manager.gd:~7956/~8042`).
 
 ### Perks the engine can now express (§13)
 
@@ -2147,8 +2459,9 @@ Setting Sun (copper construct), Matriarch of All Longing (yidag).
 
 > **Stale — cleared, kept as history (2026-10-15).** Every key in the table
 > below has been renamed, wired, merged or removed; the live state is §6
-> above. Only `crafting_quality_pct` is still unread, and the Enchantment
-> duration question (now spelt `effect_duration_turns`) waits on a decision.
+> above. Only `crafting_quality_pct` is still unread; the Enchantment
+> duration question (now spelt `effect_duration_turns`) was settled — it is
+> read once, from the table (§6).
 > Read what follows as the July snapshot it is: the names, the "13 of 40"
 > count and the suggested target systems are all out of date.
 

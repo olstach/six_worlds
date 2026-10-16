@@ -1,8 +1,9 @@
 extends Node
-## Headless verification for the four skill payouts that modify a combat roll
-## or magnitude: mace stuns, fire damage-over-time, status landing chance, and
-## Comedy's luck — and the four wound/body perks that change what a hit leaves
-## behind: Hardened, Stubborn Body, Undead Hunter and Iron Cortex.
+## Headless verification for the five skill payouts that modify a combat roll
+## or magnitude: mace stuns, fire damage-over-time, status landing chance,
+## Enchantment's status duration and Comedy's luck — and the four wound/body
+## perks that change what a hit leaves behind: Hardened, Stubborn Body, Undead
+## Hunter and Iron Cortex.
 ##
 ## Each check drives or inspects the real consumer. An earlier phase of this
 ## work "verified" bonuses by calling an accessor the same commit added, which
@@ -11,7 +12,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 11
+const EXPECTED_CHECKS: int = 15
 
 
 func _ready() -> void:
@@ -22,6 +23,10 @@ func _ready() -> void:
 	_check_status_chance_reaches_every_roll_site()
 	_check_ritual_raises_status_save_dc()
 	_check_loot_chance_reaches_the_jackpot()
+	_check_effective_luck_reaches_the_loot()
+	_check_luck_weights_a_lucky_find()
+	_check_on_hit_procs_spare_the_fallen()
+	_check_enchantment_duration_counts_once()
 
 	_check_hardened()
 	_check_stubborn_body()
@@ -224,6 +229,91 @@ func _check_loot_chance_reaches_the_jackpot() -> void:
 	_done()
 
 
+## The jackpot read attributes.luck, so Luck from gear, traits and shrines
+## counted for nothing. It reads the effective number in derived now.
+func _check_effective_luck_reaches_the_loot() -> void:
+	var c: Dictionary = _char({})
+	c["attributes"]["luck"] = 10
+	var saved_buffs: Array = GameState.active_map_buffs.duplicate(true)
+	GameState.active_map_buffs = [{"stat": "luck", "amount": 6, "combats_remaining": 1}]
+	CharacterSystem.update_derived_stats(c)
+	GameState.active_map_buffs = saved_buffs
+	if int(c["derived"].get("luck", 0)) != 16:
+		_fail("a +6 Luck shrine left derived luck at %s, expected 16"
+			% str(c["derived"].get("luck", "missing")))
+	var best: int = CombatManager.best_party_luck([c])
+	if best != 16:
+		_fail("best_party_luck read %d — the shrine's Luck never reached the loot" % best)
+	elif CombatManager.luck_jackpot_chance(best, [c]) <= CombatManager.luck_jackpot_chance(10, [c]):
+		_fail("sixteen effective Luck did not raise the jackpot chance")
+	CharacterSystem.update_derived_stats(c)
+	_done()
+
+
+## Luck's rarity weighting was dead code — nothing called it. A won fight now
+## rolls a lucky find at the jackpot's odds, its rarity tilted by Luck.
+func _check_luck_weights_a_lucky_find() -> void:
+	# More Luck, a larger share of rare-and-better.
+	var base: Dictionary = CombatManager._get_modified_rarity_weights(1.0, 10)
+	var lucky: Dictionary = CombatManager._get_modified_rarity_weights(1.0, 25)
+	var share := func(w: Dictionary) -> float:
+		var total: float = 0.0
+		for r in w:
+			total += float(w[r])
+		return float(w["rare"] + w["epic"] + w["legendary"]) / total
+	if share.call(lucky) <= share.call(base):
+		_fail("Luck 25 gave rare+ share %.3f, Luck 10 gives %.3f"
+			% [share.call(lucky), share.call(base)])
+
+	# And the roll is actually made: with the chance pushed past 1 the fight
+	# must turn up a piece of equipment nobody was carrying.
+	var saved_party: Array[Dictionary] = CharacterSystem.party.duplicate()
+	var saved_units: Array[Node] = CombatManager.all_units.duplicate()
+	CombatManager.all_units.clear()
+	var c: Dictionary = _char({})
+	c["derived"]["loot_chance_pct"] = 100000.0
+	CharacterSystem.party.clear()
+	CharacterSystem.party.append(c)
+	var drops: Array[String] = CombatManager._generate_loot_drops(1, 1.0, 10)
+	CharacterSystem.party.clear()
+	CharacterSystem.party.append_array(saved_party)
+	CombatManager.all_units.append_array(saved_units)
+	var equipment_types: Array[String] = CombatManager._lucky_find_types()
+	var found := false
+	for id in drops:
+		if str(ItemSystem.get_item(id).get("type", "")) in equipment_types:
+			found = true
+	if not found:
+		_fail("a certain lucky find produced no equipment: %s" % str(drops))
+	_done()
+
+
+## Enchantment lengthens spell statuses exactly once.
+##
+## The duration bonus used to be stated twice — `int(level / 2)` inside
+## _calculate_status_duration, and a parallel table key nothing read. Now the
+## table (`effect_duration_turns`) is the only statement and the function reads
+## it. Wiring the table without deleting the formula (or restoring the formula
+## beside the table) would double it; this pins the curve so either shows.
+## Spellpower is held at 0 so only Enchantment moves the number.
+func _check_enchantment_duration_counts_once() -> void:
+	var spell: Dictionary = {"duration": "spellpower"}
+	for level in range(0, 11):
+		var u: CombatUnit = _unit({"enchantment": level} if level > 0 else {})
+		var table_turns: int = int(u.character_data["derived"].get("effect_duration_turns", 0))
+		var expected: int = 2 + int(level / 2)
+		var got: int = CombatManager._calculate_status_duration(u, spell, 0)
+		if table_turns != int(level / 2):
+			_fail("Enchantment %d: effect_duration_turns is %d, expected %d"
+				% [level, table_turns, int(level / 2)])
+		if got != expected:
+			_fail("Enchantment %d: a spellpower-duration status lasts %d turns, "
+				% [level, got] + "expected %d (base 2 + table %d) — counted twice?"
+				% [expected, table_turns])
+		u.queue_free()
+	_done()
+
+
 func _unit(skills: Dictionary) -> CombatUnit:
 	var u := CombatUnit.new()
 	u.unit_name = "Probe"
@@ -261,10 +351,21 @@ func _count_in_source(path: String, needle: String) -> int:
 	return src.count(needle)
 
 
+## Both the primary hit and the extra arms must land through _resolve_hit_procs
+## — that is what makes the single crit-wound and disease paths cover both.
+func _expect_shared_hit_path() -> void:
+	var calls: int = _count_in_source("res://scripts/autoload/combat_manager.gd",
+		"_resolve_hit_procs(attacker, defender, result")
+	if calls < 2:
+		_fail("only %d call(s) to _resolve_hit_procs — the main hit and the arm chain should both use it" % calls)
+
+
 ## Hardened: Armor 5 and Constitution 14; a crit wound is negated half the time.
-## The roll is injected so the check is not itself a coin flip. Both crit-wound
-## paths (the main attack and each extra arm) must ask the same helper — the arm
-## chain used to roll its own wound with no Hardened check at all.
+## The roll is injected so the check is not itself a coin flip. The main attack
+## and each extra arm must both reach the same helper — the arm chain used to
+## roll its own wound with no Hardened check at all. Since 2026-10-15 there is
+## ONE crit-wound path, in _process_weapon_on_hit_procs, which both reach
+## through _resolve_hit_procs; a second copy appearing is the drift coming back.
 func _check_hardened() -> void:
 	var c: Dictionary = _char({"armor": 5})
 	c["attributes"]["constitution"] = 13
@@ -284,8 +385,9 @@ func _check_hardened() -> void:
 		_fail("Hardened negated a crit wound on a roll of 0.5 (should be 50%, not more)")
 	var sites: int = _count_in_source("res://scripts/autoload/combat_manager.gd",
 		"_crit_wound_negated(defender)")
-	if sites < 2:
-		_fail("only %d crit-wound path(s) ask _crit_wound_negated — expected the main attack and the multi-arm chain" % sites)
+	if sites != 1:
+		_fail("%d crit-wound path(s) ask _crit_wound_negated — expected exactly one, shared by the main attack and the arm chain" % sites)
+	_expect_shared_hit_path()
 	unit.queue_free()
 	_done()
 
@@ -336,8 +438,9 @@ func _check_stubborn_body() -> void:
 
 
 ## Undead Hunter: immune to disease from undead or diseased attackers — and only
-## from them. Both the main-attack proc and the arm-chain proc have to pass the
-## attacker in, or the check has nobody to compare against.
+## from them. The one disease-on-hit proc (shared by the main attack and the
+## arm chain) has to pass the attacker in, or the check has nobody to compare
+## against.
 func _check_undead_hunter() -> void:
 	var c: Dictionary = _char({"earth_magic": 3})
 	if not _eligible(c, "undead_hunter"):
@@ -363,8 +466,9 @@ func _check_undead_hunter() -> void:
 
 	var sites: int = _count_in_source("res://scripts/autoload/combat_manager.gd",
 		'_check_perk_status_immunity(defender, "diseased", attacker)')
-	if sites < 2:
-		_fail("only %d disease-on-hit path(s) pass the attacker to the immunity check — expected the main attack and the multi-arm chain" % sites)
+	if sites != 1:
+		_fail("%d disease-on-hit path(s) pass the attacker to the immunity check — expected exactly one, shared by the main attack and the arm chain" % sites)
+	_expect_shared_hit_path()
 	for u in [hunter, plain, ghoul, leper, bandit]:
 		u.queue_free()
 	_done()
@@ -398,4 +502,48 @@ func _check_iron_cortex() -> void:
 	PerkSystem.grant_perk(body, "akimbo")
 	if CombatManager.arm_chain_fire_chance(body, 3) != arm3 + 20.0:
 		_fail("Akimbo's +20 no longer reaches arm 3 once Iron Cortex is owned")
+	_done()
+
+
+## The blow that drops a unit must not go on to stun or bleed the body. Every
+## on-hit proc runs after the damage lands, and a bleeding-out unit keeps its
+## statuses through a revive — so the stun used to wait for whoever picked them
+## back up. Drives the real weapon-proc path (Trishula-style on_crit_status and
+## a 100% bleed passive) against a fallen and a standing defender, then checks
+## no on-hit function still applies a status to `defender` unguarded.
+func _check_on_hit_procs_spare_the_fallen() -> void:
+	var attacker := _team_unit(0)
+	attacker.character_data["equipped_weapon"] = {"type": "mace", "name": "Probe mace",
+		"on_crit_status": "Stunned", "passive": {"bleed_chance": 100}}
+	var crit_hit := {"success": true, "hit": true, "crit": true, "damage": 5}
+
+	var fallen := _team_unit(1)
+	fallen.is_bleeding_out = true
+	CombatManager._process_weapon_on_hit_procs(attacker, fallen, crit_hit.duplicate())
+	if not fallen.status_effects.is_empty():
+		_fail("on-hit procs landed on a bleeding-out defender: %s" % [fallen.status_effects])
+
+	# The control: the same procs on someone still standing do land, so the
+	# check above is not passing because nothing fires at all.
+	var standing := _team_unit(1)
+	CombatManager._process_weapon_on_hit_procs(attacker, standing, crit_hit.duplicate())
+	if not standing.has_status("Stunned") or not standing.has_status("Bleeding"):
+		_fail("weapon on-hit procs did not land on a living defender (%s)"
+			% [standing.status_effects])
+
+	# Every on-hit function goes through the guarded helper.
+	var src := FileAccess.get_file_as_string("res://scripts/autoload/combat_manager.gd")
+	for fn in ["func _process_on_hit_perks(", "func _process_weapon_on_hit_procs(",
+			"func _process_ammo_special_effect("]:
+		var start := src.find(fn)
+		var stop := src.find("\nfunc ", start + 1)
+		if start < 0:
+			_fail("%s not found" % fn)
+			continue
+		if src.substr(start, stop - start).contains("_apply_status_effect(defender,"):
+			_fail("%s) applies a status to the defender without the is_alive() guard "
+				% fn.trim_suffix("(") + "— use _apply_on_hit_status()")
+
+	for unit in [attacker, fallen, standing]:
+		unit.queue_free()
 	_done()

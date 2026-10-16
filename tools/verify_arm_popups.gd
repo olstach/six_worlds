@@ -116,7 +116,8 @@ func _swing(attacker: CombatUnit, defender: CombatUnit) -> Array:
 	for l in _labels(defender):
 		if l.text.begins_with("Arm "):
 			arm_labels.append(l)
-		elif l.text.is_valid_int():
+		elif l.text.trim_suffix(" crit!").is_valid_int():
+			# A critical main hit reads "12 crit!" — still the primary number.
 			numbers.append(l)
 	return [result, arm_labels, numbers, 100000 - defender.current_hp]
 
@@ -155,7 +156,7 @@ func _check_each_arm_gets_one_popup_when_blows_land() -> void:
 				% numbers.size() + "numbers were not held back")
 		var shown_total: int = 0
 		for n in numbers:
-			shown_total += n.text.to_int()
+			shown_total += n.text.trim_suffix(" crit!").to_int()
 		var positions: Dictionary = {}
 		for i in arms.size():
 			var text: String = arms[i].text

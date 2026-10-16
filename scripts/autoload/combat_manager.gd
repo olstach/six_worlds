@@ -107,7 +107,8 @@ const SUPPLY_DROP_CHANCE: float = 0.50
 const REAGENT_DROP_ID: String = "raw_reagents"
 const REAGENT_DROP_CHANCE: float = 0.25
 const REAGENT_DROP_CHANCE_CASTER: float = 0.50
-# Base rarity weights (higher = more likely to drop) — still used by boss table picks
+# Base rarity weights (higher = more likely to drop) — the lucky find's starting
+# point, before _get_modified_rarity_weights tilts them by fight size and Luck
 const RARITY_DROP_WEIGHTS: Dictionary = {
 	"common": 100, "uncommon": 50, "rare": 20, "epic": 5, "legendary": 1
 }
@@ -207,8 +208,35 @@ var active_zones: Array[Dictionary] = []
 # affinity while ice did. It lives in resources/data/terrain.json now, beside
 # everything else that ground means.
 
+## Spellpower bonus for a Summoning spell cast on ground whose spirits match
+## one of its schools (see summon_terrain_affinity_for below).
+const SUMMON_TERRAIN_BONUS_PCT: float = 0.25
+
 # Combat rewards (filled before combat_ended signal, cleared on next combat start)
 var last_combat_rewards: Dictionary = {}
+
+## The summoning affinity a spell draws on, fighting on `overworld_terrain`
+## (a MapManager.Terrain / Ground id), or {} when it gets none.
+##
+## A spell qualifies when it is a Summoning spell AND one of its schools is
+## the school this ground favours — nagas answer a Water summoning on a lake,
+## earth spirits an Earth summoning in the mountains. The returned dictionary
+## is terrain.json's `summon_affinity` block: {school, label}.
+##
+## Both the cast (the spellpower calculation) and the spell tooltip in
+## combat_arena.gd ask this one function, so the bonus a player is promised
+## is the bonus they get.
+static func summon_terrain_affinity_for(spell: Dictionary, overworld_terrain: int) -> Dictionary:
+	if overworld_terrain < 0:
+		return {}
+	var schools_lower: Array = spell.get("schools", []).map(func(s): return str(s).to_lower())
+	if not "summoning" in schools_lower:
+		return {}
+	var affinity: Dictionary = Ground.summon_affinity_of(overworld_terrain)
+	if affinity.is_empty() or not str(affinity.get("school", "")) in schools_lower:
+		return {}
+	return affinity
+
 
 func _ready() -> void:
 	_load_spell_database()
@@ -218,6 +246,9 @@ func _ready() -> void:
 	# refresh whenever the distance between units changes.
 	unit_moved.connect(_on_unit_moved_refresh_auras)
 	unit_moved.connect(_on_unit_moved_check_zones)
+	# Both start paths (direct and after deployment) emit combat_started once
+	# every unit is in all_units — the moment to note each duellist's max HP.
+	combat_started.connect(_record_duel_thresholds)
 	print("CombatManager initialized with ", _spell_database.size(), " spells, ",
 		_status_effects.size(), " status effects, ",
 		_summon_templates.size(), " summon templates")
@@ -364,13 +395,26 @@ func start_combat(grid: Node, player_units: Array, enemy_units: Array) -> void:
 		if "facing" in unit:
 			unit.facing = Vector2i(-1, 0)  # Enemies face left toward players
 
-	# Calculate turn order based on initiative
+	# Combat-start perks, round 1's turn order, the first turn.
+	_begin_first_round()
+
+
+## The moment a fight actually begins, shared by both ways into one —
+## start_combat() and, after deployment, _finalize_combat_start().
+##
+## The ORDER is the point. Combat-start perks go first, then the turn order is
+## built. It used to be the other way round, so Rousing Display's +Initiative
+## arrived after round 1's order was already fixed and changed nothing — and
+## by round 2 the buff had ticked away. Initiative only matters at the moment
+## the order is sorted, so a round-1 initiative buff has to exist by then.
+func _begin_first_round() -> void:
+	# Apply combat-start perk effects (auras, first-round buffs)
+	_apply_combat_start_perks()
+
+	# Calculate turn order based on initiative — now including those buffs
 	_calculate_turn_order()
 
 	combat_started.emit()
-
-	# Apply combat-start perk effects (auras, first-round buffs)
-	_apply_combat_start_perks()
 
 	# Start first turn
 	_start_current_turn()
@@ -383,7 +427,10 @@ func _apply_combat_start_perks() -> void:
 	for unit in all_units:
 		_fire_perk_triggers(unit, "combat_start", {})
 		var char_data = unit.character_data if "character_data" in unit else {}
-		# Rousing Display (Performance 1): allies within 3 tiles gain +5 Initiative for round 1
+		# Rousing Display (Performance 1): allies within 3 tiles gain +5 Initiative for round 1.
+		# Duration 1 is right: _begin_first_round() sorts round 1 after this,
+		# and the buff ticks away at the ally's first turn start — before
+		# round 2's order is sorted.
 		if PerkSystem.has_perk(char_data, "rousing_display"):
 			for ally in get_team_units(unit.team if "team" in unit else 0):
 				if ally == unit: continue
@@ -567,11 +614,8 @@ func _calculate_combat_rewards() -> Dictionary:
 	# --- LUCK JACKPOT ---
 	# Slim chance for a big gold bonus. Luck makes it slightly more likely
 	# but the multiplier is always large - unreliable but consequential.
-	var best_luck := 10
-	for member in CharacterSystem.get_party():
-		var luck = member.get("attributes", {}).get("luck", 10)
-		if luck > best_luck:
-			best_luck = luck
+	# EFFECTIVE Luck (gear, traits, a shrine's blessing), best in the party.
+	var best_luck := best_party_luck(CharacterSystem.get_party())
 
 	var jackpot_triggered := false
 	var jackpot_amount := 0
@@ -608,6 +652,22 @@ func _calculate_combat_rewards() -> Dictionary:
 	return rewards
 
 
+## The party's best EFFECTIVE Luck — attribute plus gear, traits and Luck map
+## buffs, as CharacterSystem.update_derived_stats leaves it in derived["luck"].
+## Never below 10, so an unlucky party is not punished below the baseline
+## (the formulas below only ever reward Luck above 10).
+##
+## This used to read attributes.luck directly, so a talisman "of Fortune" or a
+## shrine's +Luck counted for nothing at the end of a fight.
+func best_party_luck(party: Array) -> int:
+	var best := 10
+	for member in party:
+		var attrs: Dictionary = member.get("attributes", {})
+		var luck := int(member.get("derived", {}).get("luck", attrs.get("luck", 10)))
+		if luck > best:
+			best = luck
+	return best
+
 
 ## The chance a won fight pays a gold jackpot, as 0.0-1.0.
 ##
@@ -631,10 +691,20 @@ func luck_jackpot_chance(best_luck: int, party: Array) -> float:
 	return chance * (1.0 + best_boost / 100.0)
 
 
-## Generate supply, reagent, and boss guaranteed drops.
+## Generate supply, reagent, boss guaranteed drops, and the Luck-driven
+## "lucky find".
 ## Role-based random equipment drops have been removed — enemies now carry real inventories
 ## that feed the budget-based _collect_enemy_loot() system instead.
-func _generate_loot_drops(enemy_count: int, _difficulty_ratio: float, _best_luck: int) -> Array[String]:
+##
+## How the loot stats divide the work, so none of them is counted twice:
+##   - Thievery (`loot_quality_pct`) — how much of what the ENEMIES CARRIED
+##     you manage to take (the drop fraction in _collect_enemy_loot).
+##   - Luck — whether fortune adds a piece nobody was carrying (the lucky
+##     find, below), and how RARE that piece is (_get_modified_rarity_weights).
+##   - `loot_chance_pct` (Comedy's luck_pct, the Shivering Cairn shrine) —
+##     multiplies the chance of both Luck rolls, jackpot and lucky find alike,
+##     because both go through luck_jackpot_chance.
+func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: int) -> Array[String]:
 	var drops: Array[String] = []
 
 	# Collect enemy roles and boss archetype IDs
@@ -677,7 +747,32 @@ func _generate_loot_drops(enemy_count: int, _difficulty_ratio: float, _best_luck
 			if ItemSystem.item_exists(item_id) and not item_id in drops:
 				drops.append(item_id)
 
+	# --- Lucky find ---
+	# Rolled at the same odds as the gold jackpot (same Luck term, same cap,
+	# same loot_chance_pct boost) but independently of it. Luck then weights
+	# the rarity of what turns up — this is where "Luck: loot quality" lives.
+	if randf() < luck_jackpot_chance(best_luck, CharacterSystem.get_party()):
+		var found := lucky_find(difficulty_ratio, best_luck)
+		if found != "":
+			drops.append(found)
+
 	return drops
+
+
+## Item types a lucky find can turn up: any equipment.
+func _lucky_find_types() -> Array[String]:
+	var types: Array[String] = []
+	types.append_array(ItemSystem.WEAPON_TYPES)
+	types.append_array(ItemSystem.ARMOR_TYPES)
+	types.append_array(ItemSystem.TALISMAN_TYPES)
+	return types
+
+
+## One piece of equipment found by luck, its rarity weighted by Luck and by
+## the size of the fight. Returns an item id, or "" when nothing could be made.
+func lucky_find(difficulty_ratio: float, luck: int) -> String:
+	return _pick_item_from_types(_lucky_find_types(),
+		_get_modified_rarity_weights(difficulty_ratio, luck))
 
 
 ## Collect loot from dead enemy inventories using a budget-based system.
@@ -1015,17 +1110,10 @@ func _finalize_combat_start() -> void:
 		if "facing" in unit:
 			unit.facing = Vector2i(1, 0) if unit.team == Team.PLAYER else Vector2i(-1, 0)
 
-	# Calculate turn order based on initiative
-	_calculate_turn_order()
-
-	combat_started.emit()
-
-	# Combat-start perks. This path used to skip them, so Rousing Display did
-	# nothing in any fight that had a deployment phase.
-	_apply_combat_start_perks()
-
-	# Start first turn
-	_start_current_turn()
+	# Combat-start perks, round 1's turn order, the first turn. This path
+	# used to skip the perks, so Rousing Display did nothing in any fight that
+	# had a deployment phase.
+	_begin_first_round()
 
 
 ## Get combat role of a character based on their skills
@@ -1210,6 +1298,17 @@ func _start_current_turn() -> void:
 	# Process status effects at turn start (DoT, healing, duration tick)
 	var skip_turn = _process_status_effects(unit)
 
+	# Tick timed stat modifiers (active-skill buffs and debuffs, perk trigger
+	# payloads, combat-start buffs). This is the ONE place they count down:
+	# one turn of duration per turn of the unit that carries them, whether or
+	# not it also carries a status, and on a stunned turn too — a stunned
+	# unit's statuses tick, so its modifiers do as well.
+	#
+	# What a duration means, then: a modifier counts down at the START of its
+	# owner's turn and is gone when it reaches 0. Duration 1 lasts until the
+	# owner's next turn begins; duration 2 lasts through that next turn too.
+	_process_stat_modifiers(unit)
+
 	# Constitution buff/penalty statuses may have been applied or removed since
 	# last turn — reconcile the unit's max HP.
 	_reconcile_constitution_hp(unit)
@@ -1387,16 +1486,43 @@ func _check_combat_end() -> int:
 	for unit in all_units:
 		if unit.team != Team.ENEMY or not unit.is_alive():
 			continue
-		var stop_pct: int = unit.character_data.get("duel_stop_hp_pct", 0)
-		if stop_pct <= 0:
-			continue
-		var max_hp: int = unit.max_hp
-		var cur_hp: int = unit.current_hp
-		if max_hp > 0 and cur_hp * 100 <= max_hp * stop_pct:
+		var stop_hp: int = duel_stop_hp(unit)
+		if stop_hp > 0 and unit.current_hp <= stop_hp:
 			combat_log.emit("%s yields — the duel is over." % unit.character_data.get("name", "Enemy"))
 			return Team.PLAYER  # Duel victory
 
 	return -1  # Combat continues
+
+
+## Max HP each duelling enemy STARTED the fight with, by instance id. The
+## threshold is a share of this, not of the live max_hp: a max-HP buff or
+## drain mid-fight used to move the line the boss yields at.
+var _duel_start_max_hp: Dictionary = {}
+
+
+## Note every duellist's max HP as the fight begins (on combat_started).
+func _record_duel_thresholds() -> void:
+	_duel_start_max_hp.clear()
+	for unit in all_units:
+		if unit.team == Team.ENEMY and "character_data" in unit \
+				and int(unit.character_data.get("duel_stop_hp_pct", 0)) > 0:
+			_duel_start_max_hp[unit.get_instance_id()] = unit.max_hp
+
+
+## The HP at or below which this enemy yields, or 0 if it does not duel.
+## A unit seen for the first time (e.g. one that joined mid-fight) has its
+## max HP noted now and keeps that number for the rest of the fight.
+func duel_stop_hp(unit) -> int:
+	if not "character_data" in unit:
+		return 0
+	var stop_pct: int = int(unit.character_data.get("duel_stop_hp_pct", 0))
+	if stop_pct <= 0:
+		return 0
+	var id: int = unit.get_instance_id()
+	if not _duel_start_max_hp.has(id):
+		_duel_start_max_hp[id] = unit.max_hp
+	# Integer maths, same rounding as before: hp*100 <= max*pct.
+	return int(_duel_start_max_hp[id]) * stop_pct / 100
 
 
 ## Check combat end after damage/death — triggers immediately via call_deferred
@@ -1508,14 +1634,6 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 # COMBAT RESOLUTION
 # ============================================
 
-## Perform an attack from one unit to another.
-## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
-## Execute one extra arm hit in the multi-arm attack chain.
-## chain_chance (0–100): the probability that caused this arm to fire.
-## Wound and disease proc chances scale proportionally (e.g. arm 2 at 50% fire chance
-## gets 50% of the primary arm's proc rates — a glancing brush is less likely to sever).
-## No action cost, no further arm chain, no ammo or durability deduction.
-## Oil, sweep, and other weapon passives only apply to the primary arm.
 ## Coordinated Strikes: after an arm kills its target, find another living enemy
 ## within the attacker's melee reach for the remaining arms to swing at.
 func _find_chain_redirect_target(attacker: Node) -> Node:
@@ -1571,6 +1689,118 @@ func _crit_wound_negated(defender: Node, roll: float = -1.0) -> bool:
 	return false
 
 
+## Apply a landed blow's damage and record what it actually cost.
+##
+## result["damage"] is the blow BEFORE the defender's armour, resistance,
+## shields and temp HP; result["damage_taken"] is the HP the defender really
+## lost — the number its red popup shows. The combat log reports the second
+## (and the first beside it when they differ), so the log and the popup agree.
+## Shared by the primary hit and every extra arm.
+func _apply_hit_damage(attacker: Node, defender: Node, result: Dictionary) -> void:
+	var tracked: bool = "damage_taken_total" in defender
+	var before: int = defender.damage_taken_total if tracked else 0
+	# Naming the attacker, so a take_damage passive knows who to answer. A
+	# crit flags the defender first so its damage number reads "crit!" (cleared
+	# straight after, so oil or enchant damage that follows shows plainly).
+	# Extra arms hold their numbers back for their own "Arm N" popup anyway.
+	if "next_damage_is_crit" in defender:
+		defender.next_damage_is_crit = bool(result.get("crit", false))
+	apply_damage(defender, result.damage, result.damage_type, attacker)
+	if "next_damage_is_crit" in defender:
+		defender.next_damage_is_crit = false
+	result["damage_taken"] = (defender.damage_taken_total - before) if tracked else int(result.damage)
+
+
+## Weapon oil on a landed blow: bonus damage of the oil's type, and a chance
+## of its status. Each blow that lands spends one of the oil's charges — so a
+## four-armed swing that lands with every arm uses four.
+## Shared by the primary hit and every extra arm.
+func _apply_weapon_oil(attacker: Node, defender: Node, result: Dictionary) -> void:
+	if not attacker.has_method("consume_oil_charge"):
+		return
+	var oil = attacker.consume_oil_charge()
+	if oil.is_empty():
+		return
+	var oil_dmg = oil.get("bonus_damage", 0)
+	var oil_dmg_type = oil.get("bonus_damage_type", "fire")
+	if oil_dmg > 0:
+		# Resistance is applied once, inside apply_damage().
+		apply_damage(defender, oil_dmg, oil_dmg_type)
+		result["oil_damage"] = oil_dmg
+		result["oil_damage_type"] = oil_dmg_type
+	# Roll for status proc
+	var oil_status = oil.get("status", "")
+	var oil_chance = effective_status_chance(
+		attacker.character_data if "character_data" in attacker else {},
+		oil.get("status_chance", 0))
+	if oil_status != "" and oil_chance > 0:
+		if randf() * 100.0 <= oil_chance:
+			var oil_duration = oil.get("status_duration", 2)
+			# Source: the alchemist who coated the blade, so their
+			# poison_damage_pct reaches the venom they mixed.
+			_apply_on_hit_status(defender, oil_status, oil_duration, 0, attacker)
+			result["oil_status"] = oil_status
+	# Track remaining charges (unit's weapon_oil already decremented)
+	var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
+	result["oil_attacks_left"] = remaining
+
+
+## Everything a landed weapon blow sets off once its damage is in: passive
+## on-hit perks, the on_hit / on_crit / on_kill perk triggers, and the
+## weapon's own procs (Trishula's on-crit status, crit wounds with Hardened's
+## save, disease and poisoned-blood rolls with Undead Hunter / Diamond Body's
+## immunity, the weapon's passive status procs, lifesteal, elemental damage).
+##
+## The primary hit and every extra arm both call this. The arm chain used to
+## carry its own copy of half of it, and every fix to the main hit (Hardened,
+## Undead Hunter) had to be remembered twice. One function, one place.
+##
+## proc_scale (0–1) scales the chance of the PERSISTENT afflictions — crit
+## wounds, diseases, poisoned blood. An extra arm passes its own fire chance,
+## so a glancing third-arm blow is less likely to leave a lasting wound than a
+## full swing. extra_arm=true also skips the procs that belong to the whole
+## attack rather than to one blow (see _process_weapon_on_hit_procs).
+func _resolve_hit_procs(attacker: Node, defender: Node, result: Dictionary,
+		proc_scale: float = 1.0, extra_arm: bool = false) -> void:
+	_process_on_hit_perks(attacker, defender, result)
+	_fire_perk_triggers(attacker, "on_hit", {"target": defender})
+	if result.get("crit", false):
+		_fire_perk_triggers(attacker, "on_crit", {"target": defender})
+	if not defender.is_alive():
+		_fire_perk_triggers(attacker, "on_kill", {"target": defender})
+	_process_weapon_on_hit_procs(attacker, defender, result, proc_scale, extra_arm)
+
+
+## Count one weapon swing on the attacker's per-turn and per-fight counters
+## (the first_attack_turn / first_attack_combat conditions, Too Fast to
+## Count's "first dagger attack each turn", the first-ranged-shot perks).
+## Every swing counts, an extra arm's included, hit or miss.
+func _count_weapon_attack(attacker: Node) -> void:
+	if "attacks_this_turn" in attacker:
+		attacker.attacks_this_turn += 1
+		attacker.attacks_this_combat += 1
+	if attacker.has_method("get_equipped_weapon"):
+		if attacker.get_equipped_weapon().get("type", "") == "dagger":
+			attacker.dagger_attacks_this_turn += 1
+	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
+		attacker.ranged_attacks_this_turn += 1
+
+
+## Execute one extra arm hit in the multi-arm attack chain.
+##
+## chain_chance (0–100) is the probability that made this arm fire. It scales
+## the arm's chance of inflicting persistent wounds and diseases (arm 2 at a
+## 50% fire chance gets half the primary arm's rates — a glancing brush is less
+## likely to maim), via _resolve_hit_procs' proc_scale.
+##
+## The arm lands its blow through the same functions the primary hit uses —
+## _apply_hit_damage, _apply_weapon_oil, _resolve_hit_procs and
+## _count_weapon_attack — so it cannot drift from it again. What it does NOT
+## do: cost an action, start a further chain, spend ammo, wear the weapon, or
+## sweep (Urumi). Those belong to the attack as a whole, not to each blow.
+##
+## Nothing is written to the combat log here: the arena's unit_attacked
+## handler logs every arm once, from the result this returns.
 func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, chain_chance: float) -> Dictionary:
 	var weapon_dmg_type: String = "crushing"
 	if attacker.has_method("get_weapon_damage_type"):
@@ -1593,60 +1823,27 @@ func _execute_arm_chain_attack(attacker: Node, defender: Node, arm_number: int, 
 		"damage_taken": 0,
 	}
 	if hit:
+		if "last_attacker" in defender:
+			defender.last_attacker = attacker
 		var damage_result := calculate_physical_damage(attacker, defender, weapon_dmg_type)
 		result.merge(damage_result, true)
 		# Hold back the defender's plain damage number while this arm's blow
 		# lands: the arena shows it as a labelled, staggered "Arm N: X" popup
 		# instead, so it doesn't stack on top of the primary hit's number.
-		# damage_taken is the HP actually lost, after armour and resistance.
 		var holds: bool = defender.has_method("begin_held_damage")
 		if holds:
 			defender.begin_held_damage()
-		apply_damage(defender, result.damage, weapon_dmg_type)
+		_apply_hit_damage(attacker, defender, result)
 		if holds:
-			result["damage_taken"] = defender.end_held_damage()
-		_process_on_hit_perks(attacker, defender, result)
-		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
-
-		# Wound and disease procs — scaled by chain_chance so later arms are less likely to inflict.
-		# chain_chance is 0–100; divide by 100 to get a 0–1 multiplier.
-		var scale: float = chain_chance / 100.0
-		if WoundSystem and defender.team == Team.PLAYER:
-			if result.get("crit", false) and randf() < 0.20 * scale \
-					and not _crit_wound_negated(defender):
-				var char_data = defender.character_data
-				var wound_id = WoundSystem.apply_random_crit_wound(char_data)
-				if wound_id != "":
-					combat_log.emit("Arm %d: %s received a %s!" % [
-						arm_number, defender.unit_name,
-						WoundSystem.WOUND_TYPES.get(wound_id, {}).get("display_name", wound_id)
-					])
-					result["persistent_wound"] = wound_id
-			if attacker.team == Team.ENEMY:
-				var attacker_tags: Array = attacker.character_data.get("tags", []) if "character_data" in attacker else []
-				# Same immunity gate as the main attack (Undead Hunter, Diamond
-				# Body) — a second arm must not carry in what the first could not.
-				if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * scale \
-						and not _check_perk_status_immunity(defender, "diseased", attacker):
-					var tag_source: String = "undead" if "undead" in attacker_tags else "diseased"
-					var disease_id = WoundSystem.apply_random_disease(defender.character_data, tag_source)
-					if disease_id != "":
-						combat_log.emit("Arm %d: %s afflicted with %s!" % [
-							arm_number, defender.unit_name,
-							WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
-						])
-						result["persistent_disease"] = disease_id
-
-		var msg: String = "Arm %d: %s → %s for %d%s" % [
-			arm_number, attacker.unit_name, defender.unit_name, result.damage,
-			" (crit!)" if result.get("crit", false) else ""
-		]
-		combat_log.emit(msg)
-	else:
-		combat_log.emit("Arm %d: %s misses %s" % [arm_number, attacker.unit_name, defender.unit_name])
+			defender.end_held_damage()
+		_apply_weapon_oil(attacker, defender, result)
+		_resolve_hit_procs(attacker, defender, result, chain_chance / 100.0, true)
+	_count_weapon_attack(attacker)
 	return result
 
 
+## Perform an attack from one unit to another.
+## reaction=true: skips can_act() check and use_action() cost (for free attacks and ZoC reactions).
 func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dictionary:
 	if not reaction and not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
@@ -1843,36 +2040,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 					else:
 						combat_log.emit("%s stays hidden (Shady Dealings)." % attacker.unit_name)
 
-		# Apply damage — naming the attacker, so a take_damage passive knows
-		# who to answer
-		apply_damage(defender, result.damage, result.damage_type, attacker)
-
-		# Apply weapon oil effects (bonus damage + status procs)
-		if attacker.has_method("consume_oil_charge"):
-			var oil = attacker.consume_oil_charge()
-			if not oil.is_empty():
-				var oil_dmg = oil.get("bonus_damage", 0)
-				var oil_dmg_type = oil.get("bonus_damage_type", "fire")
-				if oil_dmg > 0:
-					# Resistance is applied once, inside apply_damage().
-					apply_damage(defender, oil_dmg, oil_dmg_type)
-					result["oil_damage"] = oil_dmg
-					result["oil_damage_type"] = oil_dmg_type
-				# Roll for status proc
-				var oil_status = oil.get("status", "")
-				var oil_chance = effective_status_chance(
-					attacker.character_data if "character_data" in attacker else {},
-					oil.get("status_chance", 0))
-				if oil_status != "" and oil_chance > 0:
-					if randf() * 100.0 <= oil_chance:
-						var oil_duration = oil.get("status_duration", 2)
-						# Source: the alchemist who coated the blade, so their
-						# poison_damage_pct reaches the venom they mixed.
-						_apply_status_effect(defender, oil_status, oil_duration, 0, attacker)
-						result["oil_status"] = oil_status
-				# Track remaining charges (unit's weapon_oil already decremented)
-				var remaining = attacker.weapon_oil.get("attacks_remaining", 0) if not attacker.weapon_oil.is_empty() else 0
-				result["oil_attacks_left"] = remaining
+		# Apply damage (recording the HP it actually cost), then weapon oil —
+		# the same two helpers every extra arm uses.
+		_apply_hit_damage(attacker, defender, result)
+		_apply_weapon_oil(attacker, defender, result)
 
 		# --- An imbued arrow delivers its spell on hit ---
 		#
@@ -1929,15 +2100,9 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				unit_healed.emit(attacker, steal)
 				result["lifesteal"] = steal
 
-		# --- Passive perk on-hit effects ---
-		_process_on_hit_perks(attacker, defender, result)
-		_fire_perk_triggers(attacker, "on_hit", {"target": defender})
-		if result.get("crit", false):
-			_fire_perk_triggers(attacker, "on_crit", {"target": defender})
-		if not defender.is_alive():
-			_fire_perk_triggers(attacker, "on_kill", {"target": defender})
-		# --- Weapon passive on-hit procs ---
-		_process_weapon_on_hit_procs(attacker, defender, result)
+		# --- On-hit perks, perk triggers and weapon procs ---
+		# Shared with the extra arms of a multi-arm chain.
+		_resolve_hit_procs(attacker, defender, result)
 		# --- Ammo special effects (fire arrow AoE, status procs) ---
 		if "get_selected_ammo" in attacker:
 			var ammo = attacker.get_selected_ammo()
@@ -1986,14 +2151,8 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			result.merge(dev, true)
 
 	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
-	if "attacks_this_turn" in attacker:
-		attacker.attacks_this_turn += 1
-		attacker.attacks_this_combat += 1
-	if attacker.has_method("get_equipped_weapon"):
-		if attacker.get_equipped_weapon().get("type", "") == "dagger":
-			attacker.dagger_attacks_this_turn += 1
+	_count_weapon_attack(attacker)
 	if attacker.has_method("is_ranged_weapon") and attacker.is_ranged_weapon():
-		attacker.ranged_attacks_this_turn += 1
 		# Consume one ammo; revert to default if depleted
 		if "selected_ammo_id" in attacker and attacker.selected_ammo_id != "":
 			var still_has_ammo = ItemSystem.consume_ammo(attacker.selected_ammo_id)
@@ -2015,10 +2174,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			# Only chain for dual-wielders, natural weapon species, or genuinely multi-armed characters
 			var should_chain: bool = (arm_count > 2)
 			if not should_chain:
-				var weapon_set: int = char_data.get("active_weapon_set", 1)
-				var off_slot: String = "weapon_off" if weapon_set == 1 else "weapon_off_2"
-				var equipment_dict: Dictionary = char_data.get("equipment", {})
-				var oh_id: String = equipment_dict.get(off_slot, "")
+				# The off hand lives inside the active weapon set
+				# (equipment.weapon_set_N.off); ItemSystem knows which set is
+				# active. Reading equipment["weapon_off"] directly found nothing,
+				# so a two-armed dual-wielder never chained at all.
+				var oh_id: String = ItemSystem.get_equipped_item(char_data, "weapon_off")
 				should_chain = (oh_id != "")
 			if not should_chain:
 				var primary_nw: Dictionary = BodySystem.get_natural_weapon(char_data, "hand_r")
@@ -2155,11 +2315,10 @@ func _calculate_hit_chance(attacker: Node, defender: Node) -> float:
 
 	var hit_chance = base_chance + accuracy - dodge
 
-	# Every Opening Is an Invitation: +15% accuracy against enemies with any status effect
+	# Every Opening Is an Invitation: +15% accuracy against enemies suffering a status
 	var att_char = attacker.character_data if "character_data" in attacker else {}
-	if PerkSystem.has_perk(att_char, "every_opening_is_an_invitation"):
-		if "status_effects" in defender and defender.status_effects.size() > 0:
-			hit_chance += 15.0
+	if _opening_is_an_invitation(attacker, defender):
+		hit_chance += 15.0
 
 	# Close and Personal: +15% accuracy when adjacent to exactly one enemy
 	if PerkSystem.has_perk(att_char, "close_and_personal"):
@@ -2183,7 +2342,7 @@ func _calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	if PerkSystem.has_perk(att_char, "offhand_jab"):
 		if attacker.has_method("get_equipped_weapon"):
 			if attacker.get_equipped_weapon().get("type", "") == "dagger":
-				var oh_id = att_char.get("equipment", {}).get("weapon_off", "")
+				var oh_id = ItemSystem.get_equipped_item(att_char, "weapon_off")  # active weapon set
 				if oh_id != "" and ItemSystem.get_item(oh_id).get("type", "") == "dagger":
 					hit_chance += 10.0
 
@@ -2271,6 +2430,17 @@ func _calculate_hit_chance(attacker: Node, defender: Node) -> float:
 	return clampf(hit_chance, 10.0, 95.0)
 
 
+## Every Opening Is an Invitation (Guile 5): "+15% Attack and +10% crit
+## chance against enemies SUFFERING from any status effect." Suffering is the
+## word — it counted any status at all, so a Blessed or Hasted enemy opened
+## itself up to you. Debuffs only, by the same test target_debuffed uses.
+## One function so the accuracy and the crit half cannot drift apart.
+func _opening_is_an_invitation(attacker: Node, defender: Node) -> bool:
+	var att_char: Dictionary = attacker.character_data if "character_data" in attacker else {}
+	return PerkSystem.has_perk(att_char, "every_opening_is_an_invitation") \
+		and unit_has_debuff(defender)
+
+
 ## Calculate physical damage (slashing, crushing, or piercing).
 ## Called through calculate_physical_damage() above, which aims the perks.
 func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
@@ -2296,11 +2466,10 @@ func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String
 	var crit_chance = attacker.get_crit_chance()
 	if not attacker.weapon_oil.is_empty():
 		crit_chance += attacker.weapon_oil.get("crit_bonus", 0)
-	# Every Opening Is an Invitation: +10% crit against enemies with any status effect
+	# Every Opening Is an Invitation: +10% crit against enemies suffering a status
 	var att_char_eoia = attacker.character_data if "character_data" in attacker else {}
-	if PerkSystem.has_perk(att_char_eoia, "every_opening_is_an_invitation"):
-		if "status_effects" in defender and defender.status_effects.size() > 0:
-			crit_chance += 10.0
+	if _opening_is_an_invitation(attacker, defender):
+		crit_chance += 10.0
 
 	# Cheap Shot (Guile 1): +15% crit on the first attack vs each individual enemy
 	if PerkSystem.has_perk(att_char_eoia, "cheap_shot"):
@@ -2310,7 +2479,7 @@ func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String
 	# Offhand Jab: +5% crit when main and off-hand are both daggers
 	if PerkSystem.has_perk(att_char_eoia, "offhand_jab"):
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "dagger":
-			var oh_id_oj = att_char_eoia.get("equipment", {}).get("weapon_off", "")
+			var oh_id_oj = ItemSystem.get_equipped_item(att_char_eoia, "weapon_off")  # active weapon set
 			if oh_id_oj != "" and ItemSystem.get_item(oh_id_oj).get("type", "") == "dagger":
 				crit_chance += 5.0
 
@@ -3703,15 +3872,14 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	# Summoning terrain affinity: the spirits native to this ground answer more
 	# readily. +25% spellpower for Summoning spells whose element matches the
 	# overworld terrain the battle is being fought on.
-	if battlefield_overworld_terrain >= 0:
-		var schools_lower_sum: Array = spell.get("schools", []).map(func(s): return s.to_lower())
-		if "summoning" in schools_lower_sum:
-			var affinity: Dictionary = Ground.summon_affinity_of(battlefield_overworld_terrain)
-			if not affinity.is_empty() and affinity.get("school", "") in schools_lower_sum:
-				var summon_delta := int(spellpower_bonus * 0.25)
-				spellpower_bonus += summon_delta
-				combat_log.emit("The spirits of %s answer %s readily! (+%d spellpower)" % [
-					affinity.get("label", "this place"), caster.unit_name, summon_delta])
+	# The rule itself lives in summon_terrain_affinity_for(), which the spell
+	# tooltip also reads, so the player sees the bonus before casting.
+	var summon_affinity: Dictionary = summon_terrain_affinity_for(spell, battlefield_overworld_terrain)
+	if not summon_affinity.is_empty():
+		var summon_delta := int(spellpower_bonus * SUMMON_TERRAIN_BONUS_PCT)
+		spellpower_bonus += summon_delta
+		combat_log.emit("The spirits of %s answer %s readily! (+%d spellpower)" % [
+			summon_affinity.get("label", "this place"), caster.unit_name, summon_delta])
 
 	# Lunar & weekday spellpower bonuses
 	var calendar_schools: Array = spell.get("schools", []).map(func(s: String): return s.to_lower())
@@ -4661,7 +4829,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 	if PerkSystem.has_perk(caster_char, "measured_radiance") and has_damage:
 		var is_white = element == "white" or schools.any(func(s): return s.to_lower() == "white")
 		if is_white and randf() < 0.25:
-			_apply_status_effect(target, "Blinded", 1, 0, caster)
+			_apply_on_hit_status(target, "Blinded", 1, 0, caster)
 
 	# Mental Aftershock: space damage spells apply -10% Focus and -3 Initiative for 2 turns
 	if PerkSystem.has_perk(caster_char, "mental_aftershock") and has_damage:
@@ -4705,7 +4873,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		var is_earth_tr = schools.any(func(s): return s.to_lower() == "earth")
 		var is_aoe_tr = spell.get("targeting", "").begins_with("aoe")
 		if is_earth_tr and is_aoe_tr and randf() < 0.25:
-			_apply_status_effect(target, "Knocked_Down", 1, 0, caster)
+			_apply_on_hit_status(target, "Knocked_Down", 1, 0, caster)
 
 	# Ashes Remember Heat (Fire 5): killing a burning enemy leaves burning terrain for 3 turns
 	if PerkSystem.has_perk(caster_char, "ashes_remember_heat") and has_damage:
@@ -4719,7 +4887,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 	if PerkSystem.has_perk(caster_char, "scattering_gust") and has_push:
 		var is_air_sg = schools.any(func(s): return s.to_lower() == "air")
 		if is_air_sg and randf() < 0.25:
-			_apply_status_effect(target, "Knocked_Down", 1, 0, caster)
+			_apply_on_hit_status(target, "Knocked_Down", 1, 0, caster)
 
 	# Riptide (Water 3): push/pull spells gain +1 tile displacement (applied to stat mod) + save vs knockdown
 	# The extra displacement is handled by adding a brief Move debuff to simulate root
@@ -4728,7 +4896,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		if is_water_r:
 			# Chance for knockdown in addition to the push
 			if randf() < 0.40:
-				_apply_status_effect(target, "Knocked_Down", 1, 0, caster)
+				_apply_on_hit_status(target, "Knocked_Down", 1, 0, caster)
 
 	# Mystic Healer (White 3 + Enchantment 2): single-target healing also applies a random minor buff (2 turns)
 	var has_heal = result.effects_applied.any(func(e): return e.get("type") == "heal")
@@ -4824,7 +4992,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 			if black_debuff_count >= 2 and not target.has_status("Feared"):
 				# Focus save vs DC 12 (simplified as 40% resist chance)
 				if randf() > 0.40:
-					_apply_status_effect(target, "Feared", 2, 0, caster)
+					_apply_on_hit_status(target, "Feared", 2, 0, caster)
 
 	# Amplified Misfortune: black debuff spells also spread status effects to 1 adjacent enemy
 	if PerkSystem.has_perk(caster_char, "amplified_misfortune") and has_debuff:
@@ -5256,10 +5424,6 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 	return removed
 
 
-## Process status effects at turn start.
-## Handles DoT, HoT, incapacitation, saving throws, escalating damage,
-## expiry callbacks, and status spread.
-## Returns true if the unit should skip their turn (incapacitated).
 ## The damage type a status's DoT deals, read from its `<type>_damage_per_turn`
 ## effect string.
 ##
@@ -5278,6 +5442,10 @@ func _dot_element(effect_def: Dictionary) -> String:
 	return "physical"
 
 
+## Process status effects at turn start.
+## Handles DoT, HoT, incapacitation, saving throws, escalating damage,
+## expiry callbacks, and status spread.
+## Returns true if the unit should skip their turn (incapacitated).
 func _process_status_effects(unit: Node) -> bool:
 	if not "status_effects" in unit or unit.status_effects.is_empty():
 		return false
@@ -5402,8 +5570,12 @@ func _process_status_effects(unit: Node) -> bool:
 	_refresh_aura_max_hp()
 	_process_auras(unit)
 
-	# Also process stat modifiers (buff/debuff duration tick)
-	_process_stat_modifiers(unit)
+	# Stat modifiers are NOT ticked here any more. They used to be — and then
+	# again in _process_turn_start_perks — so every timed buff and debuff lost
+	# two turns of duration per turn and lasted half what the data said. (And
+	# only when the unit happened to carry a status: with none, this function
+	# returns early and they ticked once.) _start_current_turn() ticks them
+	# exactly once now, right after this call.
 
 	return skip_turn
 
@@ -6405,7 +6577,10 @@ func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: 
 						target.aura_save_passes[aura_id] = passes + 1
 					return
 
-			_apply_status_effect(target, status_name, int(payload.get("duration", 2)))
+			# The aura's owner is the source where there is one (a ground
+			# zone has none, and passes null), so a burning or poisoning aura
+			# scales with its owner's burning_damage_pct / poison_damage_pct.
+			_apply_status_effect(target, status_name, int(payload.get("duration", 2)), 0, source)
 			status_effect_triggered.emit(source, aura["name"], 0, "aura")
 
 		"heal":
@@ -6586,12 +6761,17 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 func _process_status_weapon_enchants(attacker: Node, defender: Node, result: Dictionary) -> void:
 	if not "status_effects" in attacker:
 		return
-	# Map effect strings to their damage element
+	# Map effect strings to the damage TYPE they deal. The keys are named after
+	# schools (air, water, earth), but schools are not damage types: these
+	# dealt `air`, `water` and `earth` until 2026-10-15, which no resistance
+	# matches, so Electrified_Weapon's bonus landed unresisted. The value is
+	# what that school's spells actually deal (damage_types.json), and
+	# validate_data.py checks these literals.
 	var enchant_map = {
 		"adds_fire_damage_to_attacks": "fire",
-		"adds_air_damage_to_attacks": "air",
-		"adds_water_damage_to_attacks": "water",
-		"adds_earth_damage_to_attacks": "earth",
+		"adds_air_damage_to_attacks": "lightning",
+		"adds_water_damage_to_attacks": "ice",
+		"adds_earth_damage_to_attacks": "crushing",
 		"adds_space_damage_to_attacks": "space",
 		"adds_poison_damage_to_attacks": "poison",
 		"adds_black_damage_to_attacks": "black",
@@ -6653,73 +6833,58 @@ func _process_terrain_effects(unit: Node) -> void:
 	var value = terrain.value
 	var effect_name = combat_grid.get_effect_name(effect)
 
+	# What this effect does comes from CombatGrid.TERRAIN_HAZARDS — the same
+	# table the tile hover tooltip reads, so the two can never disagree.
+	var hazard: Dictionary = CombatGrid.TERRAIN_HAZARDS.get(effect, {})
+	if hazard.is_empty():
+		return
+	var benign: bool = bool(hazard.get("heals", false))
+
 	# Levitating units are immune to damaging ground effects (still get blessed)
-	if movement_mode == CombatGrid.MovementMode.LEVITATE:
-		if effect != CombatGrid.TerrainEffect.BLESSED:
-			return
+	if movement_mode == CombatGrid.MovementMode.LEVITATE and not benign:
+		return
 
 	# Status-based terrain immunity (Levitating, Flying statuses even without movement mode set)
 	if _unit_has_effect(unit, "immune_to_ground_effects") or _unit_has_effect(unit, "immune_to_terrain_hazards"):
-		if effect != CombatGrid.TerrainEffect.BLESSED:
+		if not benign:
 			return
 
 	# Water_Walking: immune to water/wet terrain effects
-	if _unit_has_effect(unit, "immune_to_water_terrain"):
-		if effect in [CombatGrid.TerrainEffect.WET, CombatGrid.TerrainEffect.ICE]:
-			return
+	if _unit_has_effect(unit, "immune_to_water_terrain") and bool(hazard.get("water", false)):
+		return
 
-	# Apply effect based on type — terrain now also applies matching status effects
-	match effect:
-		CombatGrid.TerrainEffect.FIRE:
-			apply_damage(unit, value, "fire")
-			if not unit.has_status("Burning"):
-				_apply_status_effect(unit, "Burning", 2)
-			terrain_damage.emit(unit, value, effect_name)
+	# Healing ground
+	if benign:
+		unit.heal(value)
+		unit_healed.emit(unit, value)
+		terrain_heal.emit(unit, value, effect_name)
+		return
 
-		CombatGrid.TerrainEffect.POISON:
-			apply_damage(unit, value, "physical")
-			if not unit.has_status("Poisoned"):
-				_apply_status_effect(unit, "Poisoned", 3)
-			terrain_damage.emit(unit, value, effect_name)
+	# Damage, if the effect deals any
+	var damage_type: String = str(hazard.get("damage_type", ""))
+	if damage_type != "":
+		apply_damage(unit, value, damage_type)
 
-		CombatGrid.TerrainEffect.ACID:
-			apply_damage(unit, value, "physical")
-			terrain_damage.emit(unit, value, effect_name)
+	# The matching status (Burning on fire, Slowed on ice...) — only when the
+	# unit does not already have it, and only on a successful roll for the
+	# chance-based ones (cursed ground, storms).
+	var status_name: String = str(hazard.get("status", ""))
+	if status_name != "" and randf() < float(hazard.get("status_chance", 1.0)):
+		var blocked: bool = unit.has_status(status_name)
+		for other in hazard.get("status_blocked_by", []):
+			if unit.has_status(str(other)):
+				blocked = true
+		if not blocked:
+			_apply_status_effect(unit, status_name, int(hazard.get("status_turns", 1)))
 
-		CombatGrid.TerrainEffect.CURSED:
-			apply_damage(unit, value, "black")
-			# 30% chance to apply Cursed debuff
-			if randf() < 0.3 and not unit.has_status("Cursed"):
-				_apply_status_effect(unit, "Cursed", 2)
-			terrain_damage.emit(unit, value, effect_name)
+	# A second status some ground adds as well — wet ground leaves you Soaked
+	# (vulnerable to lightning) on top of slowing you.
+	var also: String = str(hazard.get("also_status", ""))
+	if also != "" and not unit.has_status(also):
+		_apply_status_effect(unit, also, int(hazard.get("status_turns", 1)))
 
-		CombatGrid.TerrainEffect.BLESSED:
-			unit.heal(value)
-			unit_healed.emit(unit, value)
-			terrain_heal.emit(unit, value, effect_name)
-
-		CombatGrid.TerrainEffect.ICE:
-			# Ice applies Slowed (no damage)
-			if not unit.has_status("Slowed") and not unit.has_status("Frozen"):
-				_apply_status_effect(unit, "Slowed", 1)
-
-		CombatGrid.TerrainEffect.WET:
-			# Wet ground slows and makes units vulnerable to ice/air damage
-			if not unit.has_status("Slowed"):
-				_apply_status_effect(unit, "Slowed", 1)
-			terrain_damage.emit(unit, 0, effect_name)
-
-		CombatGrid.TerrainEffect.STORMY:
-			# Storm terrain deals lightning damage and has a chance to stun
-			apply_damage(unit, value, "lightning")
-			if randf() < 0.2 and not unit.has_status("Stunned"):
-				_apply_status_effect(unit, "Stunned", 1)
-			terrain_damage.emit(unit, value, effect_name)
-
-		CombatGrid.TerrainEffect.VOID:
-			# Void terrain deals space damage
-			apply_damage(unit, value, "space")
-			terrain_damage.emit(unit, value, effect_name)
+	if damage_type != "":
+		terrain_damage.emit(unit, value, effect_name)
 
 
 ## Create ground effects on tiles from AoE damage (fire leaves fire, ice leaves ice, etc.)
@@ -7277,7 +7442,13 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 			})
 
 		# Apply status effects
-		for status_entry in statuses:
+		for raw_entry in statuses:
+			# A bomb may list a status as a bare name ("Blinded") with one
+			# shared `status_duration`, or as {name, duration, chance}. The
+			# flashbang and acid flask use the bare form, and `.get()` on a
+			# String is a script error, so turn it into the long form first.
+			var status_entry: Dictionary = raw_entry if raw_entry is Dictionary \
+				else {"name": str(raw_entry), "duration": int(effect.get("status_duration", 2))}
 			# The thrower's Ritual makes it land more often.
 			var chance: float = effective_status_chance(
 				user.character_data if "character_data" in user else {},
@@ -7285,7 +7456,10 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 			if randf() * 100.0 <= chance:
 				var status_name = status_entry.get("name", "")
 				var duration = status_entry.get("duration", 2)
-				_apply_status_effect(target, status_name, duration)
+				# The thrower is the source, so their Fire Magic / Alchemy
+				# (burning_damage_pct, poison_damage_pct) scales the burn or
+				# venom a bomb leaves, the same as one from a spell or blade.
+				_apply_status_effect(target, status_name, duration, 0, user)
 				unit_result.effects_applied.append({
 					"type": "status", "status": status_name, "duration": duration
 				})
@@ -8325,13 +8499,6 @@ func _save_gates_status(spell: Dictionary) -> bool:
 		or not failed_branch.get("random_one_of", []).is_empty()
 
 
-## Roll a save against a spell. The caster's Focus sets the DC unless the spell
-## names another attribute; `save_tier` and `save_dc_modifier` let one spell be
-## harder to shrug off than another.
-##
-## See SaveSystem for the model. The percentage-based roll this replaced took no
-## input at all from the caster, so a Constitution-12 target resisted every
-## effect in the game at exactly 44% whoever cast it.
 ## Roll the spell's save once and apply whichever branch it landed in.
 ##
 ##   "save_type": "Constitution",
@@ -8462,6 +8629,14 @@ func _apply_resource_op(caster: Node, target: Node, spec: Dictionary,
 				"amount": moved, "landed": landed})
 
 
+## Roll a save against a spell. The caster's Focus sets the DC unless the spell
+## names another attribute; `save_tier` and `save_dc_modifier` let one spell be
+## harder to shrug off than another.
+##
+## See SaveSystem for the model. The percentage-based roll this replaced took no
+## input at all from the caster, so a Constitution-12 target resisted every
+## effect in the game at exactly 44% whoever cast it.
+##
 ## `gates_status` is true when what rides on the save is a status — then the
 ## caster's Ritual raises the DC (see status_save_dc_bonus). A save that only
 ## halves damage or stands between the target and an instant kill is not a
@@ -9375,10 +9550,10 @@ func _check_perk_status_immunity(unit: Node, status: String, source: Node = null
 		if PerkSystem.has_perk(char_data, "laughing_at_the_abyss"):
 			return true
 
-	# Bare Chest: +25% resistance to fear and pain effects while unarmored
+	# Bare Chest: +25% resistance to fear and pain effects while unarmored or in light armor
 	var fear_pain = ["feared", "agonized", "pain"]
 	if status_lower in fear_pain:
-		if PerkSystem.has_perk(char_data, "bare_chest") and _unit_is_unarmored(unit):
+		if PerkSystem.has_perk(char_data, "bare_chest") and _unit_is_unarmored(unit, true):
 			if randf() < 0.25:
 				return true
 
@@ -9435,18 +9610,54 @@ func _is_undead_or_diseased(unit: Node) -> bool:
 	return "undead" in tags or "diseased" in tags
 
 
-## Check if a unit is unarmored or wearing only light armor (robe/hat/cloth).
-## Used by unarmored perks like Flowing Footwork and Diamond Body.
-func _unit_is_unarmored(unit: Node) -> bool:
+## Worn item types that are clothing, not armour. Wearing any of these still
+## counts as "unarmored": a monk in robe, trousers, sandals and wraps is the
+## person Diamond Body and Flowing Footwork were written for. Prosthetics are a
+## replacement limb, not protection. Everything else in an armour slot —
+## body armour, helmets, gauntlets, bracers, greaves — is armour.
+const CLOTHING_TYPES: Array[String] = [
+	"robe", "cloth", "hat", "circlet", "gloves", "pants", "leggings",
+	"boots", "shoes", "sandals", "prosthetic",
+]
+
+
+## Is this unit unarmored — or, with `allow_light`, at most lightly armoured?
+##
+## The perks say two different things, and both are honoured here:
+##   * "while unarmored" — Diamond Body, Iron Shirt Technique. No armour piece
+##     on at all; clothing (CLOTHING_TYPES) is fine.
+##   * "while unarmored or in light armor" — Flowing Footwork, Bare Chest and
+##     the `unarmored_or_light` condition. Armour is allowed as long as no piece
+##     is HEAVY, and heavy means a Strength requirement — the same rule as
+##     `wearing_heavy_armor` (CombatUnit.is_wearing_heavy_armor), and exactly
+##     what generate_armor writes for its heavy pieces.
+##
+## Every armour slot is read: head, chest, legs, feet and every hand slot
+## (`hand_l`, `hand_r`, and a multi-armed body's `hand_l2`/`hand_r2`). This
+## used to read a `hands` slot that does not exist, so gauntlets never counted
+## as armour — while trousers and boots, which are clothing, did.
+func _unit_is_unarmored(unit: Node, allow_light: bool = false) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
-	var equipment = char_data.get("equipment", {})
-	for slot in ["chest", "head", "hands", "legs"]:
-		var item_id = equipment.get(slot, "")
-		if item_id == "":
+	var equipment: Dictionary = char_data.get("equipment", {})
+	for slot in equipment:
+		var slot_name := str(slot)
+		var is_armour_slot: bool = slot_name in ["head", "chest", "legs", "feet"] \
+			or slot_name.begins_with("hand_")
+		if not is_armour_slot:
 			continue
-		var item = ItemSystem.get_item(item_id)
-		var item_type = item.get("type", "")
-		if not item_type in ["robe", "hat", "cloth", ""]:
+		var item_id = equipment[slot]
+		if not item_id is String or item_id == "":
+			continue
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		var item_type := str(item.get("type", ""))
+		# No type at all is not something we can call armour.
+		if item_type == "" or item_type in CLOTHING_TYPES:
+			continue
+		# An armour piece. Strictly unarmored: that settles it.
+		if not allow_light:
+			return false
+		# Light armour is allowed; heavy (needs Strength) is not.
+		if int(item.get("requirements", {}).get("strength", 0)) > 0:
 			return false
 	return true
 
@@ -9602,7 +9813,7 @@ func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 				total += 1
 			# Flowing Footwork: +1 Movement while unarmored or in light armor
 			if PerkSystem.has_perk(char_data, "flowing_footwork"):
-				if _unit_is_unarmored(unit):
+				if _unit_is_unarmored(unit, true):
 					total += 1
 
 		"crit_chance":
@@ -9620,7 +9831,7 @@ func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 		"dodge":
 			# Flowing Footwork: +10% Dodge while unarmored or in light armor
 			if PerkSystem.has_perk(char_data, "flowing_footwork"):
-				if _unit_is_unarmored(unit):
+				if _unit_is_unarmored(unit, true):
 					total += 10
 			# Summoner's Bond: +5% Dodge/saves while 1+ summon is active
 			# (Summons are units with the 'summoned' tag on their character_data)
@@ -9765,8 +9976,31 @@ func _apply_trigger_effect(unit: Node, perk_id: String, payload: Dictionary,
 	combat_log.emit("%s: %s" % [unit.unit_name, PerkSystem.get_perk_data(perk_id).get("name", perk_id)])
 
 
-## Called from attack_unit() after damage lands, alongside _process_on_hit_perks.
-func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary) -> void:
+## Apply a status as part of a hit — a perk proc, a weapon proc, an oil, an
+## arrow, a spell perk's rider. Exactly _apply_status_effect(), except that a
+## defender the hit has already dropped gets nothing.
+##
+## Every on-hit proc runs AFTER the damage lands, so the blow that drops a
+## unit used to go on to stun, daze and poison the body. A bleeding-out unit
+## does not tick statuses, so the stun simply waited — and the ally who revived
+## them got back someone who lost their first turn to a mace that had already
+## finished with them.
+func _apply_on_hit_status(defender: Node, status: String, duration: int,
+		value: int = 0, source: Node = null) -> void:
+	if not is_instance_valid(defender) or not defender.is_alive():
+		return
+	_apply_status_effect(defender, status, duration, value, source)
+
+
+## Called through _resolve_hit_procs() after a blow's damage lands — by the
+## primary hit and by every extra arm of a multi-arm chain.
+## proc_scale (0–1) scales the persistent afflictions only (crit wounds,
+## diseases, poisoned blood); see _resolve_hit_procs.
+## extra_arm=true skips Chakram pass_through: that is the THROWN ring flying on
+## through the line, one flight per attack. Arm chains are melee-only, so this
+## cannot come up today, but an arm swing must never launch a second flight.
+func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictionary,
+		proc_scale: float = 1.0, extra_arm: bool = false) -> void:
 	if not attacker.has_method("get_equipped_weapon"):
 		return
 	var weapon = attacker.get_equipped_weapon()
@@ -9775,12 +10009,12 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 	if result.get("crit", false):
 		var on_crit_status = weapon.get("on_crit_status", "")
 		if on_crit_status != "":
-			_apply_status_effect(defender, on_crit_status, 1)
+			_apply_on_hit_status(defender, on_crit_status, 1)
 			result["on_crit_status"] = on_crit_status
 		# 20% chance a crit inflicts a persistent wound on player characters.
 		# Hardened gives a 50% chance to negate it — see _crit_wound_negated.
 		# Ranged weapons (skill_tag: "ranged") draw from the ranged wound pool.
-		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20:
+		if WoundSystem and defender.team == Team.PLAYER and randf() < 0.20 * proc_scale:
 			var char_data = defender.character_data
 			if not _crit_wound_negated(defender):
 				var is_ranged: bool = weapon.get("skill_tag", "") == "ranged"
@@ -9797,8 +10031,10 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 					result["persistent_wound"] = wound_id
 
 	# 15% chance hits from undead/diseased enemies inflict a disease on player characters.
-	# "undead_hunter" perk grants immunity to these disease procs.
 	# 15% chance hits from poison-tagged enemies inflict poisoned blood.
+	# Both procs ask _check_perk_status_immunity first, which is where Undead
+	# Hunter (disease, from these attackers only) and Diamond Body (disease and
+	# poison, while unarmored) live — no perk is checked by id here.
 	if WoundSystem and attacker.team == Team.ENEMY and defender.team == Team.PLAYER:
 		var attacker_tags: Array = attacker.character_data.get("tags", [])
 		# Perk immunities are checked here as well as for the Diseased status:
@@ -9806,7 +10042,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 		# an undead hit is exactly the thing it is claiming immunity to. Reusing
 		# _check_perk_status_immunity keeps its "while unarmored" condition,
 		# which a trait-granted resistance could not express.
-		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 \
+		if ("undead" in attacker_tags or "diseased" in attacker_tags) and randf() < 0.15 * proc_scale \
 				and not _check_perk_status_immunity(defender, "diseased", attacker):
 			var tag_source = "undead" if "undead" in attacker_tags else "diseased"
 			var char_data = defender.character_data
@@ -9817,7 +10053,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 					WoundSystem.WOUND_TYPES.get(disease_id, {}).get("display_name", disease_id)
 				])
 				result["persistent_disease"] = disease_id
-		elif "poison" in attacker_tags and randf() < 0.15 \
+		elif "poison" in attacker_tags and randf() < 0.15 * proc_scale \
 				and not _check_perk_status_immunity(defender, "poisoned"):
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_poison_disease(char_data)
@@ -9829,7 +10065,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 				result["persistent_disease"] = disease_id
 
 	# Chakram pass_through: hit the next unit in the attack line beyond the defender
-	var pass_count = weapon.get("pass_through", 0)
+	var pass_count: int = 0 if extra_arm else int(weapon.get("pass_through", 0))
 	if pass_count > 0 and "grid_position" in attacker and "grid_position" in defender:
 		var dir = (defender.grid_position - attacker.grid_position)
 		var step_x: int = 0 if dir.x == 0 else (1 if dir.x > 0 else -1)
@@ -9877,7 +10113,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 			# The attacker is the source, so a burn or a venom applied by a
 			# weapon scales with the skill of whoever swung it — the same way
 			# one applied by a spell already did.
-			_apply_status_effect(defender, status_procs[key], 3, 0, attacker)
+			_apply_on_hit_status(defender, status_procs[key], 3, 0, attacker)
 
 	# Dispel: remove one random buff from the defender
 	# status_effects is an Array of {status, duration} dicts — NOT a Dictionary
@@ -9947,7 +10183,7 @@ func _process_ammo_special_effect(attacker: Node, defender: Node, ammo: Dictiona
 				var status = effect.get("status", "")
 				var duration = effect.get("duration", 2)
 				if status != "":
-					_apply_status_effect(defender, status, duration, 0, attacker)
+					_apply_on_hit_status(defender, status, duration, 0, attacker)
 					combat_log.emit("%s is afflicted with %s from the arrow." % [defender.unit_name, status])
 
 
@@ -9988,12 +10224,12 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		if attacker.has_method("get_equipped_weapon"):
 			var weapon = attacker.get_equipped_weapon()
 			if weapon.is_empty() or weapon.get("type", "") in ["", "unarmed"]:
-				_apply_status_effect(defender, "Burning", 3)
+				_apply_on_hit_status(defender, "Burning", 3)
 
 	# Sudden End (Daggers 7): stealth first attack applies severe bleed (10% max HP/turn, 3t)
 	if _unit_has_perk(attacker, "sudden_end") and "is_stealthed" in attacker and attacker.is_stealthed:
 		var bleed_val = ceili(defender.max_hp * 0.10)
-		_apply_status_effect(defender, "Bleeding", 3, bleed_val, attacker)
+		_apply_on_hit_status(defender, "Bleeding", 3, bleed_val, attacker)
 
 	# Relentless (Unarmed cross): crit with unarmed → free unarmed attack on the same target
 	if _unit_has_perk(attacker, "relentless") and result.get("crit", false) and not attacker.in_free_attack:
@@ -10007,7 +10243,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		if attacker.has_method("get_equipped_weapon"):
 			if attacker.get_equipped_weapon().get("type", "") == "mace":
 				if defender.has_status("Stunned"):
-					_apply_status_effect(defender, "Silenced", 1)
+					_apply_on_hit_status(defender, "Silenced", 1)
 
 	# Curseblade: dagger crits have 30% chance to apply Weakness, Blind, or Slow for 2 turns
 	if _unit_has_perk(attacker, "curseblade") and result.get("crit", false):
@@ -10016,7 +10252,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				if randf() < 0.30:
 					var curses = ["Weakened", "Blinded", "Slowed"]
 					var chosen = curses[randi() % curses.size()]
-					_apply_status_effect(defender, chosen, 2, 0, attacker)
+					_apply_on_hit_status(defender, chosen, 2, 0, attacker)
 					result["curseblade_curse"] = chosen
 
 	# Rattle the Cage: unarmed crits apply Stun for 1 turn
@@ -10024,7 +10260,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		if attacker.has_method("get_equipped_weapon"):
 			var w = attacker.get_equipped_weapon()
 			if w.is_empty() or w.get("type", "") in ["", "unarmed"]:
-				_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+				_apply_on_hit_status(defender, "Stunned", 1, 0, attacker)
 
 	# See Stars: unarmed hit vs statused target → 25% chance Stun/Knockdown/Blind (1 turn)
 	if _unit_has_perk(attacker, "see_stars"):
@@ -10034,7 +10270,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				if "status_effects" in defender and defender.status_effects.size() > 0:
 					if randf() < 0.25:
 						var cc = ["Stunned", "Knocked_Down", "Blinded"]
-						_apply_status_effect(defender, cc[randi() % cc.size()], 1, 0, attacker)
+						_apply_on_hit_status(defender, cc[randi() % cc.size()], 1, 0, attacker)
 
 	# No Time to Breathe: unarmed hit → -5% dodge, -2 initiative on target (stackable, 2 turns)
 	if _unit_has_perk(attacker, "no_time_to_breathe"):
@@ -10068,7 +10304,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	if _unit_has_perk(attacker, "concussive_force"):
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
 			if randf() < 0.20:
-				_apply_status_effect(defender, "Dazed", 1, 0, attacker)
+				_apply_on_hit_status(defender, "Dazed", 1, 0, attacker)
 
 	# Shieldbreaker: mace hits reduce target Armor by 10% for 3 turns (stacking debuff)
 	if _unit_has_perk(attacker, "shieldbreaker"):
@@ -10080,8 +10316,8 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	# Thunderous Impact: mace crits knock defender prone (Knocked_Down) and Daze for 2 turns
 	if _unit_has_perk(attacker, "thunderous_impact") and result.get("crit", false):
 		if attacker.has_method("get_equipped_weapon") and attacker.get_equipped_weapon().get("type", "") == "mace":
-			_apply_status_effect(defender, "Knocked_Down", 1, 0, attacker)
-			_apply_status_effect(defender, "Dazed", 2, 0, attacker)
+			_apply_on_hit_status(defender, "Knocked_Down", 1, 0, attacker)
+			_apply_on_hit_status(defender, "Dazed", 2, 0, attacker)
 
 	# Relentless Advance: mace hit grants +1 Move for 1 turn
 	if _unit_has_perk(attacker, "relentless_advance"):
@@ -10121,7 +10357,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			var stun_pct: float = attacker.character_data.get("derived", {}).get(
 				"stun_chance_pct", 0.0)
 			if stun_pct > 0.0 and randf() * 100.0 < stun_pct:
-				_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+				_apply_on_hit_status(defender, "Stunned", 1, 0, attacker)
 				combat_log.emit("%s's mace rings %s's skull!"
 					% [attacker.unit_name, defender.unit_name])
 
@@ -10130,14 +10366,14 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		var is_melee_hit = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
 		if is_melee_hit and randf() < 0.15:
 			if randf() < 0.5:
-				_apply_status_effect(defender, "Knocked_Down", 1, 0, attacker)
+				_apply_on_hit_status(defender, "Knocked_Down", 1, 0, attacker)
 			else:
-				_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+				_apply_on_hit_status(defender, "Stunned", 1, 0, attacker)
 
 	# Play Dirty (Guile 2): 20% chance to apply a random minor debuff on any hit
 	if _unit_has_perk(attacker, "play_dirty") and randf() < 0.20:
 		var dirty_debuffs = ["Weakened", "Slowed", "Blinded", "Dodge_Debuff", "Damage_Debuff"]
-		_apply_status_effect(defender, dirty_debuffs[randi() % dirty_debuffs.size()], 1, 0, attacker)
+		_apply_on_hit_status(defender, dirty_debuffs[randi() % dirty_debuffs.size()], 1, 0, attacker)
 
 	# Nothing Wasted (Might 4): overkill — when killing a target, deal 50% of the kill-blow damage to 1 adjacent enemy
 	if _unit_has_perk(attacker, "nothing_wasted") and not defender.is_alive():
@@ -10176,7 +10412,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 		apply_damage(defender, aots_air_dmg, "lightning")
 		result["aots_air_damage"] = aots_air_dmg
 		if randf() < 0.10:
-			_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+			_apply_on_hit_status(defender, "Stunned", 1, 0, attacker)
 
 	# Static Edge (Air 1): attacks deal +10% weapon damage as bonus Air damage
 	if _unit_has_perk(attacker, "static_edge"):
@@ -10214,7 +10450,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 
 	# Electrified_Weapon: stun_chance_on_hit — 25% chance to Stun defender for 1 turn on any hit
 	if _unit_has_effect(attacker, "stun_chance_on_hit") and randf() < 0.25:
-		_apply_status_effect(defender, "Stunned", 1, 0, attacker)
+		_apply_on_hit_status(defender, "Stunned", 1, 0, attacker)
 		result["electrified_stun"] = true
 
 	# Pressure Points (Medicine 7): melee hits vs biological → 15% chance for random debuff
@@ -10225,19 +10461,23 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 			# -10% Attack (Damage_Debuff), -10% Dodge (Dodge_Debuff), or -1 Movement (Slowed)
 			var debuffs = ["Damage_Debuff", "Dodge_Debuff", "Slowed"]
 			var chosen = debuffs[randi() % debuffs.size()]
-			_apply_status_effect(defender, chosen, 2)
+			_apply_on_hit_status(defender, chosen, 2)
 
 	# --- Talisman perk on-hit effects ---
 	var talisman_perks = _get_talisman_perks(attacker)
 	if not talisman_perks.is_empty():
 		var base_damage = result.get("damage", 0)
 
-		# Elemental brands: +X% of base damage as bonus elemental damage
+		# Elemental brands: +X% of base damage as bonus elemental damage.
+		# The second entry is a damage TYPE, not a school — Frost, Stone and
+		# Storm brands dealt `water`, `earth` and `air` until 2026-10-15, which
+		# nothing resists, so the brand's name is the guide: ice, crushing,
+		# lightning. validate_data.py checks these literals.
 		var brand_map = {
 			"fire_brand_minor": ["fire", 0.05], "fire_brand": ["fire", 0.10], "fire_brand_greater": ["fire", 0.15],
-			"water_brand_minor": ["water", 0.05], "water_brand": ["water", 0.10], "water_brand_greater": ["water", 0.15],
-			"earth_brand_minor": ["earth", 0.05], "earth_brand": ["earth", 0.10], "earth_brand_greater": ["earth", 0.15],
-			"air_brand_minor": ["air", 0.05], "air_brand": ["air", 0.10], "air_brand_greater": ["air", 0.15],
+			"water_brand_minor": ["ice", 0.05], "water_brand": ["ice", 0.10], "water_brand_greater": ["ice", 0.15],
+			"earth_brand_minor": ["crushing", 0.05], "earth_brand": ["crushing", 0.10], "earth_brand_greater": ["crushing", 0.15],
+			"air_brand_minor": ["lightning", 0.05], "air_brand": ["lightning", 0.10], "air_brand_greater": ["lightning", 0.15],
 			"space_brand_minor": ["space", 0.05], "space_brand": ["space", 0.10], "space_brand_greater": ["space", 0.15],
 			"phys_brand_minor": ["physical", 0.05], "phys_brand": ["physical", 0.10], "phys_brand_greater": ["physical", 0.15],
 			"poison_brand_minor": ["poison", 0.05], "poison_brand": ["poison", 0.10], "poison_brand_greater": ["poison", 0.15],
@@ -10257,7 +10497,9 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 				if element == "poison":
 					var poison_chance = pct  # 5/10/15%
 					if randf() < poison_chance:
-						_apply_status_effect(defender, "Poisoned", 3)
+						# The attacker is the source, so their Alchemy's
+						# poison_damage_pct scales this venom like any other.
+						_apply_on_hit_status(defender, "Poisoned", 3, 0, attacker)
 
 		# Lifesteal: heal 15% of attack damage dealt (Blood Pact boosts all lifesteal by 25%)
 		if "lifesteal" in talisman_perks:
@@ -10308,16 +10550,8 @@ func _process_on_dodge_perks(unit: Node, attacker: Node) -> void:
 ## Process passive perks at the start of a unit's turn.
 ## Called from _start_current_turn().
 func _process_turn_start_perks(unit: Node) -> void:
-	# Tick active-skill stat modifiers (set by buff_self, buff_ally, buff_allies, etc.)
-	if "stat_modifiers" in unit and unit.stat_modifiers.size() > 0:
-		var expired_mods: Array[int] = []
-		for i in range(unit.stat_modifiers.size()):
-			unit.stat_modifiers[i].duration -= 1
-			if unit.stat_modifiers[i].duration <= 0:
-				expired_mods.append(i)
-		expired_mods.reverse()
-		for idx in expired_mods:
-			unit.stat_modifiers.remove_at(idx)
+	# (Timed stat modifiers are ticked once in _start_current_turn(), next to
+	# the status tick — not here. Ticking them here as well halved them.)
 
 	# Tick aggro-aura duration (look_at_me perk)
 	if "taunt_active" in unit and unit.taunt_active:

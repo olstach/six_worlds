@@ -130,7 +130,7 @@ func show_item(item: Dictionary, global_pos: Vector2) -> void:
 		var set_row = HBoxContainer.new()
 		stats_container.add_child(set_row)
 		var set_label = Label.new()
-		set_label.text = "Set: Vajra & Bell — +3 Spellpower, +3 Mana, +2 Initiative when paired"
+		set_label.text = TooltipText.set_bonus(set_pair)
 		set_label.add_theme_font_size_override("font_size", 11)
 		set_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
 		set_label.custom_minimum_size.x = 240

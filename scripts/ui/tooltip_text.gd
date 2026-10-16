@@ -102,6 +102,17 @@ static func status(status_name: String, entry: Dictionary = {}, def: Dictionary 
 	for bullet in _status_effect_bullets(entry, def):
 		lines.append("  • " + bullet)
 
+	# What it does to others: hitting back, a field around the bearer, and
+	# jumping to neighbours. Each is structured data on the status.
+	var retaliation_line: String = _status_retaliation_line(def.get("retaliation", {}))
+	if retaliation_line != "":
+		lines.append(retaliation_line)
+	for aura_line in _status_aura_lines(def):
+		lines.append(aura_line)
+	var spread_line: String = _status_spread_line(def.get("spread", {}))
+	if spread_line != "":
+		lines.append(spread_line)
+
 	# How to get rid of it.
 	var save_type: String = str(def.get("save_type", ""))
 	if save_type != "":
@@ -188,6 +199,109 @@ static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[
 	return bullets
 
 
+## "Hits back at melee attackers: 10 air damage, 30% chance of Stunned (1 turn)".
+## Reads the same `retaliation` keys CombatManager's on-hit code applies
+## (the block that handles "Retaliation, declared on the status"): range,
+## damage, element, reflect_pct, status, status_duration, status_chance.
+static func _status_retaliation_line(retal: Dictionary) -> String:
+	if retal.is_empty():
+		return ""
+	var parts: Array[String] = []
+	var element: String = DamageType.display_name(str(retal.get("element", "physical"))).to_lower()
+	var hit: int = int(retal.get("damage", 0))
+	if hit > 0:
+		parts.append("%d %s damage" % [hit, element])
+	var reflect_pct: int = int(retal.get("reflect_pct", 0))
+	if reflect_pct > 0:
+		parts.append("reflects %d%% of the damage taken as %s" % [reflect_pct, element])
+	var give: String = str(retal.get("status", "")).replace("_", " ")
+	if give != "":
+		var turns: int = int(retal.get("status_duration", 1))
+		var status_text: String = "%s (%d turn%s)" % [give, turns, "" if turns == 1 else "s"]
+		var chance: float = float(retal.get("status_chance", 1.0))
+		if chance < 1.0:
+			status_text = "%d%% chance of %s" % [roundi(chance * 100.0), status_text]
+		parts.append(status_text)
+	if parts.is_empty():
+		return ""
+	var who: String = "melee attackers" if str(retal.get("range", "melee")) == "melee" else "any attacker"
+	return "Hits back at %s: %s" % [who, ", ".join(parts)]
+
+
+## One line per aura the status emits, read from auras.json through
+## AuraSystem — "Aura: Soothing Presence (allies within 2): heals 5 each turn".
+static func _status_aura_lines(def: Dictionary) -> Array[String]:
+	var lines: Array[String] = []
+	for aura_id in AuraSystem._aura_ids_of(def):
+		var adef: Dictionary = AuraSystem.get_definition(aura_id)
+		if adef.is_empty():
+			continue
+		var radius: int = int(adef.get("radius", 2))
+		var affects: String = str(adef.get("affects", "allies"))
+		var who: String = "self" if affects == "self" else (
+			"everyone" if affects == "all" else affects)
+		if bool(adef.get("self_included", false)) and affects != "self":
+			who += " and self"
+		var reach: String = "the whole battlefield" if radius >= 20 else "within %d" % radius
+		var effects: Array[String] = []
+		for payload in adef.get("payloads", []):
+			var text: String = _aura_payload_text(payload)
+			if text != "":
+				effects.append(text)
+		lines.append("Aura: %s (%s %s): %s" % [str(adef.get("name", aura_id)), who, reach,
+			", ".join(effects) if not effects.is_empty() else "no effect"])
+	return lines
+
+
+## Words for one aura payload — the kinds AuraSystem.PAYLOAD_KINDS lists.
+static func _aura_payload_text(payload: Dictionary) -> String:
+	var amount = payload.get("amount", 0)
+	match str(payload.get("kind", "")):
+		"grant_status":
+			var sname: String = str(payload.get("status", "")).replace("_", " ")
+			var text: String = sname
+			var chance: float = float(payload.get("chance", 1.0))
+			if chance < 1.0:
+				text = "%d%% chance of %s" % [roundi(chance * 100.0), sname]
+			var save_spec: Dictionary = payload.get("save", {})
+			if not save_spec.is_empty():
+				text += " (%s save DC %d)" % [str(save_spec.get("attribute", "focus")).capitalize(),
+					int(save_spec.get("dc", 12))]
+			return text + " each turn"
+		"heal":
+			return "heals %d each turn" % int(amount)
+		"damage":
+			return "%d %s damage each turn" % [int(amount),
+				DamageType.display_name(str(payload.get("element", "physical"))).to_lower()]
+		"stat":
+			return "%+d %s" % [int(amount), str(payload.get("stat", "")).replace("_", " ")]
+		"max_hp":
+			return "%+d max HP" % int(amount)
+		"damage_taken_pct":
+			var only: String = str(payload.get("only", ""))
+			return "%+d%% %sdamage taken" % [int(amount), (only + " ") if only != "" else ""]
+		"resistance":
+			return "%+d%% %s resistance" % [int(amount),
+				DamageType.display_name(str(payload.get("type", ""))).to_lower()]
+	return ""
+
+
+## "Can spread to an adjacent unit (15% chance each turn)". The chance words
+## are turned into numbers by CombatManager._spread_chance_to_float(), the
+## same function _process_status_spread() uses.
+static func _status_spread_line(spread: Dictionary) -> String:
+	if spread.is_empty():
+		return ""
+	var chance: float = CombatManager._spread_chance_to_float(str(spread.get("chance", "none")))
+	if chance <= 0.0:
+		return ""
+	var declared_range = spread.get("range", "melee")
+	var where: String = "an adjacent unit"
+	if (declared_range is int or declared_range is float) and int(declared_range) > 1:
+		where = "a unit within %d tiles" % int(declared_range)
+	return "Can spread to %s (%d%% chance each turn)" % [where, roundi(chance * 100.0)]
+
+
 ## One tooltip line for a status's resistance key: "Immune to fire",
 ## "+25% physical resistance", "-50% ice resistance". `key` may be a scope —
 ## `all` reads as "all damage", `non_physical` as "non-physical damage".
@@ -243,21 +357,45 @@ static func turn_order_unit(unit: Node) -> String:
 # BATTLE GRID TILES
 # ============================================
 
-## What standing on each terrain effect does at the start of your turn.
-## Mirrors CombatManager._process_terrain_effects() — change one, change both.
-## `%d` is the tile's effect_value (its damage or healing).
-const TERRAIN_EFFECT_TEXT: Dictionary = {
-	CombatGrid.TerrainEffect.FIRE: "%d fire damage and Burning at turn start",
-	CombatGrid.TerrainEffect.POISON: "%d damage and Poisoned at turn start",
-	CombatGrid.TerrainEffect.ACID: "%d damage at turn start",
-	CombatGrid.TerrainEffect.CURSED: "%d black damage at turn start, 30%% chance of Cursed",
-	CombatGrid.TerrainEffect.BLESSED: "Heals %d at turn start",
-	CombatGrid.TerrainEffect.ICE: "Slowed at turn start; costs extra movement",
-	CombatGrid.TerrainEffect.WET: "Slowed at turn start; costs extra movement",
-	CombatGrid.TerrainEffect.STORMY: "%d lightning damage at turn start, 20%% chance of Stunned",
-	CombatGrid.TerrainEffect.VOID: "%d space damage at turn start",
-	CombatGrid.TerrainEffect.SMOKE: "Blocks line of sight",
-}
+## What standing on a terrain effect does at the start of your turn, built
+## from CombatGrid.TERRAIN_HAZARDS — the same table
+## CombatManager._process_terrain_effects() applies, so the words cannot drift
+## from the rule. `value` is the tile's effect_value (its damage or healing).
+## Examples: "5 fire damage and Burning at turn start",
+##           "2 black damage at turn start, 30% chance of Cursed".
+static func terrain_hazard_text(effect: int, value: int) -> String:
+	var hazard: Dictionary = CombatGrid.TERRAIN_HAZARDS.get(effect, {})
+	if hazard.is_empty():
+		return ""
+	if bool(hazard.get("blocks_sight", false)):
+		return "Blocks line of sight"
+	if bool(hazard.get("heals", false)):
+		return "Heals %d at turn start" % value
+
+	var damage_type: String = str(hazard.get("damage_type", ""))
+	var status_name: String = str(hazard.get("status", "")).replace("_", " ")
+	var chance: float = float(hazard.get("status_chance", 1.0))
+	var text: String = ""
+	if damage_type != "":
+		text = "%d %s damage" % [value, DamageType.display_name(damage_type).to_lower()]
+		if status_name != "" and chance >= 1.0:
+			text += " and " + status_name
+		text += " at turn start"
+		if status_name != "" and chance < 1.0:
+			text += ", %d%% chance of %s" % [roundi(chance * 100.0), status_name]
+	elif status_name != "":
+		# No damage — just the status (ice, wet ground).
+		if chance < 1.0:
+			text = "%d%% chance of %s at turn start" % [roundi(chance * 100.0), status_name]
+		else:
+			text = "%s at turn start" % status_name
+	var also: String = str(hazard.get("also_status", ""))
+	if also != "":
+		text = text.replace(" at turn start", " and %s at turn start" % also)
+	if bool(hazard.get("water", false)):
+		text += "; Water Walking ignores it"
+	return text
+
 
 ## Which spell school draws +25% spellpower from casting while standing on
 ## each effect — CombatManager's terrain affinity block in the spellpower
@@ -273,6 +411,19 @@ const TERRAIN_EFFECT_SCHOOL: Dictionary = {
 	CombatGrid.TerrainEffect.BLESSED: "White",
 	CombatGrid.TerrainEffect.CURSED: "Black",
 }
+
+## "The spirits of the living water answer readily here: +25% spellpower" —
+## or "" when this spell gets no summoning terrain bonus on this ground.
+## The rule is CombatManager.summon_terrain_affinity_for(), the same one the
+## cast applies.
+static func summon_terrain_line(spell: Dictionary, overworld_terrain: int) -> String:
+	var affinity: Dictionary = CombatManager.summon_terrain_affinity_for(spell, overworld_terrain)
+	if affinity.is_empty():
+		return ""
+	return "The spirits of %s answer readily here: +%d%% spellpower" % [
+		str(affinity.get("label", "this place")),
+		roundi(CombatManager.SUMMON_TERRAIN_BONUS_PCT * 100.0)]
+
 
 const TILE_TYPE_TEXT: Dictionary = {
 	CombatGrid.TileType.WALL: "Wall — impassable, blocks line of sight",
@@ -334,13 +485,18 @@ static func tile(grid: CombatGrid, pos: Vector2i, zones: Array = []) -> String:
 		elif t.effect_duration == -1:
 			eff_line += " (lasting)"
 		lines.append(eff_line)
-		var what: String = str(TERRAIN_EFFECT_TEXT.get(t.effect, ""))
+		var what: String = terrain_hazard_text(t.effect, t.effect_value)
 		if what != "":
-			lines.append("  " + (what % t.effect_value if "%d" in what else what))
+			lines.append("  " + what)
 		var school: String = str(TERRAIN_EFFECT_SCHOOL.get(t.effect, ""))
 		if school != "":
 			lines.append("  %s spells cast from here: +25%% spellpower" % school)
-		if t.effect != CombatGrid.TerrainEffect.SMOKE and t.effect != CombatGrid.TerrainEffect.BLESSED:
+		# Who is spared — the same immunity rules _process_terrain_effects()
+		# checks: flyers ignore everything, levitators only the harmful ones.
+		var hazard: Dictionary = CombatGrid.TERRAIN_HAZARDS.get(t.effect, {})
+		if bool(hazard.get("heals", false)):
+			lines.append("  Flyers are untouched")
+		elif not bool(hazard.get("blocks_sight", false)):
 			lines.append("  Flyers and levitators are untouched")
 
 	# Zones (mandalas, clouds, mud...). Traps are hidden by design and are
@@ -356,6 +512,49 @@ static func tile(grid: CombatGrid, pos: Vector2i, zones: Array = []) -> String:
 		lines.append(ztext)
 
 	return "\n".join(lines)
+
+
+## The tile tooltip while choosing where to move: the cover this tile would
+## give (from CombatGrid.get_cover_info_at — pass {} when there is none or
+## the tile is not a move destination) on top of everything tile() says.
+## One label, so hazards still show while moving.
+static func move_tile(grid: CombatGrid, pos: Vector2i, zones: Array = [],
+		cover_info: Dictionary = {}) -> String:
+	var lines: Array[String] = []
+	if bool(cover_info.get("has_cover", false)):
+		lines.append("+%d%% dodge vs ranged (cover: %s)"
+			% [int(cover_info.get("dodge_bonus", 0)), str(cover_info.get("obstacle_name", ""))])
+	var tile_text: String = tile(grid, pos, zones)
+	if tile_text != "":
+		lines.append(tile_text)
+	return "\n".join(lines)
+
+
+# ============================================
+# ITEM SETS
+# ============================================
+
+## Readable names for the stat keys a set bonus may carry.
+const _SET_STAT_NAMES: Dictionary = {
+	"spellpower": "Spellpower", "max_mana": "Mana", "initiative": "Initiative",
+	"max_hp": "HP", "damage": "Damage", "armor": "Armor", "dodge": "Dodge",
+	"accuracy": "Accuracy", "crit_chance": "Crit Chance",
+}
+
+
+## "Set: Vajra & Bell — +3 Spellpower, +3 Mana, +2 Initiative when paired",
+## built from ItemSystem.SET_BONUSES — the same table
+## ItemSystem.calculate_equipment_stats() adds from. "" for an unknown set.
+static func set_bonus(set_id: String) -> String:
+	var set_def: Dictionary = ItemSystem.SET_BONUSES.get(set_id, {})
+	if set_def.is_empty():
+		return ""
+	var parts: Array[String] = []
+	var stats: Dictionary = set_def.get("stats", {})
+	for key in stats:
+		var label: String = str(_SET_STAT_NAMES.get(key, str(key).replace("_", " ").capitalize()))
+		parts.append("%+d %s" % [int(stats[key]), label])
+	return "Set: %s — %s when paired" % [str(set_def.get("name", set_id)), ", ".join(parts)]
 
 
 # ============================================

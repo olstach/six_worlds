@@ -31,6 +31,17 @@ var temp_hp: int = 0    # Absorbed before real HP; granted by rest overheal
 # primary hit's number. See begin_held_damage() / end_held_damage().
 var _holding_damage_number: bool = false
 var _held_damage: int = 0
+
+# Set by CombatManager.attack_unit() just before it applies a critical main
+# hit, and cleared right after. While true, the damage number reads "12 crit!"
+# in the crit colour — the same treatment an extra arm's crit gets.
+var next_damage_is_crit: bool = false
+
+# Every point of HP this unit has lost this fight, after armour, resistance,
+# shields and temp HP — the same number its red popups show. It only ever goes
+# up; CombatManager reads it before and after a blow to learn what that one
+# blow actually cost (result["damage_taken"]), which is what the log reports.
+var damage_taken_total: int = 0
 var current_mana: int = 50
 var max_mana: int = 50
 var current_stamina: int = 50
@@ -293,6 +304,20 @@ func _create_visuals() -> void:
 	add_child(status_indicator)
 
 
+## Fallback icon for a status whose statuses.json entry has no `icon`.
+const STATUS_ICON_FALLBACK: String = "•"
+
+
+## The short glyph shown over a unit's head for one status. Read from the
+## `icon` field of the status in statuses.json, so a new status brings its own
+## icon with it — this used to be a hard-coded match of ~25 names, and every
+## other status (most of the 187) showed a plain "•".
+static func status_icon(status_name: String) -> String:
+	var def: Dictionary = CombatManager.get_status_definition(status_name)
+	var icon: String = str(def.get("icon", ""))
+	return icon if icon != "" else STATUS_ICON_FALLBACK
+
+
 ## Update visual components
 func _update_visuals() -> void:
 	if sprite:
@@ -336,44 +361,9 @@ func _update_visuals() -> void:
 		elif "status_effects" in self and not status_effects.is_empty():
 			var icons: Array[String] = []
 			for effect in status_effects:
-				var status_name = effect.get("status", "")
-				# Use short icons/abbreviations for each status
-				match status_name.to_lower():
-					"burning":
-						icons.append("🔥")
-					"poisoned", "festering", "diseased":
-						icons.append("☠")
-					"bleeding":
-						icons.append("💧")
-					"frozen":
-						icons.append("❄")
-					"stunned", "paralyzed":
-						icons.append("⚡")
-					"knocked_down", "prone":
-						icons.append("⬇")
-					"regenerating":
-						icons.append("💚")
-					"feared":
-						icons.append("😨")
-					"silenced":
-						icons.append("🤐")
-					"confused", "chaotic":
-						icons.append("❓")
-					"blinded":
-						icons.append("👁")
-					"rooted", "held":
-						icons.append("⛓")
-					"blessed", "hasted":
-						icons.append("✨")
-					"invisible":
-						icons.append("👻")
-					"cursed":
-						icons.append("💀")
-					"doomed":
-						icons.append("⏳")
-					_:
-						icons.append("•")
-			status_text = "".join(icons)
+				icons.append(status_icon(str(effect.get("status", ""))))
+			# A space between icons keeps two-glyph icons ("🔥↓") apart.
+			status_text = " ".join(icons)
 			# Color based on effect type using status definitions
 			var has_positive = false
 			var has_negative = false
@@ -974,9 +964,10 @@ func _perk_condition_met(condition: String, target: Node = null) -> bool:
 		"wearing_heavy_armor":
 			return is_wearing_heavy_armor()
 		"unarmored_or_light":
-			# The rule Diamond Body, Bare Chest and Flowing Footwork already
-			# use, so "unarmored" means one thing everywhere.
-			return CombatManager._unit_is_unarmored(self)
+			# The rule Bare Chest and Flowing Footwork use ("unarmored or in
+			# light armor"), so the words mean one thing everywhere. Diamond
+			# Body asks the strict version — no armour at all.
+			return CombatManager._unit_is_unarmored(self, true)
 
 		# ── Where this unit is in the fight ──
 		# The counters go up after an attack resolves, so during the first
@@ -1170,6 +1161,7 @@ func take_damage(amount: int) -> void:
 			amount -= temp_hp
 			temp_hp = 0
 	current_hp = maxi(0, current_hp - amount)
+	damage_taken_total += amount
 	# Keep character_data in sync so HP persists after combat
 	var derived_hp = character_data.get("derived", {})
 	derived_hp["current_hp"] = current_hp
@@ -1215,14 +1207,53 @@ func heal(amount: int) -> void:
 	_show_heal_number(amount)
 
 
-## Show floating damage number
-func _show_damage_number(amount: int) -> void:
-	var label = Label.new()
-	label.text = str(amount)
-	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 20)
-	label.add_theme_font_size_override("font_size", 16)
-	label.add_theme_color_override("font_color", Color(1, 0.3, 0.3))
+## Width of the box every floating popup is centred in. Wider than any
+## ordinary popup so the text never needs to grow past it.
+const POPUP_WIDTH: float = 160.0
+
+
+## Make a floating popup label CENTRED over the unit.
+##
+## The unit's origin is its centre. A Label placed at x = 0 with no width
+## starts at the centre and runs to the right, so `horizontal_alignment =
+## CENTER` had nothing to centre within and every popup sat right of the unit.
+## Here the label gets a real width and is shifted left by half of it, so its
+## middle is the unit's middle. `y` is the height above the unit's centre;
+## `offset` nudges it (multi-arm popups alternate left and right).
+func _make_popup_label(text: String, font_size: int, color: Color, y: float,
+		offset: Vector2 = Vector2.ZERO) -> Label:
+	var label := Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", color)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# A long name (a spell, a status) can be wider than POPUP_WIDTH; then the
+	# box grows to fit and is still centred, because we centre whatever width
+	# it ends up with.
+	var width: float = maxf(POPUP_WIDTH, label.get_minimum_size().x)
+	label.size = Vector2(width, label.get_minimum_size().y)
+	label.position = Vector2(-width / 2.0, y) + offset
+	return label
+
+
+## Show floating damage number. A critical main hit (next_damage_is_crit) is
+## shown as "12 crit!" in orange and a little larger, like an extra arm's crit.
+func _show_damage_number(amount: int) -> void:
+	# A blow that cost no HP shows no number. A hit resisted down to nothing
+	# never reaches take_damage() at all, so it already showed nothing; this
+	# makes a hit soaked entirely by temp HP or a shield behave the same way,
+	# and the extra arms follow the same rule (see show_arm_result).
+	if amount <= 0:
+		return
+	var text: String = str(amount)
+	var color: Color = Color(1, 0.3, 0.3)
+	var font_size: int = 16
+	if next_damage_is_crit:
+		text += " crit!"
+		color = COLOR_ARM_CRIT
+		font_size = 18
+	var label := _make_popup_label(text, font_size, color, -UNIT_SIZE.y / 2 - 20)
 	add_child(label)
 
 	# Animate and remove
@@ -1234,12 +1265,7 @@ func _show_damage_number(amount: int) -> void:
 
 ## Show floating heal number
 func _show_heal_number(amount: int) -> void:
-	var label = Label.new()
-	label.text = "+" + str(amount)
-	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 20)
-	label.add_theme_font_size_override("font_size", 16)
-	label.add_theme_color_override("font_color", Color(0.3, 1, 0.3))
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var label := _make_popup_label("+" + str(amount), 16, Color(0.3, 1, 0.3), -UNIT_SIZE.y / 2 - 20)
 	add_child(label)
 
 	# Animate and remove
@@ -1254,12 +1280,7 @@ func _show_heal_number(amount: int) -> void:
 const COLOR_ACTION_NAME = Color(0.95, 0.85, 0.3)
 
 func show_action_name(text: String) -> void:
-	var label = Label.new()
-	label.text = text
-	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 35)
-	label.add_theme_font_size_override("font_size", 13)
-	label.add_theme_color_override("font_color", COLOR_ACTION_NAME)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var label := _make_popup_label(text, 13, COLOR_ACTION_NAME, -UNIT_SIZE.y / 2 - 35)
 	add_child(label)
 
 	# Animate: float up and fade out (longer duration to avoid overlap with damage numbers)
@@ -1285,12 +1306,7 @@ func play_turn_start_bounce() -> void:
 ## otherwise land on the same spot at the same moment (multi-arm attacks).
 func show_combat_text(text: String, color: Color = Color(0.9, 0.9, 0.9),
 		delay: float = 0.0, offset: Vector2 = Vector2.ZERO) -> void:
-	var label = Label.new()
-	label.text = text
-	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 20) + offset
-	label.add_theme_font_size_override("font_size", 14)
-	label.add_theme_color_override("font_color", color)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var label := _make_popup_label(text, 14, color, -UNIT_SIZE.y / 2 - 20, offset)
 	add_child(label)
 
 	var tween = create_tween()
@@ -1339,7 +1355,10 @@ const ARM_POPUP_NUDGE = 10.0   # pixels sideways, alternating left/right
 ## or "Arm 4: dodge". `stagger` is the arm's place in the chain (0 = first
 ## extra arm) and spaces the popups out in time and position so they don't
 ## overlap the primary hit's number or each other.
-func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> void:
+## Returns false when there was nothing to show: an arm that landed but cost
+## no HP gets no popup, exactly like a primary hit that cost none (the combat
+## log still records it).
+func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> bool:
 	var arm_num: int = extra.get("arm_number", 0)
 	var text: String
 	var color: Color
@@ -1348,6 +1367,8 @@ func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> void:
 		# same number the primary hit's popup shows. Fall back to the raw
 		# damage for results made before that field existed.
 		var dmg: int = extra.get("damage_taken", extra.get("damage", 0))
+		if dmg <= 0:
+			return false
 		text = "Arm %d: %d" % [arm_num, dmg]
 		color = COLOR_ARM_HIT
 		if extra.get("crit", false):
@@ -1361,6 +1382,22 @@ func show_arm_result(attacker: Node, extra: Dictionary, stagger: int) -> void:
 	var side: float = -1.0 if stagger % 2 == 0 else 1.0
 	show_combat_text(text, color, ARM_POPUP_DELAY * (stagger + 1),
 		Vector2(side * ARM_POPUP_NUDGE, -6.0 * stagger))
+	return true
+
+
+## How much a landed weapon blow hurt, for the combat log: "12", or
+## "12 (18 before armour)" when armour, resistance or a shield took some off.
+##
+## result["damage_taken"] is the HP the defender actually lost — the number its
+## red popup shows. result["damage"] is the blow before the defender's
+## defences. The log used to print the second while the popup showed the
+## first, so the two disagreed on every armoured hit.
+static func hit_damage_text(result: Dictionary) -> String:
+	var raw: int = int(result.get("damage", 0))
+	var taken: int = int(result.get("damage_taken", raw))
+	if taken != raw:
+		return "%d (%d before armour)" % [taken, raw]
+	return str(taken)
 
 
 ## Show a popup for every extra arm in an attack result (the multi-arm chain
@@ -1376,8 +1413,8 @@ static func show_arm_chain_popups(attacker: Node, fallback_target: Node, result:
 		var target = extra.get("target", fallback_target)
 		if target == null or not is_instance_valid(target) or not target.has_method("show_arm_result"):
 			continue
-		target.show_arm_result(attacker, extra, i)
-		shown += 1
+		if target.show_arm_result(attacker, extra, i):
+			shown += 1
 	return shown
 
 
@@ -1482,12 +1519,7 @@ func show_status_applied(status_name: String) -> void:
 	# Use a human-readable name (replace underscores, capitalize)
 	var display_name = status_name.replace("_", " ")
 
-	var label = Label.new()
-	label.text = "+" + display_name
-	label.position = Vector2(0, -UNIT_SIZE.y / 2 - 28)
-	label.add_theme_font_size_override("font_size", 12)
-	label.add_theme_color_override("font_color", color)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var label := _make_popup_label("+" + display_name, 12, color, -UNIT_SIZE.y / 2 - 28)
 	add_child(label)
 
 	var tween = create_tween()
@@ -1503,12 +1535,15 @@ func show_status_expired(status_name: String) -> void:
 
 	var label = RichTextLabel.new()
 	label.bbcode_enabled = true
-	# Strikethrough via BBCode
-	label.text = "[color=#999999][s]" + display_name + "[/s][/color]"
+	# Strikethrough via BBCode, centred in the same POPUP_WIDTH box the other
+	# popups use (it was 60px wide, so longer names wrapped onto two lines).
+	label.text = "[center][color=#999999][s]" + display_name + "[/s][/color][/center]"
 	label.fit_content = true
 	label.scroll_active = false
-	label.position = Vector2(-30, -UNIT_SIZE.y / 2 - 28)
-	label.custom_minimum_size = Vector2(60, 20)
+	label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	label.position = Vector2(-POPUP_WIDTH / 2.0, -UNIT_SIZE.y / 2 - 28)
+	label.custom_minimum_size = Vector2(POPUP_WIDTH, 20)
+	label.size = Vector2(POPUP_WIDTH, 20)
 	label.add_theme_font_size_override("normal_font_size", 12)
 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(label)

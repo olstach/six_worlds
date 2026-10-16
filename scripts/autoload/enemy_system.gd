@@ -1,12 +1,16 @@
 extends Node
-## EnemySystem - Generates scaled enemies from archetype definitions
+## EnemySystem - Generates enemies from archetype definitions
 ##
-## Loads enemy archetypes and encounter templates from JSON, then generates
-## enemy dictionaries scaled to party power. Enemies use the same stat system
-## as player characters (attributes, derived stats, skills, spells).
+## Loads enemy archetypes and encounter templates from JSON, then builds each
+## enemy as a character from an XP budget. The budget is absolute per realm —
+## it does NOT follow the player's strength — and is set by
+## resources/data/enemies/encounter_budgets.json:
+##     realm_base * encounter tier * rolled band * fight difficulty
+## Enemies use the same stat system as player characters (attributes,
+## derived stats, skills, spells).
 ##
 ## Usage:
-##   var enemies = EnemySystem.generate_encounter("demon_patrol", "cold_hell")
+##   var enemies = EnemySystem.generate_encounter("demon_patrol", "cold_hell", "hell", "hard")
 ##   # Returns Array[Dictionary] ready for CombatUnit.init_as_enemy()
 
 # Loaded data from JSON
@@ -411,18 +415,76 @@ func resolve_encounter_tier(template: Dictionary) -> String:
 	return TIER_ORDER[best]
 
 
-## Total XP the enemy party is built from: realm_base * tier * band.
+## Turn whatever `difficulty` word a fight was written with into one of the
+## tiers in encounter_budgets.json's `difficulty` table.
+##
+## - "" (no difficulty given) is "normal", silently.
+## - A known tier is returned as it is.
+## - An alias (a skill-roll word like "difficult", see `difficulty_aliases`) is
+##   mapped onto its combat tier, with a warning so the data gets fixed.
+## - Anything else is "normal", with a warning.
+## tools/validate_data.py rejects the last two in data, so the warnings are for
+## old saves and hand-built calls.
+func normalize_difficulty(difficulty: String) -> String:
+	var table: Dictionary = budgets.get("difficulty", {})
+	var key: String = difficulty.strip_edges().to_lower()
+	if key == "":
+		return "normal"
+	if table.has(key) and not key.begins_with("_"):
+		return key
+	var aliases: Dictionary = budgets.get("difficulty_aliases", {})
+	if aliases.has(key) and table.has(String(aliases[key])):
+		push_warning("EnemySystem: fight difficulty '%s' is a skill-roll word, using '%s'"
+			% [difficulty, aliases[key]])
+		return String(aliases[key])
+	push_warning("EnemySystem: unknown fight difficulty '%s', using 'normal'" % difficulty)
+	return "normal"
+
+
+## The knobs for one difficulty tier, from encounter_budgets.json. Always
+## returns a dictionary with an `xp_multiplier`, so a tier missing from the
+## file behaves like normal instead of crashing.
+func difficulty_settings(difficulty: String) -> Dictionary:
+	var tier: String = normalize_difficulty(difficulty)
+	var settings: Dictionary = budgets.get("difficulty", {}).get(tier, {}).duplicate()
+	if not settings.has("xp_multiplier"):
+		settings["xp_multiplier"] = 1.0
+	return settings
+
+
+## Total XP the enemy party is built from:
+##     realm_base * tier * band * difficulty
 ## Absolute per realm — it does not track the player's own XP.
-func resolve_party_budget(encounter_id: String, realm: String) -> Dictionary:
+##
+## Difficulty works through this one number on purpose. Everything else about
+## an enemy — attributes, skills, breadth, gear rarity, consumables, spells —
+## already follows its share of the budget, and so does what the party earns
+## for winning (CombatManager pays a fraction of the enemy party's XP). One
+## multiplier here therefore makes a "hard" fight harder in every way a
+## stronger character is stronger, AND pays more for it. Multiplying HP after
+## the build would do neither, and would quietly break the "XP is the only
+## currency" rule the enemy builder rests on.
+func resolve_party_budget(encounter_id: String, realm: String, difficulty: String = "normal") -> Dictionary:
 	var template: Dictionary = encounters.get(encounter_id, {})
 	var tier: String = resolve_encounter_tier(template)
-	var band: String = roll_band()
+	var diff_tier: String = normalize_difficulty(difficulty)
+	var settings: Dictionary = difficulty_settings(diff_tier)
+
+	# min_tier: a fight marked "boss" is priced as a boss even when its enemy
+	# list is ordinary. It never lowers a tier that is already higher.
+	var min_tier: String = String(settings.get("min_tier", ""))
+	if min_tier != "" and TIER_ORDER.find(min_tier) > TIER_ORDER.find(tier):
+		tier = min_tier
+
+	# band: a fixed band instead of the common/uncommon/rare roll.
+	var band: String = String(settings["band"]) if settings.has("band") else roll_band()
 
 	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
 	var tier_mult: float = float(budgets.get("tier_multipliers", {}).get(tier, 1.0))
-	var xp: int = maxi(1, int(round(base * tier_mult * _band_multiplier(band))))
+	var diff_mult: float = float(settings["xp_multiplier"])
+	var xp: int = maxi(1, int(round(base * tier_mult * _band_multiplier(band) * diff_mult)))
 
-	return {"xp": xp, "band": band, "tier": tier}
+	return {"xp": xp, "band": band, "tier": tier, "difficulty": diff_tier}
 
 
 func _ready() -> void:
@@ -547,14 +609,16 @@ func _load_name_parts() -> void:
 ## encounter_id: matches enemy_group from events/mobs JSON
 ## region: "cold_hell", "fire_hell", or "" for any
 ## realm: which of the six worlds this encounter is in — used for name generation
-## difficulty: tier string from the event/mob ("easy".."boss"), scales enemy power
+## difficulty: the fight's difficulty word from the event/mob ("easy", "normal",
+##   "hard", "very_hard", "boss"). What each one does lives in the `difficulty`
+##   table of encounter_budgets.json — see resolve_party_budget().
 func generate_encounter(encounter_id: String, region: String = "", realm: String = "hell", difficulty: String = "normal") -> Array[Dictionary]:
 	var template = encounters.get(encounter_id, {})
 	if template.is_empty():
 		push_warning("EnemySystem: Unknown encounter '%s', generating fallback" % encounter_id)
-		return _generate_fallback_encounter(realm)
+		return _generate_fallback_encounter(realm, difficulty)
 
-	var budget: Dictionary = resolve_party_budget(encounter_id, realm)
+	var budget: Dictionary = resolve_party_budget(encounter_id, realm, difficulty)
 	var party_xp: int = int(budget["xp"])
 
 	# Whether meeting this party opens a fight or a conversation. The encounter
@@ -607,7 +671,7 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 				"is_hero": bool(members[i].get("is_hero", false))})
 
 	if slots.is_empty():
-		return _generate_fallback_encounter(realm)
+		return _generate_fallback_encounter(realm, difficulty)
 
 	# Resolve each slot to an archetype before splitting the budget, so the
 	# hero can be chosen by threat where the composition was authored.
@@ -637,10 +701,15 @@ func generate_encounter(encounter_id: String, region: String = "", realm: String
 			String(slot.get("region", effective_region)), bool(slot.get("is_hero", false)))
 		if not enemy.is_empty():
 			enemy["disposition"] = party_disposition
+			# A duel threshold written on the ENCOUNTER overrides the
+			# archetype's (which _build_enemy already copied): the same boss
+			# can fight to the death in one place and yield in another.
+			if template.has("duel_stop_hp_pct"):
+				enemy["duel_stop_hp_pct"] = int(template["duel_stop_hp_pct"])
 			enemies.append(enemy)
 
 	if enemies.is_empty():
-		return _generate_fallback_encounter(realm)
+		return _generate_fallback_encounter(realm, difficulty)
 	return enemies
 
 
@@ -686,7 +755,20 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		push_warning("EnemySystem: Unknown archetype '%s'" % archetype_id)
 		return {}
 
-	var effective_budget: float = float(xp_budget)
+	# How well-equipped this character is, on one scale shared by everything
+	# kit-related below: rarity, the role-based potions and bombs, and the
+	# consumables bought from what the gear left over. 1.0 is a mid-game
+	# character. It comes from the kit budget, which is itself a function of
+	# XP — so a harder fight (more XP, see resolve_party_budget) is also a
+	# better-equipped one, with no separate rule.
+	#
+	# Before 2026-10-15 the potion/bomb roll and the fallback weapon read the
+	# raw XP budget against thresholds tuned for the OLD party-power number
+	# (where ~80 was mid-game). XP runs from ~25 to several thousand, so every
+	# animal-realm enemy saturated them and the crude weapon gained +2 damage
+	# per 80 XP. They now read this scale instead.
+	var kit_budget: int = equipment_budget_for_xp(xp_budget)
+	var power_scale: float = float(kit_budget) / 180.0
 
 	# Birth and background first — the same two steps a player character takes.
 	var birth: String = CharacterSystem.roll_birth_for_realm(realm)
@@ -707,7 +789,7 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	var attributes = built["attributes"]
 	var skills = built["skills"]
 	var derived = _calculate_derived_stats(attributes, skills)
-	var equipment = _generate_equipment(archetype.get("equipment_template", {}), effective_budget)
+	var equipment = _generate_equipment(archetype.get("equipment_template", {}))
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
 	var perks = _build_perks(archetype.get("guaranteed_perks", []), skills)
 
@@ -727,29 +809,37 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	# apply_birth_modifiers() above stored the birth's resistances on
 	# built["base_resistances"]; today every race's list is empty, so this
 	# changes nothing until races are given some.
+	# (The zeroed keys were the old air/water/earth until 2026-10-15 — schools,
+	# not damage types, so three of the seven named nothing anyone deals.)
 	var resistances = {
-		"physical": 0, "space": 0, "air": 0,
-		"fire": 0, "water": 0, "earth": 0, "black": 0
+		"physical": 0, "space": 0, "lightning": 0,
+		"fire": 0, "ice": 0, "poison": 0, "black": 0
 	}
 	var racial_resists: Dictionary = built.get("base_resistances", {})
 	for key in racial_resists:
 		resistances[key] = resistances.get(key, 0) + racial_resists[key]
+	# And the birth's TRAITS. Most racial resistance actually lives on traits
+	# (Undead: poison 25, disease 50; Incorporeal: physical 50), which
+	# apply_birth_modifiers() gave this enemy through `starting_traits`. A player
+	# gets them via TraitSystem.get_resistances() in update_derived_stats(); an
+	# enemy never ran that step, so a skeleton enemy shrugged off poison no
+	# better than a living one until 2026-10-15.
+	var trait_resists: Dictionary = TraitSystem.get_resistances(built)
+	for key in trait_resists:
+		resistances[key] = resistances.get(key, 0) + trait_resists[key]
 	var arch_resists = archetype.get("resistances", {})
 	for key in arch_resists:
 		resistances[key] = resistances.get(key, 0) + arch_resists[key]
 
 	# Generate consumable inventory, then merge any archetype-guaranteed items
-	var inventory = _generate_enemy_inventory(archetype, effective_budget)
+	var inventory = _generate_enemy_inventory(archetype, power_scale)
 	for everyday in _generate_everyday_items(skills, xp_budget):
 		inventory.append(everyday)
 	for item in archetype.get("starting_inventory", []):
 		inventory.append(item)
 
-	# Map power budget to item rarity — shared by weapon and armor generation.
+	# Map power_scale to item rarity — shared by weapon and armor generation.
 	# Realm drives the material tier (e.g. hell → bone/obsidian/bronze); rarity drives quality.
-	# Rarity derives from the kit budget, which is itself a function of XP.
-	var kit_budget: int = equipment_budget_for_xp(xp_budget)
-	var power_scale = float(kit_budget) / 180.0
 	var item_rarity: String
 	if power_scale < 0.5:
 		item_rarity = "common"
@@ -1006,17 +1096,19 @@ func _get_weapon_damage_type(weapon_type: String) -> String:
 			return "crushing"
 
 
-## Generate equipment stats based on archetype template + power level
-func _generate_equipment(template: Dictionary, power_level: float) -> Dictionary:
+## Read the archetype's equipment template: weapon type, armour category, and
+## the stats of the crude weapon used only if ItemSystem cannot generate one.
+## No power scaling here — real weapons come from ItemSystem at a rarity set
+## by the kit budget, and the crude fallback is just the template's numbers.
+func _generate_equipment(template: Dictionary) -> Dictionary:
 	var result: Dictionary = {}
 
 	# Weapon stats
 	var weapon = template.get("weapon", {})
-	var power_scale = power_level / 80.0  # Normalize around expected mid-game power
 
 	result.weapon_type = weapon.get("type", "sword")
-	result.weapon_damage = int(weapon.get("base_damage", 5) + power_scale * 2)
-	result.weapon_accuracy = int(weapon.get("base_accuracy", 3) + power_scale * 1)
+	result.weapon_damage = int(weapon.get("base_damage", 5))
+	result.weapon_accuracy = int(weapon.get("base_accuracy", 3))
 	result.weapon_range = weapon.get("range", 1)
 
 	# Pass through armor category for item generation in _build_enemy
@@ -1248,20 +1340,23 @@ func generate_enemy_name(realm: String, tags: Array = [], region: String = "", r
 		return prefix + "-" + root + "-" + suffix
 
 
-## Generate consumable inventory for an enemy based on archetype and power level.
-## Higher power enemies get more/better items. Roles determine item types.
-func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Array:
+## Generate consumable inventory for an enemy based on archetype and power_scale
+## (the kit-budget scale from _build_enemy, where 1.0 is a mid-game character).
+## Better-equipped enemies get more/better items. Roles determine item types.
+## The thresholds are the old power-number ones (60, 80, 100 out of a mid-game
+## 80) converted onto that scale: 0.75, 1.0 and 1.25.
+func _generate_enemy_inventory(archetype: Dictionary, power_scale: float) -> Array:
 	var inventory: Array = []
 	var roles = archetype.get("roles", [])
 
 	# Chance to have items at all increases with power
-	var item_chance = clampf(power_level / 100.0, 0.2, 0.9)
+	var item_chance = clampf(power_scale * 0.8, 0.2, 0.9)
 	if randf() > item_chance:
 		return inventory  # No items this enemy
 
 	# All enemies: chance for a health potion
 	if randf() < 0.6:
-		if power_level > 60:
+		if power_scale > 0.75:
 			inventory.append({"item_id": "greater_health_potion", "quantity": 1})
 		else:
 			inventory.append({"item_id": "health_potion", "quantity": 1})
@@ -1273,7 +1368,7 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 			has_magic = true
 			break
 	if has_magic and randf() < 0.5:
-		if power_level > 60:
+		if power_scale > 0.75:
 			inventory.append({"item_id": "greater_mana_potion", "quantity": 1})
 		else:
 			inventory.append({"item_id": "mana_potion", "quantity": 1})
@@ -1302,7 +1397,7 @@ func _generate_enemy_inventory(archetype: Dictionary, power_level: float) -> Arr
 		inventory.append({"item_id": oils[randi() % oils.size()], "quantity": 1})
 
 	# Higher power enemies get an extra potion
-	if power_level > 80 and randf() < 0.4:
+	if power_scale > 1.0 and randf() < 0.4:
 		inventory.append({"item_id": "health_potion", "quantity": 1})
 
 	# Healer/support types carry herb bundles (useful in combat; also lootable)
@@ -1409,12 +1504,13 @@ func _pick_archetype_for_role(role: String, region: String, tier: String = "devi
 	return candidates[randi() % candidates.size()]
 
 
-## Fallback encounter when encounter_id is unknown — 2 generic demon warriors
 ## Fallback when an encounter cannot be resolved. Picks an archetype belonging
 ## to the realm rather than a hell demon, which used to be hardcoded here and
 ## put demons in the animal realm's forest whenever a lookup failed.
-func _generate_fallback_encounter(realm: String = "hell") -> Array[Dictionary]:
-	var base: float = float(budgets.get("realm_base", {}).get(realm, 200))
+## The fight's difficulty still applies, so a broken "easy" stays easier.
+func _generate_fallback_encounter(realm: String = "hell", difficulty: String = "normal") -> Array[Dictionary]:
+	var base: float = float(budgets.get("realm_base", {}).get(realm, 200)) \
+		* float(difficulty_settings(difficulty)["xp_multiplier"])
 
 	var candidates: Array[String] = []
 	for arch_id in archetypes:
