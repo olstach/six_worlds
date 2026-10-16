@@ -2163,7 +2163,8 @@ Done 2026-10-16 (branch `claude/round-3`), plus three new enemies:
       and destructive**: `--write` would undo Aegis of Tranquility's elements,
       Borrowed Opening and more. Their work is all in the data — delete them
       (or strip them to a read-only checker).
-- [ ] Enemy AI throws bombs only at 2+ clustered party members
+- [x] **Done 2026-10-16: data-driven AI templates** (`enemies/ai_templates.json`,
+      archetype `ai_template` + `ai` overrides, verify_enemy_AI). Was: enemy AI throws bombs only at 2+ clustered party members
       (`_ai_try_use_bomb`) and drinks potions only itself
       (`_ai_try_use_potion`), so the honey-keeper never heals allies and a
       lone target is never bombed.
@@ -2173,6 +2174,17 @@ Done 2026-10-16 (branch `claude/round-3`), plus three new enemies:
 - [ ] Magnetizing Aura spell: `special.triggers_on` and
       `special.effect: "charm_chance"` are unread.
 - [x] Mirrored glove pairs count their stats on both hands — no: a pair is one item and counts once (Olaf). Done.
+- [ ] AI templates: `_ai_try_cast_spell` does not know heal spells — the
+      honey-keeper's `lesser_heal` is aimed at the nearest party member.
+      Next natural template section: spell targeting.
+- [ ] Bomb targeting measures range with diagonals (Chebyshev) but
+      `ai_use_combat_item` checks Manhattan steps — a diagonal throw at the
+      edge of range silently fails.
+- [ ] Decision: players cannot hand a potion to an adjacent ally; enemies
+      with a medic template now can. Give players the same?
+- [ ] AI templates still to come: `targeting` and `movement` sections
+      (reserved in the schema); the 23 `support` archetypes stay on `default`
+      until given a template.
 - [ ] Heavy Armor Training's movement half does nothing yet: no heavy
       armour has a movement penalty.
 
