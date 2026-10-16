@@ -2820,10 +2820,8 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 
 	# If clicking already selected slot with equipped item, unequip it
 	if selected_equipment_slot == slot_id and equipped_item_id != "":
+		# For gloves this takes the pair off both hands (ItemSystem handles it).
 		ItemSystem.unequip_item(player, slot_id)
-		# Also clear the mirror slot (no inventory return — gloves are one item)
-		if slot_id in GLOVE_MIRRORS:
-			_set_glove_mirror(player, GLOVE_MIRRORS[slot_id], "", equipped_item_id)
 		_update_equipment_slots()
 		_update_equipment_display()
 		return
@@ -2843,28 +2841,10 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 		else:
 			btn.remove_theme_color_override("font_color")
 
-## Glove slots that hold the item -> the slot that mirrors it. One pair of
-## gloves is one inventory item, worn on both hands of a pair.
-const GLOVE_MIRRORS := {"hand_l": "hand_r", "hand_l2": "hand_r2"}
-## And back again: clicking a mirror box acts on the box that holds the item.
+## Clicking a mirror box (a right hand) acts on the box that holds the pair.
+## One pair of gloves is one item, worn on both hands; ItemSystem.equip_item
+## and unequip_item keep the two hands in step (see GLOVE_MIRRORS there).
 const GLOVE_MIRROR_OF := {"hand_r": "hand_l", "hand_r2": "hand_l2"}
-
-
-## Put `item_id` (or "" to clear) in a mirror glove slot. If that slot holds a
-## DIFFERENT item of its own — starting gear fills every hand slot separately
-## — it goes back to the inventory first instead of being overwritten and lost.
-## `pair_item` is what the holding slot had before this change: a mirror
-## showing that is just the copy, and is not returned (that would duplicate it).
-func _set_glove_mirror(player: Dictionary, mirror_slot: String, item_id: String,
-		pair_item: String) -> void:
-	var equipment: Dictionary = player.get("equipment", {})
-	var held: String = str(equipment.get(mirror_slot, ""))
-	var is_own_item: bool = held != "" and held != item_id and held != pair_item
-	if is_own_item:
-		ItemSystem.unequip_item(player, mirror_slot)
-	equipment[mirror_slot] = item_id
-	if CharacterSystem:
-		CharacterSystem.update_derived_stats(player)
 
 
 ## Update equipment slot buttons to show equipped items
@@ -3108,14 +3088,9 @@ func _on_equipment_item_pressed(item: Dictionary) -> void:
 		AudioManager.play("ui_denied")
 		return
 
-	# Equip the item. Remember what the slot held first: its mirror is a copy
-	# of that, not an item of its own (see _set_glove_mirror).
-	var old_pair: String = ItemSystem.get_equipped_item(player, selected_equipment_slot)
+	# Equip the item. Gloves/gauntlets/bracers go on both hands of the pair
+	# as one item — ItemSystem.equip_item does the mirroring.
 	if ItemSystem.equip_item(player, item_id, selected_equipment_slot):
-		# Mirror gloves/gauntlets/bracers to hand_r (one pair = one inventory item)
-		if selected_equipment_slot in GLOVE_MIRRORS:
-			_set_glove_mirror(player, GLOVE_MIRRORS[selected_equipment_slot], item_id,
-				old_pair)
 		_update_equipment_slots()
 		_update_equipment_display()
 

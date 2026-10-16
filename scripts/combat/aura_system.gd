@@ -52,6 +52,7 @@ class_name AuraSystem
 ## What an aura can do to a unit inside it.
 const PAYLOAD_KINDS: Array[String] = [
 	"stat",              # continuous — AuraSystem.stat_bonus(), via CombatUnit getters
+	"stat_pct",          # continuous — AuraSystem.stat_pct_bonus(): a % of the unit's OWN sheet value
 	"grant_status",      # per turn  — CombatManager._process_auras()
 	"heal",              # per turn  — CombatManager._process_auras()
 	"damage",            # per turn  — CombatManager._process_auras()
@@ -305,6 +306,25 @@ static func stat_bonus(unit: Node, stat: String, units: Array, distance_fn: Call
 			var mult := sign_for(aura, other, unit)
 			for p in aura["payloads"]:
 				if p.get("kind", "") == "stat" and p.get("stat", "") == stat:
+					total += float(p.get("amount", 0)) * mult
+	return total
+
+
+## Total PERCENTAGE bonus to `stat` for `unit` from every `stat_pct` aura
+## reaching it. The caller turns it into points against the unit's own sheet
+## value (CombatManager.get_continuous_stat_bonus) — "+10% Armor" means a
+## tenth of THAT unit's Armor, which a flat `stat` payload cannot say.
+## Shield Wall is the first user.
+static func stat_pct_bonus(unit: Node, stat: String, units: Array, distance_fn: Callable) -> float:
+	var total := 0.0
+	for other in units:
+		for aura in emitted_by(other):
+			var dist: int = distance_fn.call(other, unit)
+			if not reaches(aura, other, unit, dist):
+				continue
+			var mult := sign_for(aura, other, unit)
+			for p in aura["payloads"]:
+				if p.get("kind", "") == "stat_pct" and p.get("stat", "") == stat:
 					total += float(p.get("amount", 0)) * mult
 	return total
 

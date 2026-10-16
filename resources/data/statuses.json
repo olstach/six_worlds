@@ -678,6 +678,23 @@
 			"aura": "favorable_wind"
 		},
 		{
+			"name": "Shield_Wall",
+			"icon": "🛡",
+			"type": "buff",
+			"category": "aura",
+			"effects": [],
+			"duration_type": "turns",
+			"default_duration": 1,
+			"dispellable": true,
+			"dispel_methods": [
+				"dispel"
+			],
+			"aura": [
+				"shield_wall",
+				"shield_wall_cover"
+			]
+		},
+		{
 			"name": "Flying",
 			"icon": "🪽",
 			"type": "buff",

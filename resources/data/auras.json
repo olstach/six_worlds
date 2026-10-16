@@ -297,6 +297,31 @@
         }
       ],
       "_comment": "Battlefield-wide, and resistible. Each enemy who makes the save sees a little further through it, so the DC they personally face drops by 2 every time — the mirage wears out against anyone who keeps their head."
+    },
+    "_comment_shield_wall": "Shield Wall is two auras on one status (Shield_Wall), because the wall and its cover want different amounts. `stat_pct` is a percentage of the receiving unit's OWN sheet value - +25% of your Armor, +10% of each adjacent ally's - which a flat `stat` payload cannot express.",
+    "shield_wall": {
+      "name": "Shield Wall",
+      "radius": 0,
+      "affects": "self",
+      "payloads": [
+        {
+          "kind": "stat_pct",
+          "stat": "armor",
+          "amount": 25
+        }
+      ]
+    },
+    "shield_wall_cover": {
+      "name": "Shield Wall (cover)",
+      "radius": 1,
+      "affects": "allies",
+      "payloads": [
+        {
+          "kind": "stat_pct",
+          "stat": "armor",
+          "amount": 10
+        }
+      ]
     }
   }
 }

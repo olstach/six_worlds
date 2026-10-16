@@ -280,8 +280,10 @@ COMBAT_DATA = {
         "push": {"tiles": 1},
     },
     "shield_wall": {
+        # "+25% Armor and adjacent allies gain +10% Armor" until your next
+        # turn: the Shield_Wall status carries two stat_pct auras (auras.json).
         "effect": "stance", "targeting": "self",
-        "buffs": [{"stat": "armor", "value": 25, "duration": 2}],
+        "statuses": [{"status": "Shield_Wall", "duration": 1}],
     },
 
     # ---- might -----------------------------------------------------------

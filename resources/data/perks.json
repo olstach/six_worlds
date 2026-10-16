@@ -7287,7 +7287,41 @@
       "requires_perks": [],
       "description": "When wearing heavy armor, gain +10% resistance to all elemental damage.",
       "flavor": "",
-      "is_mantra": false
+      "is_mantra": false,
+      "effects": [
+        {
+          "type": "resistance",
+          "damage_type": "fire",
+          "value": 10,
+          "conditions": [
+            "wearing_heavy_armor"
+          ]
+        },
+        {
+          "type": "resistance",
+          "damage_type": "ice",
+          "value": 10,
+          "conditions": [
+            "wearing_heavy_armor"
+          ]
+        },
+        {
+          "type": "resistance",
+          "damage_type": "lightning",
+          "value": 10,
+          "conditions": [
+            "wearing_heavy_armor"
+          ]
+        },
+        {
+          "type": "resistance",
+          "damage_type": "space",
+          "value": 10,
+          "conditions": [
+            "wearing_heavy_armor"
+          ]
+        }
+      ]
     },
     "fortified": {
       "name": "Fortified",
@@ -7375,10 +7409,9 @@
       "combat_data": {
         "effect": "stance",
         "targeting": "self",
-        "buffs": [
+        "statuses": [
           {
-            "stat": "armor",
-            "value": 25,
+            "status": "Shield_Wall",
             "duration": 1
           }
         ]

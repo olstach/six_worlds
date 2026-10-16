@@ -7310,6 +7310,8 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Favorable_Wind** `Favorable_Wind` — buff · spellpower
   - desc: (empty)
+- **Shield_Wall** `Shield_Wall` — buff · turns 1
+  - desc: (empty)
 - **Soothing_Presence** `Soothing_Presence` — buff · spellpower
   - desc: (empty)
 - **Aura_of_Blessing** `Aura_of_Blessing` — buff · spellpower
