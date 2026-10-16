@@ -35,6 +35,7 @@ func _ready() -> void:
 	_check_trigger_conditions()
 	_check_combat_start_and_turn_start()
 	_check_take_damage_and_ally_damaged()
+	_check_unbroken_stops_at_a_quarter()
 	_check_parry_success()
 	_check_reentrancy_guard()
 	_check_stat_modifiers_tick_once()
@@ -355,14 +356,21 @@ func _check_armour_conditions() -> void:
 		[{"chest": "cloth_robe", "legs": "leather_pants", "feet": "leather_boots",
 			"hand_l": "leather_gloves"}, [false, true, true]],
 		# Gauntlets are armour (heavy, they need Strength) — in either hand.
-		[{"hand_l": "iron_gauntlets"}, [false, false, false]],
-		[{"hand_r": "iron_gauntlets"}, [false, false, false]],
+		[{"hand_l": "iron_gauntlets"}, [true, false, false]],
+		[{"hand_r": "iron_gauntlets"}, [true, false, false]],
+		# ...and so in a four-armed body's extra hands.
+		[{"hand_l2": "iron_gauntlets"}, [true, false, false]],
 		# A leather cap is light armour: fine for Flowing Footwork, not for
 		# Diamond Body.
 		[{"head": "leather_cap"}, [false, true, false]],
-		[{"legs": "iron_greaves"}, [false, false, false]],
+		[{"legs": "iron_greaves"}, [true, false, false]],
+		# Heavy is ANY heavy piece, so "wearing heavy armour" is always the
+		# opposite of "unarmored or light": a leather vest under an iron
+		# helmet is heavy, not light.
+		[{"chest": "leather_vest", "head": "iron_helmet"}, [true, false, false]],
 	]
-	var armour_slots: Array[String] = ["head", "chest", "legs", "feet", "hand_l", "hand_r"]
+	var armour_slots: Array[String] = ["head", "chest", "legs", "feet", "hand_l", "hand_r",
+		"hand_l2", "hand_r2"]
 	for case in cases:
 		for slot in armour_slots:
 			equipment[slot] = ""
@@ -586,6 +594,48 @@ func _check_take_damage_and_ally_damaged() -> void:
 		_fail("take_damage did not fire for sourceless damage")
 	if _mod(victim, "accuracy") != 0:
 		_fail("an attacker-targeted payload with no attacker landed on the unit itself")
+
+
+## Unbroken (Armor 10): the first time each combat the unit would drop below
+## 25% HP it stops at 25%, and its Armor doubles until the turn ends. Once.
+func _check_unbroken_stops_at_a_quarter() -> void:
+	var holder := _make_unit(Vector2i(8, 1), 0, ["unbroken"])
+	var plain := _make_unit(Vector2i(8, 2), 0)
+	# Some Armor to double. Timed modifiers are cleared after every hit,
+	# because the probe perks of earlier checks (an ally_damaged armour buff)
+	# are still on the field and would muddy the count.
+	holder.character_data["derived"]["armor"] = 5
+	var armour_before: int = holder.get_armor()
+
+	# A hit that leaves it above 25% does not spend the perk.
+	CombatManager.apply_damage(holder, 500, "true")
+	holder.stat_modifiers = []
+	if holder.current_hp != 500 or holder.unbroken_used:
+		_fail("Unbroken fired on a hit that stayed above 25%% (HP %d)" % holder.current_hp)
+
+	# The hit that would take it to 50 stops at 250, and Armor doubles.
+	CombatManager.apply_damage(holder, 450, "true")
+	holder.stat_modifiers = []
+	if holder.current_hp != 250:
+		_fail("Unbroken: HP after the crossing hit is %d, expected 250" % holder.current_hp)
+	if holder.get_armor() != armour_before * 2:
+		_fail("Unbroken: Armor is %d, expected double %d" % [holder.get_armor(), armour_before])
+
+	# The turn ends: the doubled Armor goes.
+	CombatManager.turn_ended.emit(holder)
+	if holder.get_armor() != armour_before:
+		_fail("Unbroken: Armor is %d after the turn ended, expected %d"
+			% [holder.get_armor(), armour_before])
+
+	# Once per combat: the next crossing hit goes through.
+	CombatManager.apply_damage(holder, 200, "true")
+	if holder.current_hp != 50:
+		_fail("Unbroken fired twice in one combat (HP %d, expected 50)" % holder.current_hp)
+
+	# Without the perk, nothing stops the fall.
+	CombatManager.apply_damage(plain, 900, "true")
+	if plain.current_hp != 100:
+		_fail("a unit without Unbroken stopped at %d HP, expected 100" % plain.current_hp)
 
 
 ## parry_success: a melee miss against someone holding a melee weapon. Not a

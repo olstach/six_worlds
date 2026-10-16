@@ -1544,10 +1544,21 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 	# Requirements
 	var requirements: Dictionary = {}
 	var tier: int = mat_info.get("tier", 2)
-	# Heavy armor needs strength
-	if armor_type in ["armor", "gauntlets", "greaves", "helmet", "shield"]:
-		if base_armor >= 3:
-			requirements["strength"] = 8 + tier * 2
+	# Heavy armour needs Strength — and needing Strength is what MAKES a piece
+	# heavy everywhere else in the game (see is_heavy_armor_piece below).
+	# A piece is heavy when its base type says so ("heavy": true in
+	# armor_bases: body armour, helmet, gauntlets, greaves, shield) and it is
+	# not made of a soft material ("light_material": leather, hide, cloth...).
+	#
+	# The requirement grows with the material's tier and with how much metal
+	# the piece is: +1 per 8 points of base weight. So an iron cuirass (weight
+	# 20) needs 6 + 4 + 2 = 12, iron greaves or a shield 11, an iron helmet or
+	# gauntlets 10 — the same numbers as the hand-made iron pieces in items.json.
+	# (This used to need base armour >= 3, which left every generated helmet
+	# and pair of gauntlets light, and asked 16 Strength for an iron cuirass.)
+	if base.get("heavy", false) and not mat_info.get("light_material", false):
+		var bulk: int = int(float(base.get("weight", 5)) / 8.0)
+		requirements["strength"] = 6 + tier + bulk
 
 	var item_data: Dictionary = {
 		"name": item_name,
@@ -1618,6 +1629,43 @@ const ARMOR_TYPES: Array[String] = [
 	"helmet", "hat", "armor", "robe", "gloves", "gauntlets", "pants",
 	"greaves", "boots", "shield"
 ]
+
+# ============================================
+# HEAVY AND LIGHT ARMOUR
+# ============================================
+# One definition, read by every perk that cares (Living Fortress, Armored
+# Skin, Flowing Footwork, Bare Chest...):
+#   * A PIECE is heavy when it has a Strength requirement. generate_armor
+#     writes one for exactly the heavy pieces, and the hand-made heavy pieces
+#     in items.json (chainmail, lamellar, the iron pieces) all carry one.
+#   * A CHARACTER is "wearing heavy armour" when ANY worn armour piece is
+#     heavy. That makes it the exact opposite of "unarmored or in light
+#     armor": everyone is one or the other, never both and never neither.
+
+## The equipment slots that hold armour (a shield in the off hand does not
+## count — it is carried, not worn). Every hand slot counts, so a four-armed
+## body's `hand_l2`/`hand_r2` gauntlets are armour too.
+func is_armour_slot(slot: String) -> bool:
+	return slot in ["head", "chest", "legs", "feet"] or slot.begins_with("hand_")
+
+
+## Is this one item a piece of heavy armour? (See the block comment above.)
+func is_heavy_armor_piece(item: Dictionary) -> bool:
+	return int(item.get("requirements", {}).get("strength", 0)) > 0
+
+
+## Does this equipment dictionary ({slot: item_id}) include any heavy piece?
+func wears_heavy_armor(equipment: Dictionary) -> bool:
+	for slot in equipment:
+		if not is_armour_slot(str(slot)):
+			continue
+		var item_id = equipment[slot]
+		if not item_id is String or item_id == "":
+			continue
+		if is_heavy_armor_piece(get_item(item_id)):
+			return true
+	return false
+
 
 # Talisman types
 const TALISMAN_TYPES: Array[String] = ["talisman", "trinket", "amulet", "ring", "charm"]

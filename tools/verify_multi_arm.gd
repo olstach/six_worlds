@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 12
+const EXPECTED_CHECKS: int = 13
 var grid: CombatGrid
 
 
@@ -34,6 +34,7 @@ func _ready() -> void:
 	_check_severing_drops_both_weapon_sets()
 	_check_severing_with_a_full_pack_keeps_the_item()
 	_check_four_armed_bodies_wear_four_gloves()
+	_check_equipment_screen_has_second_hands()
 	_check_unbroken_downgrades_wounds()
 	_check_unbroken_leaves_diseases_alone()
 
@@ -327,6 +328,50 @@ func _check_four_armed_bodies_wear_four_gloves() -> void:
 	if ItemSystem.equip_item(two, glove, "hand_l2"):
 		_fail("two arms: a human put gloves on a third hand")
 	ItemSystem.remove_from_inventory(glove, 1)
+	_done()
+
+
+## The equipment screen has boxes for the second pair of hands, and its
+## one-pair-is-one-item mirror works there the same as for hand_l/hand_r:
+## the mirror never duplicates the pair, and never swallows a glove that was
+## in the mirror slot on its own (starting gear fills each hand separately).
+func _check_equipment_screen_has_second_hands() -> void:
+	var menu_script: GDScript = load("res://scripts/ui/main_menu.gd")
+	var slots: Dictionary = menu_script.EQUIPMENT_SLOTS
+	if not slots.has("hand_l2") or not slots.has("hand_r2"):
+		_fail("equipment screen: no hand_l2/hand_r2 in EQUIPMENT_SLOTS")
+	# Not added to the tree, so none of its UI is built — only the helper runs.
+	var menu = menu_script.new()
+	var glove: String = _first_item_of_type("gloves")
+	var four: Dictionary = CharacterSystem.create_blank_character()
+	four["body_plan"] = {"species": "four_armed", "missing_parts": [], "prosthetics": {}}
+	var stray := "__verify_stray_glove__"
+	ItemSystem._item_database[stray] = {"name": "Stray glove", "type": "gloves",
+		"slot": "hand_l"}
+	four["equipment"]["hand_r2"] = stray   # as starting gear would leave it
+	# Equip a pair to the second hands, as _on_equipment_item_pressed does.
+	ItemSystem.add_to_inventory(glove, 1)
+	ItemSystem.equip_item(four, glove, "hand_l2")
+	menu._set_glove_mirror(four, "hand_r2", glove, "")
+	if String(four["equipment"]["hand_r2"]) != glove:
+		_fail("equipment screen: hand_r2 does not mirror the gloves on hand_l2")
+	if ItemSystem._find_inventory_item(stray) == -1:
+		_fail("equipment screen: the glove already on hand_r2 was overwritten, not returned")
+	# Unequip, as a second click on the box does: the pair goes back once.
+	ItemSystem.unequip_item(four, "hand_l2")
+	menu._set_glove_mirror(four, "hand_r2", "", glove)
+	if String(four["equipment"]["hand_r2"]) != "":
+		_fail("equipment screen: hand_r2 kept the gloves after unequipping")
+	var copies := 0
+	for entry in ItemSystem.get_inventory():
+		if entry.get("item_id", "") == glove:
+			copies += int(entry.get("quantity", 1))
+	if copies != 1:
+		_fail("equipment screen: unequipping a pair left %d in the pack, expected 1" % copies)
+	ItemSystem.remove_from_inventory(glove, 1)
+	ItemSystem.remove_from_inventory(stray, 1)
+	ItemSystem._item_database.erase(stray)
+	menu.free()
 	_done()
 
 
