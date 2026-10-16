@@ -139,9 +139,7 @@ rm -f /tmp/_vd.log
 
 # CONTENT.md and the JSON must agree, or a build could ship without
 # writing that exists only in the document.
-if [ ! -f CONTENT.md ]; then
-    ok "CONTENT.md not created yet"
-elif out=$(python3 tools/content_sync.py --check 2>&1); then
+if out=$(python3 tools/content_sync.py --check 2>&1); then
     ok "CONTENT.md matches the data"
 else
     bad "CONTENT.md and the data disagree - run: python3 tools/content_sync.py --write"
