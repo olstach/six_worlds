@@ -1,5 +1,44 @@
 # Inbox
 
+*Write anything here, any shape. The sync never touches this section. Use `##` for headings inside it.*
+
+## PERKS.md — stacking rules (recovered)
+
+Not stored anywhere in the data; check the code agrees before relying on them.
+
+- **Stacking rule:** Percentage-based cost reductions (mana, stamina) stack **multiplicatively**, not additively. Example: -75% (school) + -25% (ritual circle) = 81.25% total reduction, not 100%.
+- **Overcast stacking:** Spellpower multipliers from overcast effects (Push the Words, Burn the Breath, Grand Working, One Perfect Sentence) stack **additively** with each other. Example: Push (+100%) + Burn (+100%) = +200% total, not x2 x 2 = x4.
+
+## Wounds — design notes (recovered)
+
+From `docs/companion_quirks.md` ("New Wound & Disease Types"). Everything else in that section is built; these were still open on 2026-10-16:
+
+- **`venom_shock` display name.** It shows as "Mortification", marked placeholder in `wound_system.gd`. Options: Mortification / Black Flux / Fell Choler / The Darkening.
+- Add `burn` to a fire-enemy-specific wound pool (or to CRIT_WOUND_POOL for fire-using enemies) — a design call when fire archetypes are built.
+- Add event outcomes using `"wound": {"id": "barbed_wound"}`, `"sprain"` and `"burn"` to fitting events (lava pit, trapped passage, etc.). No event uses them yet.
+- Add `"tags": ["poison"]` to the relevant enemy archetypes, so `poisoned_blood` can be applied. None has the tag yet.
+
+## docs/companion_quirks.md — trait and camp notes (recovered)
+
+The per-companion reasons for each trait are now `notes:` on the companions. The rest:
+
+- **Stubborn** appears most often (14 companions) — thematically fitting for souls stuck in lower realms.
+- **Greedy** clusters in hell's yellow/black devils and the hungry ghost merchants.
+- **Grief-struck / Melancholic** concentrated in HG companions whose deaths involved loss.
+- **Devout / Lapsed** pair creates interesting contrast (Nyingje's genuine faith vs. Drupchen's hollow form vs. Gomchen's cynical scholarship).
+- Physical traits (Strong, Quick, Sharp-eyed) used sparingly — mostly for companions defined by a physical characteristic.
+
+Camp review notes, left open when the camp activities were built:
+
+- Combat Drill (+3 initiative) stacks with Encouraging Words (+2) — review whether this is too strong.
+- `camp_creditor` takes 30 or 50 gold — tune to the economy.
+- `camp_whispered_offering` takes food — check against forage yield.
+- All camp event karma values are tentative until karma-to-reincarnation tuning is done.
+
+## docs/BACKGROUNDS_BY_BIRTH.md — births with no background of their own
+
+Every birth can take the 33 universal backgrounds (and most some shared ones); these 28 have none written for them specifically (as of 2026-10-16): apsara, black_devil, blue_devil, dralha, dre, gandharva, green_devil, gyelpo, human, matsya, mountain_folk, nomad, planetary_deity, preserved, red_devil, rudra, shaza, skeleton_copper, skeleton_golden, skeleton_iron, skeleton_silver, skeleton_turquoise, trader, tsen, vetala, white_devil, yellow_devil, yidag.
+
 # World
 
 ## Hell `hell`
@@ -84,6 +123,22 @@
 - **Pretaloka - The Hungry Ghost Realm** `realm` — 192x192 tiles
   - description:
     > The realm of insatiable craving, divided into fetid swamps crawling with the newly dead, ancient graveyards haunted by desiccated skeletons, and the charnel grounds where vetalas hold court in palaces that are not quite real.
+  - notes:
+    > From the hungry ghost events plan (all 60 planned events are built):
+    >
+    > Realm themes:
+    > - **Insatiable hunger and craving** — the defining trait of pretas
+    > - **Decay, rot, and impermanence** — everything is falling apart
+    > - **Attachment to the past** — ghosts clinging to former lives
+    > - **Three zones**: Fetid Swamps (rolang/zombies), Dry Graveyards (skeletons), Charnel Grounds (vetalas)
+    >
+    > Karma guidelines:
+    > - Feeding/sharing → god, human karma
+    > - Greed/hoarding → hungry_ghost karma
+    > - Violence against undead → hell, asura karma
+    > - Compassion/release → god karma
+    > - Trickery/theft → animal, hungry_ghost karma
+    > - Buddhist practice (yoga, ritual) → god karma
 
 ### Zones `zones`
 
@@ -585,6 +640,8 @@
     - Jaina `jaina` — attributes awareness +1 · skills yoga 2, ritual 1, learning 1
       - description:
         > You looked at your blades and understood the problem. They were made for one thing only, and that thing leaves a mark on the soul. You chose the longer road: discipline, the practice of not-harming, and finally the great fast that others call death but you know as the last purification.
+  - notes:
+    > Known issue (from the Meadow workbook): **Khadga is two animals.** The birth, its body plan (`mantis`), its backgrounds and its enemy archetypes are the mantis. Its naming lore is a rhinoceros — wallows, horns, *The Good Mud*, *Where the Horn Broke*, "May your horn be long" — and so are both its companions: Tikshnashringa means *sharp horn* and charges in straight lines, and Nirvikalpa weighs two thousand pounds. *Khadga* is Sanskrit for both a sword and a rhinoceros, which is probably how it happened. Pick one — or split it into two births, as gana and mriga were split.
 - **Patanga** `patanga` — attributes finesse +1, constitution -1, focus +2, awareness +1, charm -1 · skills air_magic 1, alchemy 1, guile 1 · weight 45
   - description: Poison, silk, iridescence, and a tendency to appear where least expected, the Patanga know how to kindle fear and wonder alike.
   - backgrounds:
@@ -1623,26 +1680,50 @@
   - flavor: A red devil cast out of the Infernal Guard for showing mercy to a damned soul. He carries the contradiction quietly.
   - skills: martial_arts, unarmed, yoga, fire_magic
   - traits: devout, brave
+  - notes:
+    > Meaning: Karnak — "fortified village" (ancient Egyptian place name)
+    >
+    > Why devout, brave: Showed mercy at great personal cost — faith-driven act, genuine courage
 - **Serji** `serji` — cost 650 · background former_soldier
   - flavor: The biggest man in the hot hell gym — and the one who walked out. Not because he won, but because winning there stopped meaning anything.
   - skills: unarmed, might, leadership
   - traits: war_hardened, composed
+  - notes:
+    > Meaning: "Golden" (Tibetan)
+    >
+    > Why war_hardened, composed: Left the gym when winning stopped meaning anything — violence-desensitised but at peace with that
 - **Red Peony** `red_peony` — cost 600 · background former_soldier
   - flavor: She carries a two-handed club the size of a small tree and moves like she knows exactly how much space she takes up. A lot.
   - skills: maces, might, armor
   - traits: strong, hot_tempered
+  - notes:
+    > Meaning: The red peony — a flower associated with passion and fierceness
+    >
+    > Why strong, hot_tempered: Enormous physical presence, moves like she owns the space
 - **Raktamatta** `raktamatta` — cost 550 · background farmer
   - flavor: A law-abiding butcher who followed every regulation, filed every permit, and enjoyed his work with a thoroughness that made inspectors nervous.
   - skills: axes, spears, smithing
   - traits: fastidious, stubborn
+  - notes:
+    > Meaning: "Blood-Mad" / "Drunk on Blood" (Sanskrit: *rakta* = blood, *matta* = intoxicated)
+    >
+    > Why fastidious, stubborn: Every permit filed, every regulation followed — meticulous, inflexible
 - **Jawbreaker** `jawbreaker` — cost 500 · background raider
   - flavor: Fast, reckless, and deeply committed to the principle that the best defence is a fractured orbital bone. Also picks pockets while they're down.
   - skills: unarmed, daggers, thievery
   - traits: quick, gambler
+  - notes:
+    > Meaning: English nickname — one who breaks jaws
+    >
+    > Why quick, gambler: Fast, reckless, pocket-picking mid-fight — natural reflexes and high-risk instincts
 - **Tejasimha** `tejasimha` — cost 750 · background raider
   - flavor: First matches, then houses, then whole districts. He died laughing in a fire he started — hearty, genuine laughter, right to the end.
   - skills: fire_magic, ritual, sorcery
   - traits: curious, vain
+  - notes:
+    > Meaning: "Radiant Lion" / "Fire Lion" (Sanskrit: *teja* = fire/radiance, *simha* = lion)
+    >
+    > Why curious, vain: Died laughing in his own fire — genuinely fascinated by his own power, theatrical
 
 ### Blue Devil `blue_devil`
 
@@ -1650,20 +1731,36 @@
   - flavor: A village girl drowned as punishment for being found in bed with another girl. She has been very quiet ever since, but her stillness is not grief.
   - skills: water_magic, yoga, white_magic
   - traits: composed, brave
+  - notes:
+    > Meaning: The water lily — a flower that blooms on the surface of still water, rooted in mud
+    >
+    > Why composed, brave: "Her stillness is not grief" — resolved, not broken; brave enough to be who she was
 - **Dvijihva** `dvijihva` — cost 800 · background scholar
   - flavor:
     > A sorcerer for hire who worked for two rival clients simultaneously, studying both thoroughly. He was killed when they compared notes. He considers this an occupational hazard.
   - skills: enchantment, sorcery, learning
   - traits: greedy, stubborn
+  - notes:
+    > Meaning: "Two-Tongued" (Sanskrit: *dvi* = two, *jihvā* = tongue) — the forked tongue of a snake; a liar
+    >
+    > Why greedy, stubborn: Worked two rivals simultaneously and was shocked it went wrong — greedy and absolutely certain it would work
 - **Yaga Mataji** `yaga_mataji` — cost 700 · background merchant
   - flavor: An old innkeeper who poisoned guests she found sinful. Her criteria were specific, her dosing was precise, and she kept excellent records.
   - skills: alchemy, black_magic, ritual
   - traits: fastidious, suspicious
+  - notes:
+    > Meaning: "Honored Mother of Rites" (Sanskrit: *yāga* = ritual sacrifice, *mātājī* = revered mother)
+    >
+    > Why fastidious, suspicious: Specific criteria for who gets poisoned; trusted no one's judgment but her own
 - **Niyamendra** `niyamendra` — cost 600 · background noble
   - flavor:
     > Court bureaucrat of a petty king, who found his true calling in the invention of regulations. He can freeze any ordinary process in place — paperwork is eternal.
   - skills: persuasion, logistics, water_magic
   - traits: fastidious, patient
+  - notes:
+    > Meaning: "Lord of Rules" (Sanskrit: *niyama* = rule/regulation, *indra* = lord)
+    >
+    > Why fastidious, patient: Invented regulations and let bureaucracy grind — meticulous and unhurried
 
 ### Green Devil `green_devil`
 
@@ -1671,19 +1768,35 @@
   - flavor: A huntsman who grew bored with animals and started tracking people instead. The challenge was the point. He is still tracking.
   - skills: ranged, guile, daggers
   - traits: curious, stubborn
+  - notes:
+    > Meaning: Possibly Tibetan for "swift one" or a regional name meaning "the pursuer"
+    >
+    > Why curious, stubborn: Switched from animals to people for the challenge; relentless once he picks a target
 - **Samvibrahmi** `samvibrahmi` — cost 600 · background noble
   - flavor:
     > Driven by constant suspicion of assassination, he prepared obsessively for every conceivable threat. He was ultimately killed by a cabbage cart. He still doesn't know how they did it.
   - skills: guile, daggers, learning
   - traits: paranoid, suspicious
+  - notes:
+    > Meaning: "Perfectly Bewildered" (Sanskrit: *sam* = completely, *vibhrāmī* = one who is confused/erring)
+    >
+    > Why paranoid, suspicious: Obsessively prepared for every threat; died to a cabbage cart
 - **Vāyuvega** `vayuvega` — cost 750 · background former_soldier
   - flavor: Battle mage for a gang in life — a firm believer in hitting hard first and letting the questions sort themselves out among the survivors.
   - skills: air_magic, sorcery, ritual
   - traits: hot_tempered, brave
+  - notes:
+    > Meaning: "Speed of the Wind" (Sanskrit: *vāyu* = wind/air, *vega* = velocity/force)
+    >
+    > Why hot_tempered, brave: Hit hard first, let survivors ask questions — impulsive but fearless
 - **Angulimāla** `angulimala` — cost 700 · background executioner
   - flavor: Executioner of a crime syndicate, known for a particular professional habit involving fingers. He is fast, precise, and oddly graceful about it.
   - skills: swords, grace, ranged
   - traits: fastidious, sharp_memory
+  - notes:
+    > Meaning: "Garland of Fingers" (Sanskrit: *aṅguli* = finger, *māla* = garland/necklace) — a famous Buddhist outlaw who collected the fingers of his victims
+    >
+    > Why fastidious, sharp_memory: Professional precision with a "particular habit" involving fingers — exact and unforgettable
 
 ### Yellow Devil `yellow_devil`
 
@@ -1692,15 +1805,27 @@
     > Owner of a textile manufactory, maximiser of profit, minimiser of worker wellbeing. In hell he applies the same efficiency to whatever operation he finds himself part of.
   - skills: logistics, trade, smithing
   - traits: greedy, stubborn
+  - notes:
+    > Meaning: "Miser" (Hindi/Urdu: *kanjūs* = penny-pincher, tightwad)
+    >
+    > Why greedy, stubborn: Maximum profit, minimum worker wellbeing — inflexible efficiency maximiser
 - **Sarpatailaka** `sarpatailaka` — cost 650 · background merchant
   - flavor: A trader in snake oil and false cures, who offered hope where real treatment was available. The daggers are for customers who want a refund.
   - skills: trade, daggers, earth_magic
   - traits: greedy, gambler
+  - notes:
+    > Meaning: "Snake Oil" (Sanskrit: *sarpa* = snake, *tailaka* = oil/unguent) — literally
+    >
+    > Why greedy, gambler: Snake oil merchant — high-margin, high-risk operation
 - **Shiny Needle** `shiny_needle` — cost 750 · background noble
   - flavor:
     > She prided herself on being the prettiest. When age threatened that, she found an elegant solution — draining the lifeforce of rivals through carefully rehearsed enchantments. She called it skincare.
   - skills: performance, enchantment, earth_magic
   - traits: vain, addiction
+  - notes:
+    > Meaning: English — a needle bright enough to catch the eye; something sharp disguised as something decorative
+    >
+    > Why vain, addiction: Called draining rivals' lifeforce "skincare" — vanity as compulsion
 
 ### Black Devil `black_devil`
 
@@ -1708,19 +1833,35 @@
   - flavor: Actually rather nice, though the face doesn't help first impressions. She calls the spirits she summons by name and asks how they've been.
   - skills: space_magic, white_magic, persuasion
   - traits: generous, trusting
+  - notes:
+    > Meaning: English — a noble title paired with a bluntly descriptive epithet
+    >
+    > Why generous, trusting: Actually rather nice; calls spirits by name, asks how they've been
 - **Sineater Thirteen** `sineater_thirteen` — cost 900 · background penitent
   - flavor:
     > Born from a splinter of dark energy left when a primordial Srid was shattered by a wrathful Buddha. It has absorbed twelve previous identities and is still hungry.
   - skills: black_magic, space_magic, ritual
   - traits: haunted, curious
+  - notes:
+    > Meaning: English — a ritual figure who absorbs the sins of others; the number thirteen the count of identities consumed
+    >
+    > Why haunted, curious: Absorbed twelve previous identities and is still hungry — each one haunts, each one fascinates
 - **Dyūtapati** `dyutapati` — cost 700 · background merchant
   - flavor: Owner of a casino in hell — cigar always lit, odds always in his favour, smile always present. The house wins. He is the house.
   - skills: persuasion, trade, guile
   - traits: greedy, patient
+  - notes:
+    > Meaning: "Lord of Gambling" (Sanskrit: *dyūta* = game of dice/gambling, *pati* = lord/master)
+    >
+    > Why greedy, patient: Casino owner, odds always in his favour — calculating and willing to wait as long as it takes
 - **Coolhead Hotblood** `coolhead_hotblood` — cost 700 · background infernal_scribe
   - flavor: A people-pleasing librarian who let frustration build in his innards like an alchemical retort. One day the seal broke. He found the experience clarifying.
   - skills: black_magic, sorcery, unarmed
   - traits: hot_tempered, sharp_memory
+  - notes:
+    > Meaning: English — a contradiction; the calm exterior over the boiling interior
+    >
+    > Why hot_tempered, sharp_memory: Pent-up frustration building like a retort — remembered every slight, every frustration, until the seal broke
 
 ### White Devil `white_devil`
 
@@ -1729,15 +1870,27 @@
     > Fascinated by humanoid anatomy the way a botanist is fascinated by plants. Can be persuaded to forego vivisection of party members — keeping them alive is, after all, a more interesting experiment.
   - skills: medicine, daggers, alchemy
   - traits: curious, fastidious
+  - notes:
+    > Meaning: "Auspicious Life" / "Blessed Lifespan" (Sanskrit: *āyur* = life/lifespan, *maṅgala* = auspicious/fortunate)
+    >
+    > Why curious, fastidious: Studies anatomy with botanical thoroughness — fascinated, precise
 - **Amlamarjari** `amlamarjari` — cost 750 · background reveler
   - flavor: Party girl who found ways to patch up her comrades long after they couldn't go on. Her healing is excellent. Her bedside manner is chaotic.
   - skills: white_magic, comedy, alchemy
   - traits: generous, night_drinker
+  - notes:
+    > Meaning: "Sour Cat" (Sanskrit: *amla* = sour/acidic, *mārjārī* = cat)
+    >
+    > Why generous, night_drinker: Patches everyone up after the party; reliable at both
 - **Vimohini** `vimohini` — cost 850 · background penitent
   - flavor:
     > In life, a mystic whose visions were so vivid that entire communities reshaped themselves around her prophecies. She wasn't lying. She genuinely saw another reality. In hell, the visions have teeth.
   - skills: enchantment, summoning, guile
   - traits: dreamer, haunted
+  - notes:
+    > Meaning: "The Great Enchantress" / "She Who Bewilders All" (Sanskrit: *vi* = intensifier, *mohinī* = one who enchants/deludes)
+    >
+    > Why dreamer, haunted: Visions so vivid communities reshaped themselves around them — in hell, the visions have teeth
 
 ## Hungry Ghost `hungry_ghost`
 
@@ -1748,11 +1901,19 @@
     > Worked every day of his life with diligence and nothing to show for it. No time to rest, no time to reflect. He is still moving, still laboring. He is not entirely sure why.
   - skills: axes, armor, logistics
   - traits: stubborn, war_hardened
+  - notes:
+    > Meaning: "Long Life" (Tibetan: *tshe ring*)
+    >
+    > Why stubborn, war_hardened: Still moving, still laboring — habit outlasted understanding; the body just keeps going
 - **Drupchen** `drupchen` — cost 650 · background monk
   - flavor:
     > Performed every ritual, recited every text, accumulated every merit point. Believed none of it. He is in the hungry ghost realm, which he finds philosophically interesting now that he can no longer attribute it to coincidence.
   - skills: ritual, yoga, maces
   - traits: lapsed, stubborn
+  - notes:
+    > Meaning: "Great Achiever" / "Great Practice" (Tibetan: *sgrub chen*)
+    >
+    > Why lapsed, stubborn: Performed every ritual, recited every text; believed none of it. Finds his current situation philosophically interesting.
 
 ### Preserved `preserved`
 
@@ -1760,20 +1921,36 @@
   - flavor: His formula for eternal preservation was correct in every detail. He finished mixing it the night before he died. He has had some time to consider the timing.
   - skills: alchemy, summoning, enchantment
   - traits: curious, composed
+  - notes:
+    > Meaning: "Essence of Being" / "Becoming of Mercury" (Sanskrit: *rasa* = essence/juice/mercury in alchemy, *bhava* = being/existence)
+    >
+    > Why curious, composed: Formula was perfect; timing was not. Still reviewing it calmly.
 - **Saka** `saka` — cost 650 · background hunter
   - flavor:
     > Desiccated by the white salt flats of a desert that keeps its dead well. Still carrying the composite bow he carved from horn and sinew. Still knows which direction the game runs.
   - skills: ranged, guile, logistics
   - traits: patient, stubborn
+  - notes:
+    > Meaning: "Arrow" (Tibetan) — also the name of an ancient steppe people
+    >
+    > Why patient, stubborn: Desiccated but still carrying the bow; still knows which way the game runs
 - **Mehr** `mehr` — cost 900 · background priest
   - flavor: Tall, one-eyed, recovered from a tar pit with most of her prophecies intact. The one that failed was accurate. The court simply did not want to hear it.
   - skills: fire_magic, space_magic, medicine
   - traits: sharp_eyed, brave
+  - notes:
+    > Meaning: "Sun" / "Love" (Persian: *mehr*)
+    >
+    > Why sharp_eyed, brave: One-eyed prophet who told the truth the court didn't want to hear
 - **Khedrup** `khedrup` — cost 750 · background charnel_yogi
   - flavor:
     > Treated the dharma as a system to be optimized. Found every multiplying formula, every auspicious day, every legitimate shortcut. He preserved himself flawlessly. He is still in the hungry ghost realm. He is reviewing his calculations.
   - skills: alchemy, ritual, black_magic
   - traits: stubborn, superstitious
+  - notes:
+    > Meaning: "Accomplished Scholar" (Tibetan: *mkhas grub* = learned one who has achieved)
+    >
+    > Why stubborn, superstitious: Treated dharma as a system to optimise; found every shortcut, every auspicious day. Still reviewing the calculations.
 
 ### Shaza `shaza`
 
@@ -1782,11 +1959,19 @@
     > Boredom is a dangerous condition in a man without constraints and an unshakeable certainty of his own superiority. He passed through every conventional pleasure and kept going. By the end, the only question was what came next.
   - skills: persuasion, guile, black_magic
   - traits: vain, greedy
+  - notes:
+    > Meaning: "Playful Grace" / "Coquetry" (Sanskrit: *vilāsa* = sport/play/charm/dalliance)
+    >
+    > Why vain, greedy: Certainty of superiority led to consuming every experience — vanity feeding hunger
 - **Marmajna** `marmajna` — cost 750 · background healer
   - flavor:
     > A physician of genuine skill who understood the body as a system of resources. He began with cadavers. The logic that followed was, he still insists, impeccable. Exactly where the line was — he is still working on that.
   - skills: medicine, alchemy, sorcery
   - traits: curious, stubborn
+  - notes:
+    > Meaning: "Knower of Vital Points" (Sanskrit: *marma* = vital point/vulnerable spot, *jña* = one who knows)
+    >
+    > Why curious, stubborn: Followed the logic past the line; still insists the reasoning is impeccable
 
 ### Yidag `yidag`
 
@@ -1795,11 +1980,19 @@
     > A wealthy man who spent nothing, ate little, and wore his clothing until it dissolved. He died sitting on his gold. In the hungry ghost realm, the gold is gone. The hunger is not.
   - skills: trade, thievery, daggers
   - traits: greedy, addiction
+  - notes:
+    > Meaning: "Miser" / "The Wretched One" (Sanskrit: *kṛpaṇa* = miser, pitiable person)
+    >
+    > Why greedy, addiction: Died sitting on his gold. The gold is gone. The hunger is not.
 - **Yasha** `yasha` — cost 550 · background bone_dancer
   - flavor:
     > Always one performance away from being truly seen, truly remembered. Still performing. The halls are empty now but the hunger for recognition does not consult the audience.
   - skills: performance, persuasion, comedy
   - traits: vain, melancholic
+  - notes:
+    > Meaning: "Fame" / "Glory" (Sanskrit: *yaśas* = renown, reputation)
+    >
+    > Why vain, melancholic: Always one performance away from being truly seen. The halls are empty. The hunger isn't.
 
 ### Skeleton `skeleton`
 
@@ -1807,10 +2000,18 @@
   - flavor: Non-violent by choice. She patches up whoever needs patching up, including enemies, which the party finds occasionally inconvenient.
   - skills: white_magic, medicine, grace
   - traits: generous, devout
+  - notes:
+    > Meaning: English — a healer reduced to her most literal form
+    >
+    > Why generous, devout: Non-violent by principle; patches enemies if they need it — principled care
 - **Hustle Bones** `hustle_bones` — cost 650 · background merchant
   - flavor: Has traded his finger joints for better deals, his ribs for bulk discounts, and one femur for something he won't discuss. Still in profit, last he checked.
   - skills: trade, logistics, earth_magic
   - traits: greedy, gambler
+  - notes:
+    > Meaning: English — a trader who never stops dealing, even after death
+    >
+    > Why greedy, gambler: Traded finger joints, ribs, and one femur for better deals; still in profit
 
 ### Vetala `vetala`
 
@@ -1819,6 +2020,10 @@
     > Spent centuries asking riddles at crossroads. When the charnel grounds ran short of interesting passersby, he went looking for them. He is still looking for the question no one can answer.
   - skills: learning, persuasion, ritual
   - traits: curious, sharp_memory
+  - notes:
+    > Meaning: "The Question" (Sanskrit: *praśna* = question, riddle)
+    >
+    > Why curious, sharp_memory: Centuries of riddles at crossroads; still looking for the one no one can answer
 
 ### Dralha `dralha`
 
@@ -1827,6 +2032,10 @@
     > Outcast at twelve. Followed at twenty. United the clans at thirty-five through sheer force of demonstrated possibility — showing them what happened when people stopped fighting each other long enough to eat. He never stopped being the outcast kid trying to feed people through a bad winter.
   - skills: leadership, swords, armor
   - traits: generous, brave
+  - notes:
+    > Meaning: "The Teaching" / "Dharma" (Tibetan: *bstan pa* = the doctrine of the Buddha)
+    >
+    > Why generous, brave: United clans through demonstrated possibility — always the outcast kid trying to feed people
 
 ### Iron Skeleton `skeleton_iron`
 
@@ -1835,6 +2044,10 @@
     > His commanding officer fell in battle three hundred years ago. The order to stand down was never transmitted. He kept his post. He is not pleased about having been relieved of it.
   - skills: swords, might, armor
   - traits: stubborn, war_hardened
+  - notes:
+    > Meaning: English — a vow made in iron; unbreakable and unyielding
+    >
+    > Why stubborn, war_hardened: Kept his post for three hundred years. The order to stand down was never transmitted.
 
 ### Turquoise Skeleton `skeleton_turquoise`
 
@@ -1842,6 +2055,10 @@
   - flavor: Remembers the genealogies of peoples who left no other trace anywhere in the six worlds. Recites them anyway. Someone has to.
   - skills: learning, performance, comedy
   - traits: sharp_memory, melancholic
+  - notes:
+    > Meaning: English — one who records history
+    >
+    > Why sharp_memory, melancholic: Remembers the genealogies of peoples who left no other trace anywhere in the six worlds
 
 ### Silver Skeleton `skeleton_silver`
 
@@ -1850,6 +2067,10 @@
     > Made a vow to remain until every being in this realm found its way out. Still here. Still trying. Probably the oldest being in the charnel grounds, and the least troubled by it.
   - skills: yoga, white_magic, medicine
   - traits: patient, devout
+  - notes:
+    > Meaning: "Compassion" (Tibetan: *snying rje*)
+    >
+    > Why patient, devout: Vowed to remain until every being in this realm found its way out. Still here. Still trying.
 
 ### Copper Skeleton `skeleton_copper`
 
@@ -1858,6 +2079,10 @@
     > Brokered peace between enemies by naming what each side secretly needed and daring them to deny it out loud. Now performs the same service at the Skeleton King's copper mirror court, with mixed results.
   - skills: persuasion, leadership, fire_magic
   - traits: trusting, generous
+  - notes:
+    > Meaning: "Guardian of Peace" (Sanskrit: *śānti* = peace, *pāla* = protector)
+    >
+    > Why trusting, generous: Names what each side secretly needs and dares them to deny it — empathic and open-handed
 
 ### Golden Skeleton `skeleton_golden`
 
@@ -1866,6 +2091,10 @@
     > Ran the village market for forty years. Knew every price, every shortage, every family's circumstances. Indispensable and invisible in equal measure. She finds she cannot stop being useful.
   - skills: logistics, trade, medicine
   - traits: generous, patient
+  - notes:
+    > Meaning: "Glorious Lamp" (Tibetan: *dpal sgron*)
+    >
+    > Why generous, patient: Ran the village market for forty years; knew every price, every family — indispensable and invisible
 
 ### Dré `dre`
 
@@ -1874,11 +2103,19 @@
     > Left to gather in the forest. Came back to find the village gone — a flash flood, no warning, nothing left. Drowned herself in the same river three days later. Still here, still not sure what she is waiting for.
   - skills: water_magic, enchantment, logistics
   - traits: grief_struck, melancholic
+  - notes:
+    > Meaning: "Dharma Joy" / "Joyful in the Teaching" (Tibetan: *chos skyid*)
+    >
+    > Why grief_struck, melancholic: Lost her entire village to a flash flood; still not sure what she is waiting for
 - **Nangwa** `nangwa` — cost 750 · background scholar
   - flavor:
     > Died mid-sentence, mid-proof, mid-thought. The argument is almost certainly sound. He just needs a moment to finish it. He has needed this moment for quite some time now.
   - skills: learning, space_magic, enchantment
   - traits: curious, stubborn
+  - notes:
+    > Meaning: "Light" / "Appearance" / "Clarity" (Tibetan: *snang ba*)
+    >
+    > Why curious, stubborn: Died mid-proof, mid-thought; just needs one more moment — has needed it for quite some time
 
 ### Gyelpo `gyelpo`
 
@@ -1887,11 +2124,19 @@
     > Professional curse-caster, contract work only, reliable until his final commission. His target had a solid practice of the Devourer of Curses. The invoice was never collected.
   - skills: sorcery, air_magic, ritual
   - traits: blood_handed, stubborn
+  - notes:
+    > Meaning: "Hard to Live With" (Sanskrit: *dur* = difficult, *vāsas* = dwelling/abiding) — the name of a legendarily wrathful sage in Hindu mythology
+    >
+    > Why blood_handed, stubborn: Professional curse work; final commission backfired. The invoice was never collected.
 - **Gomchen** `gomchen` — cost 850 · background monk
   - flavor:
     > A master of ten thousand sutras who found that political dominance within the monastery walls required a different kind of mastery. He acquired it. He was very good at it. He is here.
   - skills: ritual, sorcery, leadership
   - traits: lapsed, vain
+  - notes:
+    > Meaning: "Great Meditator" (Tibetan: *sgom chen*)
+    >
+    > Why lapsed, vain: Mastered ten thousand sutras and used them for monastery politics — form without substance, prestige without faith
 
 ## Animal `animal`
 
@@ -2203,10 +2448,12 @@
   - desc: Command over wind and lightning
 - **Ritual** `ritual` — general · focus / awareness
   - desc: External ceremony - mandala creation, material components to enhance spells
+  - notes: The following perks use **ritual objects** tied to schools: charms, gems, fetishes, seals. Objects are consumed or exhausted on use.
 - **Learning** `learning` — general · focus / awareness
   - desc: Knowledge of the realms, monsters, and lore
 - **Comedy** `comedy` — general · charm / awareness
   - desc: Wit, humor, and trickster dialogue options
+  - notes: Nothing evades disaster like someone who doesn't take it seriously.
 - **Guile** `guile` — general · finesse / awareness
   - desc: Stealth, sneaking, and intrigue-based interactions
 
@@ -2224,10 +2471,12 @@
   - desc: Direct magical power - instant effects like Fireball
 - **Might** `might` — general · strength / constitution
   - desc: Physical feats of strength and endurance
+  - notes: Formerly Athletics.
 - **Leadership** `leadership` — general · charm / strength
   - desc: Inspire and command others in battle and beyond
 - **Performance** `performance` — general · charm / finesse
   - desc: Passionate artistic expression - song, dance, seduction
+  - notes: Morale effects include inspiration, fear, panic, confusion, and confidence-related bonuses and penalties.
 
 ## Water `water`
 
@@ -2235,16 +2484,19 @@
   - theme: Fluidity, transformation, healing
 - **Spears** `spears` — combat · strength / finesse
   - desc: Proficiency with spears, halberds, and polearms
+  - notes: Spears have innate 2-tile melee reach.
 - **Water Magic** `water_magic` — magic · focus / awareness
   - desc: Command over water and ice
 - **Enchantment** `enchantment` — magic · focus / charm
   - desc: Status changes with duration - buffs like Stone Skin
 - **Grace** `grace` — general · finesse / awareness
   - desc: Agility, balance, and flowing movement
+  - notes: Formerly Acrobatics.
 - **Medicine** `medicine` — general · awareness / focus
   - desc: Boosts party healing rate and potion effectiveness - consumes Herbs
 - **Alchemy** `alchemy` — general · focus / awareness
   - desc: Potion brewing and transmutation
+  - notes: Consumable Power affects all potions, bombs, oils, and elixirs. Crafting Yield is a % chance to produce an extra item when crafting.
 - **Thievery** `thievery` — general · finesse / luck
   - desc: Lockpicking, pickpocketing, and acquiring things
 
@@ -2254,18 +2506,21 @@
   - theme: Stability, materialism, endurance
 - **Maces** `maces` — combat · strength / constitution
   - desc: Proficiency with blunt weapons and crushing strikes
+  - notes: Stun Chance is a flat addition to the chance of triggering a Constitution save vs Stun (1 turn) on each hit.
 - **Armor** `armor` — combat · constitution / strength
   - desc: Proficiency with shields and protective gear
 - **Earth Magic** `earth_magic` — magic · focus / constitution
   - desc: Command over stone and earth
 - **Summoning** `summoning` — magic · focus / charm
   - desc: Calling creatures and objects into existence
+  - notes: Summon HP applies to all summoned creatures regardless of school.
 - **Logistics** `logistics` — general · awareness / charm
   - desc: Reduces food consumption, increases overworld speed - consumes Food
 - **Trade** `trade` — general · charm / awareness
   - desc: Negotiate better prices and find rare goods
 - **Smithing** `smithing` — general · focus / finesse
   - desc: Passively repairs equipment and restores ammo - consumes Scrap
+  - notes: Crafting Quality improves stats on crafted items. Repair Efficiency reduces material cost and improves restoration.
 
 # Perks
 
@@ -5143,6 +5398,10 @@
 - **Dual Discipline** `dual_discipline` — needs swords 5, daggers 3
   - desc: Can dual-wield a sword and dagger. Off-hand dagger attacks deal 50% damage. Switching between any weapons is a free action.
   - flavor: Two blades, one thought.
+  - notes:
+    > Cross-skill perks (from PERKS.md): Cross-skill perks reward characters who invest across multiple disciplines. They require minimum levels in two or more skills, which may be from the same or different elements. Any character meeting the requirements can unlock the perk.
+    >
+    > **Design note:** These are tuning targets for alpha. Requirements and numbers will shift based on playtesting.
 - **Phalanx Fighter** `phalanx_fighter` — needs spears 5, armor 5
   - desc:
     > While wielding a spear and shield, allies adjacent to you gain +15% Armor. Your spear reaction attacks also trigger when adjacent allies are targeted by melee attacks.
@@ -5334,6 +5593,8 @@
   - desc:
     > Space magic mana costs reduced by 15% (multiplicative). +10% to all Space-element skill checks. Once per rest, cast your next Space spell as a free action (no action cost).
   - flavor: You have touched the emptiness between things.
+  - notes:
+    > Elemental mastery (from PERKS.md): These unlock based on total element affinity — the sum of all your skill levels in that element's 7 skills. Reaching **40 affinity** requires deep specialization across multiple skills in that element (e.g., four skills at 7+, or a broad spread reaching 40 total). These are late-game capstones.
 - **Wind Adept** `wind_adept` — also: air_affinity_25
   - desc: +1 permanent Movement Speed. Air damage +15%. Immune to Slow effects.
   - flavor: The wind does not ask permission.
