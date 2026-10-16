@@ -3,7 +3,7 @@ writing fields. Each choice is a child entry: its text is the title, and the
 text of each outcome branch is a writing field. Everything mechanical (what a
 choice requires and pays) is shown as one terse context line.
 
-The rendering is ported from tools/export_review_docs.py (export_events,
+The rendering is ported from the old tools/export_review_docs.py (export_events,
 reward_line, req_line, CHOICE_LABEL) -- copied, not imported, so this module
 stands on its own.
 """

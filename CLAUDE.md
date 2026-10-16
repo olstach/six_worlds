@@ -17,7 +17,21 @@
 - Data files (JSON) go in `resources/data/`
 
 ### Content Creation Pattern
-Olaf handles content creation (races, characters, events, spells) during offline time, then collaborates with Claude to integrate content into game systems. When given raw content, format it properly and integrate with existing JSON structures.
+All of the game's writing lives in **`CONTENT.md`** at the project root —
+Olaf's one place to edit. The JSON in `resources/data/` is what the game reads;
+`python3 tools/content_sync.py` keeps the two in agreement (dry run by default,
+`--write` applies, `--check` is what `verify_all.sh` runs).
+
+- Olaf writes new ideas in the **Inbox** at the top of `CONTENT.md`, any shape.
+  When he asks to integrate Inbox items, turn them into data in the JSON, run
+  `python3 tools/content_sync.py --write` so they appear in their proper
+  section, and delete them from the Inbox.
+- Writing fields (names, descriptions, flavour, bios, event text) edited in
+  `CONTENT.md` import into the JSON on `--write`. Numbers stay in the JSON.
+- `notes:` on any entry is kept in `tools/content_base.json` and never reaches
+  the game.
+- After changing the JSON from code, run `content_sync.py --write` too, or
+  `verify_all.sh` fails on the mismatch.
 
 ### Verifying a change
 
@@ -150,6 +164,10 @@ Instead of levels, use relative XP comparison with descriptive labels ("slightly
 - `resources/data/races.json` - Race definitions with modifiers
 - `resources/data/skills.json` - Skill definitions by category/element
 
+### Content
+- `CONTENT.md` - all the game's writing; Olaf edits here, and its Inbox takes new ideas
+- `tools/content_sync.py` - keeps `CONTENT.md` and the JSON in agreement (`--write` to apply)
+
 ### Documentation
 - `README.md` - current state, how to run and verify, where things live
 - `TODO.md` - open work, deferred decisions, designs waiting to be built
@@ -180,7 +198,7 @@ The largest remaining gaps, for orientation only:
 2. **This is a passion project** - Room for iteration and experimentation
 3. **Clarify ambiguous requirements** before implementing
 4. **Break large systems into testable components**
-5. **Olaf has a spell list** (in SPECIFICATION/chat1.txt) with ~150+ spells organized by school/level
+5. **Olaf may still have a spell list** (~150+ spells by school/level) that was never in git. If it turns up, it goes in the `CONTENT.md` Inbox
 6. **Party-wide skill bonuses** - Some skill-table payouts are prefixed
    `party_`: one member's skill pays the whole party, best member only.
    Designed, not built - see TODO. The older "logistics train" framing

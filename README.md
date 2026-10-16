@@ -74,7 +74,7 @@ scripts/autoload/    21 singletons — the game's systems
 scripts/combat/      grid, units, arena, shared vocabularies
 scripts/ui/  scripts/overworld/
 resources/data/      all content as JSON
-docs/review/         content prose, round-trips to JSON (see below)
+CONTENT.md           all the game's writing, kept in sync with the JSON (see below)
 docs/superpowers/specs/   design docs for work not yet built
 tools/               validators, verifiers, data authoring scripts
 ```
@@ -99,22 +99,44 @@ stat or an area shape:
 
 ---
 
-## Editing content
+## Writing content
 
-Prose lives in `docs/review/` as Markdown and round-trips to JSON. Edit between
-the anchors, then:
+**`CONTENT.md`** at the project root holds all of the game's writing in one
+place: realms, births, companions, skills, perks, spells, statuses, traits,
+equipment, enemies, events and quests. Edit it there. The game itself only reads
+the JSON in `resources/data/`, and a sync keeps the two in agreement.
+
+- **Names, descriptions, flavour, bios and event text** are editable. Lines
+  after a `—` and fields like costs and requirements are shown for context and
+  are not imported; edit numbers in the JSON. `(empty)` marks a gap waiting
+  for text.
+- The **name** on an entry line is editable; the id in backticks is not.
+- **`notes:`** works on any entry. It is kept by the sync and never reaches the
+  game.
+- **The Inbox** at the top is yours: write anything there, any shape, and use
+  `##` for headings inside it. The sync never touches it. When you want Inbox
+  items turned into data, ask Claude.
+- **Don't rename the group headings** (`## …`, `### …`). A renamed heading
+  can't be placed, so its entries move to the Inbox. To rename something, edit
+  the title on its entry line.
+
+After editing:
 
 ```bash
-python3 tools/import_review_docs.py           # dry run
-python3 tools/import_review_docs.py --write   # apply
-tools/verify_all.sh --quick                   # always
+python3 tools/content_sync.py           # dry run: shows what would change
+python3 tools/content_sync.py --write   # apply it
+tools/verify_all.sh --quick             # always
 ```
 
-`docs/review/README.md` has the rules. Claude's unedited prose is marked
-**NEW EVENT** / **NEW** — those want Olaf's pass.
+If the same text was changed in both `CONTENT.md` and the JSON since the last
+sync, that is a **conflict**: the sync prints both versions and writes nothing
+at all. Fix one side and run it again. Anything the sync can't place (a broken
+id, a new entry typed into a section) is moved to the Inbox with a note saying
+where it was found — never dropped.
 
-`PERKS.md` and `CHARACTERS.md` are hand-maintained design sources, not
-generated; they do not round-trip.
+`verify_all.sh` runs `content_sync.py --check` and fails while `CONTENT.md`
+and the JSON disagree, so nothing written in the document can be missing from
+a build.
 
 Perk mechanics are authored through `tools/wire_active_perks.py` and
 `tools/wire_passive_perks.py`, which regenerate `perks.json` and refuse data the

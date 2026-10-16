@@ -1,6 +1,6 @@
 # Six Worlds — TODO
 
-**Last updated:** 2026-10-15
+**Last updated:** 2026-10-16
 
 The open list. Organised as: **what to do next → what is still open → designs
 waiting to be built → what got done**. The full historical checklists (every
@@ -14,10 +14,8 @@ claimed 600 perks, 565 items, 103 traits and Godot 4.6 against a real 604, 606,
 121 and 4.7.2. One place for facts.
 
 Companion documents:
-- `PERKS.md` — perk trees per skill, hand-maintained
-- `CHARACTERS.md` — companion bios, hand-maintained
-- `docs/review/` — all realm prose; round-trips to JSON via
-  `tools/import_review_docs.py`
+- `CONTENT.md` — all the game's writing, and an Inbox for new ideas; kept in
+  agreement with the JSON by `tools/content_sync.py`
 - `docs/superpowers/specs/` — designs approved but not yet built
 - `tools/verify_all.sh` — run after any edit
 
@@ -25,45 +23,26 @@ Companion documents:
 
 ## Where to pick up
 
-- [ ] **NEXT — one master content document, and a cleaner folder.**
-      *Asked for 2026-10-15.* Content Olaf is working on is spread across
-      ~40 markdown files. Gather every `.md` that holds **content data** into
-      a single master file, the one source of truth for content not yet
-      fully in code. Then remove every doc that is not directly called by
-      code or tooling. This file is meant to be **temporary**. As each piece
-      of content is fully implemented in normalized data (`resources/data/`
-      JSON plus the loaders), it leaves the master file. When nothing is
-      left, the master file is deleted and the content lives only in the
-      code structure.
-
-      What exists today (main tree, 2026-10-15):
-      - **Content:** `PERKS.md`, `CHARACTERS.md`,
-        `docs/BACKGROUNDS_BY_BIRTH.md`, `docs/companion_quirks.md`, the 13
-        files in `docs/review/` (realm prose, events, traits, the Meadow
-        workbook), `resources/data/events/hungry_ghost_events_plan.md`,
-        `docs/SIX_WORLDS_COMPOSER_BRIEF.md`.
-      - **Design/plan:** `docs/plans/` (6 files: economy, perk wiring, the
-        resistance, spell and terrain audits), `docs/superpowers/plans/` (8)
-        and `docs/superpowers/specs/` (6). Most of these are built, so they
-        are history that git already keeps.
-      - **Project docs that stay separate:** `README.md`, `TODO.md`,
-        `CLAUDE.md`, `.claude/skills/`.
-
-      **Referenced by code or tools, so check before deleting.** Every
-      `docs/review/*.md` (round-tripped by `tools/import_review_docs.py`),
-      `PERKS.md` (10 references in tools), and `docs/plans/ECONOMY_DESIGN.md`
-      and `ECONOMY_FLOWS.md` (cited from code comments). If one of these is
-      folded into the master file, update the tool to read the master file
-      too. Otherwise the round-trip breaks.
-
-      Also found while listing: CLAUDE.md points to `SPECIFICATION/chat1.txt`
-      (the spell list), and this file points to `EDIT_LATER.md` (wound
-      design notes). **Neither file exists in the tree.** Either recover
-      them from git history into the master file, or drop the references.
-
-      To settle with Olaf when this starts: which plan/spec docs count as
-      content to keep and which are history to delete, and the master
-      file's name and location (e.g. `CONTENT.md` at the root).
+- [x] ~~**NEXT — one master content document, and a cleaner folder.**~~ —
+      **built 2026-10-16.** `CONTENT.md` at the root holds all the writing:
+      realms, births, companions, skills, perks, spells, statuses, traits,
+      equipment, enemies, events and quests, with an Inbox on top that the
+      sync never touches. It is not temporary after all: it stays the place
+      to edit for as long as development lasts, and `tools/content_sync.py`
+      keeps it and the JSON in agreement both ways (three-way, against
+      `tools/content_base.json`; a conflict writes nothing). `verify_all.sh`
+      fails while they disagree, so nothing written there can miss a build.
+      Numbers stay in the JSON. Retired: `docs/review/` and its two tools,
+      `PERKS.md`, `CHARACTERS.md`, `docs/BACKGROUNDS_BY_BIRTH.md`,
+      `docs/companion_quirks.md`, the hungry ghost events plan, and the four
+      `PERKS.md` scripts (`parse_perks.py` would have overwritten
+      `perks.json` from the stale markdown). Text that lived only in markdown
+      became `notes:` on its entry (61) or an Inbox item (4). The two missing
+      files resolved themselves: `EDIT_LATER.md` never held the wound notes
+      — they were in `docs/companion_quirks.md`, and their open items are in
+      the Inbox — and the spell list goes in the Inbox if it turns up.
+      `docs/plans/`, `docs/superpowers/` and the composer brief were left
+      alone, as agreed: history, not content.
 
 **A hell → hungry ghost → animal playthrough.** All three realms are populated
 and none of the recent content has been played; the animal realm has never been
@@ -95,7 +74,7 @@ Worth watching for specifically:
 Then, depending on appetite:
 
 - **Content:** more quests (the board works but holds three, all hell),
-  `PERKS.md`'s empty tiers, cursed items.
+  empty perk flavour (the Perks section of `CONTENT.md`), cursed items.
 - **Systems:** the three approved combat designs below, prosthetic items
   (small, unblocks a fully-coded flow), or combat-UI polish (wound icons,
   per-arm damage popups).
@@ -106,7 +85,7 @@ Then, depending on appetite:
 - [ ] **All recent prose is Claude's and wants Olaf's pass.** The three hungry
       ghost map-critical events (boss + both pass guardians), the 34 further HG
       events, the 47 animal zone events, and the 24 animal companion bios.
-      Marked **NEW EVENT** / **NEW** in `docs/review/`.
+      They are listed in §7; edit them in `CONTENT.md`.
 
 ---
 
@@ -2207,6 +2186,18 @@ And still no race uses the plan.
 - [ ] Poison's `_check_perk_status_immunity` call (`~9822`) passes no attacker.
 - [ ] Every `verify_enemy_xp` run prints ~165 "no births defined for realm
       'domain'" warnings (`character_system.gd:~554`).
+- [ ] **items.json: 52 items (cape, tool, herb, medicine, eyewear, face_cloth)
+      have types missing from `item_types`** — 40 tools, 6 capes, 2 herbs, 2
+      medicines, 1 eyewear, 1 face cloth. Found building `CONTENT.md`
+      (2026-10-16).
+- [ ] **Three duplicated JSON keys**, found normalising the data
+      (2026-10-16). Only the last value was ever read, so normalising dropped
+      the dead first one and nothing changed in play — but each looks like a
+      typo for a different key: Karka Crusher `crushing: 15` then `-10`
+      (`animal_archetypes.json`), Carrion Worm `crushing: 10` then `-10`
+      (`hungry_ghost_archetypes.json`), the Ice_Sheet summon `ice: 100` then
+      `50` (`summon_templates.json`). Recover the intended values from git
+      (`git show 5370c04^:<file>`) and decide.
 
 **UI**
 
@@ -2235,7 +2226,7 @@ Kept in full: these are settled designs with no implementation yet.
 
 - Deities are **translated** into English ("Adamantine Terrifier", not
   "Vajrabhairava") — avoids publishing secret names while keeping the meaning
-- Roster drawn from the mantra list in `PERKS.md`; masks as optional head-slot
+- Roster drawn from the mantra perks (`is_mantra` in `perks.json`); masks as optional head-slot
   items granting a large Deity Yoga bonus
 - **Relationship stages**: Heard → Connected → Practicing → Established →
   Realized (persists cross-lifetime from Practicing+)
@@ -2562,7 +2553,7 @@ a full session's first hour before it was checked against the code.
 | `docs/plans/2026-03-01-companions-*.md` (4) | Completed plans; the system shipped. Specs now live in `docs/superpowers/specs/`. |
 | `docs/plans/2026-03-02-recruitment-*.md` (2) | Same. |
 
-Kept: `PERKS.md` and `CHARACTERS.md` (hand-maintained design sources),
+Kept (the first three since retired for `CONTENT.md`, 2026-10-16): `PERKS.md` and `CHARACTERS.md` (hand-maintained design sources),
 `docs/review/` (round-trips to JSON), `docs/plans/PERK_WIRING_PLAN.md`
 (corrected and current), `CLAUDE.md` (agent working agreement).
 
