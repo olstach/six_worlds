@@ -87,6 +87,14 @@ var is_stealthed: bool = false             # Whether this unit is in stealth (sh
 var see_through_stealth: bool = false      # Divine Eye: can target stealthed/invisible units
 var status_effects: Array = []  # Active status effects on this unit
 
+# Unbroken (Armor 10): the first time each combat this unit would drop below
+# 25% HP it stops there instead, and its Armor doubles until the end of that
+# turn. `unbroken_used` makes it once per combat (a fresh CombatUnit is built
+# for every fight); `unbroken_armor_bonus` is the extra Armor get_armor() adds,
+# cleared by CombatManager's turn_ended signal (see trigger_unbroken).
+var unbroken_used: bool = false
+var unbroken_armor_bonus: int = 0
+
 # Active skill stat modifiers: [{stat, value, duration}] — applied by _apply_stat_modifier()
 # Duration ticks down at each turn start; stat getters sum all matching modifiers.
 var stat_modifiers: Array[Dictionary] = []
@@ -883,7 +891,46 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_armor = mantra_stat_bonuses.get("armor", 0)
-	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_continuous_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor") + _get_conditional_perk_bonus("armor")
+	return derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_continuous_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor") + _get_conditional_perk_bonus("armor") + unbroken_armor_bonus
+
+
+## Unbroken (Armor 10 perk), first half: "The first time each combat you would
+## drop below 25% HP, you instead stop at 25% and all your Armor values double
+## until end of turn."
+##
+## Called by CombatManager just before HP is taken, with the damage about to
+## land. Returns the damage to apply instead — unchanged unless the perk fires.
+## (The second half, wounds downgraded one severity, is in WoundSystem.)
+func trigger_unbroken(damage: int) -> int:
+	if unbroken_used or damage <= 0 or current_hp <= 0:
+		return damage
+	if not PerkSystem or not PerkSystem.has_perk(character_data, "unbroken"):
+		return damage
+	# The floor: a quarter of max HP, never less than 1.
+	var floor_hp: int = maxi(1, ceili(max_hp * 0.25))
+	# Temp HP soaks damage before HP does (see take_damage), so only what gets
+	# past it can push HP down.
+	var hp_loss: int = maxi(0, damage - temp_hp)
+	# Already at or below the floor: nothing to "drop below", so it waits.
+	# Not dropping below it this hit: likewise.
+	if current_hp < floor_hp or current_hp - hp_loss >= floor_hp:
+		return damage
+	unbroken_used = true
+	# Double Armor: add a bonus equal to what Armor is right now.
+	unbroken_armor_bonus = maxi(0, get_armor())
+	# "Until end of turn" — whoever's turn it is now. One-shot, so it removes
+	# itself; the bonus is gone the moment that turn ends.
+	if not CombatManager.turn_ended.is_connected(_on_unbroken_turn_ended):
+		CombatManager.turn_ended.connect(_on_unbroken_turn_ended, CONNECT_ONE_SHOT)
+	CombatManager.combat_log.emit("%s is unbroken! They stand fast at %d HP, their armour doubled."
+		% [unit_name, floor_hp])
+	# Let temp HP take its share, then stop HP exactly at the floor.
+	return mini(damage, temp_hp) + (current_hp - floor_hp)
+
+
+## The turn Unbroken fired in has ended: the doubled Armor goes.
+func _on_unbroken_turn_ended(_unit: Node) -> void:
+	unbroken_armor_bonus = 0
 
 
 ## ── Conditional passive perk effects ─────────────────────────────────────────
@@ -1006,17 +1053,13 @@ func _perk_condition_met(condition: String, target: Node = null) -> bool:
 	return false
 
 
-## True when this unit's body armour is heavy — a chest piece with a Strength
-## requirement. That requirement IS the game's definition of heavy armour:
-## ItemSystem.generate_armor() writes one exactly for the heavy armour types,
-## and the hand-made heavy pieces (chainmail, lamellar, iron) all carry one,
-## while leather and padding do not. A helmet alone does not make you heavy.
+## True when this unit wears ANY heavy armour piece (one with a Strength
+## requirement) in any armour slot — head, chest, legs, feet or a hand.
+## It is the exact opposite of the `unarmored_or_light` condition, so a unit
+## is always one or the other. The definition lives in ItemSystem
+## (is_heavy_armor_piece / wears_heavy_armor), shared with every other reader.
 func is_wearing_heavy_armor() -> bool:
-	var chest_id: String = character_data.get("equipment", {}).get("chest", "")
-	if chest_id == "":
-		return false
-	var chest: Dictionary = ItemSystem.get_item(chest_id)
-	return int(chest.get("requirements", {}).get("strength", 0)) > 0
+	return ItemSystem.wears_heavy_armor(character_data.get("equipment", {}))
 
 
 ## True when an enemy stands directly behind this unit, relative to its facing.

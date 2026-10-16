@@ -3,7 +3,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 8
+const EXPECTED_CHECKS: int = 9
 
 
 func _ready() -> void:
@@ -15,6 +15,7 @@ func _ready() -> void:
 	_check_values_match_the_tiering()
 	_check_ritual_metal_coding()
 	_check_ritual_implement_coding()
+	_check_generated_armour_weight()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -264,4 +265,42 @@ func _check_ritual_implement_coding() -> void:
 	if not wrong.is_empty():
 		_fail("%d implements are mis-coded for their type: %s"
 			% [wrong.size(), wrong.slice(0, 4)])
+	_done()
+
+
+## Generated armour: a heavy base type in a hard material needs Strength in
+## EVERY slot (the old rule only asked at base armour >= 3, so helmets and
+## gauntlets were always light); a soft material or a light base never does;
+## and the numbers line up with the hand-made iron pieces.
+func _check_generated_armour_weight() -> void:
+	# [type, material, expected Strength (0 = light)]
+	var cases: Array = [
+		["armor", "iron", 12],       # chainmail asks 12
+		["helmet", "iron", 10],      # iron_helmet asks 10
+		["gauntlets", "iron", 10],   # iron_gauntlets ask 10
+		["greaves", "iron", 11],
+		["shield", "iron", 11],
+		["armor", "vajra", 16],
+		["helmet", "bone", 7],
+		["armor", "leather", 0],     # leather armour is light
+		["gauntlets", "hide", 0],
+		["boots", "iron", 0],        # not a heavy base type
+		["robe", "iron", 0],
+	]
+	for case in cases:
+		var item_id: String = ItemSystem.generate_armor(case[0], "common", case[1], "common")
+		var item: Dictionary = ItemSystem.get_item(item_id)
+		var strength: int = int(item.get("requirements", {}).get("strength", 0))
+		if strength != int(case[2]):
+			_fail("generated %s %s asks Strength %d, expected %d"
+				% [case[1], case[0], strength, case[2]])
+		if ItemSystem.is_heavy_armor_piece(item) != (int(case[2]) > 0):
+			_fail("generated %s %s: is_heavy_armor_piece disagrees with its Strength"
+				% [case[1], case[0]])
+	# A unit wearing any one heavy piece wears heavy armour; a heavy item
+	# outside the armour slots (a shield in the off hand) does not count.
+	if not ItemSystem.wears_heavy_armor({"head": "iron_helmet", "chest": "leather_vest"}):
+		_fail("an iron helmet over a leather vest is not read as heavy armour")
+	if ItemSystem.wears_heavy_armor({"chest": "leather_vest", "weapon_off": "iron_gauntlets"}):
+		_fail("a heavy item outside the armour slots was read as worn armour")
 	_done()

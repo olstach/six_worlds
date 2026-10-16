@@ -1,5 +1,6 @@
 {
 	"_comment": "Equipment generation tables: materials, quality, traits, and base stats for procedural weapons/armor",
+	"_comment_heavy": "Heavy armour: an armor_bases entry with \"heavy\": true, made of a material without \"light_material\": true. generate_armor gives exactly those pieces a Strength requirement, and a Strength requirement is what the game reads as heavy (ItemSystem.is_heavy_armor_piece).",
 	"materials": {
 		"wood": {
 			"tier": 0,
@@ -144,6 +145,7 @@
 			"_note": "Highest earthly ritual material; solar, incorruptible"
 		},
 		"cloth": {
+			"light_material": true,
 			"tier": 0,
 			"damage_mult": 0.4,
 			"armor_mult": 0.35,
@@ -162,6 +164,7 @@
 			"_note": "Soft goods. Robes and hats had no material that fitted them."
 		},
 		"leather": {
+			"light_material": true,
 			"tier": 1,
 			"damage_mult": 0.5,
 			"armor_mult": 0.6,
@@ -208,6 +211,7 @@
 			"_note": "Shell. Ritual implements — dorje, drilbu, khatvanga."
 		},
 		"hide": {
+			"light_material": true,
 			"tier": 1,
 			"damage_mult": 0.5,
 			"armor_mult": 0.7,
@@ -264,6 +268,7 @@
 			]
 		},
 		"silk": {
+			"light_material": true,
 			"tier": 2,
 			"damage_mult": 0.4,
 			"armor_mult": 0.3,
@@ -577,6 +582,7 @@
 			"_note": "Mala bead — the sea-stone. Water."
 		},
 		"cotton": {
+			"light_material": true,
 			"tier": 1,
 			"damage_mult": 0.4,
 			"armor_mult": 0.4,
@@ -730,6 +736,7 @@
 	},
 	"armor_bases": {
 		"helmet": {
+			"heavy": true,
 			"armor": 2,
 			"dodge": 0,
 			"weight": 4,
@@ -745,6 +752,7 @@
 			"max_mana": 5
 		},
 		"armor": {
+			"heavy": true,
 			"armor": 6,
 			"dodge": -3,
 			"weight": 20,
@@ -767,6 +775,7 @@
 			"slot": "hand_l"
 		},
 		"gauntlets": {
+			"heavy": true,
 			"armor": 2,
 			"dodge": 0,
 			"weight": 4,
@@ -782,6 +791,7 @@
 			"slot": "legs"
 		},
 		"greaves": {
+			"heavy": true,
 			"armor": 4,
 			"dodge": -2,
 			"weight": 8,
@@ -796,6 +806,7 @@
 			"slot": "feet"
 		},
 		"shield": {
+			"heavy": true,
 			"armor": 3,
 			"dodge": 5,
 			"weight": 8,

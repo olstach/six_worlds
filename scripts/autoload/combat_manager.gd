@@ -2818,6 +2818,11 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 					combat_log.emit("%s's mantric armor is destroyed!" % unit.unit_name)
 				break
 
+	# Unbroken (Armor 10): once per combat, stop at 25% HP and double Armor.
+	# Before the death-saves below, so it is spent first.
+	if damage > 0 and unit.has_method("trigger_unbroken"):
+		damage = unit.trigger_unbroken(damage)
+
 	# Ancestors_Blessing: death_resistance — survive one otherwise-fatal hit at 1 HP,
 	# consuming the blessing.
 	if damage >= unit.current_hp and unit.current_hp > 0 and _unit_has_effect(unit, "death_resistance"):
@@ -9669,7 +9674,7 @@ func _unit_is_unarmored(unit: Node, allow_light: bool = false) -> bool:
 		if not allow_light:
 			return false
 		# Light armour is allowed; heavy (needs Strength) is not.
-		if int(item.get("requirements", {}).get("strength", 0)) > 0:
+		if ItemSystem.is_heavy_armor_piece(item):
 			return false
 	return true
 

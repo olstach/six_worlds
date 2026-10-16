@@ -149,7 +149,7 @@ const PERK_CONDITIONS: Array[String] = [
 	"wielding_dagger", "wielding_staff", "wielding_ranged", "unarmed",
 	"not_flanked", "did_not_move", "moved_this_turn", "from_stealth",
 	"below_half_hp", "above_half_hp",
-	"wearing_heavy_armor",   # body armour with a Strength requirement
+	"wearing_heavy_armor",   # any worn armour piece with a Strength requirement
 	"unarmored_or_light",    # CombatManager._unit_is_unarmored(unit, true)
 	"first_attack_combat",   # no weapon attack made yet this fight
 	"first_attack_turn",     # no weapon attack made yet this turn
