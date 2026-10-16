@@ -983,7 +983,7 @@
 				"hp_shield"
 			],
 			"grants_resistance": {
-				"non_physical": 25
+				"magic": 25
 			},
 			"duration_type": "until_destroyed",
 			"dispellable": false
@@ -1181,7 +1181,7 @@
 				"defense_bonus"
 			],
 			"grants_resistance": {
-				"non_physical": 15
+				"magic": 15
 			},
 			"duration_type": "spellpower",
 			"dispellable": true,
@@ -2428,7 +2428,7 @@
 				"dodge_bonus"
 			],
 			"grants_resistance": {
-				"non_physical": 15
+				"magic": 15
 			},
 			"duration_type": "spellpower",
 			"dispellable": true,

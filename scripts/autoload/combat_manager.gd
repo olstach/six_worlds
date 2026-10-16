@@ -6554,8 +6554,9 @@ func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: 
 				return
 			# A standing field that charmed everyone beside it every single turn
 			# would end fights on its own, so a payload may fire on a roll.
+			# The owner's Ritual raises that chance like any other status roll.
 			var chance: float = float(payload.get("chance", 1.0))
-			if chance < 1.0 and randf() > chance:
+			if chance < 1.0 and randf() > ritual_chance(source, chance):
 				return
 
 			# Or on a saving throw, which is the better answer when the effect
@@ -6569,7 +6570,8 @@ func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: 
 				var passes: int = int(target.aura_save_passes.get(aura_id, 0)) \
 					if "aura_save_passes" in target else 0
 				var dc: int = int(save_spec.get("dc", 12)) \
-					- passes * int(save_spec.get("dc_drop_per_pass", 0))
+					- passes * int(save_spec.get("dc_drop_per_pass", 0)) \
+					+ status_save_dc_bonus(source)
 				var roll: Dictionary = SaveSystem.roll(
 					target, save_spec.get("attribute", "focus"), maxi(1, dc))
 				if roll.success:
@@ -6743,15 +6745,15 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 
 				var give: String = retal.get("status", "")
 				if give != "" and not attacker.has_status(give):
-					if randf() <= float(retal.get("status_chance", 1.0)):
+					if randf() <= ritual_chance(defender, float(retal.get("status_chance", 1.0))):
 						_apply_status_effect(attacker, give,
 							int(retal.get("status_duration", 1)), 0, defender)
 						status_effect_triggered.emit(defender, status_name, 0, "reactive")
 
 		# Magnetizing Aura — chance to charm melee attackers
 		if "charm_chance_on_enemy_melee_approach" in effects and is_melee:
-			# 25% chance to charm the attacker for 1 turn
-			if randf() < 0.25:
+			# 25% chance to charm the attacker for 1 turn, raised by Ritual
+			if randf() < ritual_chance(defender, 0.25):
 				_apply_status_effect(attacker, "Charmed", 1)
 				status_effect_triggered.emit(defender, status_name, 0, "reactive")
 
@@ -7717,6 +7719,16 @@ func status_save_dc_bonus(applier: Node) -> int:
 	var pct: float = float(applier.character_data.get("derived", {}).get(
 		"status_effect_chance_pct", 0.0))
 	return int(pct / SaveSystem.PERCENT_PER_ROLL_POINT)
+
+
+## effective_status_chance for a unit and a 0.0-1.0 chance, the scale auras,
+## retaliation and the hard-coded perk procs use. `source` may be null (a
+## ground zone has no owner), and then the chance is returned unchanged.
+func ritual_chance(source: Node, chance: float) -> float:
+	if chance >= 1.0 or source == null or not is_instance_valid(source) \
+			or not "character_data" in source:
+		return chance
+	return effective_status_chance(source.character_data, chance * 100.0) / 100.0
 
 
 ## True when an effect string resolves to something that actually happens.
@@ -10364,14 +10376,14 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	# Put Your Weight Into It (Might 1): 15% chance to knockback 1 tile OR stun 1 turn on melee hit
 	if _unit_has_perk(attacker, "put_your_weight_into_it"):
 		var is_melee_hit = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
-		if is_melee_hit and randf() < 0.15:
+		if is_melee_hit and randf() < ritual_chance(attacker, 0.15):
 			if randf() < 0.5:
 				_apply_on_hit_status(defender, "Knocked_Down", 1, 0, attacker)
 			else:
 				_apply_on_hit_status(defender, "Stunned", 1, 0, attacker)
 
 	# Play Dirty (Guile 2): 20% chance to apply a random minor debuff on any hit
-	if _unit_has_perk(attacker, "play_dirty") and randf() < 0.20:
+	if _unit_has_perk(attacker, "play_dirty") and randf() < ritual_chance(attacker, 0.20):
 		var dirty_debuffs = ["Weakened", "Slowed", "Blinded", "Dodge_Debuff", "Damage_Debuff"]
 		_apply_on_hit_status(defender, dirty_debuffs[randi() % dirty_debuffs.size()], 1, 0, attacker)
 

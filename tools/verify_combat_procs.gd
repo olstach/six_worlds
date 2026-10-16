@@ -12,7 +12,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 15
+const EXPECTED_CHECKS: int = 16
 
 
 func _ready() -> void:
@@ -22,6 +22,7 @@ func _ready() -> void:
 	_check_luck_feeds_crit_and_loot()
 	_check_status_chance_reaches_every_roll_site()
 	_check_ritual_raises_status_save_dc()
+	_check_ritual_reaches_auras_retaliation_and_perk_procs()
 	_check_loot_chance_reaches_the_jackpot()
 	_check_effective_luck_reaches_the_loot()
 	_check_luck_weights_a_lucky_find()
@@ -151,6 +152,34 @@ func _check_status_chance_reaches_every_roll_site() -> void:
 			% sites + "4 (oils, spell status effects, bombs, weapon procs)")
 	if not src.contains("wielder_data, float(passive[key])"):
 		_fail("weapon status procs do not go through effective_status_chance")
+	_done()
+
+
+## Auras, retaliation and the hard-coded perk procs (Magnetizing Aura, Play
+## Dirty, Put Your Weight Into It) roll on a 0.0-1.0 scale and used to skip
+## Ritual entirely. They go through ritual_chance now; a ground zone, which
+## has no owner, passes null and keeps its chance as written.
+func _check_ritual_reaches_auras_retaliation_and_perk_procs() -> void:
+	var ritualist := _unit({"ritual": 10})
+	var plain := _unit({})
+	if CombatManager.ritual_chance(ritualist, 0.25) <= 0.25:
+		_fail("Ritual 10 left a 25%% aura/perk chance at %.3f"
+			% CombatManager.ritual_chance(ritualist, 0.25))
+	if not is_equal_approx(CombatManager.ritual_chance(plain, 0.25), 0.25):
+		_fail("no Ritual changed a 25% chance")
+	if not is_equal_approx(CombatManager.ritual_chance(null, 0.3), 0.3):
+		_fail("an ownerless ground zone's chance was changed")
+	if CombatManager.ritual_chance(ritualist, 1.0) != 1.0:
+		_fail("a certain effect stopped being certain")
+	var f := FileAccess.open("res://scripts/autoload/combat_manager.gd", FileAccess.READ)
+	var src := f.get_as_text() if f != null else ""
+	for needle in ["ritual_chance(source, chance)", "status_save_dc_bonus(source)",
+			'ritual_chance(defender, float(retal.get("status_chance"',
+			"ritual_chance(defender, 0.25)", "ritual_chance(attacker, 0.15)",
+			"ritual_chance(attacker, 0.20)"]:
+		if not src.contains(needle):
+			_fail("combat_manager.gd no longer contains '%s' — a status roll "
+				% needle + "has slipped out from under Ritual")
 	_done()
 
 

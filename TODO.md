@@ -2105,14 +2105,17 @@ And still no race uses the plan.
   boss = boss tier with a fixed band. "hard" is the commonest word in the
   data (103 of 203 fights), so the average fight grew ~11%. Tune in
   `encounter_budgets.json` → `difficulty`.
-- **`status_effect_chance_pct` scales two ways:** ×1.3 on a chance roll, but
+- ~~**`status_effect_chance_pct` scales two ways**~~ — **kept as is, Olaf
+  2026-10-16:** ×1.3 on a chance roll, but
   +30 percentage points (as DC) on a save. Consistent with how SaveSystem
   treats every other percentage, inconsistent with itself.
-- **Should Ritual reach** aura `grant_status`, retaliation `status_chance`
-  and the hard-coded perk procs (Magnetizing Aura, Play Dirty, Put Your
-  Weight Into It)?
-- **"Magic resistance" blocks poison** through `non_physical` and mantra
-  `magic_resist`, while Yoga's equanimity excludes it. Probably unintended.
+- ~~**Should Ritual reach** aura `grant_status`, retaliation `status_chance`
+  and the hard-coded perk procs~~ — **yes, Olaf 2026-10-16; done** through
+  `CombatManager.ritual_chance` (aura saves get the DC bonus).
+- ~~**"Magic resistance" blocks poison**~~ — **unintended, Olaf 2026-10-16;
+  fixed.** The status scope is `magic` now (was `non_physical`) and mantras
+  cover magic types only. Poison is not magic.
+  - [ ] Idea from Olaf: a Yoga and/or Might perk that resists poison.
 - **Investment payouts, ritual tooltip wording and the parry definition**
   (a melee miss against someone holding a melee weapon) are all first drafts.
 

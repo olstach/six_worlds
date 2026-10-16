@@ -1055,7 +1055,7 @@ _other_res = {k for k in _dt_data.get("other_resistances", {}) if not k.startswi
 _dt_src = open(os.path.join(ROOT, "scripts/combat/damage_type.gd"), encoding="utf-8").read()
 _dt_categories = _gd_list(_dt_src, "CATEGORIES")
 # Group keys a status may write in grants_resistance / grants_vulnerability —
-# `all`, `non_physical`. Read from the class, like the categories.
+# `all`, `magic`. Read from the class, like the categories.
 _dt_scopes = _gd_list(_dt_src, "RESISTANCE_SCOPES")
 if not _dt_scopes:
     err("data->code", "could not read DamageType.RESISTANCE_SCOPES — status "
@@ -1131,7 +1131,7 @@ def _walk_damage_types(node, where):
                         f"'{_base}', which is not a damage type anything deals")
             elif k in ("resistances", "grants_resistance", "grants_vulnerability") \
                     and isinstance(v, dict):
-                # A status may also name a scope (`all`, `non_physical`); a
+                # A status may also name a scope (`all`, `magic`); a
                 # unit's own `resistances` block may not, because nothing
                 # there would read it.
                 _scopes_ok = k != "resistances"

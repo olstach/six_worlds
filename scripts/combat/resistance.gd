@@ -233,7 +233,6 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 	#    These were twenty named effect strings ("physical_immunity",
 	#    "fire_resistance_minus_50", ...) translated by a table in this file
 	#    until 2026-10-15. They are data on the statuses now.
-	var physical: bool = DamageType.is_physical(damage_type)
 	if "status_effects" in unit:
 		for effect in unit.status_effects:
 			var status_name: String = str(effect.get("status", ""))
@@ -250,8 +249,9 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 				if DamageType.scope_covers(str(key), damage_type):
 					_add(acc, -float(vuln[key]), status_name)
 
-	# 3. Mantras, which only ever covered magic.
-	if not physical and "mantra_stat_bonuses" in unit:
+	# 3. Mantras, which cover magic only — not poison, which is no more magic
+	#    than a sword is.
+	if DamageType.is_magic(damage_type) and "mantra_stat_bonuses" in unit:
 		var mantra: float = float(unit.mantra_stat_bonuses.get("magic_resist", 0))
 		if mantra != 0.0:
 			_add(acc, mantra, "mantra")

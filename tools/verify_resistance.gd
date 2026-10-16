@@ -567,7 +567,7 @@ func _check_statuses_declare_their_resistances() -> void:
 	var unit := _make_unit()
 	# [status, damage type, expected total]. One row per shape the old table
 	# had: physical covering its subtypes, a vulnerability, an element under a
-	# school's old name, the non_physical scope, and `all`.
+	# school's old name, the magic scope, and `all`.
 	for entry in [
 			["Frozen", "piercing", -50.0],
 			["Petrified", "slashing", 100.0],
@@ -578,7 +578,8 @@ func _check_statuses_declare_their_resistances() -> void:
 			["Fire_Vulnerable_50", "fire", -50.0],
 			["Praying", "white", 15.0],
 			["Praying", "piercing", 0.0],
-			["Rainbow_Cloak", "poison", 15.0],
+			["Rainbow_Cloak", "poison", 0.0],
+			["Rainbow_Cloak", "fire", 15.0],
 			["Mantric_Armor", "black", 25.0],
 			["Mantric_Armor", "physical", 0.0],
 			["Invulnerable", "fire", 100.0],

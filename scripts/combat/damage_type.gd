@@ -37,12 +37,16 @@ const CATEGORIES: Array[String] = [
 ## own `resistances` block and aura payloads name one type each.
 ##
 ##   all           every damage type (Invulnerable)
-##   non_physical  everything that is not force: the elements, white, black
-##                 and poison (Mantric Armor, Praying, Rainbow Cloak)
+##   magic         every type marked `magic` in damage_types.json: the
+##                 elements, white and black (Mantric Armor, Praying, Rainbow
+##                 Cloak). Not poison — venom is a body's problem, not magic,
+##                 even when a spell delivers it. This scope was once
+##                 `non_physical` and covered poison too; Olaf ruled that out
+##                 2026-10-16.
 ##
 ## They used to be effect strings with a table in Resistance translating them,
 ## `immune_to_all_damage` and friends. See scope_covers() for what each means.
-const RESISTANCE_SCOPES: Array[String] = ["all", "non_physical"]
+const RESISTANCE_SCOPES: Array[String] = ["all", "magic"]
 
 static var _types: Dictionary = {}
 static var _other: Dictionary = {}
@@ -112,8 +116,8 @@ static func scope_covers(key: String, damage_type: String) -> bool:
 	match key:
 		"physical":
 			return is_physical(damage_type)
-		"non_physical":
-			return not is_physical(damage_type)
+		"magic":
+			return is_magic(damage_type)
 		"all":
 			return true
 	return false

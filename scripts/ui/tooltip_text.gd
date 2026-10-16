@@ -304,14 +304,14 @@ static func _status_spread_line(spread: Dictionary) -> String:
 
 ## One tooltip line for a status's resistance key: "Immune to fire",
 ## "+25% physical resistance", "-50% ice resistance". `key` may be a scope —
-## `all` reads as "all damage", `non_physical` as "non-physical damage".
+## `all` reads as "all damage", `magic` as "magic damage".
 static func _resistance_bullet(key: String, amount: float) -> String:
 	var what: String
 	match key:
 		"all":
 			what = "all damage"
-		"non_physical":
-			what = "non-physical damage"
+		"magic":
+			what = "magic damage"
 		_:
 			what = DamageType.display_name(key).to_lower()
 	if amount >= Resistance.DECLARED_IMMUNITY:
