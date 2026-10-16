@@ -269,8 +269,8 @@ func player_died() -> void:
 ## racks belonging to worlds that no longer exist. Before this existed,
 ## `start_new_run` reset five things and the new-game path reset fifteen, and
 ## the two had already drifted apart.
-func reset_for_new_life() -> void:
-	gold = 100
+func reset_for_new_life(start_gold: int = 100) -> void:
+	gold = start_gold
 	food = 50
 	herbs = 20
 	scrap = 15
@@ -290,6 +290,9 @@ func reset_for_new_life() -> void:
 	# would yank the new one "home" to it.
 	last_healing_location = {}
 	planar_return = {}
+	# The fallen belong to the life that just ended; they must not be
+	# restorable (or shown) in the next one.
+	CharacterSystem.fallen.clear()
 	# Quest and event state belongs to the world that just ended: a new life
 	# rolls a new world, so nothing in it can be half-done or already finished.
 	# (Decided by Olaf 2026-10-16. If a flag ever needs to outlive a death —
@@ -309,10 +312,10 @@ func reset_for_new_life() -> void:
 
 
 ## Start new run after reincarnation
-func start_new_run(spawn_world: String) -> void:
+func start_new_run(spawn_world: String, start_gold: int = 100) -> void:
 	is_alive = true
 	current_world = spawn_world
-	reset_for_new_life()
+	reset_for_new_life(start_gold)
 
 ## Get info about current world
 func get_current_world_info() -> Dictionary:
@@ -789,6 +792,7 @@ func get_save_data() -> Dictionary:
 		"active_quests": active_quests.duplicate(true),
 		"completed_quest_ids": completed_quest_ids.duplicate(),
 		"hours_elapsed": hours_elapsed,
+		"planar_return": planar_return.duplicate(true),
 	}
 
 
@@ -819,6 +823,7 @@ func load_save_data(data: Dictionary) -> void:
 		completed_quest_ids.append(str(id))
 	overworld_log = []  # session-only; always start fresh on load
 	hours_elapsed = data.get("hours_elapsed", 0)
+	planar_return = data.get("planar_return", {}).duplicate(true)
 
 	# Restore unlocked worlds
 	unlocked_worlds.clear()

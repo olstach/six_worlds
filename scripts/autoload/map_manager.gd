@@ -499,6 +499,7 @@ func load_map(map_id: String) -> bool:
 	visited_tiles.clear()
 	collected_objects.clear()
 	defeated_mobs.clear()
+	searched_tiles.clear()
 
 	# Try static JSON map first
 	var file_path = "res://resources/data/maps/%s.json" % map_id

@@ -310,8 +310,9 @@ func _on_begin_new_life() -> void:
 
 	# Reset game state for new run
 	GameState.is_party_wiped = false
-	GameState.gold = 50  # Starting gold for new life (less than first run)
-	GameState.start_new_run(realm)
+	# Starting gold for a new life (less than the first run's 100). Passed in
+	# because start_new_run resets gold and would overwrite a value set before.
+	GameState.start_new_run(realm, 50)
 
 	# Clear map so overworld generates a fresh one for the new realm
 	MapManager.current_map_id = ""
