@@ -643,10 +643,25 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 		"ring1", "ring2", "amulet", "trinket1", "trinket2"
 	]
 
+	# What heavy armour costs in Dodge and Movement, summed as we go, for
+	# Heavy Armor Training below.
+	var heavy_penalty: Dictionary = {"dodge": 0, "movement": 0}
 	for slot in slots_to_check:
 		var item_id = equipment.get(slot, "")
 		if item_id != "":
 			_add_item_stats(item_id, bonuses)
+			if is_armour_slot(slot) and is_heavy_armor_piece(get_item(item_id)):
+				var piece_stats: Dictionary = get_item(item_id).get("stats", {})
+				for stat in heavy_penalty:
+					heavy_penalty[stat] += mini(0, int(piece_stats.get(stat, 0)))
+
+	# Heavy Armor Training (Armor 1): "Reduce movement and dodge penalties
+	# from heavy armor by 50%." Gives back half of what the heavy pieces take
+	# (rounded in the wearer's favour: a -5 Dodge cuirass costs -2). Light
+	# armour's penalties are not touched — the perk is about heavy armour.
+	if PerkSystem and PerkSystem.has_perk(character, "heavy_armor_training"):
+		for stat in heavy_penalty:
+			bonuses[stat] += roundi(-heavy_penalty[stat] * 0.5)
 
 	# Weapon set (active only)
 	var active_set = character.get("active_weapon_set", 1)

@@ -16,6 +16,8 @@ var failures: int = 0
 func _ready() -> void:
 	_check_unconditional_stat_bonus()
 	_check_resistances()
+	_check_heavy_armor_training()
+	_check_armored_skin()
 	_check_stat_conversion()
 	_check_conditional_bonus()
 	_check_trigger()
@@ -32,6 +34,7 @@ func _ready() -> void:
 	_check_target_conditions()
 	_check_terrain_condition()
 	_check_conditional_crit_reaches_the_getter()
+	_check_living_fortress()
 	_check_trigger_conditions()
 	_check_combat_start_and_turn_start()
 	_check_take_damage_and_ally_damaged()
@@ -116,6 +119,57 @@ func _check_resistances() -> void:
 	var other_resists: Dictionary = other.derived.get("resistances", {})
 	if other_resists.get("bleed", 0) != 25:
 		_fail("stone_body: bleed resistance is %s, expected 25" % other_resists.get("bleed", 0))
+
+
+## Heavy Armor Training: "Reduce movement and dodge penalties from heavy armor
+## by 50%." Chainmail (heavy, Dodge -5) costs only -2 with the perk; a light
+## piece's penalty (generated leather armour, Dodge -3) is untouched.
+func _check_heavy_armor_training() -> void:
+	var plain := _blank()
+	var bare_dodge: int = int(plain.derived.get("dodge", 0))
+	plain["equipment"]["chest"] = "chainmail"
+	CharacterSystem.update_derived_stats(plain)
+	var mail_cost: int = int(plain.derived.get("dodge", 0)) - bare_dodge
+	if mail_cost >= 0:
+		_fail("heavy_armor_training: chainmail costs no Dodge to begin with (%d)" % mail_cost)
+	var trained := _blank()
+	trained["equipment"]["chest"] = "chainmail"
+	_grant(trained, "heavy_armor_training")
+	var trained_cost: int = int(trained.derived.get("dodge", 0)) - bare_dodge
+	if trained_cost != mail_cost - roundi(mail_cost * 0.5):
+		_fail("heavy_armor_training: chainmail costs %d Dodge with the perk, %d without — expected half"
+			% [trained_cost, mail_cost])
+	# Light armour keeps its penalty.
+	var leather: String = ItemSystem.generate_armor("armor", "common", "leather", "common")
+	var light_plain := _blank()
+	light_plain["equipment"]["chest"] = leather
+	CharacterSystem.update_derived_stats(light_plain)
+	var light_trained := _blank()
+	light_trained["equipment"]["chest"] = leather
+	_grant(light_trained, "heavy_armor_training")
+	if light_plain.derived.get("dodge", 0) != light_trained.derived.get("dodge", 0):
+		_fail("heavy_armor_training: changed a LIGHT armour's Dodge penalty")
+
+
+## Armored Skin: "When wearing heavy armor, gain +10% resistance to all
+## elemental damage." Nothing out of armour or in light armour; +10 to fire,
+## ice, lightning and space in any heavy piece.
+func _check_armored_skin() -> void:
+	var character := _blank()
+	_grant(character, "armored_skin")
+	if character.derived.get("resistances", {}).get("fire", 0) != 0:
+		_fail("armored_skin: fire resistance without any armour on")
+	character["equipment"]["chest"] = "leather_vest"
+	CharacterSystem.update_derived_stats(character)
+	if character.derived.get("resistances", {}).get("fire", 0) != 0:
+		_fail("armored_skin: fire resistance in light armour")
+	character["equipment"]["head"] = "iron_helmet"
+	CharacterSystem.update_derived_stats(character)
+	var resists: Dictionary = character.derived.get("resistances", {})
+	for element in ["fire", "ice", "lightning", "space"]:
+		if resists.get(element, 0) != 10:
+			_fail("armored_skin: %s resistance in heavy armour is %s, expected 10"
+				% [element, resists.get(element, 0)])
 
 
 ## No perk is wired for conversion yet — Parry and Improved Parry, the obvious
@@ -508,6 +562,31 @@ func _check_conditional_crit_reaches_the_getter() -> void:
 	if attacker.perk_attack_target != null:
 		_fail("calculate_physical_damage left perk_attack_target pointing at the defender")
 	victim.status_effects = []
+
+
+## Living Fortress: "While in heavy armor, immune to critical hits." Against
+## an attacker who always crits, the defender in chainmail is never critted;
+## the same defender out of armour is.
+func _check_living_fortress() -> void:
+	var sure_crit := _probe_perk("__probe_sure_crit__", [
+		{"type": "stat_bonus", "stat": "crit_chance", "value": 500}])
+	var attacker := _make_unit(Vector2i(8, 1), 0, [sure_crit])
+	var fortress := _make_unit(Vector2i(9, 1), 1, ["living_fortress"])
+	var crits_in_mail := 0
+	var crits_bare := 0
+	fortress.character_data["equipment"]["chest"] = "chainmail"
+	for i in range(8):
+		if CombatManager.calculate_physical_damage(attacker, fortress, "slashing").get("crit", false):
+			crits_in_mail += 1
+	fortress.character_data["equipment"]["chest"] = ""
+	for i in range(8):
+		if CombatManager.calculate_physical_damage(attacker, fortress, "slashing").get("crit", false):
+			crits_bare += 1
+	if crits_in_mail > 0:
+		_fail("living_fortress: critted %d of 8 times in heavy armour" % crits_in_mail)
+	if crits_bare != 8:
+		_fail("living_fortress: the probe attacker critted %d of 8 against bare skin — test is not testing"
+			% crits_bare)
 
 
 ## An on_trigger effect with conditions fires only when they hold.

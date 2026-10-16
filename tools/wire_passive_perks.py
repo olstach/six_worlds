@@ -40,7 +40,7 @@ SCRIPTS = ROOT / "scripts"
 # Damage/effect types a resistance entry may name. Matches CombatUnit.resistances
 # plus the non-elemental ones statuses use.
 RESISTANCE_TYPES = {
-    "physical", "space", "air", "fire", "water", "earth",
+    "physical", "space", "air", "fire", "water", "earth", "ice", "lightning",
     "bleed", "poison", "disease", "mental",
 }
 
@@ -71,6 +71,14 @@ MODIFIABLE_STATS = _gdscript_string_array("MODIFIABLE")
 # thing that goes stale. Wiring an effect to a trigger nothing fires is silent
 # death, same as the rest.
 LIVE_TRIGGERS = _gdscript_string_array("PERK_TRIGGERS")
+
+# Conditions a `resistance` effect may carry — PerkSystem.SHEET_CONDITIONS,
+# parsed from perk_system.gd for the same reason as the lists above.
+SHEET_CONDITIONS = set(re.findall(r'"([^"]+)"', re.search(
+    r"const SHEET_CONDITIONS: Array\[String\] = \[(.*?)\]",
+    (ROOT / "scripts" / "autoload" / "perk_system.gd").read_text(encoding="utf-8"),
+).group(1)))
+assert SHEET_CONDITIONS, "SHEET_CONDITIONS parsed empty"
 LIVE_CONDITIONS = _gdscript_string_array("PERK_CONDITIONS")
 
 # The terrain family: "on_terrain_" + any key of terrain.json.
@@ -115,6 +123,14 @@ PASSIVE_EFFECTS = {
     "stone_body": [
         {"type": "resistance", "damage_type": "bleed", "value": 25},
         {"type": "resistance", "damage_type": "poison", "value": 25},
+    ],
+    "armored_skin": [
+        # "When wearing heavy armor, gain +10% resistance to all elemental
+        # damage." Fire, ice, lightning, space — the same set Aegis of
+        # Tranquility uses — gated on a sheet condition.
+        {"type": "resistance", "damage_type": dt, "value": 10,
+         "conditions": ["wearing_heavy_armor"]}
+        for dt in ("fire", "ice", "lightning", "space")  # the elemental types in damage_types.json
     ],
 
     # ---- conditional stat bonuses ----------------------------------------
@@ -198,6 +214,13 @@ def validate(data, hardcoded):
             elif kind == "resistance":
                 if effect["damage_type"] not in RESISTANCE_TYPES:
                     errors.append(f"{pid}: unknown damage_type '{effect['damage_type']}'")
+                # Resistances are baked into derived stats, so only conditions
+                # the character sheet can answer may gate one (PerkSystem.
+                # SHEET_CONDITIONS) — not combat ones like not_flanked.
+                for condition in effect.get("conditions", []):
+                    if condition not in SHEET_CONDITIONS:
+                        errors.append(f"{pid}: resistance gated on '{condition}', "
+                                      f"which PerkSystem cannot judge off the sheet")
             elif kind == "on_trigger":
                 if effect["trigger"] not in LIVE_TRIGGERS:
                     errors.append(

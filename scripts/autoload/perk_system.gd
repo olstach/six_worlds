@@ -590,8 +590,36 @@ func get_passive_resistances(character: Dictionary) -> Dictionary:
 			push_error("PerkSystem: perk '%s' has a resistance with no damage_type"
 				% entry.perk_id)
 			continue
+		# A resistance may hang on what the character WEARS (Armored Skin:
+		# "when wearing heavy armor"). That is known from the character sheet,
+		# and equipping anything reruns update_derived_stats, so it is judged
+		# here. See SHEET_CONDITIONS for the ones that can be.
+		var met := true
+		for condition in effect.get("conditions", []):
+			if not _sheet_condition_met(character, str(condition), entry.perk_id):
+				met = false
+				break
+		if not met:
+			continue
 		totals[damage_type] = totals.get(damage_type, 0) + effect.get("value", 0)
 	return totals
+
+
+## Conditions a resistance effect may carry: the ones answerable from the
+## character sheet alone, without a combat unit. (Combat conditions such as
+## `not_flanked` change from moment to moment and cannot gate a resistance
+## that is baked into derived stats.) tools/wire_passive_perks.py keeps the
+## same list.
+const SHEET_CONDITIONS: Array[String] = ["wearing_heavy_armor"]
+
+
+func _sheet_condition_met(character: Dictionary, condition: String, perk_id: String) -> bool:
+	match condition:
+		"wearing_heavy_armor":
+			return ItemSystem.wears_heavy_armor(character.get("equipment", {}))
+	push_error("PerkSystem: perk '%s' gates a resistance on '%s', which is not a sheet condition"
+		% [perk_id, condition])
+	return false
 
 
 ## Passive effects that need a live combat unit to judge — anything with a

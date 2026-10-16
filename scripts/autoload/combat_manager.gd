@@ -2524,6 +2524,15 @@ func _opening_is_an_invitation(attacker: Node, defender: Node) -> bool:
 		and unit_has_debuff(defender)
 
 
+## Living Fortress: "While in heavy armor, immune to critical hits." True
+## when this defender has the perk and wears any heavy piece right now.
+func _crit_turned_by_living_fortress(defender: Node) -> bool:
+	if not "character_data" in defender or not defender.has_method("is_wearing_heavy_armor"):
+		return false
+	return PerkSystem.has_perk(defender.character_data, "living_fortress") \
+		and defender.is_wearing_heavy_armor()
+
+
 ## Calculate physical damage (slashing, crushing, or piercing).
 ## Called through calculate_physical_damage() above, which aims the perks.
 func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
@@ -2604,6 +2613,10 @@ func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String
 		crit_chance += 25.0
 
 	var crit = randf() * 100.0 <= crit_chance
+	# Living Fortress (Armor 9): in heavy armour no hit against you is a
+	# critical — it lands as a normal hit (no extra damage, armour holds).
+	if crit and _crit_turned_by_living_fortress(defender):
+		crit = false
 	# Backstab crits deal 2x damage (replacing the 1.5x standard multiplier)
 	var crit_multi = 2.0 if (_backstab_triggered and crit) else 1.5
 
