@@ -187,17 +187,26 @@ the one below it.
 
 ### Enemy AI templates
 
-How an enemy uses its kit is data, in
-`resources/data/enemies/ai_templates.json`. Each template is a set of knobs: a
-`priority` list (the order it tries potions, skills, spells, bombs and oils
-before attacking) and an `items` section (when to drink a potion, whether to
-hand one to a hurt ally, how many opponents a bomb must catch, when to coat a
-weapon, how many consumables a turn). The file's `_comment`s explain every key.
+How an enemy fights is data, in `resources/data/enemies/ai_templates.json`.
+Each template is a set of knobs:
 
-- `default` is today's behaviour and is what every archetype gets unless told
+- `priority`: the order it tries potions, healing spells, skills, buffs,
+  attack spells, bombs and oils before attacking.
+- `items`: when to drink a potion, whether to hand one to a hurt ally, how many
+  opponents a bomb must catch, when to coat a weapon, how many consumables a turn.
+- `spells`: below what HP a healing spell goes out, whether to walk into range
+  to cast it, and who gets buffs.
+- `targeting`: whom to attack (nearest, weakest, wounded, casters).
+- `movement`: advance, or hang back out of reach while staying in range.
+
+The file's `_comment`s explain every key.
+
+- `default` is the old behaviour and is what every archetype gets unless told
   otherwise. Other templates list only what they change from it: `grenadier`
   (bombs first, even at one target), `field_medic` (hands potions to allies),
-  `alchemist` (medic plus bombs), `tinkerer` (oils early, bombs before skills).
+  `alchemist` (medic plus bombs), `tinkerer` (oils early, bombs before skills),
+  `healer` (heals first, walks to the wounded, stays back), `enchanter` (buffs
+  the front line first, stays back), `hexer` (curses casters from a distance).
 - An archetype picks one with `"ai_template": "grenadier"`, and can change single
   knobs on top with an `ai` block, e.g. `"ai": {"items": {"bomb_min_targets": 3}}`.
 - To add a template: add it under `templates`. To add a new knob: add it to
@@ -207,7 +216,7 @@ weapon, how many consumables a turn). The file's `_comment`s explain every key.
 
 `validate_data.py` rejects an unknown template name, a knob that `default` does
 not have (typos), and out-of-range values; `verify_enemy_ai` checks the AI
-follows the knobs. `targeting` and `movement` sections are planned but not built.
+follows the knobs.
 
 ---
 

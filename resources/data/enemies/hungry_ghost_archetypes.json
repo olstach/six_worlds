@@ -95,6 +95,7 @@
       "realm": "hungry_ghost"
     },
     "hg_rolang_ancient": {
+      "ai_template": "hexer",
       "_comment": "The rare preserved rolang - alchemical or yogic arts kept the body intact. Rot caster and support.",
       "name": "Rolang Ancient",
       "tier": "devil",
@@ -647,6 +648,7 @@
       "realm": "hungry_ghost"
     },
     "hg_vetala_elder": {
+      "ai_template": "hexer",
       "name": "Vetala Elder",
       "tier": "devil",
       "roles": [
@@ -878,6 +880,7 @@
       "realm": "hungry_ghost"
     },
     "hg_charnel_wraith": {
+      "ai_template": "hexer",
       "_comment": "Stronger incorporeal from the charnel grounds — more focused and more dangerous than a lost preta.",
       "name": "Charnel Wraith",
       "tier": "shade",

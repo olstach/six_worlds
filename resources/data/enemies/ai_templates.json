@@ -1,11 +1,14 @@
 {
-  "_comment": "Enemy AI templates. An archetype names one with \"ai_template\" (missing = \"default\") and may add an \"ai\" block that overrides single knobs, e.g. \"ai\": {\"items\": {\"bomb_min_targets\": 1}}. Every template is laid over \"default\" first, so a template only lists what it changes; the archetype's \"ai\" block is laid over that. Dictionaries merge key by key, anything else (numbers, lists) replaces. EnemySystem resolves this once when the enemy is built and stores the result as character_data[\"ai\"]; combat_arena.gd reads only that. \"default\" is also the schema: validate_data.py rejects a key in a template or override that \"default\" does not have, so add new knobs to \"default\" first. Reserved for later, not built yet: \"targeting\" (who to attack) and \"movement\" (where to stand) sections.",
-  "_comment_priority": "priority: the order the AI tries its non-attack actions each time it has an action left. Ids: heal_self (healing potion on itself), heal_ally (healing potion on a hurt ally), restore_mana (mana potion), active_skill, spell, bomb, oil. Anything not listed is never tried. Attacking, or moving into range, always comes after the whole list.",
+  "_comment": "Enemy AI templates. An archetype names one with \"ai_template\" (missing = \"default\") and may add an \"ai\" block that overrides single knobs, e.g. \"ai\": {\"items\": {\"bomb_min_targets\": 1}}. Every template is laid over \"default\" first, so a template only lists what it changes; the archetype's \"ai\" block is laid over that. Dictionaries merge key by key, anything else (numbers, lists) replaces. EnemySystem resolves this once when the enemy is built and stores the result as character_data[\"ai\"]; combat_arena.gd reads only that. \"default\" is also the schema: validate_data.py rejects a key in a template or override that \"default\" does not have, so add new knobs to \"default\" first.",
+  "_comment_priority": "priority: the order the AI tries its non-attack actions each time it has an action left. Ids: heal_self (healing potion on itself), heal_ally (healing potion on a hurt ally), restore_mana (mana potion), heal_spell (healing spell on a hurt ally or itself), active_skill, buff_spell (a spell that strengthens an ally or itself), spell (a spell aimed at opponents: damage, curses, summons), bomb, oil. Anything not listed is never tried. Attacking, or moving into range, always comes after the whole list.",
   "_comment_items": "items: heal_self_below = drink a healing potion when own HP is under this fraction (0 = never). heal_ally_below = give a healing potion to an ally under this fraction of HP (0 = never); potions are handed over, so the ally must be adjacent (CombatManager.POTION_ALLY_REACH). heal_ally_step_in = if no hurt ally is adjacent, spend one action moving next to the most hurt one it can reach, then hand the potion over (needs two actions left). mana_self_below = drink a mana potion when mana is under this fraction (only units that know spells). bomb_min_targets = least number of opponents the blast must catch. bomb_avoid_allies = never throw where the blast would catch the thrower or its allies (matters for bombs that hit everyone, like smoke). bomb_prefer = how to choose between throws catching the same number: most_targets (first found), casters (catch spellcasters), wounded (catch the most-hurt). oil_when = in_range (coat the weapon only when about to attack), always (coat it at the first chance), never. max_per_turn = consumables used per turn. use_chance = chance per turn (0-1) that the unit uses items at all.",
+  "_comment_spells": "spells: heal_below = cast a healing spell on an ally (or itself) under this fraction of HP (0 = never). heal_step_in = if no hurt ally is in the spell's range, spend one action moving into range first (needs two actions left). buff_who = who gets a buff spell: front (the ally standing nearest an opponent) or self (only itself). A buff is never cast on someone who already has every status it gives, and a curse or other damage-free spell is never cast on an opponent who already has every status it causes. Spells the AI does not know how to aim yet (resurrections, whole-party and whole-field spells, self-teleports) are never cast.",
+  "_comment_targeting": "targeting: prefer = who the unit attacks and aims spells at. nearest (the nearest opponent; chanters count as 3 tiles closer), weakest (the most hurt and most isolated, a little closer is better: hunters), wounded (the most hurt, a little closer is better), casters (the nearest opponent who knows spells, else the nearest). A taunt or an aggro aura always overrides it.",
+  "_comment_movement": "movement: style = advance (close in to weapon reach, or to spell range for casters and archers: the old rule) or hang_back (stay at least keep_distance tiles from every opponent while staying in spell or bow range of the target, or within reach of an ally for a unit whose spells only help allies). hang_back only applies while the unit has a spell it can cast or a ranged weapon; otherwise it advances like anyone else. An opponent who walks up to it still gets hit.",
   "templates": {
     "default": {
-      "_comment": "Today's behaviour, unchanged: potion at 35% HP, mana potion at 30%, bombs only into 2+ clustered opponents, oil when in attack range, one consumable a turn.",
-      "priority": ["heal_self", "heal_ally", "restore_mana", "active_skill", "spell", "bomb", "oil"],
+      "_comment": "Today's behaviour, unchanged for items: potion at 35% HP, mana potion at 30%, bombs only into 2+ clustered opponents, oil when in attack range, one consumable a turn. Healing spells go to an ally under half HP, buffs to the front line, attacks at the nearest opponent, and the unit advances.",
+      "priority": ["heal_self", "heal_ally", "restore_mana", "heal_spell", "active_skill", "buff_spell", "spell", "bomb", "oil"],
       "items": {
         "use_chance": 1.0,
         "max_per_turn": 1,
@@ -17,11 +20,23 @@
         "bomb_avoid_allies": false,
         "bomb_prefer": "most_targets",
         "oil_when": "in_range"
+      },
+      "spells": {
+        "heal_below": 0.5,
+        "heal_step_in": false,
+        "buff_who": "front"
+      },
+      "targeting": {
+        "prefer": "nearest"
+      },
+      "movement": {
+        "style": "advance",
+        "keep_distance": 3
       }
     },
     "grenadier": {
       "_comment": "Throws first and thinks later: bombs before skills and spells, a lone target is worth a bomb, two a turn, aims at casters, keeps its own side out of the blast.",
-      "priority": ["heal_self", "bomb", "restore_mana", "active_skill", "spell", "oil"],
+      "priority": ["heal_self", "bomb", "restore_mana", "heal_spell", "active_skill", "buff_spell", "spell", "oil"],
       "items": {
         "max_per_turn": 2,
         "bomb_min_targets": 1,
@@ -31,7 +46,7 @@
     },
     "field_medic": {
       "_comment": "Keeps the line standing: hands potions to allies under half HP, stepping in to reach them, before anything else. Drinks its own at half HP too.",
-      "priority": ["heal_ally", "heal_self", "restore_mana", "spell", "active_skill", "bomb", "oil"],
+      "priority": ["heal_ally", "heal_spell", "heal_self", "restore_mana", "buff_spell", "spell", "active_skill", "bomb", "oil"],
       "items": {
         "max_per_turn": 2,
         "heal_self_below": 0.5,
@@ -42,7 +57,7 @@
     },
     "alchemist": {
       "_comment": "A field medic who also brews trouble: same ally healing, and bombs a pair of opponents without catching friends, aiming at the wounded.",
-      "priority": ["heal_ally", "heal_self", "restore_mana", "bomb", "spell", "active_skill", "oil"],
+      "priority": ["heal_ally", "heal_spell", "heal_self", "restore_mana", "bomb", "buff_spell", "spell", "active_skill", "oil"],
       "items": {
         "max_per_turn": 2,
         "heal_self_below": 0.5,
@@ -50,15 +65,54 @@
         "heal_ally_step_in": true,
         "bomb_avoid_allies": true,
         "bomb_prefer": "wounded"
+      },
+      "spells": {
+        "heal_below": 0.6,
+        "heal_step_in": true
+      },
+      "movement": {
+        "style": "hang_back"
       }
     },
     "tinkerer": {
       "_comment": "Prepares its gear: coats its weapon at the first chance rather than waiting until it is in reach, bombs before skills, two gadgets a turn, keeps allies out of the blast.",
-      "priority": ["heal_self", "oil", "bomb", "restore_mana", "active_skill", "spell"],
+      "priority": ["heal_self", "oil", "bomb", "restore_mana", "heal_spell", "active_skill", "buff_spell", "spell"],
       "items": {
         "max_per_turn": 2,
         "bomb_avoid_allies": true,
         "oil_when": "always"
+      }
+    },
+    "healer": {
+      "_comment": "A priest or medic who casts: heals anyone under 60% HP before anything else, walking into range to do it, then strengthens the front line. Stays back out of the melee.",
+      "priority": ["heal_spell", "heal_ally", "heal_self", "restore_mana", "buff_spell", "spell", "active_skill", "bomb", "oil"],
+      "items": {
+        "heal_ally_below": 0.4
+      },
+      "spells": {
+        "heal_below": 0.6,
+        "heal_step_in": true
+      },
+      "movement": {
+        "style": "hang_back"
+      }
+    },
+    "enchanter": {
+      "_comment": "Strengthens its side first: buffs the front line before attacking, heals at half HP, and keeps out of reach.",
+      "priority": ["heal_self", "buff_spell", "heal_spell", "restore_mana", "spell", "active_skill", "bomb", "oil"],
+      "movement": {
+        "style": "hang_back"
+      }
+    },
+    "hexer": {
+      "_comment": "Curses and drains from a distance, aiming at the opponents who cast spells. Keeps out of reach.",
+      "priority": ["heal_self", "restore_mana", "spell", "heal_spell", "buff_spell", "active_skill", "bomb", "oil"],
+      "targeting": {
+        "prefer": "casters"
+      },
+      "movement": {
+        "style": "hang_back",
+        "keep_distance": 3
       }
     }
   }

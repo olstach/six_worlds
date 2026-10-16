@@ -388,11 +388,16 @@ for aid, (arch, src) in archetypes.items():
 _ai_path = "resources/data/enemies/ai_templates.json"
 ai_templates = {k: v for k, v in json.load(open(os.path.join(ROOT, _ai_path), encoding="utf-8"))
                 .get("templates", {}).items() if not k.startswith("_")}
-AI_ACTIONS = {"heal_self", "heal_ally", "restore_mana", "active_skill", "spell", "bomb", "oil"}
-AI_FRACTIONS = {"use_chance", "heal_self_below", "heal_ally_below", "mana_self_below"}
-AI_COUNTS = {"max_per_turn", "bomb_min_targets"}
+AI_ACTIONS = {"heal_self", "heal_ally", "restore_mana", "heal_spell", "active_skill",
+              "buff_spell", "spell", "bomb", "oil"}
+AI_FRACTIONS = {"use_chance", "heal_self_below", "heal_ally_below", "mana_self_below",
+                "heal_below"}
+AI_COUNTS = {"max_per_turn", "bomb_min_targets", "keep_distance"}
 AI_ENUMS = {"bomb_prefer": {"most_targets", "casters", "wounded"},
-            "oil_when": {"in_range", "always", "never"}}
+            "oil_when": {"in_range", "always", "never"},
+            "buff_who": {"front", "self"},
+            "prefer": {"nearest", "weakest", "wounded", "casters"},
+            "style": {"advance", "hang_back"}}
 
 
 def check_ai_block(block, schema, where):

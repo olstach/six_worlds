@@ -1212,7 +1212,9 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		enemy["duel_stop_hp_pct"] = archetype["duel_stop_hp_pct"]
 
 	# Optional AI behavior mode — read by combat_arena during the enemy turn.
-	# Supported: erratic_movement, priority_target, pack_bonus, burrow_emerge
+	# Supported: erratic_movement, pack_bonus, burrow_emerge. (Who to attack
+	# is the AI template's targeting.prefer — the old "priority_target" is
+	# targeting.prefer "weakest" now.)
 	if archetype.has("ai_behavior"):
 		enemy["ai_behavior"] = archetype["ai_behavior"]
 

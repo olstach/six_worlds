@@ -1363,6 +1363,8 @@ func _build_item_tooltip(item: Dictionary) -> String:
 
 	lines.append("")
 	lines.append("Uses 1 action. Consumed on use.")
+	if item.get("type", "") in CombatManager.HANDED_ITEM_TYPES:
+		lines.append("Can be given to an adjacent ally instead.")
 	return "\n".join(lines)
 
 
@@ -1377,7 +1379,19 @@ func _on_item_selected(item: Dictionary) -> void:
 	var item_type = item.get("type", "")
 
 	match item_type:
-		"potion", "charm", "oil":
+		"potion", "medicine", "herb":
+			# Drunk or applied by hand: on yourself, or given to an adjacent
+			# ally. With nobody beside you there is nothing to choose, so it is
+			# used at once; otherwise click yourself or the ally.
+			var tiles := CombatManager.handed_item_tiles(unit)
+			if tiles.size() <= 1:
+				_try_use_item(unit.grid_position)
+			else:
+				current_action_mode = ActionMode.USE_ITEM
+				combat_grid.highlight_spell_range_and_area(tiles, tiles)
+				_log_message("Use %s on yourself, or give it to an adjacent ally..." % item.get("name", "?"))
+
+		"charm", "oil":
 			# Self-targeting -- use immediately
 			_try_use_item(unit.grid_position)
 
@@ -1458,8 +1472,13 @@ func _on_item_used_in_combat(user: Node, item: Dictionary, result: Dictionary) -
 	if user.has_method("show_action_name"):
 		user.show_action_name(item_name)
 
-	if item_type == "potion":
-		_log_message("%s uses %s!" % [user.unit_name, item_name])
+	if item_type in CombatManager.HANDED_ITEM_TYPES:
+		# A potion, medicine or herb may have been given to an adjacent ally
+		var recipient: Node = result.get("recipient", user)
+		if recipient != null and recipient != user:
+			_log_message("%s gives %s to %s!" % [user.unit_name, item_name, recipient.unit_name])
+		else:
+			_log_message("%s uses %s!" % [user.unit_name, item_name])
 		for effect in result.get("effects_applied", []):
 			var etype = effect.get("type", "")
 			match etype:
@@ -3436,17 +3455,17 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	var castable_spells = CombatManager.get_castable_spells(unit)
 	var is_caster = not castable_spells.is_empty()
 
-	# Find best target based on range
+	# AI template knobs (resources/data/enemies/ai_templates.json), resolved
+	# when the enemy was built. Units without them get the default template.
+	var ai: Dictionary = EnemySystem.get_ai(unit.character_data)
+	var target_prefer: String = str(ai.get("targeting", {}).get("prefer", "nearest"))
+
+	# Find best target based on range. `nearest` is the template's chosen
+	# target (targeting.prefer), which is the nearest one unless it says otherwise.
 	var attack_range = unit.get_attack_range()
 	var is_ranged = attack_range > 1
-	# ai_behavior "priority_target" picks the weakest/most isolated victim instead
-	# of the nearest one (rakshasa maneater and similar hunters).
 	var ai_behavior: String = unit.character_data.get("ai_behavior", "")
-	var nearest: CombatUnit = null
-	if ai_behavior == "priority_target":
-		nearest = _find_priority_target(unit, player_units)
-	if nearest == null:
-		nearest = _find_nearest_enemy(unit, player_units)
+	var nearest: CombatUnit = _ai_pick_target(unit, player_units, target_prefer)
 
 	if nearest == null:
 		CombatManager.end_turn()
@@ -3462,9 +3481,6 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	if ai_behavior == "erratic_movement" and CombatManager.can_act(1):
 		_ai_erratic_hop(unit, nearest)
 
-	# AI template knobs (resources/data/enemies/ai_templates.json), resolved
-	# when the enemy was built. Units without them get the default template.
-	var ai: Dictionary = EnemySystem.get_ai(unit.character_data)
 	var item_knobs: Dictionary = ai.get("items", {})
 	var priority: Array = ai.get("priority", [])
 	# How many consumables may still be used this turn. use_chance below 1.0
@@ -3515,6 +3531,12 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 						acted = _ai_try_use_potion(unit, "restore_mana")
 						if acted:
 							items_left -= 1
+				"heal_spell":
+					# Healing spell on the most hurt ally (or itself)
+					acted = _ai_try_heal_spell(unit, ai)
+				"buff_spell":
+					# A spell that strengthens an ally (or itself)
+					acted = _ai_try_buff_spell(unit, player_units, ai)
 				"active_skill":
 					if not used_active_skill_this_turn:
 						acted = _ai_try_use_active_skill(unit, player_units, nearest)
@@ -3544,7 +3566,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		if acted:
 			# The target may have died, or the unit may have moved
 			if not nearest.is_alive():
-				nearest = _find_nearest_enemy(unit, player_units)
+				nearest = _ai_pick_target(unit, player_units, target_prefer)
 				if nearest == null:
 					break
 			continue
@@ -3572,52 +3594,78 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 					_log_message("%s attacks %s - MISS!" % [unit.unit_name, nearest.unit_name])
 
 				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
+					nearest = _ai_pick_target(unit, player_units, target_prefer)
 					if nearest == null:
 						break
 		else:
 			# --- Reposition if out of range ---
 			var move_range = CombatManager.get_movement_range(unit)
 			var best_tile: Vector2i = unit.grid_position
-			var best_score: int = -999
 
-			# Find max effective range across all castable spells (handles melee vs ranged spells)
+			# Reach of the spells this unit would aim at opponents, and of the
+			# ones that help allies (for a hanging-back healer). Spell range is
+			# counted without the diagonal shortcut (CombatManager.spell_distance).
 			var max_spell_range := 0
+			var support_range := 0
 			for sp in castable_spells:
-				max_spell_range = max(max_spell_range, _get_spell_ai_range(sp))
+				var norm: Dictionary = CombatManager.get_spell(sp.get("id", ""))
+				match _ai_spell_kind(norm):
+					"attack":
+						max_spell_range = maxi(max_spell_range, int(norm.get("range", 1)))
+					"heal", "buff":
+						if norm.get("targeting", "") != "self":
+							support_range = maxi(support_range, int(norm.get("range", 1)))
 
-			var optimal_range = 1
-			if max_spell_range > 1:
-				# Has ranged spells — stay at range to use them
-				optimal_range = max_spell_range
-			elif is_ranged:
-				optimal_range = attack_range
+			var movement: Dictionary = ai.get("movement", {})
+			var hang_back: bool = str(movement.get("style", "advance")) == "hang_back" \
+					and (max_spell_range > 0 or support_range > 0 or is_ranged)
 
-			# Whether to use range-keeping movement (spells or ranged weapon) vs just close in
-			var wants_range = max_spell_range > 1 or is_ranged
+			if hang_back:
+				# Keep out of reach while staying in range of the target (or,
+				# for a unit whose spells only help, within reach of an ally)
+				best_tile = _ai_hang_back_tile(unit, move_range, nearest, player_units,
+						max_spell_range, support_range, attack_range if is_ranged else 0,
+						int(movement.get("keep_distance", 3)))
+			else:
+				var optimal_range = 1
+				if max_spell_range > 1:
+					# Has ranged spells — stay at range to use them
+					optimal_range = max_spell_range
+				elif is_ranged:
+					optimal_range = attack_range
 
-			for tile in move_range:
-				var tile_dist = _grid_distance(tile, nearest.grid_position)
+				# Whether to use range-keeping movement (spells or ranged weapon) vs just close in
+				var wants_range = max_spell_range > 1 or is_ranged
+				# Spells measure range one way, weapons another; score tiles by
+				# the rule the action will actually be checked against.
+				var by_spell: bool = max_spell_range > 1
+				var best_score: int = -999
 
-				if wants_range:
-					var score = 0
-					if tile_dist <= optimal_range and tile_dist >= 2:
-						score = 100
-						score += tile_dist
-					elif tile_dist <= optimal_range:
-						score = 50
+				for tile in move_range:
+					var tile_dist: int = CombatManager.spell_distance(tile, nearest.grid_position) \
+							if by_spell else _grid_distance(tile, nearest.grid_position)
+
+					if wants_range:
+						var score = 0
+						if tile_dist <= optimal_range and tile_dist >= 2:
+							score = 100
+							score += tile_dist
+						elif tile_dist <= optimal_range:
+							score = 50
+						else:
+							score = -tile_dist
+						if score > best_score:
+							best_score = score
+							best_tile = tile
 					else:
-						score = -tile_dist
-					if score > best_score:
-						best_score = score
-						best_tile = tile
-				else:
-					if tile_dist < _grid_distance(best_tile, nearest.grid_position):
-						best_tile = tile
+						if tile_dist < _grid_distance(best_tile, nearest.grid_position):
+							best_tile = tile
 
 			if best_tile != unit.grid_position:
 				CombatManager.move_unit(unit, best_tile)
-				if not castable_spells.is_empty():
+				if hang_back:
+					_log_message("%s keeps its distance" % unit.unit_name)
+				elif not castable_spells.is_empty():
 					_log_message("%s positions for casting" % unit.unit_name)
 				elif is_ranged:
 					_log_message("%s repositions" % unit.unit_name)
@@ -3631,120 +3679,392 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 		CombatManager.end_turn()
 
 
-## Get effective range for a spell for AI use.
-## Mirrors CombatManager.get_spell() range normalization so both movement and
-## casting use the same numbers (raw spell data stores range inside target.range).
-func _get_spell_ai_range(spell: Dictionary) -> int:
-	var target_data = spell.get("target", {})
-	var raw_range = target_data.get("range", spell.get("range", ""))
-	if raw_range is int or raw_range is float:
-		return int(raw_range)
-	elif raw_range == "melee":
-		return 1
-	else:
-		# No range specified — default by level (level 1 = range 4, level 3 = range 6, etc.)
-		var level = spell.get("level", 1)
-		return 3 + level
+## What the AI does with a spell, from its normalised form
+## (CombatManager.get_spell): "heal" (mends allies), "buff" (strengthens
+## allies), "attack" (aimed at opponents: damage, curses, summons), or "" for a
+## spell the AI does not know how to aim yet — resurrections, whole-party and
+## whole-field spells, self-teleports. Those are never cast by the AI.
+##
+## Who the spell is aimed at decides first: Life Drain heals its caster but is
+## aimed at an opponent, so it is an attack.
+func _ai_spell_kind(spell: Dictionary) -> String:
+	if spell.is_empty():
+		return ""
+	var targeting: String = str(spell.get("targeting", "single"))
+	var eligible: String = str(spell.get("target", {}).get("eligible", "enemy"))
+	# "heal" is a number of HP (or "full"); the tag covers heals by formula
+	var heal_value = spell.get("heal")
+	var heals: bool = (heal_value != null and not str(heal_value) in ["", "0", "false"]) \
+			or "heal" in spell.get("tags", [])
+	var helps: bool = targeting in ["self", "single_ally"] \
+			or (targeting == "aoe" and eligible in ["ally", "allies"])
+	if helps:
+		return "heal" if heals else "buff"
+	match targeting:
+		"single", "chain", "aoe":
+			return "attack"
+		"ground":
+			# Summons, decoys, clouds — but not a teleport of the caster itself
+			if spell.get("reposition", {}).get("self", false):
+				return ""
+			return "attack"
+	return ""
 
 
-## AI: Try to cast a spell, returns true if spell was cast
-func _ai_try_cast_spell(unit: CombatUnit, spells: Array[Dictionary], enemies: Array[Node], primary_target: CombatUnit) -> bool:
-	# Sort spells by damage potential (prefer higher damage spells)
-	spells.sort_custom(func(a, b):
-		var a_dmg = 0
-		var b_dmg = 0
-		for effect in a.get("effects", []):
-			if effect.type == "damage":
-				a_dmg += effect.base_value
-		for effect in b.get("effects", []):
-			if effect.type == "damage":
-				b_dmg += effect.base_value
-		return a_dmg > b_dmg
-	)
+## The unit's castable spells of one kind ("heal", "buff", "attack"), in their
+## normalised form. Attacks come strongest first (by base damage).
+func _ai_spells_of_kind(unit: CombatUnit, kind: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for raw in CombatManager.get_castable_spells(unit):
+		var spell: Dictionary = CombatManager.get_spell(raw.get("id", ""))
+		if _ai_spell_kind(spell) == kind:
+			result.append(spell)
+	if kind == "attack":
+		result.sort_custom(func(a, b): return _ai_spell_damage(a) > _ai_spell_damage(b))
+	return result
 
-	# Try each spell
+
+## A spell's base damage for ranking, 0 when it has none (or a formula).
+func _ai_spell_damage(spell: Dictionary) -> float:
+	var dmg = spell.get("damage")
+	return float(dmg) if dmg is int or dmg is float else 0.0
+
+
+## True if `target` already carries every status the spell causes — recasting
+## would only refresh it. A spell that causes no status never counts as worn.
+func _ai_spell_already_on(spell: Dictionary, target: Node) -> bool:
+	var statuses: Array = spell.get("statuses_caused", [])
+	if statuses.is_empty():
+		return false
+	for status_name in statuses:
+		if not target.has_status(str(status_name)):
+			return false
+	return true
+
+
+## Cast `spell` at `target_pos` for the AI. Returns true on success.
+func _ai_cast(unit: CombatUnit, spell: Dictionary, target_pos: Vector2i) -> bool:
+	var result = CombatManager.cast_spell(unit, spell.get("id", ""), target_pos)
+	if not result.success:
+		return false
+	# Spell casting breaks concentration (AI casters rarely have continuous_recitation)
+	if "active_mantras" in unit and not unit.active_mantras.is_empty():
+		var char_data_ai = unit.character_data if "character_data" in unit else {}
+		if not PerkSystem.has_perk(char_data_ai, "continuous_recitation"):
+			CombatManager._interrupt_mantras(unit, "%s's concentration breaks from casting!" % unit.unit_name)
+	return true
+
+
+## The living units of `units` standing on `tiles`.
+func _ai_units_on(tiles: Array, units: Array) -> Array[Node]:
+	var found: Array[Node] = []
+	for u in units:
+		if u.is_alive() and u.grid_position in tiles:
+			found.append(u)
+	return found
+
+
+## The tiles an AoE spell aimed at `center` covers.
+func _ai_aoe_tiles(unit: CombatUnit, spell: Dictionary, center: Vector2i) -> Array:
+	var aoe_def: Dictionary = spell.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
+	var grid_sz = combat_grid.grid_size if combat_grid else Vector2i(16, 10)
+	return AoEResolver.get_tiles(aoe_def, unit.grid_position, center, grid_sz)
+
+
+## AI: cast a healing spell on the most hurt ally (itself included) under the
+## template's spells.heal_below. With spells.heal_step_in, a unit with no hurt
+## ally in range first spends one action moving into range (two actions needed).
+## Returns true if a spell was cast.
+func _ai_try_heal_spell(unit: CombatUnit, ai: Dictionary) -> bool:
+	var knobs: Dictionary = ai.get("spells", {})
+	var below: float = float(knobs.get("heal_below", 0.0))
+	if below <= 0.0:
+		return false
+	var spells := _ai_spells_of_kind(unit, "heal")
+	if spells.is_empty():
+		return false
+
+	# Hurt allies, most hurt first
+	var hurt: Array[Node] = []
+	for ally in CombatManager.get_team_units(unit.team):
+		if ally.is_alive() and ally.max_hp > 0 \
+				and float(ally.current_hp) / float(ally.max_hp) < below:
+			hurt.append(ally)
+	if hurt.is_empty():
+		return false
+	hurt.sort_custom(func(a, b):
+		return float(a.current_hp) / float(a.max_hp) < float(b.current_hp) / float(b.max_hp))
+
 	for spell in spells:
-		var spell_id = spell.get("id", "")
-		var spell_range = _get_spell_ai_range(spell)
-		var targeting = spell.get("targeting", "single")
+		var pos := _ai_heal_target(unit, spell, hurt)
+		if pos != Vector2i(-1, -1) and _ai_cast(unit, spell, pos):
+			return true
 
-		# Find valid target position
-		var target_pos: Vector2i = Vector2i(-1, -1)
-
-		match targeting:
-			"single":
-				# Target nearest enemy in range
-				for enemy in enemies:
-					if not enemy.is_alive():
-						continue
-					var dist = _grid_distance(unit.grid_position, enemy.grid_position)
-					if dist <= spell_range:
-						target_pos = enemy.grid_position
-						break
-
-			"aoe":
-				# Find the target position that maximizes enemies hit by the AoE shape
-				var aoe_def: Dictionary = spell.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
-				var grid_sz = Vector2i(16, 10)
-				if combat_grid:
-					grid_sz = combat_grid.grid_size
-				var best_pos = Vector2i(-1, -1)
-				var best_count = 0
-
-				for enemy in enemies:
-					if not enemy.is_alive():
-						continue
-					var dist = _grid_distance(unit.grid_position, enemy.grid_position)
-					if dist > spell_range:
-						continue
-					var aoe_tiles = AoEResolver.get_tiles(aoe_def, unit.grid_position,
-							enemy.grid_position, grid_sz)
-					var count = 0
-					for other in enemies:
-						if other.is_alive() and other.grid_position in aoe_tiles:
-							count += 1
-					if count > best_count:
-						best_count = count
-						best_pos = enemy.grid_position
-
-				if best_count > 0:
-					target_pos = best_pos
-
-			"self":
-				target_pos = unit.grid_position
-
-			"ground":
-				# Summoning: pick a random unoccupied tile in range near the front line
-				var valid_ground = CombatManager.get_spell_targets(unit, spell_id)
-				if not valid_ground.is_empty():
-					# Prefer tiles closer to enemies
-					var best = valid_ground[0]
-					var best_dist = 999
-					for enemy in enemies:
-						if not enemy.is_alive():
-							continue
-						for tile in valid_ground:
-							var d = _grid_distance(tile, enemy.grid_position)
-							if d < best_dist:
-								best_dist = d
-								best = tile
-					target_pos = best
-
-		# If valid target found, cast the spell
-		if target_pos != Vector2i(-1, -1):
-			var result = CombatManager.cast_spell(unit, spell_id, target_pos)
-			if result.success:
-				# Spell casting breaks concentration (AI casters rarely have continuous_recitation)
-				if "active_mantras" in unit and not unit.active_mantras.is_empty():
-					var char_data_ai = unit.character_data if "character_data" in unit else {}
-					if not PerkSystem.has_perk(char_data_ai, "continuous_recitation"):
-						CombatManager._interrupt_mantras(unit, "%s's concentration breaks from casting!" % unit.unit_name)
-				return true
-
+	# Nobody hurt in range: walk into range of the most hurt one we can reach,
+	# then heal. (Self-only heals have nothing to walk to.)
+	if not bool(knobs.get("heal_step_in", false)) or not CombatManager.can_act(2):
+		return false
+	var tiles := CombatManager.get_movement_range(unit)
+	for ally in hurt:
+		if ally == unit:
+			continue
+		for spell in spells:
+			if spell.get("targeting", "") == "self":
+				continue
+			var reach: int = int(spell.get("range", 1))
+			var best_tile := Vector2i(-1, -1)
+			for tile in tiles:
+				if CombatManager.spell_distance(tile, ally.grid_position) > reach:
+					continue
+				if best_tile == Vector2i(-1, -1) \
+						or _grid_distance(unit.grid_position, tile) < _grid_distance(unit.grid_position, best_tile):
+					best_tile = tile
+			if best_tile != Vector2i(-1, -1) and CombatManager.move_unit(unit, best_tile):
+				_log_message("%s hurries toward %s" % [unit.unit_name, ally.unit_name])
+				return _ai_cast(unit, spell, ally.grid_position)
 	return false
 
 
-## Find nearest alive enemy unit
+## Where to aim a healing spell so it reaches the most hurt ally in `hurt`
+## (sorted most hurt first), or (-1, -1) if it reaches none.
+func _ai_heal_target(unit: CombatUnit, spell: Dictionary, hurt: Array[Node]) -> Vector2i:
+	match str(spell.get("targeting", "")):
+		"self":
+			return unit.grid_position if unit in hurt else Vector2i(-1, -1)
+		"single_ally":
+			var valid := CombatManager.get_spell_targets(unit, spell.get("id", ""))
+			for ally in hurt:
+				if ally.grid_position in valid:
+					return ally.grid_position
+		"aoe":
+			# Centre it on whichever hurt ally lets it catch the most hurt allies
+			var valid := CombatManager.get_spell_targets(unit, spell.get("id", ""))
+			var best := Vector2i(-1, -1)
+			var best_count := 0
+			for ally in hurt:
+				if not ally.grid_position in valid:
+					continue
+				var count := _ai_units_on(_ai_aoe_tiles(unit, spell, ally.grid_position), hurt).size()
+				if count > best_count:
+					best_count = count
+					best = ally.grid_position
+			return best
+	return Vector2i(-1, -1)
+
+
+## AI: cast a spell that strengthens an ally (or itself). spells.buff_who
+## "front" picks the ally standing nearest an opponent, "self" only the caster.
+## Nobody gets a buff whose statuses they already all have, and a buff that
+## gives no status at all is skipped — there is no telling whether it helps.
+## Returns true if a spell was cast.
+func _ai_try_buff_spell(unit: CombatUnit, opponents: Array[Node], ai: Dictionary) -> bool:
+	var who: String = str(ai.get("spells", {}).get("buff_who", "front"))
+	var allies: Array[Node] = []
+	for ally in CombatManager.get_team_units(unit.team):
+		if ally.is_alive() and (who != "self" or ally == unit):
+			allies.append(ally)
+	# Front line first: whoever stands nearest an opponent
+	var front := func(u: Node) -> int:
+		var d := 999
+		for o in opponents:
+			if o.is_alive():
+				d = mini(d, _grid_distance(u.grid_position, o.grid_position))
+		return d
+	allies.sort_custom(func(a, b): return front.call(a) < front.call(b))
+
+	for spell in _ai_spells_of_kind(unit, "buff"):
+		if spell.get("statuses_caused", []).is_empty():
+			continue
+		var wanting: Array[Node] = []
+		for ally in allies:
+			if not _ai_spell_already_on(spell, ally):
+				wanting.append(ally)
+		if wanting.is_empty():
+			continue
+		var pos := Vector2i(-1, -1)
+		match str(spell.get("targeting", "")):
+			"self":
+				if unit in wanting:
+					pos = unit.grid_position
+			"single_ally":
+				var valid := CombatManager.get_spell_targets(unit, spell.get("id", ""))
+				for ally in wanting:
+					if ally.grid_position in valid:
+						pos = ally.grid_position
+						break
+			"aoe":
+				var valid := CombatManager.get_spell_targets(unit, spell.get("id", ""))
+				var best_count := 0
+				for ally in wanting:
+					if not ally.grid_position in valid:
+						continue
+					var count := _ai_units_on(_ai_aoe_tiles(unit, spell, ally.grid_position), wanting).size()
+					if count > best_count:
+						best_count = count
+						pos = ally.grid_position
+		if pos != Vector2i(-1, -1) and _ai_cast(unit, spell, pos):
+			return true
+	return false
+
+
+## AI: cast a spell at opponents. Strongest first; a single-target spell goes
+## at the chosen target if it can reach it, otherwise at whoever it can reach.
+## A damage-free spell (a curse) skips anyone already carrying all it causes,
+## and an area spell that would also catch the caster's side (eligible "all",
+## like Rain) is only aimed where it catches none of them.
+## Returns true if a spell was cast.
+func _ai_try_cast_spell(unit: CombatUnit, _spells: Array[Dictionary], enemies: Array[Node], primary_target: CombatUnit) -> bool:
+	var own_side: Array[Node] = CombatManager.get_team_units(unit.team)
+	for spell in _ai_spells_of_kind(unit, "attack"):
+		var spell_id: String = spell.get("id", "")
+		var valid := CombatManager.get_spell_targets(unit, spell_id)
+		var no_damage: bool = _ai_spell_damage(spell) <= 0.0
+		var target_pos := Vector2i(-1, -1)
+
+		match str(spell.get("targeting", "single")):
+			"single", "chain":
+				# The chosen target first, then anyone in reach in list order
+				var candidates: Array[Node] = [primary_target]
+				candidates.append_array(enemies)
+				for enemy in candidates:
+					if enemy == null or not enemy.is_alive() or not enemy.grid_position in valid:
+						continue
+					if no_damage and _ai_spell_already_on(spell, enemy):
+						continue
+					target_pos = enemy.grid_position
+					break
+
+			"aoe":
+				# The centre (on an opponent) catching the most opponents
+				var hits_own: bool = str(spell.get("target", {}).get("eligible", "enemy")) == "all"
+				var best_count := 0
+				for enemy in enemies:
+					if not enemy.is_alive() or not enemy.grid_position in valid:
+						continue
+					var tiles := _ai_aoe_tiles(unit, spell, enemy.grid_position)
+					if hits_own and not _ai_units_on(tiles, own_side).is_empty():
+						continue
+					var count := _ai_units_on(tiles, enemies).size()
+					if count > best_count:
+						best_count = count
+						target_pos = enemy.grid_position
+
+			"ground":
+				# Summons and clouds: the free tile in range nearest an opponent
+				var best_dist := 999
+				for tile in valid:
+					for enemy in enemies:
+						if not enemy.is_alive():
+							continue
+						var d := _grid_distance(tile, enemy.grid_position)
+						if d < best_dist:
+							best_dist = d
+							target_pos = tile
+
+		if target_pos != Vector2i(-1, -1) and _ai_cast(unit, spell, target_pos):
+			return true
+	return false
+
+
+## Who the AI attacks and aims spells at, by the template's targeting.prefer.
+## A taunt or an aggro aura overrides every preference (see _find_nearest_enemy).
+func _ai_pick_target(unit: CombatUnit, enemies: Array[Node], prefer: String) -> CombatUnit:
+	var nearest := _find_nearest_enemy(unit, enemies)
+	if nearest == null or prefer == "nearest" or _ai_is_compelled(unit, enemies):
+		return nearest
+	match prefer:
+		"weakest":
+			var hunted := _find_priority_target(unit, enemies)
+			return hunted if hunted != null else nearest
+		"wounded":
+			var best: CombatUnit = null
+			var best_score := -999.0
+			for enemy in enemies:
+				if not enemy.is_alive() or not enemy.is_targetable():
+					continue
+				var hp_frac: float = float(enemy.current_hp) / maxf(1.0, float(enemy.max_hp))
+				var score: float = (1.0 - hp_frac) * 100.0 \
+						- float(_grid_distance(unit.grid_position, enemy.grid_position)) * 2.0
+				if score > best_score:
+					best_score = score
+					best = enemy
+			return best if best != null else nearest
+		"casters":
+			var best: CombatUnit = null
+			var best_dist := 999
+			for enemy in enemies:
+				if not enemy.is_alive() or not enemy.is_targetable() \
+						or enemy.character_data.get("known_spells", []).is_empty():
+					continue
+				var d := _grid_distance(unit.grid_position, enemy.grid_position)
+				if d < best_dist:
+					best_dist = d
+					best = enemy
+			return best if best != null else nearest
+	return nearest
+
+
+## True if a taunt or an aggro aura decides this unit's target for it.
+func _ai_is_compelled(unit: CombatUnit, enemies: Array[Node]) -> bool:
+	for fx in unit.status_effects:
+		var fx_def = CombatManager.get_status_definition(fx.get("status", ""))
+		if "must_attack_taunter" in fx_def.get("effects", []):
+			var taunter = fx.get("source", null)
+			if taunter != null and is_instance_valid(taunter) and taunter.is_alive() \
+					and taunter.is_targetable() and taunter in enemies:
+				return true
+	for enemy in enemies:
+		if enemy.is_alive() and enemy.is_targetable() \
+				and "taunt_active" in enemy and enemy.taunt_active:
+			return true
+	return false
+
+
+## movement.style "hang_back": the tile (from `tiles`, or staying put) that
+## keeps at least `keep` tiles from every opponent while staying in reach —
+## spell range of `target` when the unit has attack spells, bow range when it
+## has a ranged weapon, otherwise within support-spell range of an ally.
+## Among equally good tiles it moves as little as it can.
+func _ai_hang_back_tile(unit: CombatUnit, tiles: Array[Vector2i], target: CombatUnit,
+		opponents: Array[Node], spell_reach: int, support_reach: int, bow_reach: int,
+		keep: int) -> Vector2i:
+	var candidates: Array[Vector2i] = [unit.grid_position]
+	candidates.append_array(tiles)
+	var allies: Array[Node] = []
+	for ally in CombatManager.get_team_units(unit.team):
+		if ally != unit and ally.is_alive():
+			allies.append(ally)
+
+	var best := unit.grid_position
+	var best_score := -INF
+	for tile in candidates:
+		var score := 0.0
+		# Too close to an opponent costs a lot, per tile short
+		var closest := 999
+		for o in opponents:
+			if o.is_alive():
+				closest = mini(closest, _grid_distance(tile, o.grid_position))
+		if closest < keep:
+			score -= float(keep - closest) * 100.0
+		# In reach of something useful to do
+		if spell_reach > 0 or bow_reach > 0:
+			var d: int = CombatManager.spell_distance(tile, target.grid_position) if spell_reach > 0 \
+					else _grid_distance(tile, target.grid_position)
+			var reach: int = spell_reach if spell_reach > 0 else bow_reach
+			score += 50.0 if d <= reach else -float(d)
+		elif support_reach > 0 and not allies.is_empty():
+			var nearest_ally := 999
+			for ally in allies:
+				nearest_ally = mini(nearest_ally, CombatManager.spell_distance(tile, ally.grid_position))
+			score += 50.0 if nearest_ally <= support_reach else -float(nearest_ally)
+		# Prefer moving less
+		score -= float(_grid_distance(unit.grid_position, tile)) * 0.1
+		if score > best_score:
+			best_score = score
+			best = tile
+	return best
+
+
 ## AI: Try to use a potion of a given effect type from combat_inventory.
 ## Returns true if a potion was used.
 func _ai_try_use_potion(unit: CombatUnit, effect_type: String) -> bool:
@@ -3762,14 +4082,7 @@ func _ai_try_use_potion(unit: CombatUnit, effect_type: String) -> bool:
 		if effect.get("type", "") == effect_type:
 			var result = CombatManager.ai_use_combat_item(unit, item_id, unit.grid_position)
 			if result.get("success", false):
-				var item_name = item.get("name", item_id)
-				_log_message("%s uses %s!" % [unit.unit_name, item_name])
-				for fx in result.get("effects_applied", []):
-					if fx.get("type", "") == "heal":
-						_log_message("  Healed for %d HP" % fx.amount)
-					elif fx.get("type", "") == "restore_mana":
-						_log_message("  Restored %d mana" % fx.amount)
-				return true
+				return true  # _on_item_used_in_combat logs it
 	return false
 
 
@@ -3807,8 +4120,10 @@ func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node], knobs: Dictio
 		for target in player_units:
 			if not target.is_alive():
 				continue
-			var dist = _grid_distance(unit.grid_position, target.grid_position)
-			if dist > bomb_range:
+			# Throw range is counted like a spell's (CombatManager.spell_distance,
+			# no diagonal shortcut) — the blast radius below counts diagonals
+			# as one step, as _use_bomb does.
+			if CombatManager.spell_distance(unit.grid_position, target.grid_position) > bomb_range:
 				continue
 			# A bomb that hits everyone would catch our own side too
 			if avoid_allies and hits_all and _ai_blast_catches(target.grid_position, aoe_radius, own_side):
@@ -3826,15 +4141,8 @@ func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node], knobs: Dictio
 				best_pos = target.grid_position
 
 		if best_count >= min_targets and best_pos != Vector2i(-1, -1):
-			var result = CombatManager.ai_use_combat_item(unit, item_id, best_pos)
-			if result.get("success", false):
-				var item_name = item.get("name", item_id)
-				_log_message("%s throws %s!" % [unit.unit_name, item_name])
-				var total_damage = result.get("total_damage", 0)
-				var hit_count = result.get("hit_count", 0)
-				if hit_count > 0:
-					_log_message("  Hit %d targets for %d total damage!" % [hit_count, total_damage])
-				return true
+			if CombatManager.ai_use_combat_item(unit, item_id, best_pos).get("success", false):
+				return true  # _on_item_used_in_combat logs the throw and the hits
 	return false
 
 
@@ -3919,15 +4227,8 @@ func _ai_try_heal_ally(unit: CombatUnit, knobs: Dictionary) -> bool:
 	if patient == null:
 		return false
 
-	var result = CombatManager.ai_use_combat_item(unit, potion_id, patient.grid_position)
-	if not result.get("success", false):
-		return false
-	var item_name = ItemSystem.get_item(potion_id).get("name", potion_id)
-	_log_message("%s gives %s a %s!" % [unit.unit_name, patient.unit_name, item_name])
-	for fx in result.get("effects_applied", []):
-		if fx.get("type", "") == "heal":
-			_log_message("  Healed for %d HP" % fx.amount)
-	return true
+	# _on_item_used_in_combat logs the hand-over and the healing
+	return CombatManager.ai_use_combat_item(unit, potion_id, patient.grid_position).get("success", false)
 
 
 ## AI: Try to apply a weapon oil from combat_inventory.
@@ -3942,10 +4243,8 @@ func _ai_try_use_oil(unit: CombatUnit) -> bool:
 		if item.is_empty() or item.get("type", "") != "oil":
 			continue
 
-		var result = CombatManager.ai_use_combat_item(unit, item_id, unit.grid_position)
-		if result.get("success", false):
-			_log_message("%s coats weapon with %s!" % [unit.unit_name, item.get("name", item_id)])
-			return true
+		if CombatManager.ai_use_combat_item(unit, item_id, unit.grid_position).get("success", false):
+			return true  # _on_item_used_in_combat logs it
 	return false
 
 
@@ -4116,7 +4415,7 @@ func _ai_try_use_active_skill(unit: CombatUnit, player_units: Array[Node], neare
 	return false
 
 
-## ai_behavior "priority_target": prefer the weakest and most isolated target.
+## targeting.prefer "weakest": the most hurt and most isolated target (hunters).
 ## Score = missing-HP fraction (predator instinct for the wounded) plus an
 ## isolation bonus for targets with few allies nearby.
 func _find_priority_target(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:

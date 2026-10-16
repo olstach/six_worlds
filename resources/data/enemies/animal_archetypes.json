@@ -301,6 +301,7 @@
       "realm": "animal"
     },
     "animal_makara_current": {
+      "ai_template": "enchanter",
       "name": "Makara Currentmaster",
       "tier": "devil",
       "roles": [
@@ -642,6 +643,7 @@
       "realm": "animal"
     },
     "animal_bhramara_drone": {
+      "ai_template": "enchanter",
       "_comment": "Support caster that calls reinforcements; weak alone but dangerous when it completes a summon",
       "name": "Bhramara Drone",
       "tier": "imp",
@@ -740,6 +742,7 @@
       "realm": "animal"
     },
     "animal_patanga_ascetic": {
+      "ai_template": "enchanter",
       "name": "Patanga Ascetic",
       "tier": "shade",
       "roles": [
@@ -956,7 +959,7 @@
         "animal"
       ],
       "realm": "animal",
-      "ai_behavior": "priority_target"
+      "ai": {"targeting": {"prefer": "weakest"}}
     },
     "animal_varaha_charger": {
       "_comment": "Tusk charge; maces perk concussive_force gives knockback on crits",
@@ -1002,6 +1005,7 @@
       "realm": "animal"
     },
     "animal_varaha_elder": {
+      "ai_template": "healer",
       "_comment": "Sounder tactician; heals allies via medicine perks; raises aggression when sounder-mates are wounded",
       "name": "Varaha Elder",
       "tier": "devil",
@@ -1458,6 +1462,7 @@
       "ai_behavior": "pack_bonus"
     },
     "animal_gana_elder": {
+      "ai_template": "enchanter",
       "_comment": "Sings the hunt rather than joining it. What the pack hears from her, it does.",
       "name": "Gana Elder",
       "tier": "devil",
@@ -1499,6 +1504,7 @@
       "realm": "animal"
     },
     "animal_gana_howler": {
+      "ai_template": "enchanter",
       "_comment": "Pack support; enchantment perks buff allies and weaken party members",
       "name": "Gana Howler",
       "tier": "shade",
@@ -1630,6 +1636,7 @@
       "realm": "animal"
     },
     "animal_vanara_elder": {
+      "ai_template": "healer",
       "_comment": "Troop director; leadership perks give formation bonuses to nearby vanara",
       "name": "Vanara Elder",
       "tier": "shade",
@@ -1761,6 +1768,7 @@
       "realm": "animal"
     },
     "animal_kapota_messenger": {
+      "ai_template": "enchanter",
       "_comment": "Fast support; disrupts party formation; grace perks make it very hard to pin down",
       "name": "Kapota Messenger",
       "tier": "imp",

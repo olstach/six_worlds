@@ -307,6 +307,7 @@
       "realm": "hell"
     },
     "hell_shade_whisperer": {
+      "ai_template": "hexer",
       "name": "Shade Whisperer",
       "tier": "shade",
       "roles": [
@@ -640,6 +641,7 @@
       "realm": "hell"
     },
     "hell_sloth_imp": {
+      "ai_template": "healer",
       "name": "Sloth Imp",
       "tier": "imp",
       "roles": [
@@ -859,6 +861,7 @@
       "realm": "hell"
     },
     "hell_ice_priest": {
+      "ai_template": "healer",
       "name": "Ice Priest",
       "tier": "devil",
       "roles": [
@@ -1167,6 +1170,7 @@
       "realm": "hell"
     },
     "hell_ember_priest": {
+      "ai_template": "healer",
       "name": "Ember Priest",
       "tier": "devil",
       "roles": [
@@ -1438,6 +1442,7 @@
       "realm": "hell"
     },
     "hell_yellow_devil_transmuter": {
+      "ai_template": "enchanter",
       "name": "Yellow Devil Transmuter",
       "tier": "devil",
       "roles": [
@@ -1709,6 +1714,7 @@
       "realm": "hell"
     },
     "hell_black_devil_mindbender": {
+      "ai_template": "hexer",
       "name": "Black Devil Mindbender",
       "tier": "devil",
       "roles": [
@@ -1803,6 +1809,7 @@
     },
     "_comment_white_devils": "=== WHITE DEVIL RACE — any region, space/charm affinity, manipulative ===",
     "hell_white_devil_tempter": {
+      "ai_template": "hexer",
       "name": "White Devil Tempter",
       "tier": "devil",
       "roles": [
@@ -1849,6 +1856,7 @@
       "realm": "hell"
     },
     "hell_white_devil_medicus": {
+      "ai_template": "healer",
       "name": "White Devil Medicus",
       "tier": "devil",
       "roles": [
@@ -1893,6 +1901,7 @@
       "realm": "hell"
     },
     "hell_white_devil_illusionist": {
+      "ai_template": "enchanter",
       "name": "White Devil Illusionist",
       "tier": "devil",
       "roles": [

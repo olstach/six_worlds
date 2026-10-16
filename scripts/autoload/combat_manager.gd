@@ -3800,7 +3800,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 
 	# Self-targeting spells don't need range check
 	if targeting != "self":
-		var distance = _spell_distance(caster.grid_position, target_pos)
+		var distance = spell_distance(caster.grid_position, target_pos)
 		if distance > spell_range:
 			return {"success": false, "reason": "Target out of range"}
 
@@ -7244,7 +7244,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 				# Stealthed/invisible units cannot be targeted unless caster has true sight
 				if not unit.is_targetable() and not caster_true_sight:
 					continue
-				var dist = _spell_distance(caster.grid_position, unit.grid_position)
+				var dist = spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
@@ -7255,7 +7255,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 					continue
 				if unit.team != caster.team:
 					continue
-				var dist = _spell_distance(caster.grid_position, unit.grid_position)
+				var dist = spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
@@ -7268,7 +7268,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 					continue
 				if unit.team != caster.team:
 					continue
-				var dist = _spell_distance(caster.grid_position, unit.grid_position)
+				var dist = spell_distance(caster.grid_position, unit.grid_position)
 				if dist <= spell_range:
 					valid_positions.append(unit.grid_position)
 
@@ -7278,7 +7278,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 				for x in range(combat_grid.grid_size.x):
 					for y in range(combat_grid.grid_size.y):
 						var pos = Vector2i(x, y)
-						var dist = _spell_distance(caster.grid_position, pos)
+						var dist = spell_distance(caster.grid_position, pos)
 						if dist <= spell_range:
 							valid_positions.append(pos)
 
@@ -7288,7 +7288,7 @@ func get_spell_targets(caster: Node, spell_id: String) -> Array[Vector2i]:
 				for x in range(combat_grid.grid_size.x):
 					for y in range(combat_grid.grid_size.y):
 						var pos = Vector2i(x, y)
-						var dist = _spell_distance(caster.grid_position, pos)
+						var dist = spell_distance(caster.grid_position, pos)
 						if dist <= spell_range and combat_grid.is_valid_position(pos) and not combat_grid.is_occupied(pos):
 							valid_positions.append(pos)
 
@@ -7324,7 +7324,7 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 		var targeting = spell.get("targeting", "single")
 		if targeting != "self":
 			var spell_range = spell.get("range", 1)
-			var distance = _spell_distance(user.grid_position, target_pos)
+			var distance = spell_distance(user.grid_position, target_pos)
 			if distance > spell_range:
 				return {"success": false, "reason": "Target out of range"}
 			var targets = _get_spell_targets(user, spell, target_pos)
@@ -7333,9 +7333,17 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 	elif item_type == "bomb":
 		var effect = item.get("effect", {})
 		var bomb_range = effect.get("range", 4)
-		var distance = _spell_distance(user.grid_position, target_pos)
+		var distance = spell_distance(user.grid_position, target_pos)
 		if distance > bomb_range:
 			return {"success": false, "reason": "Target out of range"}
+
+	# A potion, medicine or herb can be given to an adjacent ally instead
+	var recipient: Node = user
+	if item_type in HANDED_ITEM_TYPES:
+		var handed := handed_item_recipient(user, target_pos)
+		if not handed.has("recipient"):
+			return {"success": false, "reason": handed.reason}
+		recipient = handed.recipient
 
 	# Consume the item from inventory
 	var consume_result = ItemSystem.use_consumable(item_id)
@@ -7346,7 +7354,8 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 	var result: Dictionary = {}
 	match item_type:
 		"potion":
-			result = _apply_potion_effect(user, item)
+			result = _apply_potion_effect(user, item, recipient)
+			result["recipient"] = recipient
 		"scroll":
 			result = _use_scroll(user, item, target_pos)
 		"charm":
@@ -7356,19 +7365,21 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 		"oil":
 			result = _apply_oil(user, item)
 		"medicine", "herb":
-			result = _apply_potion_effect(user, item)
-			# Field Surgeon (Medicine 6): on success, attempt to treat one wound mid-combat
+			result = _apply_potion_effect(user, item, recipient)
+			result["recipient"] = recipient
+			# Field Surgeon (Medicine 6): on success, attempt to treat one wound
+			# mid-combat — the user's training, the recipient's wound
 			if result.get("success", false) and WoundSystem and PerkSystem.has_perk(user.character_data, "field_surgeon"):
-				var wounds := WoundSystem.get_wounds(user.character_data)
+				var wounds := WoundSystem.get_wounds(recipient.character_data)
 				if not wounds.is_empty():
 					var med_level := CharacterSystem.get_effective_skill_level(user.character_data, "medicine")
 					var roll := randi_range(1, 20) + med_level
 					if roll >= 14:
 						var wound_id: String = wounds[0].get("id", "")
 						var wdef: Dictionary = WoundSystem.WOUND_TYPES.get(wound_id, {})
-						WoundSystem.cure_wound(user.character_data, wound_id)
-						combat_log.emit("%s's field surgeon training — %s treated mid-combat!" % [
-							user.unit_name, wdef.get("display_name", wound_id)
+						WoundSystem.cure_wound(recipient.character_data, wound_id)
+						combat_log.emit("%s's field surgeon training — %s's %s treated mid-combat!" % [
+							user.unit_name, recipient.unit_name, wdef.get("display_name", wound_id)
 						])
 					else:
 						combat_log.emit("%s attempts field surgery — conditions too chaotic. (Rolled %d, need 14)" % [user.unit_name, roll])
@@ -7729,8 +7740,11 @@ func _get_facing_zone(from_pos: Vector2i, target_unit: Node) -> String:
 		return "flank"
 
 
-## Manhattan distance (diamond shape — used for spell ranges)
-func _spell_distance(a: Vector2i, b: Vector2i) -> int:
+## Manhattan distance (diamond shape) — the range rule for spells, scrolls and
+## thrown bombs. Walking, weapon reach and blast radii count diagonals as one
+## step (_grid_distance) instead. Public so the enemy AI measures a throw or a
+## cast exactly the way this file will check it.
+func spell_distance(a: Vector2i, b: Vector2i) -> int:
 	return absi(a.x - b.x) + absi(a.y - b.y)
 
 
@@ -7764,9 +7778,40 @@ func get_unit_at(pos: Vector2i) -> Node:
 # ============================================
 
 ## How far a potion can be handed to an ally: adjacent only (diagonals count).
-## A potion is given, not thrown. Only the AI does this today — the player's
-## potions are still self-only (use_combat_item).
+## A potion is given, not thrown. Both sides can do it: the player through
+## use_combat_item, enemies through ai_use_combat_item.
 const POTION_ALLY_REACH: int = 1
+
+## Item types that are drunk or applied by hand, and so can be given to an
+## adjacent ally instead of used on yourself.
+const HANDED_ITEM_TYPES: Array[String] = ["potion", "medicine", "herb"]
+
+
+## Who a handed item (HANDED_ITEM_TYPES) lands on when `user` aims it at
+## `target_pos`: the user on its own tile, otherwise the living ally standing
+## there within POTION_ALLY_REACH. Returns {"recipient": unit} or
+## {"reason": why not}. Checked before the item is spent, so a refusal costs
+## nothing.
+func handed_item_recipient(user: Node, target_pos: Vector2i) -> Dictionary:
+	if target_pos == user.grid_position:
+		return {"recipient": user}
+	var ally: Node = get_unit_at(target_pos)
+	if ally == null or not ally.is_alive() or ally.team != user.team:
+		return {"reason": "No ally there"}
+	if _grid_distance(user.grid_position, target_pos) > POTION_ALLY_REACH:
+		return {"reason": "Ally out of reach"}
+	return {"recipient": ally}
+
+
+## Tiles a handed item can go to: the user's own, plus every living ally
+## within POTION_ALLY_REACH. The arena highlights these when a potion is picked.
+func handed_item_tiles(user: Node) -> Array[Vector2i]:
+	var tiles: Array[Vector2i] = [user.grid_position]
+	for unit in get_team_units(user.team):
+		if unit != user and unit.is_alive() \
+				and _grid_distance(user.grid_position, unit.grid_position) <= POTION_ALLY_REACH:
+			tiles.append(unit.grid_position)
+	return tiles
 
 
 ## Use a combat item from an AI unit's own combat_inventory (not the player shared inventory).
@@ -7797,18 +7842,17 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 	if item_type == "bomb":
 		var effect = item.get("effect", {})
 		var bomb_range = effect.get("range", 4)
-		var distance = _spell_distance(user.grid_position, target_pos)
+		var distance = spell_distance(user.grid_position, target_pos)
 		if distance > bomb_range:
 			return {"success": false, "reason": "Target out of range"}
 
 	# Validate the recipient for a potion handed to an ally (before consuming)
 	var recipient: Node = user
-	if item_type == "potion" and target_pos != user.grid_position:
-		recipient = get_unit_at(target_pos)
-		if recipient == null or not recipient.is_alive() or recipient.team != user.team:
-			return {"success": false, "reason": "No ally there"}
-		if _grid_distance(user.grid_position, target_pos) > POTION_ALLY_REACH:
-			return {"success": false, "reason": "Ally out of reach"}
+	if item_type == "potion":
+		var handed := handed_item_recipient(user, target_pos)
+		if not handed.has("recipient"):
+			return {"success": false, "reason": handed.reason}
+		recipient = handed.recipient
 
 	# Consume from personal inventory
 	user.combat_inventory[inv_index].quantity -= 1

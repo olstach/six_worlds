@@ -2174,17 +2174,43 @@ Done 2026-10-16 (branch `claude/round-3`), plus three new enemies:
 - [ ] Magnetizing Aura spell: `special.triggers_on` and
       `special.effect: "charm_chance"` are unread.
 - [x] Mirrored glove pairs count their stats on both hands — no: a pair is one item and counts once (Olaf). Done.
-- [ ] AI templates: `_ai_try_cast_spell` does not know heal spells — the
+- [x] AI templates: `_ai_try_cast_spell` does not know heal spells — the
       honey-keeper's `lesser_heal` is aimed at the nearest party member.
-      Next natural template section: spell targeting.
-- [ ] Bomb targeting measures range with diagonals (Chebyshev) but
+      Done (Round 5): the AI read spells before `get_spell` normalised them,
+      so every spell looked like "single enemy" and ally buffs never fired.
+      New priority ids `heal_spell` and `buff_spell`, a `spells` section.
+- [x] Bomb targeting measures range with diagonals (Chebyshev) but
       `ai_use_combat_item` checks Manhattan steps — a diagonal throw at the
-      edge of range silently fails.
-- [ ] Decision: players cannot hand a potion to an adjacent ally; enemies
-      with a medic template now can. Give players the same?
-- [ ] AI templates still to come: `targeting` and `movement` sections
+      edge of range silently fails. Done (Round 5), and the same for spells:
+      the AI now measures with `CombatManager.spell_distance`.
+- [x] Decision: players cannot hand a potion to an adjacent ally; enemies
+      with a medic template now can. Give players the same? Yes (Olaf). Done:
+      potions, medicine and herbs; picking one with an ally beside you asks
+      for a target.
+- [x] AI templates still to come: `targeting` and `movement` sections
       (reserved in the schema); the 23 `support` archetypes stay on `default`
-      until given a template.
+      until given a template. Done (Round 5): `targeting.prefer`,
+      `movement.style` (`hang_back`), templates `healer`, `enchanter`, `hexer`
+      on 20 of them; the maneater's `ai_behavior: priority_target` is now
+      `targeting.prefer: "weakest"`.
+
+#### Round 6 — found during Round 5
+
+- [ ] The AI never casts resurrections (`single_corpse`), whole-party or
+      whole-field spells (`party`, `global`), or self-teleports (Blink, which
+      the mindbender is guaranteed). Each needs its own "when is this worth
+      it" rule.
+- [ ] Decision: spell, scroll and bomb ranges count without the diagonal
+      shortcut (Manhattan), while walking, weapon reach and blast radii count
+      a diagonal as one step. Deliberate? A range-4 Firebolt cannot reach a
+      target 3 tiles away diagonally.
+- [ ] `hg_swamp_leech` (support) and `animal_bhramara_drone` have no spells
+      worth a template of their own; the leech stays on `default`, the drone
+      is an `enchanter` for its summons.
+- [x] Every enemy potion, bomb and oil was logged twice (the AI function and
+      `_on_item_used_in_combat`). Fixed.
+- [x] Medicine and herb items did nothing when clicked in combat. Fixed with
+      potion handing.
 - [ ] Heavy Armor Training's movement half does nothing yet: no heavy
       armour has a movement penalty.
 
