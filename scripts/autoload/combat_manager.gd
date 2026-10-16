@@ -2212,7 +2212,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	else:
 		# Attack missed — check dodge/parry perks on defender
 		_process_on_dodge_perks(defender, attacker)
-		_fire_perk_triggers(defender, "dodge_success", {"attacker": attacker})
+		_fire_dodge_success(defender, attacker, is_ranged)
 		# A melee blow that missed someone holding a melee weapon met steel:
 		# that is a parry as well as a dodge, and fires both. Riposte has
 		# always read "dodge or parry" as one moment; this keeps the two
@@ -5027,7 +5027,8 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 	# Wired in get_continuous_stat_bonus; here we add it as a bonus damage proc on spell hits
 	# Chain Spark (Air 3): Lightning spells have 30% chance to chain to 1 adjacent target
 	if PerkSystem.has_perk(caster_char, "chain_spark") and has_damage:
-		var is_lightning = element == "lightning" or schools.any(func(s): return s.to_lower() == "air")
+		# Lightning damage only: an Air spell dealing physical damage is not lightning.
+		var is_lightning = element == "lightning"
 		if is_lightning and randf() < 0.30:
 			var chain_targets = _get_enemies_in_range(target, 2)
 			chain_targets.erase(target)
@@ -10075,6 +10076,14 @@ func _fire_damage_triggers(unit: Node, damage: int, damage_type: String, source:
 
 ## A miss counts as a parry when it was a melee blow and the defender had a
 ## melee weapon in hand to turn it with.
+## dodge_success is "a melee attack missed you" (Borrowed Opening's text says
+## so): an arrow that misses fires nothing.
+func _fire_dodge_success(defender: Node, attacker: Node, attack_was_ranged: bool) -> void:
+	if attack_was_ranged:
+		return
+	_fire_perk_triggers(defender, "dodge_success", {"attacker": attacker})
+
+
 func _is_parry(defender: Node, attacker: Node, attack_was_ranged: bool) -> bool:
 	if attack_was_ranged or attacker == null or not defender.has_method("get_equipped_weapon"):
 		return false

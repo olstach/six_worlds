@@ -3269,9 +3269,6 @@
       "statuses_caused": [
         "Fireshield"
       ],
-      "special": {
-        "triggers_on": "melee_attack_received"
-      },
       "target": {
         "type": "single",
         "eligible": "ally",

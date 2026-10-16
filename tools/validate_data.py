@@ -1398,7 +1398,7 @@ for _aid, _adef in _auras.items():
 # its entry in item_types; a type with no entry quietly behaves as nothing
 # (herbs and medicine could not be used at all). Status names are case-sensitive:
 # on_crit_status "pinned" matched no status and silently did nothing.
-# (`statuses_removed` is skipped: it is read by length, not by name.)
+# `statuses_removed` is checked too: the potion `cleanse` effect removes by name.
 _items_file = load("resources/data/items.json")
 _item_types = {k for k in _items_file.get("item_types", {}) if not k.startswith("_")}
 _ITEM_STATUS_KEYS = ("on_crit_status", "on_hit_status", "on_kill_status",
@@ -1411,7 +1411,7 @@ def _item_status_names(node):
         for k, v in node.items():
             if k in _ITEM_STATUS_KEYS and isinstance(v, str) and v:
                 yield k, v
-            elif k == "statuses" and isinstance(v, list):
+            elif k in ("statuses", "statuses_removed") and isinstance(v, list):
                 for e in v:
                     n = e.get("name") if isinstance(e, dict) else e
                     if isinstance(n, str):

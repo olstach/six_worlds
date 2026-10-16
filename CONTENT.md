@@ -9142,7 +9142,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Stamina Tonic** `stamina_tonic` — uncommon · inventory · value 45
   - description: A bracing brew that floods the body with energy. Restores stamina and delays fatigue.
 - **Cure-All** `cure_all` — uncommon · inventory · value 60
-  - description: A bitter draught that purges poison, disease, and curse alike.
+  - description: A bitter draught that purges poison, disease, and curse alike, and douses burns, frost and stuns.
 - **Elixir of Vitality** `elixir_of_vitality` — rare · inventory · value 150
   - description: A deep crimson elixir that surges through the blood. Heals massively and temporarily increases maximum HP.
 - **Elixir of Power** `elixir_of_power` — rare · inventory · value 150

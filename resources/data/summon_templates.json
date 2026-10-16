@@ -1958,7 +1958,6 @@
       "special": {
         "immovable": true,
         "auto_attack_nearest_enemy": true,
-        "attack_type": "laser",
         "attack_damage_type": "space"
       },
       "tags": [

@@ -838,6 +838,15 @@ func _check_borrowed_opening_waits_for_the_attack() -> void:
 	if _mod(monk, "damage") != 0 or _mod(monk, "crit_chance") != 20:
 		_fail("Borrowed Opening gave damage %+d, crit %+d (expected crit +20 only)"
 			% [_mod(monk, "damage"), _mod(monk, "crit_chance")])
+	# A missed arrow is not a missed melee attack: nothing fires.
+	var archer_monk := _make_unit(Vector2i(6, 12), 0, ["borrowed_opening"])
+	archer_monk.character_data["equipped_weapon"] = {}
+	CombatManager._fire_dodge_success(archer_monk, foe, true)
+	if _mod(archer_monk, "crit_chance") != 0:
+		_fail("Borrowed Opening fired on a ranged miss")
+	CombatManager._fire_dodge_success(archer_monk, foe, false)
+	if _mod(archer_monk, "crit_chance") != 20:
+		_fail("Borrowed Opening did not fire on a melee miss via _fire_dodge_success")
 	CombatManager.turn_order.assign([monk])
 	CombatManager.current_unit_index = 0
 	CombatManager._start_current_turn()

@@ -314,10 +314,8 @@ func _on_begin_new_life() -> void:
 	# because start_new_run resets gold and would overwrite a value set before.
 	GameState.start_new_run(realm, 50)
 
-	# Clear map so overworld generates a fresh one for the new realm
-	MapManager.current_map_id = ""
-	# Reset fog of war so the new run starts unexplored
-	MapManager.visited_tiles.clear()
+	# (The map and fog of war were cleared by start_new_run, through
+	# MapManager.reset_for_new_life.)
 
 	# Save progress after reincarnation
 	SaveManager.autosave()

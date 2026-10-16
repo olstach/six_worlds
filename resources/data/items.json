@@ -2925,14 +2925,14 @@
       "rarity": "uncommon",
       "weight": 1,
       "value": 60,
-      "description": "A bitter draught that purges poison, disease, and curse alike.",
+      "description": "A bitter draught that purges poison, disease, and curse alike, and douses burns, frost and stuns.",
       "effect": {
         "type": "cleanse",
         "statuses_removed": [
           "Poisoned",
           "Bleeding",
-          "Burned",
-          "Chilled",
+          "Burning",
+          "Frozen",
           "Stunned",
           "Cursed",
           "Diseased"
@@ -14009,7 +14009,7 @@
         "type": "cleanse",
         "statuses_removed": [
           "Stunned",
-          "Unconscious"
+          "Dazed"
         ],
         "targeting": "ally"
       },
@@ -14076,8 +14076,7 @@
         "type": "cleanse",
         "statuses_removed": [
           "Cursed",
-          "Haunted",
-          "Possessed"
+          "Dominated"
         ],
         "targeting": "self"
       },
