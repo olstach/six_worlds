@@ -1,0 +1,65 @@
+{
+  "_comment": "Enemy AI templates. An archetype names one with \"ai_template\" (missing = \"default\") and may add an \"ai\" block that overrides single knobs, e.g. \"ai\": {\"items\": {\"bomb_min_targets\": 1}}. Every template is laid over \"default\" first, so a template only lists what it changes; the archetype's \"ai\" block is laid over that. Dictionaries merge key by key, anything else (numbers, lists) replaces. EnemySystem resolves this once when the enemy is built and stores the result as character_data[\"ai\"]; combat_arena.gd reads only that. \"default\" is also the schema: validate_data.py rejects a key in a template or override that \"default\" does not have, so add new knobs to \"default\" first. Reserved for later, not built yet: \"targeting\" (who to attack) and \"movement\" (where to stand) sections.",
+  "_comment_priority": "priority: the order the AI tries its non-attack actions each time it has an action left. Ids: heal_self (healing potion on itself), heal_ally (healing potion on a hurt ally), restore_mana (mana potion), active_skill, spell, bomb, oil. Anything not listed is never tried. Attacking, or moving into range, always comes after the whole list.",
+  "_comment_items": "items: heal_self_below = drink a healing potion when own HP is under this fraction (0 = never). heal_ally_below = give a healing potion to an ally under this fraction of HP (0 = never); potions are handed over, so the ally must be adjacent (CombatManager.POTION_ALLY_REACH). heal_ally_step_in = if no hurt ally is adjacent, spend one action moving next to the most hurt one it can reach, then hand the potion over (needs two actions left). mana_self_below = drink a mana potion when mana is under this fraction (only units that know spells). bomb_min_targets = least number of opponents the blast must catch. bomb_avoid_allies = never throw where the blast would catch the thrower or its allies (matters for bombs that hit everyone, like smoke). bomb_prefer = how to choose between throws catching the same number: most_targets (first found), casters (catch spellcasters), wounded (catch the most-hurt). oil_when = in_range (coat the weapon only when about to attack), always (coat it at the first chance), never. max_per_turn = consumables used per turn. use_chance = chance per turn (0-1) that the unit uses items at all.",
+  "templates": {
+    "default": {
+      "_comment": "Today's behaviour, unchanged: potion at 35% HP, mana potion at 30%, bombs only into 2+ clustered opponents, oil when in attack range, one consumable a turn.",
+      "priority": ["heal_self", "heal_ally", "restore_mana", "active_skill", "spell", "bomb", "oil"],
+      "items": {
+        "use_chance": 1.0,
+        "max_per_turn": 1,
+        "heal_self_below": 0.35,
+        "heal_ally_below": 0.0,
+        "heal_ally_step_in": false,
+        "mana_self_below": 0.3,
+        "bomb_min_targets": 2,
+        "bomb_avoid_allies": false,
+        "bomb_prefer": "most_targets",
+        "oil_when": "in_range"
+      }
+    },
+    "grenadier": {
+      "_comment": "Throws first and thinks later: bombs before skills and spells, a lone target is worth a bomb, two a turn, aims at casters, keeps its own side out of the blast.",
+      "priority": ["heal_self", "bomb", "restore_mana", "active_skill", "spell", "oil"],
+      "items": {
+        "max_per_turn": 2,
+        "bomb_min_targets": 1,
+        "bomb_avoid_allies": true,
+        "bomb_prefer": "casters"
+      }
+    },
+    "field_medic": {
+      "_comment": "Keeps the line standing: hands potions to allies under half HP, stepping in to reach them, before anything else. Drinks its own at half HP too.",
+      "priority": ["heal_ally", "heal_self", "restore_mana", "spell", "active_skill", "bomb", "oil"],
+      "items": {
+        "max_per_turn": 2,
+        "heal_self_below": 0.5,
+        "heal_ally_below": 0.5,
+        "heal_ally_step_in": true,
+        "bomb_avoid_allies": true
+      }
+    },
+    "alchemist": {
+      "_comment": "A field medic who also brews trouble: same ally healing, and bombs a pair of opponents without catching friends, aiming at the wounded.",
+      "priority": ["heal_ally", "heal_self", "restore_mana", "bomb", "spell", "active_skill", "oil"],
+      "items": {
+        "max_per_turn": 2,
+        "heal_self_below": 0.5,
+        "heal_ally_below": 0.5,
+        "heal_ally_step_in": true,
+        "bomb_avoid_allies": true,
+        "bomb_prefer": "wounded"
+      }
+    },
+    "tinkerer": {
+      "_comment": "Prepares its gear: coats its weapon at the first chance rather than waiting until it is in reach, bombs before skills, two gadgets a turn, keeps allies out of the blast.",
+      "priority": ["heal_self", "oil", "bomb", "restore_mana", "active_skill", "spell"],
+      "items": {
+        "max_per_turn": 2,
+        "bomb_avoid_allies": true,
+        "oil_when": "always"
+      }
+    }
+  }
+}

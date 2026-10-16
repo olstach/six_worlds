@@ -1484,7 +1484,7 @@
       "realm": "hell"
     },
     "hell_yellow_devil_grenadier": {
-      "_comment": "Yellow devils trade in everything, powder included. Spends over half its kit on bombs (consumable_share) instead of armour; the AI throws them when 2+ party members are clustered. Hell kits are small (realm_base 200), so the list starts with the cheap bombs (ghost pepper, bone dust) and only reaches fire bombs on harder fights.",
+      "_comment": "Yellow devils trade in everything, powder included. Spends over half its kit on bombs (consumable_share) instead of armour; its 'grenadier' AI template throws them before anything else, even at a lone target, and two a turn. Hell kits are small (realm_base 200), so the list starts with the cheap bombs (ghost pepper, bone dust) and only reaches fire bombs on harder fights.",
       "name": "Yellow Devil Grenadier",
       "tier": "devil",
       "roles": [
@@ -1525,6 +1525,7 @@
         "smoke_bomb",
         "fire_bomb"
       ],
+      "ai_template": "grenadier",
       "threat_multiplier": 1.0,
       "tags": [
         "biological",

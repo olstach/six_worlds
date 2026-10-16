@@ -730,6 +730,7 @@
         "stamina_tonic",
         "antidote"
       ],
+      "ai_template": "alchemist",
       "threat_multiplier": 0.9,
       "tags": [
         "biological",
@@ -1620,6 +1621,7 @@
         "flame_oil",
         "whetstone_oil"
       ],
+      "ai_template": "tinkerer",
       "threat_multiplier": 0.9,
       "tags": [
         "biological",

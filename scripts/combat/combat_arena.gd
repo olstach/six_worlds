@@ -3462,8 +3462,17 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 	if ai_behavior == "erratic_movement" and CombatManager.can_act(1):
 		_ai_erratic_hop(unit, nearest)
 
-	# Track flags to avoid repeating certain actions in a turn
-	var used_consumable_this_turn = false
+	# AI template knobs (resources/data/enemies/ai_templates.json), resolved
+	# when the enemy was built. Units without them get the default template.
+	var ai: Dictionary = EnemySystem.get_ai(unit.character_data)
+	var item_knobs: Dictionary = ai.get("items", {})
+	var priority: Array = ai.get("priority", [])
+	# How many consumables may still be used this turn. use_chance below 1.0
+	# makes some turns item-free (only rolled when it could matter).
+	var items_left: int = int(item_knobs.get("max_per_turn", 1))
+	var use_chance: float = float(item_knobs.get("use_chance", 1.0))
+	if use_chance < 1.0 and randf() >= use_chance:
+		items_left = 0
 	var used_active_skill_this_turn = false
 
 	# Use all actions (safety counter prevents infinite loops if an action path
@@ -3476,63 +3485,74 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 			break
 		var dist = _grid_distance(unit.grid_position, nearest.grid_position)
 
-		# --- PRIORITY 1: Emergency consumable (health potion at low HP) ---
-		if not used_consumable_this_turn:
-			var hp_pct = float(unit.current_hp) / float(unit.max_hp)
-			if hp_pct < 0.35:
-				if _ai_try_use_potion(unit, "heal"):
-					used_consumable_this_turn = true
-					continue
+		# --- Template actions, in the template's priority order ---
+		# The first one that does something uses the action; then the loop
+		# starts over from the top of the list with whatever actions are left.
+		var acted := false
+		for action in priority:
+			match str(action):
+				"heal_self":
+					# Healing potion when own HP is low
+					if items_left > 0 and unit.max_hp > 0 \
+							and float(unit.current_hp) / float(unit.max_hp) < float(item_knobs.get("heal_self_below", 0.0)):
+						acted = _ai_try_use_potion(unit, "heal")
+						if acted:
+							items_left -= 1
+				"heal_ally":
+					# Healing potion handed to a hurt ally (field medics)
+					if items_left > 0:
+						acted = _ai_try_heal_ally(unit, item_knobs)
+						if acted:
+							items_left -= 1
+				"restore_mana":
+					# Mana potion for a unit that knows spells and is running dry.
+					# (Checks known spells rather than castable ones: a caster at
+					# 0 mana has no castable spells, which is exactly when it
+					# needs the potion.)
+					if items_left > 0 and unit.max_mana > 0 \
+							and not unit.character_data.get("known_spells", []).is_empty() \
+							and float(unit.current_mana) / float(unit.max_mana) < float(item_knobs.get("mana_self_below", 0.0)):
+						acted = _ai_try_use_potion(unit, "restore_mana")
+						if acted:
+							items_left -= 1
+				"active_skill":
+					if not used_active_skill_this_turn:
+						acted = _ai_try_use_active_skill(unit, player_units, nearest)
+						if acted:
+							used_active_skill_this_turn = true
+				"spell":
+					# Refresh castable spells (mana may have changed)
+					castable_spells = CombatManager.get_castable_spells(unit)
+					if is_caster and not castable_spells.is_empty():
+						acted = _ai_try_cast_spell(unit, castable_spells, player_units, nearest)
+				"bomb":
+					if items_left > 0:
+						acted = _ai_try_use_bomb(unit, player_units, item_knobs)
+						if acted:
+							items_left -= 1
+				"oil":
+					# Weapon oil, only while no oil is active. "in_range" waits
+					# until the unit is about to attack; "always" coats at once.
+					var oil_when: String = str(item_knobs.get("oil_when", "in_range"))
+					if items_left > 0 and unit.weapon_oil.is_empty() \
+							and (oil_when == "always" or (oil_when == "in_range" and dist <= attack_range)):
+						acted = _ai_try_use_oil(unit)
+						if acted:
+							items_left -= 1
+			if acted:
+				break
+		if acted:
+			# The target may have died, or the unit may have moved
+			if not nearest.is_alive():
+				nearest = _find_nearest_enemy(unit, player_units)
+				if nearest == null:
+					break
+			continue
 
-		# --- PRIORITY 2: Mana potion if caster is low on mana ---
-		if not used_consumable_this_turn and is_caster:
-			var mana_pct = float(unit.current_mana) / float(unit.max_mana) if unit.max_mana > 0 else 1.0
-			if mana_pct < 0.3:
-				if _ai_try_use_potion(unit, "restore_mana"):
-					used_consumable_this_turn = true
-					continue
-
-		# --- PRIORITY 3: Active skills ---
-		if not used_active_skill_this_turn:
-			if _ai_try_use_active_skill(unit, player_units, nearest):
-				used_active_skill_this_turn = true
-				# Check if target died
-				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
-					if nearest == null:
-						break
-				continue
-
-		# --- PRIORITY 4: Spells ---
-		# Refresh castable spells (mana may have changed)
+		# Nothing in the template's list fired: attack, or move into range.
 		castable_spells = CombatManager.get_castable_spells(unit)
-		if is_caster and not castable_spells.is_empty():
-			var spell_cast = _ai_try_cast_spell(unit, castable_spells, player_units, nearest)
-			if spell_cast:
-				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
-					if nearest == null:
-						break
-				continue
 
-		# --- PRIORITY 5: Bomb if multiple enemies clustered ---
-		if not used_consumable_this_turn:
-			if _ai_try_use_bomb(unit, player_units):
-				used_consumable_this_turn = true
-				# Refresh nearest after potential kills
-				if not nearest.is_alive():
-					nearest = _find_nearest_enemy(unit, player_units)
-					if nearest == null:
-						break
-				continue
-
-		# --- PRIORITY 6: Oil before attacking (if in range and no oil active) ---
-		if not used_consumable_this_turn and unit.weapon_oil.is_empty() and dist <= attack_range:
-			if _ai_try_use_oil(unit):
-				used_consumable_this_turn = true
-				continue
-
-		# --- PRIORITY 7: Physical attack ---
+		# --- Physical attack ---
 		if dist <= attack_range:
 			unit.play_attack_animation(nearest.global_position)
 			var result = CombatManager.attack_unit(unit, nearest)
@@ -3556,7 +3576,7 @@ func _do_enemy_turn(unit: CombatUnit) -> void:
 					if nearest == null:
 						break
 		else:
-			# --- PRIORITY 8: Reposition if out of range ---
+			# --- Reposition if out of range ---
 			var move_range = CombatManager.get_movement_range(unit)
 			var best_tile: Vector2i = unit.grid_position
 			var best_score: int = -999
@@ -3753,8 +3773,17 @@ func _ai_try_use_potion(unit: CombatUnit, effect_type: String) -> bool:
 	return false
 
 
-## AI: Try to use a bomb on clustered player units. Uses if 2+ enemies in blast radius.
-func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node]) -> bool:
+## AI: Try to throw a bomb, following the unit's AI template knobs
+## (ai_templates.json "items"): bomb_min_targets opponents must be caught,
+## bomb_avoid_allies keeps the thrower's own side out of a bomb that hits
+## everyone, and bomb_prefer breaks ties between throws catching the same number.
+## Default knobs (2 targets, no ally check, first best found) are the old rule.
+func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node], knobs: Dictionary = {}) -> bool:
+	var min_targets: int = maxi(1, int(knobs.get("bomb_min_targets", 2)))
+	var avoid_allies: bool = bool(knobs.get("bomb_avoid_allies", false))
+	var prefer: String = str(knobs.get("bomb_prefer", "most_targets"))
+	var own_side: Array[Node] = CombatManager.get_team_units(unit.team)
+
 	for inv_entry in unit.combat_inventory:
 		var item_id = inv_entry.get("item_id", "")
 		var qty = inv_entry.get("quantity", 0)
@@ -3768,10 +3797,12 @@ func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node]) -> bool:
 		var effect = item.get("effect", {})
 		var bomb_range = effect.get("range", 4)
 		var aoe_radius = effect.get("aoe_radius", 1)
+		var hits_all: bool = effect.get("hits_all", false)
 
-		# Find best bomb target (position that hits the most enemies)
+		# Find best bomb target: the most opponents caught, then the preference
 		var best_pos = Vector2i(-1, -1)
 		var best_count = 0
+		var best_bonus := -1.0
 
 		for target in player_units:
 			if not target.is_alive():
@@ -3779,17 +3810,22 @@ func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node]) -> bool:
 			var dist = _grid_distance(unit.grid_position, target.grid_position)
 			if dist > bomb_range:
 				continue
-			# Count enemies in AoE
+			# A bomb that hits everyone would catch our own side too
+			if avoid_allies and hits_all and _ai_blast_catches(target.grid_position, aoe_radius, own_side):
+				continue
+			# Count opponents in the blast, and score them for the preference
 			var count = 0
+			var bonus := 0.0
 			for other in player_units:
 				if other.is_alive() and _grid_distance(target.grid_position, other.grid_position) <= aoe_radius:
 					count += 1
-			if count > best_count:
+					bonus += _ai_bomb_preference(other, prefer)
+			if count > best_count or (count == best_count and bonus > best_bonus):
 				best_count = count
+				best_bonus = bonus
 				best_pos = target.grid_position
 
-		# Only use bomb if hitting 2+ enemies
-		if best_count >= 2 and best_pos != Vector2i(-1, -1):
+		if best_count >= min_targets and best_pos != Vector2i(-1, -1):
 			var result = CombatManager.ai_use_combat_item(unit, item_id, best_pos)
 			if result.get("success", false):
 				var item_name = item.get("name", item_id)
@@ -3800,6 +3836,98 @@ func _ai_try_use_bomb(unit: CombatUnit, player_units: Array[Node]) -> bool:
 					_log_message("  Hit %d targets for %d total damage!" % [hit_count, total_damage])
 				return true
 	return false
+
+
+## True if any living unit in `units` stands within `radius` of `center`.
+func _ai_blast_catches(center: Vector2i, radius: int, units: Array[Node]) -> bool:
+	for u in units:
+		if u.is_alive() and _grid_distance(center, u.grid_position) <= radius:
+			return true
+	return false
+
+
+## How much a bomb template's bomb_prefer likes catching this opponent.
+## Only breaks ties between throws that catch the same number of opponents.
+func _ai_bomb_preference(target: Node, prefer: String) -> float:
+	match prefer:
+		"casters":
+			return 1.0 if not target.character_data.get("known_spells", []).is_empty() else 0.0
+		"wounded":
+			# 0 at full HP, approaching 1 near death
+			if target.max_hp <= 0:
+				return 0.0
+			return 1.0 - float(target.current_hp) / float(target.max_hp)
+	return 0.0  # most_targets: the first best throw found wins, as before
+
+
+## AI: Hand a healing potion to the most hurt ally under the template's
+## heal_ally_below fraction. Potions are handed over, so the ally must be within
+## CombatManager.POTION_ALLY_REACH; with heal_ally_step_in the unit first spends
+## one action stepping next to the ally (only if it still has two actions).
+## Returns true if a potion was given.
+func _ai_try_heal_ally(unit: CombatUnit, knobs: Dictionary) -> bool:
+	var threshold: float = float(knobs.get("heal_ally_below", 0.0))
+	if threshold <= 0.0:
+		return false
+
+	# Find a healing potion in the unit's own stash
+	var potion_id := ""
+	for inv_entry in unit.combat_inventory:
+		if inv_entry.get("quantity", 0) <= 0:
+			continue
+		var item = ItemSystem.get_item(inv_entry.get("item_id", ""))
+		if item.get("type", "") == "potion" and item.get("effect", {}).get("type", "") == "heal":
+			potion_id = inv_entry.get("item_id", "")
+			break
+	if potion_id == "":
+		return false
+
+	# Hurt allies, most hurt first (the unit itself is heal_self's job)
+	var hurt: Array[Node] = []
+	for ally in CombatManager.get_team_units(unit.team):
+		if ally == unit or not ally.is_alive() or ally.max_hp <= 0:
+			continue
+		if float(ally.current_hp) / float(ally.max_hp) < threshold:
+			hurt.append(ally)
+	if hurt.is_empty():
+		return false
+	hurt.sort_custom(func(a, b):
+		return float(a.current_hp) / float(a.max_hp) < float(b.current_hp) / float(b.max_hp))
+
+	var reach: int = CombatManager.POTION_ALLY_REACH
+	var patient: Node = null
+	for ally in hurt:
+		if _grid_distance(unit.grid_position, ally.grid_position) <= reach:
+			patient = ally
+			break
+
+	# Nobody in reach: step next to the most hurt ally we can get to
+	if patient == null and bool(knobs.get("heal_ally_step_in", false)) and CombatManager.can_act(2):
+		var tiles := CombatManager.get_movement_range(unit)
+		for ally in hurt:
+			var best_tile := Vector2i(-1, -1)
+			for tile in tiles:
+				if _grid_distance(tile, ally.grid_position) > reach:
+					continue
+				if best_tile == Vector2i(-1, -1) \
+						or _grid_distance(unit.grid_position, tile) < _grid_distance(unit.grid_position, best_tile):
+					best_tile = tile
+			if best_tile != Vector2i(-1, -1) and CombatManager.move_unit(unit, best_tile):
+				_log_message("%s hurries to %s's side" % [unit.unit_name, ally.unit_name])
+				patient = ally
+				break
+	if patient == null:
+		return false
+
+	var result = CombatManager.ai_use_combat_item(unit, potion_id, patient.grid_position)
+	if not result.get("success", false):
+		return false
+	var item_name = ItemSystem.get_item(potion_id).get("name", potion_id)
+	_log_message("%s gives %s a %s!" % [unit.unit_name, patient.unit_name, item_name])
+	for fx in result.get("effects_applied", []):
+		if fx.get("type", "") == "heal":
+			_log_message("  Healed for %d HP" % fx.amount)
+	return true
 
 
 ## AI: Try to apply a weapon oil from combat_inventory.
