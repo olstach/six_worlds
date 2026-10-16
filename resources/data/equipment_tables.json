@@ -1,6 +1,7 @@
 {
 	"_comment": "Equipment generation tables: materials, quality, traits, and base stats for procedural weapons/armor",
 	"_comment_heavy": "Heavy armour: an armor_bases entry with \"heavy\": true, made of a material without \"light_material\": true. generate_armor gives exactly those pieces a Strength requirement, and a Strength requirement is what the game reads as heavy (ItemSystem.is_heavy_armor_piece).",
+	"_comment_soft_goods": "Soft goods: an armor_bases entry with \"soft_goods\": true (hat, robe, gloves, pants, boots) can only be generated from a material whose allowed_types names that type - cloth, cotton, silk, leather, hide, scale, chitin. A material with no allowed_types (the metals, bone, obsidian) fits every other armour type but never these, so there is no generated Iron Robe or Bone Hat. Hand-made items in items.json are not bound by this.",
 	"materials": {
 		"wood": {
 			"tier": 0,
@@ -744,6 +745,7 @@
 			"slot": "head"
 		},
 		"hat": {
+			"soft_goods": true,
 			"armor": 0,
 			"dodge": 0,
 			"weight": 1,
@@ -760,6 +762,7 @@
 			"slot": "chest"
 		},
 		"robe": {
+			"soft_goods": true,
 			"armor": 1,
 			"dodge": 0,
 			"weight": 3,
@@ -768,6 +771,7 @@
 			"max_mana": 10
 		},
 		"gloves": {
+			"soft_goods": true,
 			"armor": 1,
 			"dodge": 0,
 			"weight": 2,
@@ -784,6 +788,7 @@
 			"damage": 1
 		},
 		"pants": {
+			"soft_goods": true,
 			"armor": 2,
 			"dodge": 0,
 			"weight": 5,
@@ -799,6 +804,7 @@
 			"slot": "legs"
 		},
 		"boots": {
+			"soft_goods": true,
 			"armor": 1,
 			"dodge": 0,
 			"weight": 3,

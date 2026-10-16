@@ -3,7 +3,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 9
+const EXPECTED_CHECKS: int = 10
 
 
 func _ready() -> void:
@@ -16,6 +16,7 @@ func _ready() -> void:
 	_check_ritual_metal_coding()
 	_check_ritual_implement_coding()
 	_check_generated_armour_weight()
+	_check_generated_armour_material_fits()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -283,9 +284,9 @@ func _check_generated_armour_weight() -> void:
 		["armor", "vajra", 16],
 		["helmet", "bone", 7],
 		["armor", "leather", 0],     # leather armour is light
-		["gauntlets", "hide", 0],
-		["boots", "iron", 0],        # not a heavy base type
-		["robe", "iron", 0],
+		["armor", "hide", 0],
+		["boots", "scale", 0],       # not a heavy base type (hard material)
+		["pants", "chitin", 0],
 	]
 	for case in cases:
 		var item_id: String = ItemSystem.generate_armor(case[0], "common", case[1], "common")
@@ -303,4 +304,42 @@ func _check_generated_armour_weight() -> void:
 		_fail("an iron helmet over a leather vest is not read as heavy armour")
 	if ItemSystem.wears_heavy_armor({"chest": "leather_vest", "weapon_off": "iron_gauntlets"}):
 		_fail("a heavy item outside the armour slots was read as worn armour")
+	_done()
+
+
+## Generated armour never pairs a material with a type it cannot make:
+## no Iron Robe, no Bone Hat, no Cloth cuirass (ItemSystem.armor_material_fits
+## reads allowed_types on materials and soft_goods on armour bases). Rolls
+## every armour type many times in every realm and through the rarity
+## fallback, and also asks for impossible pairs outright.
+func _check_generated_armour_material_fits() -> void:
+	# The rule itself, on pairs whose answer is not in doubt.
+	var pairs: Array = [
+		["robe", "iron", false], ["hat", "bone", false], ["armor", "cloth", false],
+		["gauntlets", "copper", false], ["boots", "steel", false],
+		["helmet", "iron", true], ["robe", "silk", true], ["gloves", "leather", true],
+		["shield", "scale", true], ["hat", "cotton", true],
+	]
+	for p in pairs:
+		if ItemSystem.armor_material_fits(p[1], p[0]) != bool(p[2]):
+			_fail("armor_material_fits(%s, %s) should be %s" % [p[1], p[0], p[2]])
+	# Rolled items.
+	var tables: Dictionary = ItemSystem._equipment_tables
+	var realms: Array = [""]
+	realms.append_array(tables.get("realm_material_weights", {}).keys())
+	var bad: Dictionary = {}
+	for armor_type in tables.get("armor_bases", {}):
+		for realm in realms:
+			for i in range(12):
+				var item_id: String = ItemSystem.generate_armor(armor_type, "rare", "", "", realm)
+				var mat: String = ItemSystem.get_item(item_id).get("generated", {}).get("material", "")
+				if not ItemSystem.armor_material_fits(mat, armor_type):
+					bad["%s %s" % [mat, armor_type]] = true
+		# An impossible override is replaced, not honoured.
+		var forced: String = ItemSystem.generate_armor(armor_type, "common", "iron" if armor_type in ["robe", "hat"] else "copper", "common")
+		var forced_mat: String = ItemSystem.get_item(forced).get("generated", {}).get("material", "")
+		if not ItemSystem.armor_material_fits(forced_mat, armor_type):
+			bad["%s %s (override)" % [forced_mat, armor_type]] = true
+	if not bad.is_empty():
+		_fail("generated armour with a disallowed material: %s" % ", ".join(bad.keys()))
 	_done()

@@ -1457,6 +1457,11 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 			var tier_key = rarity_tiers.get(rarity, "4")
 			m_weights = tier_materials.get(tier_key, {"iron": 100})
 		material = _weighted_pick(m_weights)
+
+	# Material/type compatibility, the armour twin of the weapon check above:
+	# no Iron Robe, no Bone Hat, no Copper Gauntlets. See armor_material_fits.
+	if not armor_material_fits(material, armor_type):
+		material = _fitting_armor_material(material, armor_type, m_weights)
 	var mat_info = materials[material]
 
 	# Calculate stats
@@ -1584,6 +1589,57 @@ func generate_armor(armor_type: String = "", rarity: String = "common",
 		item_data["passive"] = passive
 
 	return register_runtime_item(item_data)
+
+
+## Can this material make this armour type? Two rules, both from
+## equipment_tables.json:
+##   1. A material with an "allowed_types" list makes only those types
+##      (cloth makes robes and hats, never a cuirass; copper only foci).
+##   2. A "soft_goods" base type (hat, robe, gloves, pants, boots) is made
+##      only by a material that NAMES it — so the metals, bone and obsidian,
+##      which have no list and fit every hard piece, never make a robe.
+func armor_material_fits(material: String, armor_type: String) -> bool:
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()
+	var materials: Dictionary = _equipment_tables.get("materials", {})
+	var base: Dictionary = _equipment_tables.get("armor_bases", {}).get(armor_type, {})
+	if not material in materials:
+		return false
+	var allowed: Array = materials[material].get("allowed_types", [])
+	if allowed.is_empty():
+		return not base.get("soft_goods", false)
+	return armor_type in allowed
+
+
+## Pick a material that fits `armor_type` when the rolled one does not.
+## First choice: another material from the same weight table (keeps the
+## realm's flavour). Otherwise — usually the case for soft goods, since the
+## realm tables hold only metals, bone and obsidian — the fitting material
+## whose tier is closest to the one that was rolled, so a hell hat is cotton
+## and a god-realm hat is silk.
+func _fitting_armor_material(rolled: String, armor_type: String, m_weights: Dictionary) -> String:
+	var materials: Dictionary = _equipment_tables.get("materials", {})
+	var filtered: Dictionary = {}
+	for mat_key in m_weights:
+		if armor_material_fits(str(mat_key), armor_type):
+			filtered[mat_key] = m_weights[mat_key]
+	if not filtered.is_empty():
+		return _weighted_pick(filtered)
+	var rolled_tier: int = int(materials.get(rolled, {}).get("tier", 3))
+	var best: Array[String] = []
+	var best_gap: int = 999
+	for mat_key in materials:
+		if str(mat_key).begins_with("_") or not armor_material_fits(str(mat_key), armor_type):
+			continue
+		var gap: int = absi(int(materials[mat_key].get("tier", 0)) - rolled_tier)
+		if gap < best_gap:
+			best_gap = gap
+			best = [str(mat_key)]
+		elif gap == best_gap:
+			best.append(str(mat_key))
+	if best.is_empty():
+		return rolled  # no material fits at all — data error; keep going
+	return best[randi() % best.size()]
 
 
 ## Generate equipment matching a party member's best weapon skill.
