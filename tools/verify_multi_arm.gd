@@ -308,21 +308,31 @@ func _check_severing_with_a_full_pack_keeps_the_item() -> void:
 	_done()
 
 
-## A four-armed body can glove all four hands; a two-armed one cannot reach
-## for a third.
+## A four-armed body can glove all four hands — one pair per pair of hands,
+## the left slot holding it and the right mirroring — and a two-armed one
+## cannot reach for a third.
 func _check_four_armed_bodies_wear_four_gloves() -> void:
 	var glove: String = _first_item_of_type("gloves")
 	var four: Dictionary = CharacterSystem.create_blank_character()
 	four["body_plan"] = {"species": "four_armed", "missing_parts": [], "prosthetics": {}}
 	if not four["equipment"].has("hand_l2") or not four["equipment"].has("hand_r2"):
 		_fail("four arms: the default equipment has no hand_l2/hand_r2")
-	for slot in ["hand_l2", "hand_r2"]:
+	var before: int = ItemSystem.get_inventory_count(glove)
+	for slot in ["hand_l", "hand_l2"]:
 		ItemSystem.add_to_inventory(glove, 1)
 		if not ItemSystem.equip_item(four, glove, slot):
 			_fail("four arms: gloves cannot be equipped to %s" % slot)
 			ItemSystem.remove_from_inventory(glove, 1)
-		elif String(four["equipment"].get(slot, "")) != glove:
-			_fail("four arms: equip_item said yes but %s is empty" % slot)
+	for slot in ["hand_l", "hand_r", "hand_l2", "hand_r2"]:
+		if String(four["equipment"].get(slot, "")) != glove:
+			_fail("four arms: %s is not gloved after equipping two pairs" % slot)
+	if ItemSystem.get_inventory_count(glove) != before:
+		_fail("four arms: two pairs on four hands did not take exactly two from the pack")
+	for slot in ["hand_l", "hand_l2"]:
+		ItemSystem.unequip_item(four, slot)
+	if ItemSystem.get_inventory_count(glove) != before + 2:
+		_fail("four arms: taking off two pairs did not return exactly two")
+	ItemSystem.remove_from_inventory(glove, 2)
 	var two: Dictionary = CharacterSystem.create_blank_character()
 	ItemSystem.add_to_inventory(glove, 1)
 	if ItemSystem.equip_item(two, glove, "hand_l2"):
@@ -331,47 +341,82 @@ func _check_four_armed_bodies_wear_four_gloves() -> void:
 	_done()
 
 
-## The equipment screen has boxes for the second pair of hands, and its
-## one-pair-is-one-item mirror works there the same as for hand_l/hand_r:
-## the mirror never duplicates the pair, and never swallows a glove that was
-## in the mirror slot on its own (starting gear fills each hand separately).
+## One pair of gloves is one item on two hands, and ItemSystem keeps it so:
+## equipping from either hand gloves both; unequipping from either hand
+## returns the one pair; a separate glove already on the other hand goes back
+## to the pack (never overwritten); a right hand that wears a DIFFERENT glove
+## of its own comes off with the pair; and a companion's starting kit naming a
+## glove for each hand is settled into one pair — unequipping it used to
+## return only one of the two. The equipment screen's boxes include the
+## second pair of hands.
 func _check_equipment_screen_has_second_hands() -> void:
 	var menu_script: GDScript = load("res://scripts/ui/main_menu.gd")
 	var slots: Dictionary = menu_script.EQUIPMENT_SLOTS
 	if not slots.has("hand_l2") or not slots.has("hand_r2"):
 		_fail("equipment screen: no hand_l2/hand_r2 in EQUIPMENT_SLOTS")
-	# Not added to the tree, so none of its UI is built — only the helper runs.
-	var menu = menu_script.new()
 	var glove: String = _first_item_of_type("gloves")
-	var four: Dictionary = CharacterSystem.create_blank_character()
-	four["body_plan"] = {"species": "four_armed", "missing_parts": [], "prosthetics": {}}
 	var stray := "__verify_stray_glove__"
 	ItemSystem._item_database[stray] = {"name": "Stray glove", "type": "gloves",
 		"slot": "hand_l"}
-	four["equipment"]["hand_r2"] = stray   # as starting gear would leave it
-	# Equip a pair to the second hands, as _on_equipment_item_pressed does.
+	var g0: int = ItemSystem.get_inventory_count(glove)
+
+	# Equip on the second hands while hand_r2 wears a stray glove of its own.
+	var four: Dictionary = CharacterSystem.create_blank_character()
+	four["body_plan"] = {"species": "four_armed", "missing_parts": [], "prosthetics": {}}
+	four["equipment"]["hand_r2"] = stray
 	ItemSystem.add_to_inventory(glove, 1)
 	ItemSystem.equip_item(four, glove, "hand_l2")
-	menu._set_glove_mirror(four, "hand_r2", glove, "")
 	if String(four["equipment"]["hand_r2"]) != glove:
-		_fail("equipment screen: hand_r2 does not mirror the gloves on hand_l2")
-	if ItemSystem._find_inventory_item(stray) == -1:
-		_fail("equipment screen: the glove already on hand_r2 was overwritten, not returned")
-	# Unequip, as a second click on the box does: the pair goes back once.
-	ItemSystem.unequip_item(four, "hand_l2")
-	menu._set_glove_mirror(four, "hand_r2", "", glove)
-	if String(four["equipment"]["hand_r2"]) != "":
-		_fail("equipment screen: hand_r2 kept the gloves after unequipping")
-	var copies := 0
-	for entry in ItemSystem.get_inventory():
-		if entry.get("item_id", "") == glove:
-			copies += int(entry.get("quantity", 1))
-	if copies != 1:
-		_fail("equipment screen: unequipping a pair left %d in the pack, expected 1" % copies)
-	ItemSystem.remove_from_inventory(glove, 1)
+		_fail("pairs: hand_r2 does not mirror the gloves on hand_l2")
+	if ItemSystem.get_inventory_count(stray) != 1:
+		_fail("pairs: the glove already on hand_r2 was overwritten, not returned")
 	ItemSystem.remove_from_inventory(stray, 1)
+	# Unequip from the MIRROR hand: the pair comes off both, once.
+	ItemSystem.unequip_item(four, "hand_r2")
+	if String(four["equipment"]["hand_l2"]) != "" or String(four["equipment"]["hand_r2"]) != "":
+		_fail("pairs: unequipping from the right hand left a glove on")
+	if ItemSystem.get_inventory_count(glove) != g0 + 1:
+		_fail("pairs: unequipping a pair left %d in the pack, expected %d"
+			% [ItemSystem.get_inventory_count(glove), g0 + 1])
+
+	# Equip from the right hand: it lands on the left, mirrored.
+	var two: Dictionary = CharacterSystem.create_blank_character()
+	ItemSystem.equip_item(two, glove, "hand_r")
+	if String(two["equipment"]["hand_l"]) != glove or String(two["equipment"]["hand_r"]) != glove:
+		_fail("pairs: equipping gloves to hand_r did not glove both hands")
+	if ItemSystem.get_inventory_count(glove) != g0:
+		_fail("pairs: one pair on two hands did not take exactly one from the pack")
+	ItemSystem.unequip_item(two, "hand_l")
+	# A different glove of its own on the right hand comes off with the pair.
+	two["equipment"]["hand_l"] = glove
+	two["equipment"]["hand_r"] = stray
+	ItemSystem.remove_from_inventory(glove, 1)
+	ItemSystem.unequip_item(two, "hand_l")
+	if ItemSystem.get_inventory_count(stray) != 1 or ItemSystem.get_inventory_count(glove) != g0 + 1:
+		_fail("pairs: unequipping did not return every distinct glove held")
+	ItemSystem.remove_from_inventory(stray, 1)
+
+	# Companion starting kit: a glove named for each hand settles into one pair.
+	var companion: Dictionary = CharacterSystem.create_blank_character()
+	CompanionSystem._apply_starting_equipment(companion, {},
+		{"hand_l": glove, "hand_r": glove}, "common")
+	if String(companion["equipment"]["hand_l"]) != glove \
+			or String(companion["equipment"]["hand_r"]) != glove:
+		_fail("pairs: a starting kit's gloves are not on both hands")
+	ItemSystem.unequip_item(companion, "hand_l")
+	if String(companion["equipment"]["hand_r"]) != "":
+		_fail("pairs: a starting kit's right glove stayed on after the pair came off")
+	if ItemSystem.get_inventory_count(glove) != g0 + 2:
+		_fail("pairs: unequipping a starting kit's pair returned %d, expected 1"
+			% (ItemSystem.get_inventory_count(glove) - g0 - 1))
+	# Only the right hand named: the pair moves to the left and mirrors.
+	var righty: Dictionary = CharacterSystem.create_blank_character()
+	CompanionSystem._apply_starting_equipment(righty, {}, {"hand_r": glove}, "common")
+	if String(righty["equipment"]["hand_l"]) != glove:
+		_fail("pairs: a kit glove named only for hand_r was not settled onto hand_l")
+
+	ItemSystem.remove_from_inventory(glove, ItemSystem.get_inventory_count(glove) - g0)
 	ItemSystem._item_database.erase(stray)
-	menu.free()
 	_done()
 
 

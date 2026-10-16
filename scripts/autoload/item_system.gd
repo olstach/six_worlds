@@ -199,6 +199,17 @@ func equip_item(character: Dictionary, item_id: String, slot: String) -> bool:
 	var item_type = item.get("type", "")
 	var valid_slots: Array = []
 
+	# Gloves come in pairs: one item, worn on both hands of a pair. The left
+	# slot (hand_l / hand_l2) holds it and the right one mirrors it. Asked to
+	# glove a right hand, glove the pair from the left — unless the left hand
+	# is gone, in which case the right hand wears it alone.
+	var mirror_slot: String = ""
+	if is_pair_item(item_id):
+		if slot in GLOVE_MIRROR_OF and _hand_slot_usable(character, GLOVE_MIRROR_OF[slot]):
+			slot = GLOVE_MIRROR_OF[slot]
+		if slot in GLOVE_MIRRORS and _hand_slot_usable(character, GLOVE_MIRRORS[slot]):
+			mirror_slot = GLOVE_MIRRORS[slot]
+
 	if item_type in _item_types:
 		valid_slots = _item_types[item_type].get("slots", [])
 
@@ -246,11 +257,23 @@ func equip_item(character: Dictionary, item_id: String, slot: String) -> bool:
 			if main_item.get("two_handed", false):
 				unequip_item(character, "weapon_main")
 
+	# The other hand of the pair: if it wears a glove of its own, that goes
+	# back to the pack first (never overwritten and lost).
+	if mirror_slot != "":
+		var held: String = get_equipped_item(character, mirror_slot)
+		if held != "":
+			if is_pair_item(held):
+				unequip_item(character, mirror_slot, true)
+			else:
+				mirror_slot = ""  # something that is not a glove — leave it be
+
 	# Remove from inventory
 	remove_from_inventory(item_id, 1)
 
 	# Equip to character
 	_set_equipped_item(character, slot, item_id)
+	if mirror_slot != "":
+		_set_equipped_item(character, mirror_slot, item_id)
 
 	# Track attached prosthetics on the body plan so missing-limb penalties can
 	# be offset and the character sheet can show what is fitted where.
@@ -280,10 +303,18 @@ func swap_equipped(character: Dictionary, slot: String, new_item_id: String) -> 
 ## pack even past max_inventory_size rather than being refused. The pack is
 ## then over-full until the player sorts it out — better than deleting a
 ## weapon nobody chose to throw away. Ordinary unequips leave force off.
+##
+## Gloves: taking off a pair from either hand takes it off both, and returns
+## the one item. If the other hand wore a DIFFERENT glove of its own, that
+## comes back too — every distinct item comes off, nothing is lost.
 func unequip_item(character: Dictionary, slot: String, force: bool = false) -> bool:
 	var item_id = get_equipped_item(character, slot)
 	if item_id == "":
 		return false  # Nothing equipped
+
+	# A right hand showing the left hand's pair is a mirror: act on the left.
+	if slot in GLOVE_MIRROR_OF and get_equipped_item(character, GLOVE_MIRROR_OF[slot]) == item_id:
+		slot = GLOVE_MIRROR_OF[slot]
 
 	# Check if inventory has space
 	if not force and _inventory.size() >= max_inventory_size:
@@ -292,6 +323,17 @@ func unequip_item(character: Dictionary, slot: String, force: bool = false) -> b
 
 	# Remove from slot
 	_set_equipped_item(character, slot, "")
+
+	# Clear the pair's mirror; return a separate glove found there.
+	if slot in GLOVE_MIRRORS:
+		var mirror: String = GLOVE_MIRRORS[slot]
+		var held: String = get_equipped_item(character, mirror)
+		if held == item_id:
+			_set_equipped_item(character, mirror, "")
+		elif held != "" and is_pair_item(held):
+			_set_equipped_item(character, mirror, "")
+			add_to_inventory(held, 1, true)  # never destroyed, even past a full pack
+			item_unequipped.emit(character, mirror, held)
 
 	# Detaching a prosthetic restores the full missing-limb penalty
 	if BodySystem and get_item(item_id).get("type", "") == "prosthetic":
@@ -307,6 +349,52 @@ func unequip_item(character: Dictionary, slot: String, force: bool = false) -> b
 
 	item_unequipped.emit(character, slot, item_id)
 	return true
+
+
+## Glove slots that hold a pair -> the slot that mirrors it, and back again.
+const GLOVE_MIRRORS: Dictionary = {"hand_l": "hand_r", "hand_l2": "hand_r2"}
+const GLOVE_MIRROR_OF: Dictionary = {"hand_r": "hand_l", "hand_r2": "hand_l2"}
+## Item types that are a pair: one item, both hands.
+const PAIR_ITEM_TYPES: Array[String] = ["gloves", "gauntlets", "bracers"]
+
+
+## Is this item a pair of gloves/gauntlets/bracers (one item for two hands)?
+func is_pair_item(item_id: String) -> bool:
+	return str(get_item(item_id).get("type", "")) in PAIR_ITEM_TYPES
+
+
+## Gear written straight into a character's equipment (a companion's
+## starting kit — it never passes through the pack) may name a glove for
+## each hand. Settle that into the standard shape: the left slot holds ONE
+## pair and the right mirrors it, so taking it off later returns one item
+## and not two. A pair named only for the right hand moves to the left.
+## Kit items were never in the pack, so a duplicate is simply dropped.
+func settle_glove_pairs(character: Dictionary) -> void:
+	var equipment: Dictionary = character.get("equipment", {})
+	for holding in GLOVE_MIRRORS:
+		var mirror: String = GLOVE_MIRRORS[holding]
+		var left: String = str(equipment.get(holding, ""))
+		var right: String = str(equipment.get(mirror, ""))
+		if left == "" and right != "" and is_pair_item(right) \
+				and _hand_slot_usable(character, holding):
+			equipment[holding] = right
+			left = right
+		if left != "" and is_pair_item(left) and _hand_slot_usable(character, mirror) \
+				and (right == "" or is_pair_item(right)):
+			equipment[mirror] = left
+
+
+## Can this hand slot wear something right now? (The body has it, the arm is
+## not severed, and a natural weapon does not lock it.)
+func _hand_slot_usable(character: Dictionary, slot: String) -> bool:
+	if not BodySystem:
+		return true
+	if not BodySystem.body_has_slot(character, slot):
+		return false
+	var part: Dictionary = BodySystem.get_part_for_slot(character, slot)
+	if not part.is_empty() and part.get("id", "") in character.get("body_plan", {}).get("missing_parts", []):
+		return false
+	return not BodySystem.is_slot_locked(character, slot)
 
 
 ## Get the item ID equipped in a slot

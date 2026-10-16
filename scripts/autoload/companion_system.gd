@@ -267,6 +267,10 @@ func _apply_starting_equipment(character: Dictionary, fixed_equip: Dictionary,
 				else:
 					character.equipment[slot] = ItemSystem.generate_armor(armor_val, rarity, "", "", realm)
 
+	# Gloves named for each hand become one pair worn on both (left holds,
+	# right mirrors) — otherwise unequipping them later returns only one.
+	ItemSystem.settle_glove_pairs(character)
+
 
 ## What recruiting this companion costs right now. The one place the price is
 ## computed, so the price a shop SHOWS is always the price recruit() CHARGES.
