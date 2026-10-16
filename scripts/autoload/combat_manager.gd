@@ -7382,14 +7382,19 @@ func use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dicti
 	return result
 
 
-## Apply potion effects to the user (always self-targeted)
-func _apply_potion_effect(user: Node, item: Dictionary) -> Dictionary:
+## Apply potion effects. `user` is whoever administers it (their Alchemy sets
+## the strength); `recipient` is who it lands on — the user unless given
+## (AI units can hand a potion to an adjacent ally, see ai_use_combat_item).
+func _apply_potion_effect(user: Node, item: Dictionary, recipient: Node = null) -> Dictionary:
 	var effect = item.get("effect", {})
 	var effect_type = effect.get("type", "")
 	var result = {"success": true, "effects_applied": []}
 
 	# Alchemy skill bonus: increases potion effectiveness
 	var alchemy_bonus = _get_alchemy_bonus(user)
+	# From here on `user` means the one drinking it
+	if recipient != null:
+		user = recipient
 
 	match effect_type:
 		"heal":
@@ -7758,8 +7763,16 @@ func get_unit_at(pos: Vector2i) -> Node:
 # AI CONSUMABLE USAGE
 # ============================================
 
+## How far a potion can be handed to an ally: adjacent only (diagonals count).
+## A potion is given, not thrown. Only the AI does this today — the player's
+## potions are still self-only (use_combat_item).
+const POTION_ALLY_REACH: int = 1
+
+
 ## Use a combat item from an AI unit's own combat_inventory (not the player shared inventory).
 ## Works like use_combat_item but consumes from the unit's personal stash.
+## A potion goes to the user when target_pos is its own tile, or to the ally
+## standing on target_pos if that ally is within POTION_ALLY_REACH.
 func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Dictionary:
 	if not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
@@ -7788,6 +7801,15 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 		if distance > bomb_range:
 			return {"success": false, "reason": "Target out of range"}
 
+	# Validate the recipient for a potion handed to an ally (before consuming)
+	var recipient: Node = user
+	if item_type == "potion" and target_pos != user.grid_position:
+		recipient = get_unit_at(target_pos)
+		if recipient == null or not recipient.is_alive() or recipient.team != user.team:
+			return {"success": false, "reason": "No ally there"}
+		if _grid_distance(user.grid_position, target_pos) > POTION_ALLY_REACH:
+			return {"success": false, "reason": "Ally out of reach"}
+
 	# Consume from personal inventory
 	user.combat_inventory[inv_index].quantity -= 1
 	if user.combat_inventory[inv_index].quantity <= 0:
@@ -7797,7 +7819,8 @@ func ai_use_combat_item(user: Node, item_id: String, target_pos: Vector2i) -> Di
 	var result: Dictionary = {}
 	match item_type:
 		"potion":
-			result = _apply_potion_effect(user, item)
+			result = _apply_potion_effect(user, item, recipient)
+			result["recipient"] = recipient
 		"bomb":
 			result = _use_bomb(user, item, target_pos)
 		"oil":

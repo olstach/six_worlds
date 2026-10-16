@@ -25,6 +25,10 @@ var budgets: Dictionary = {}
 ## Party composition templates: member counts and relative XP shares.
 var party_archetypes: Dictionary = {}
 
+## Enemy AI templates (ai_templates.json): template_id -> knobs. "default" is
+## both the fallback and the schema every other template is laid over.
+var ai_templates: Dictionary = {}
+
 # Spell database reference (loaded from spells.json)
 var all_spells: Dictionary = {}
 
@@ -587,6 +591,7 @@ func resolve_party_budget(encounter_id: String, realm: String, difficulty: Strin
 func _ready() -> void:
 	_load_budgets()
 	_load_party_composition()
+	_load_ai_templates()
 	# Scan the enemies directory so every realm's data loads automatically
 	# (hell, hungry_ghost, animal, domain, and any future realm files).
 	var enemies_dir = "res://resources/data/enemies/"
@@ -696,6 +701,77 @@ func _load_name_parts() -> void:
 		return
 
 	name_parts = json.get_data()
+
+
+# ============================================
+# AI TEMPLATES
+# ============================================
+
+## Load resources/data/enemies/ai_templates.json. Its name doesn't end in
+## _archetypes/_encounters, so the directory scan in _ready() skips it.
+func _load_ai_templates() -> void:
+	var file = FileAccess.open("res://resources/data/enemies/ai_templates.json", FileAccess.READ)
+	if not file:
+		push_error("EnemySystem: Could not load ai_templates.json")
+		return
+	var json = JSON.new()
+	var err = json.parse(file.get_as_text())
+	file.close()
+	if err != OK:
+		push_error("EnemySystem: Failed to parse ai_templates.json: " + json.get_error_message())
+		return
+	var templates: Dictionary = json.get_data().get("templates", {})
+	for key in templates:
+		# Skip comment entries
+		if key.begins_with("_"):
+			continue
+		ai_templates[key] = templates[key]
+	if not ai_templates.has("default"):
+		push_error("EnemySystem: ai_templates.json has no \"default\" template")
+
+
+## Lay `overlay` over `base` and return a new dictionary. Nested dictionaries
+## merge key by key; any other value (number, list, string) replaces outright.
+## Keys starting with "_" are comments and are dropped.
+static func _deep_merge(base: Dictionary, overlay: Dictionary) -> Dictionary:
+	var result: Dictionary = base.duplicate(true)
+	for key in overlay:
+		if str(key).begins_with("_"):
+			continue
+		var value = overlay[key]
+		if value is Dictionary and result.get(key) is Dictionary:
+			result[key] = _deep_merge(result[key], value)
+		else:
+			result[key] = value.duplicate(true) if (value is Dictionary or value is Array) else value
+	# Comments copied from `base` aren't knobs either
+	for key in result.keys():
+		if str(key).begins_with("_"):
+			result.erase(key)
+	return result
+
+
+## The AI knobs for one archetype: "default", then its ai_template, then its
+## own "ai" overrides. An unknown template name warns and falls back to default.
+## The result also records which template it came from, as "template".
+func resolve_ai(archetype: Dictionary) -> Dictionary:
+	var template_id: String = str(archetype.get("ai_template", "default"))
+	if not ai_templates.has(template_id):
+		push_warning("EnemySystem: unknown ai_template '%s' — using default" % template_id)
+		template_id = "default"
+	var knobs: Dictionary = _deep_merge(ai_templates.get("default", {}), ai_templates.get(template_id, {}))
+	knobs = _deep_merge(knobs, archetype.get("ai", {}))
+	knobs["template"] = template_id
+	return knobs
+
+
+## The AI knobs a unit's character_data carries. Enemies get theirs when they
+## are built (_build_enemy); anything else the AI drives — summons, charmed or
+## berserk party members — has none and gets the default template.
+func get_ai(character_data: Dictionary) -> Dictionary:
+	var ai = character_data.get("ai", {})
+	if ai is Dictionary and not ai.is_empty():
+		return ai
+	return resolve_ai({})
 
 
 # ============================================
@@ -1139,6 +1215,10 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	# Supported: erratic_movement, priority_target, pack_bonus, burrow_emerge
 	if archetype.has("ai_behavior"):
 		enemy["ai_behavior"] = archetype["ai_behavior"]
+
+	# AI template knobs (ai_templates.json + the archetype's "ai" overrides),
+	# resolved once here so the combat AI reads a single dictionary.
+	enemy["ai"] = resolve_ai(archetype)
 
 	return enemy
 ## Calculate derived stats using the same formulas as CharacterSystem.

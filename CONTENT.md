@@ -9976,7 +9976,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Yellow Devil Transmuter** `hell_yellow_devil_transmuter` — devil · caster/support · biological, devil
 - **Yellow Devil Grenadier** `hell_yellow_devil_grenadier` — devil · ranged · biological, devil
   - design:
-    > Yellow devils trade in everything, powder included. Spends over half its kit on bombs (consumable_share) instead of armour; the AI throws them when 2+ party members are clustered. Hell kits are small (realm_base 200), so the list starts with the cheap bombs (ghost pepper, bone dust) and only reaches fire bombs on harder fights.
+    > Yellow devils trade in everything, powder included. Spends over half its kit on bombs (consumable_share) instead of armour; its 'grenadier' AI template throws them before anything else, even at a lone target, and two a turn. Hell kits are small (realm_base 200), so the list starts with the cheap bombs (ghost pepper, bone dust) and only reaches fire bombs on harder fights.
 - **Green Devil Hunter** `hell_green_devil_hunter` — devil · ranged · biological, devil
 - **Green Devil Sniper** `hell_green_devil_sniper` — devil · ranged · biological, devil
 - **Green Devil Backstabber** `hell_green_devil_backstabber` — devil · frontline · biological, devil

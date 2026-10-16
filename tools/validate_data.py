@@ -381,6 +381,67 @@ for aid, (arch, src) in archetypes.items():
         if not isinstance(share, (int, float)) or not 0 <= share <= 1:
             err("archetype->value", f"{src}:{aid}: consumable_share {share!r} is not 0.0-1.0")
 
+# ── enemy AI templates ───────────────────────────────────────────────────────
+# ai_templates.json: "default" is the schema. Every other template and every
+# archetype's "ai" override may only use keys "default" has (catches typos
+# that would otherwise silently do nothing), and the values must make sense.
+_ai_path = "resources/data/enemies/ai_templates.json"
+ai_templates = {k: v for k, v in json.load(open(os.path.join(ROOT, _ai_path), encoding="utf-8"))
+                .get("templates", {}).items() if not k.startswith("_")}
+AI_ACTIONS = {"heal_self", "heal_ally", "restore_mana", "active_skill", "spell", "bomb", "oil"}
+AI_FRACTIONS = {"use_chance", "heal_self_below", "heal_ally_below", "mana_self_below"}
+AI_COUNTS = {"max_per_turn", "bomb_min_targets"}
+AI_ENUMS = {"bomb_prefer": {"most_targets", "casters", "wounded"},
+            "oil_when": {"in_range", "always", "never"}}
+
+
+def check_ai_block(block, schema, where):
+    """Keys must exist in `schema` (the default template); values must be sane."""
+    for key, value in block.items():
+        if key.startswith("_"):
+            continue
+        if key not in schema:
+            err("ai->key", f"{where}: '{key}' is not a knob ai_templates.json default has")
+            continue
+        if isinstance(schema[key], dict):
+            if not isinstance(value, dict):
+                err("ai->value", f"{where}: '{key}' must be a section ({{...}})")
+            else:
+                check_ai_block(value, schema[key], f"{where}.{key}")
+        elif key == "priority":
+            if not isinstance(value, list) or any(a not in AI_ACTIONS for a in value):
+                err("ai->value", f"{where}: priority {value!r} — actions are {sorted(AI_ACTIONS)}")
+            elif len(set(value)) != len(value):
+                err("ai->value", f"{where}: priority lists an action twice")
+        elif key in AI_FRACTIONS:
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value <= 1:
+                err("ai->value", f"{where}: {key} {value!r} is not 0.0-1.0")
+        elif key in AI_COUNTS:
+            if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+                err("ai->value", f"{where}: {key} {value!r} is not a whole number >= 1")
+        elif key in AI_ENUMS:
+            if value not in AI_ENUMS[key]:
+                err("ai->value", f"{where}: {key} {value!r} — one of {sorted(AI_ENUMS[key])}")
+        elif type(value) is not type(schema[key]):
+            err("ai->value", f"{where}: {key} {value!r} should be {type(schema[key]).__name__}")
+
+
+if "default" not in ai_templates:
+    err("ai->template", f"{_ai_path}: no 'default' template")
+else:
+    _ai_schema = ai_templates["default"]
+    for tid, tmpl in ai_templates.items():
+        check_ai_block(tmpl, _ai_schema, f"ai_templates.json:{tid}")
+    for aid, (arch, src) in archetypes.items():
+        tid = arch.get("ai_template", "default")
+        if tid not in ai_templates:
+            err("archetype->ai_template", f"{src}:{aid}: ai_template '{tid}' unknown")
+        if "ai" in arch:
+            if not isinstance(arch["ai"], dict):
+                err("ai->value", f"{src}:{aid}: 'ai' must be a section ({{...}})")
+            else:
+                check_ai_block(arch["ai"], _ai_schema, f"{src}:{aid}.ai")
+
 # ── companions ───────────────────────────────────────────────────────────────
 for cid, comp in companions.items():
     if comp.get("birth") and comp["birth"] not in races:
