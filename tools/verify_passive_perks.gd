@@ -40,6 +40,9 @@ func _ready() -> void:
 	_check_reentrancy_guard()
 	_check_stat_modifiers_tick_once()
 	_check_rousing_display_sorts_round_one()
+	_check_downed_and_actionless_units_tick()
+	_check_avatar_of_the_wind_reaches_every_ally()
+	_check_borrowed_opening_waits_for_the_attack()
 	_check_every_opening_wants_a_debuff()
 	_teardown_field()
 
@@ -166,16 +169,16 @@ func _check_trigger() -> void:
 	unit.stat_modifiers = []
 
 	CombatManager._fire_perk_triggers(unit, "dodge_success", {})
-	var gained := unit._get_stat_modifier_bonus("damage")
+	var gained := unit._get_stat_modifier_bonus("crit_chance")
 
 	# A trigger that does not match must do nothing.
 	unit.stat_modifiers = []
 	CombatManager._fire_perk_triggers(unit, "on_kill", {})
-	var spurious := unit._get_stat_modifier_bonus("damage")
+	var spurious := unit._get_stat_modifier_bonus("crit_chance")
 	unit.free()
 
 	if gained != 20:
-		_fail("borrowed_opening: dodge_success gave %d damage, expected 20" % gained)
+		_fail("borrowed_opening: dodge_success gave %d crit, expected 20" % gained)
 	if spurious != 0:
 		_fail("borrowed_opening: fired on on_kill, which it does not listen for")
 
@@ -723,10 +726,10 @@ func _check_rousing_display_sorts_round_one() -> void:
 	var leader := _make_unit(Vector2i(1, 8), 0, ["rousing_display"])
 	var ally := _make_unit(Vector2i(2, 8), 0)
 	var enemy := _make_unit(Vector2i(9, 8), 1)
-	# Blank characters tie on Initiative. Put the enemy 3 ahead of the ally,
-	# so only a +5 that arrives before the sort lets the ally go first; and
+	# Blank characters tie on Initiative. Put the enemy 1 ahead of the ally,
+	# so only the +2 arriving before the sort lets the ally go first; and
 	# the leader well behind, so the first turn (which ticks) is not theirs.
-	CombatManager._apply_stat_modifier(enemy, "initiative", 3, 9)
+	CombatManager._apply_stat_modifier(enemy, "initiative", 1, 9)
 	CombatManager._apply_stat_modifier(leader, "initiative", -20, 9)
 
 	var saved: Array[Node] = CombatManager.all_units.duplicate()
@@ -738,13 +741,110 @@ func _check_rousing_display_sorts_round_one() -> void:
 	if order.find(ally) < 0 or order.find(enemy) < 0:
 		_fail("Rousing Display probe: the turn order is missing a unit (%s)" % [order])
 	elif order.find(ally) > order.find(enemy):
-		_fail("Rousing Display: the inspired ally still acts after an enemy at +3 — "
+		_fail("Rousing Display: the inspired ally still acts after an enemy at +1 — "
 			+ "the buff arrived after round 1 was sorted")
 	# Used, then gone: the ally's own first turn start has ticked it away, so
 	# it cannot carry into round 2's sort.
 	if _mod(ally, "initiative") != 0:
 		_fail("Rousing Display's buff survived the ally's first turn (%d left)"
 			% _mod(ally, "initiative"))
+	CombatManager.turn_order.clear()
+
+
+## A unit skipped for actions — bleeding out, or a decoy with none — still has
+## its statuses and modifiers count down at the point its turn would come. It
+## used to skip straight past, and a bleeding-out unit fell out of the next
+## round's order altogether, so a buff on a downed ally rode on for ever (and
+## its bleed-out never counted down).
+func _check_downed_and_actionless_units_tick() -> void:
+	for kind in ["bleeding", "decoy"]:
+		var skipped := _make_unit(Vector2i(10, 1), 0)
+		var next := _make_unit(Vector2i(10, 3), 0)
+		if kind == "bleeding":
+			skipped.is_bleeding_out = true
+			skipped.bleed_out_turns = 3
+		else:
+			skipped.max_actions = 0
+		skipped.status_effects = [{"status": "Blessed", "duration": 1}]
+		CombatManager._apply_stat_modifier(skipped, "accuracy", 7, 1)
+
+		# `next` stands behind it so the skip has somewhere to advance to.
+		CombatManager.turn_order.assign([skipped, next])
+		CombatManager.current_unit_index = 0
+		CombatManager._start_current_turn()
+		if _mod(skipped, "accuracy") != 0:
+			_fail("a %s unit's stat modifier did not tick when its turn was skipped" % kind)
+		if skipped.has_status("Blessed"):
+			_fail("a %s unit's status did not tick when its turn was skipped" % kind)
+		if kind == "bleeding" and (skipped.bleed_out_turns != 2 or skipped.is_dead):
+			_fail("bleed-out did not count down once (%d left, dead=%s)"
+				% [skipped.bleed_out_turns, skipped.is_dead])
+
+		# And it keeps its place in the next round's order.
+		var saved: Array[Node] = CombatManager.all_units.duplicate()
+		CombatManager.all_units.assign([skipped, next])
+		CombatManager._calculate_turn_order()
+		CombatManager.all_units.assign(saved)
+		if not skipped in CombatManager.turn_order:
+			_fail("a %s unit fell out of the next round's turn order" % kind)
+		CombatManager.turn_order.clear()
+		skipped.is_bleeding_out = false
+
+
+## Avatar of the Wind's buffs, cast at the holder's turn start, must reach
+## every ally for one turn of that ally's own — the ones acting after the
+## holder this round and the ones acting before it next round — and refresh
+## rather than stack.
+func _check_avatar_of_the_wind_reaches_every_ally() -> void:
+	var before := _make_unit(Vector2i(1, 11), 0)
+	var holder := _make_unit(Vector2i(2, 11), 0, ["avatar_of_the_wind"])
+	var after := _make_unit(Vector2i(3, 11), 0)
+	CombatManager.turn_order.assign([before, holder, after])
+
+	for round_no in [1, 2]:
+		for i in range(3):
+			CombatManager.current_unit_index = i
+			CombatManager._start_current_turn()
+			var unit: CombatUnit = CombatManager.turn_order[i]
+			# What matters is what the ally ACTS with, i.e. after its own
+			# turn start ticked. Round 1's first ally has not been reached yet.
+			if unit == holder or (unit == before and round_no == 1):
+				continue
+			if _mod(unit, "dodge") != 5 or _mod(unit, "movement") != 1:
+				_fail("Avatar of the Wind: %s acts in round %d with dodge %+d, move %+d "
+					% [unit.unit_name, round_no, _mod(unit, "dodge"), _mod(unit, "movement")]
+					+ "(expected +5, +1)")
+
+	# The wind dies with the holder's perk: one more turn, then gone.
+	holder.character_data["perks"].clear()
+	for i in [0, 0]:
+		CombatManager.current_unit_index = i
+		CombatManager._start_current_turn()
+	if _mod(before, "dodge") != 0:
+		_fail("Avatar of the Wind outlived its holder by more than a turn (%+d)"
+			% _mod(before, "dodge"))
+	CombatManager.turn_order.clear()
+
+
+## Borrowed Opening: dodge a blow, and your next attack gets +20% CRIT (it gave
+## +20 damage) — still there on your own turn, which a duration-1 buff laid on
+## the enemy's turn was not, and spent by the attack.
+func _check_borrowed_opening_waits_for_the_attack() -> void:
+	var monk := _make_unit(Vector2i(6, 11), 0, ["borrowed_opening"])
+	var foe := _make_unit(Vector2i(7, 11), 1)
+	monk.character_data["equipped_weapon"] = {}   # unarmed
+	CombatManager._fire_perk_triggers(monk, "dodge_success", {"attacker": foe})
+	if _mod(monk, "damage") != 0 or _mod(monk, "crit_chance") != 20:
+		_fail("Borrowed Opening gave damage %+d, crit %+d (expected crit +20 only)"
+			% [_mod(monk, "damage"), _mod(monk, "crit_chance")])
+	CombatManager.turn_order.assign([monk])
+	CombatManager.current_unit_index = 0
+	CombatManager._start_current_turn()
+	if _mod(monk, "crit_chance") != 20:
+		_fail("Borrowed Opening's crit was gone by the monk's own turn")
+	CombatManager._spend_next_attack_modifiers(monk)
+	if _mod(monk, "crit_chance") != 0:
+		_fail("Borrowed Opening's crit was not spent by the attack")
 	CombatManager.turn_order.clear()
 
 

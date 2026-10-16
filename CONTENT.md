@@ -3743,7 +3743,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 ### Level 6 `6`
 
 - **Borrowed Opening** `borrowed_opening`
-  - desc: Passive. When an enemy's melee attack misses you, your next unarmed attack this turn gains +20% crit chance.
+  - desc: Passive. When an enemy's melee attack misses you, your next unarmed attack gains +20% crit chance.
   - flavor: You learn the shape of the miss.
 
 ### Level 7 `7`
@@ -4164,7 +4164,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 ### Level 1 `1`
 
 - **Rousing Display** `rousing_display`
-  - desc: When combat starts, allies within 3 tiles gain +5% morale and +2 Initiative for the first round.
+  - desc: When combat starts, allies within 3 tiles gain +2 Initiative for the first round.
   - flavor: (empty)
 - **Good with a Crowd** `good_with_a_crowd`
   - desc: +10% to social rolls when 2+ NPCs are present.

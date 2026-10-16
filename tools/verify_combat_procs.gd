@@ -12,7 +12,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 16
+const EXPECTED_CHECKS: int = 17
 
 
 func _ready() -> void:
@@ -27,6 +27,7 @@ func _ready() -> void:
 	_check_effective_luck_reaches_the_loot()
 	_check_luck_weights_a_lucky_find()
 	_check_on_hit_procs_spare_the_fallen()
+	_check_spell_riders_and_imbued_arrows_spare_the_fallen()
 	_check_enchantment_duration_counts_once()
 
 	_check_hardened()
@@ -599,5 +600,49 @@ func _check_on_hit_procs_spare_the_fallen() -> void:
 				% fn.trim_suffix("(") + "— use _apply_on_hit_status()")
 
 	for unit in [attacker, fallen, standing]:
+		unit.queue_free()
+	_done()
+
+
+## The same rule for the two paths _apply_on_hit_status does not cover: the
+## stat penalties a spell perk lays on its target (Touch of Gloom and kin) and
+## the spell an Arcane Archer's imbued arrow carries. Both ran after the
+## damage that could already have dropped the target.
+func _check_spell_riders_and_imbued_arrows_spare_the_fallen() -> void:
+	var caster := _team_unit(0)
+	caster.character_data["perks"].append({"id": "touch_of_gloom"})
+	var black_spell := {"schools": ["Black"], "damage_type": "black"}
+	var cast_result := {"effects_applied": [{"type": "status", "status": "Weakened"}]}
+
+	var fallen := _team_unit(1)
+	fallen.is_bleeding_out = true
+	CombatManager._process_spell_cast_perks(caster, fallen, black_spell, cast_result)
+	if not fallen.stat_modifiers.is_empty():
+		_fail("Touch of Gloom's penalties landed on a downed target: %s"
+			% [fallen.stat_modifiers])
+
+	# Control: someone still standing does take the -1 Movement / -3 Initiative.
+	var standing := _team_unit(1)
+	CombatManager._process_spell_cast_perks(caster, standing, black_spell, cast_result)
+	if standing._get_stat_modifier_bonus("initiative") != -3:
+		_fail("Touch of Gloom did not reach a living target (%s)" % [standing.stat_modifiers])
+
+	# Every target-directed stat penalty in the spell-perk function goes
+	# through the guarded helper.
+	var src := FileAccess.get_file_as_string("res://scripts/autoload/combat_manager.gd")
+	var start := src.find("func _process_spell_cast_perks(")
+	var stop := src.find("\nfunc ", start + 1)
+	if start < 0 or src.substr(start, stop - start).contains("_apply_stat_modifier(target,"):
+		_fail("_process_spell_cast_perks applies a stat modifier to its target without "
+			+ "the is_alive() guard — use _apply_on_hit_stat_modifier()")
+
+	# The imbued arrow: its spell is only delivered to a defender still up.
+	var imbue_at := src.find("# --- An imbued arrow delivers its spell on hit ---")
+	var imbue_end := src.find("_apply_spell_effects(", imbue_at)
+	if imbue_at < 0 or imbue_end < 0 \
+			or not src.substr(imbue_at, imbue_end - imbue_at).contains("defender.is_alive()"):
+		_fail("the imbued-arrow block delivers its spell without checking defender.is_alive()")
+
+	for unit in [caster, fallen, standing]:
 		unit.queue_free()
 	_done()

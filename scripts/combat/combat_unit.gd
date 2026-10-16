@@ -993,7 +993,12 @@ func _perk_condition_met(condition: String, target: Node = null) -> bool:
 		"wielding_ranged":
 			return is_ranged_weapon()
 		"unarmed":
-			return get_equipped_weapon().is_empty()
+			# Fists count: a body's natural weapon comes back from
+			# get_equipped_weapon() typed "unarmed" (or untyped), which is the
+			# same test combat uses for an unarmed attack. is_empty() alone
+			# was never true for anyone with hands.
+			var bare: Dictionary = get_equipped_weapon()
+			return bare.is_empty() or bare.get("type", "") in ["", "unarmed"]
 		"not_flanked":
 			return not is_flanked()
 		"did_not_move":
