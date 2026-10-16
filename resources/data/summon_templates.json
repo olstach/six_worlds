@@ -86,7 +86,6 @@
       "base_crit": 0,
       "base_accuracy": 0,
       "resistances": {
-        "ice": 100,
         "ice": 50,
         "fire": -50
       },

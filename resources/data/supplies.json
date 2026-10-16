@@ -1,6 +1,5 @@
 {
 	"_comment": "Supply system: four resources consumed on the overworld, each tied to a passive skill",
-
 	"supply_types": {
 		"food": {
 			"name": "Food",
@@ -47,33 +46,28 @@
 			"linked_skill": "alchemy"
 		}
 	},
-
 	"overworld_healing": {
 		"_comment": "Base passive healing happens as long as party has food. Medicine bonus stacks on top but costs herbs.",
 		"base_heal_rate_pct": 1.0,
 		"medicine_bonus_per_level_pct": 0.5
 	},
-
 	"starvation": {
 		"_comment": "When food hits 0: healing stops immediately. Grace period before HP drain based on LOWEST party Constitution.",
 		"grace_period_base_steps": 10,
 		"grace_period_per_constitution": 2,
 		"damage_per_step_pct": 2.0
 	},
-
 	"logistics_overworld": {
 		"_comment": "Each Logistics level reduces food consumption and increases overworld movement speed.",
 		"food_cost_reduction_pct_per_level": 7.5,
 		"speed_bonus_pct_per_level": 2
 	},
-
 	"smithing_overworld": {
 		"_comment": "Smithing passively repairs durability and restores ammo each overworld step (costs scrap).",
 		"repair_durability_pct_per_level": 1.0,
 		"ammo_restore_per_step_base": 1,
 		"ammo_restore_bonus_per_3_levels": 1
 	},
-
 	"alchemy_overworld": {
 		"_comment": "Alchemy passively brews items from unlocked tiers while travelling (costs reagents). Can be toggled off. Higher Alchemy = better odds of brewing higher-tier items.",
 		"brew_chance_per_step_pct": 15,
@@ -81,62 +75,97 @@
 		"reagent_cost_per_brew": 1,
 		"high_tier_reagent_cost": 3
 	},
-
 	"alchemy_crafting_tiers": {
 		"_comment": "Items unlocked by Alchemy perks. Each tier grants access to a group of items for both passive and active crafting. Reagent cost listed per item.",
 		"remedies": {
 			"tier_1": {
 				"perk": "apprentice_apothecary",
-				"items": ["health_potion", "mana_potion", "antidote"],
+				"items": [
+					"health_potion",
+					"mana_potion",
+					"antidote"
+				],
 				"reagent_cost": 1
 			},
 			"tier_2": {
 				"perk": "journeyman_apothecary",
-				"items": ["greater_health_potion", "greater_mana_potion", "stamina_tonic", "cure_all"],
+				"items": [
+					"greater_health_potion",
+					"greater_mana_potion",
+					"stamina_tonic",
+					"cure_all"
+				],
 				"reagent_cost": 2
 			},
 			"tier_3": {
 				"perk": "master_apothecary",
-				"items": ["elixir_of_vitality", "elixir_of_power", "panacea"],
+				"items": [
+					"elixir_of_vitality",
+					"elixir_of_power",
+					"panacea"
+				],
 				"reagent_cost": 4
 			}
 		},
 		"munitions": {
 			"tier_1": {
 				"perk": "bomb_maker",
-				"items": ["fire_bomb", "frost_bomb", "smoke_bomb"],
+				"items": [
+					"fire_bomb",
+					"frost_bomb",
+					"smoke_bomb"
+				],
 				"reagent_cost": 1
 			},
 			"tier_2": {
 				"perk": "demolitions_expert",
-				"items": ["acid_flask", "thunder_bomb", "flashbang"],
+				"items": [
+					"acid_flask",
+					"thunder_bomb",
+					"flashbang"
+				],
 				"reagent_cost": 2
 			},
 			"tier_3": {
 				"perk": "master_demolitionist",
-				"items": ["inferno_bomb", "void_grenade", "plague_flask"],
+				"items": [
+					"inferno_bomb",
+					"void_grenade",
+					"plague_flask"
+				],
 				"reagent_cost": 4
 			}
 		},
 		"applications": {
 			"tier_1": {
 				"perk": "applied_toxicology",
-				"items": ["flame_oil", "frost_oil", "poison_oil"],
+				"items": [
+					"flame_oil",
+					"frost_oil",
+					"poison_oil"
+				],
 				"reagent_cost": 1
 			},
 			"tier_2": {
 				"perk": "advanced_coatings",
-				"items": ["whetstone_oil", "paralyzing_oil", "warding_oil"],
+				"items": [
+					"whetstone_oil",
+					"paralyzing_oil",
+					"warding_oil"
+				],
 				"reagent_cost": 2
 			},
 			"tier_3": {
 				"perk": "master_coatings",
-				"items": ["dragons_blood_oil", "void_oil", "sovereign_oil"],
+				"items": [
+					"dragons_blood_oil",
+					"void_oil",
+					"sovereign_oil"
+				],
 				"reagent_cost": 4
 			}
 		}
 	},
-
 	"ammo_limits": {
 		"_comment": "Max ammo by weapon type. Restored passively via Smithing+Scrap, or to full at shops for gold.",
 		"bow": 20,

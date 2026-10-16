@@ -1,142 +1,235 @@
 {
   "_comment": "Zones: areas that do something to whoever is in them, anchored to the ground rather than to a unit. Payloads use the SAME vocabulary as auras — see resources/data/auras.json and AuraSystem — because a zone is an aura with a place instead of a body, and one payload list with two anchors beats two lists that drift apart.",
-
   "_comment_triggers": "`while_inside` fires each round on everyone standing in it. `on_enter` fires once on a unit that steps in. `on_death_inside` fires when a unit dies on its ground. A payload's own `affects` overrides the zone's, because a zone often wants both at once.",
-
   "_comment_footprint": "The tiles come from the casting spell's `aoe` block, so every shape AoEResolver knows — circle, arc, cone, line, cross, band — is available to a zone without naming any of them here.",
-
   "zones": {
     "grave_soil": {
       "name": "Grave Soil",
       "affects": "all",
       "on_death_inside": [
-        { "kind": "raise", "summon": "Zombie", "for": "caster", "affects": "enemies" }
+        {
+          "kind": "raise",
+          "summon": "Zombie",
+          "for": "caster",
+          "affects": "enemies"
+        }
       ],
       "_comment": "Cursed ground: an enemy that dies on it gets up again on your side. Nothing happens while you merely stand here, which is what makes it a trap rather than a hazard — its whole value is deciding where the fighting goes."
     },
-
     "shroud_of_darkness": {
       "name": "Shroud of Darkness",
       "affects": "all",
       "while_inside": [
-        { "kind": "grant_status", "status": "Shadow_Cloaked", "duration": 1, "affects": "allies" },
-        { "kind": "grant_status", "status": "Ranged_Attack_Debuff_50", "duration": 1, "affects": "enemies" }
+        {
+          "kind": "grant_status",
+          "status": "Shadow_Cloaked",
+          "duration": 1,
+          "affects": "allies"
+        },
+        {
+          "kind": "grant_status",
+          "status": "Ranged_Attack_Debuff_50",
+          "duration": 1,
+          "affects": "enemies"
+        }
       ],
       "_comment": "Obscures sight both ways. Your people are hard to see; theirs cannot shoot what they cannot see. The duration is 1 because it is refreshed every round the unit stays in, and so lapses a round after they leave."
     },
-
     "vajra_mandala": {
       "name": "Vajra Mandala",
       "affects": "all",
       "while_inside": [
-        { "kind": "damage_taken_pct", "amount": -30, "only": "magic", "affects": "allies" },
-        { "kind": "stat", "stat": "spellpower", "amount": 3, "affects": "allies" }
+        {
+          "kind": "damage_taken_pct",
+          "amount": -30,
+          "only": "magic",
+          "affects": "allies"
+        },
+        {
+          "kind": "stat",
+          "stat": "spellpower",
+          "amount": 3,
+          "affects": "allies"
+        }
       ],
       "on_enter": [
-        { "kind": "damage", "amount": 25, "element": "crushing", "affects": "enemies" },
-        { "kind": "grant_status", "status": "Frozen", "duration": 1, "chance": 0.35, "affects": "enemies" }
+        {
+          "kind": "damage",
+          "amount": 25,
+          "element": "crushing",
+          "affects": "enemies"
+        },
+        {
+          "kind": "grant_status",
+          "status": "Frozen",
+          "duration": 1,
+          "chance": 0.35,
+          "affects": "enemies"
+        }
       ],
       "_comment": "A circle of orbiting vajras. Allies inside are sheltered from magic and cast from a consecrated circle — a mandala is what Ritual is for — while enemies pay to cross the line, once, each time they cross it. The shelter and the spellpower are the two payload kinds that are READ where they apply rather than pushed on a tick; see CombatManager._zone_damage_taken_multiplier. The crossing toll was `water` until 2026-10-15, which is not a damage type, so nothing resisted it; it is crushing now — the vajras are what hit you, and the spell itself deals crushing."
     },
-
     "poison_cloud": {
       "name": "Poison Cloud",
       "affects": "all",
       "while_inside": [
-        { "kind": "damage", "amount": 8, "element": "poison" },
-        { "kind": "grant_status", "status": "Poisoned", "duration": 2, "chance": 0.5 }
+        {
+          "kind": "damage",
+          "amount": 8,
+          "element": "poison"
+        },
+        {
+          "kind": "grant_status",
+          "status": "Poisoned",
+          "duration": 2,
+          "chance": 0.5
+        }
       ],
       "_comment": "What Poisonous Cloud and Miasma leave behind. Affects everyone, because a cloud does not know whose side you are on — which is the interesting half of casting one, and the reason both spells carried an unread `cloud_effect: true` for months."
     },
-
     "black_ice": {
       "name": "Black Ice",
       "affects": "all",
       "on_enter": [
-        { "kind": "grant_status", "status": "Knocked_Down", "duration": 1, "affects": "enemies",
-          "save": { "attribute": "finesse", "dc": 13 } }
+        {
+          "kind": "grant_status",
+          "status": "Knocked_Down",
+          "duration": 1,
+          "affects": "enemies",
+          "save": {
+            "attribute": "finesse",
+            "dc": 13
+          }
+        }
       ],
       "_comment": "Ice you put where somebody has to cross. Allies are told where it is, which is the whole difference between a trap and a hazard — the payload names enemies."
     },
-
     "fog_of_war": {
       "name": "Fog of War",
       "affects": "all",
       "while_inside": [
-        { "kind": "stat", "stat": "accuracy", "amount": -20, "affects": "enemies" }
+        {
+          "kind": "stat",
+          "stat": "accuracy",
+          "amount": -20,
+          "affects": "enemies"
+        }
       ],
       "_comment": "A bank of fog. The accuracy is the zone's; the sight-blocking is a SMOKE terrain effect laid under it, because line of sight is the grid's business and not a payload's."
     },
-
     "gravity_well": {
       "name": "Gravity Well",
       "affects": "all",
       "while_inside": [
-        { "kind": "stat", "stat": "movement", "amount": -2, "affects": "enemies" },
-        { "kind": "stat", "stat": "dodge", "amount": -15, "affects": "enemies" }
+        {
+          "kind": "stat",
+          "stat": "movement",
+          "amount": -2,
+          "affects": "enemies"
+        },
+        {
+          "kind": "stat",
+          "stat": "dodge",
+          "amount": -15,
+          "affects": "enemies"
+        }
       ],
       "_comment": "Ground that has become heavier than it was. Slower and easier to hit, which is what a well does to anyone in it."
     },
-
     "inscribed_circle": {
       "name": "Inscribed Circle",
       "affects": "allies",
       "while_inside": [
-        { "kind": "stat", "stat": "mana_cost_pct", "amount": -25 }
+        {
+          "kind": "stat",
+          "stat": "mana_cost_pct",
+          "amount": -25
+        }
       ],
       "_comment": "A ritual circle drawn where you stand. Ritual is the skill of ceremony done in a place, so its circle is a place — and the discount follows whoever stands in it, not whoever drew it."
     },
-
     "caltrops": {
       "name": "Caltrops",
       "trap": true,
       "affects": "all",
       "on_enter": [
-        { "kind": "damage", "amount": 10, "element": "piercing" },
-        { "kind": "grant_status", "status": "Slowed", "duration": 1, "chance": 0.5 }
+        {
+          "kind": "damage",
+          "amount": 10,
+          "element": "piercing"
+        },
+        {
+          "kind": "grant_status",
+          "status": "Slowed",
+          "duration": 1,
+          "chance": 0.5
+        }
       ],
       "_comment": "Scattered iron. Hurts whoever walks onto it and does not ask whose boots they are — Prepared Ground is a logistics perk, and logistics does not aim."
     },
-
     "open_door": {
       "name": "Open Door",
       "affects": "all",
       "pair": "gate",
       "on_enter": [
-        { "kind": "grant_status", "status": "Hasted", "duration": 1, "affects": "allies" }
+        {
+          "kind": "grant_status",
+          "status": "Hasted",
+          "duration": 1,
+          "affects": "allies"
+        }
       ],
       "_comment": "One end of a gate. Stepping onto it puts you out of the other end — the pairing is what CombatManager does with `pair: gate`, and the payload is only what the crossing feels like. Allies come out of it moving; anyone else simply arrives."
     },
-
     "snare_trap": {
       "name": "Snare",
       "trap": true,
       "affects": "all",
       "on_enter": [
-        { "kind": "damage", "amount": 12, "element": "piercing", "affects": "enemies" },
-        { "kind": "grant_status", "status": "Immobilized", "duration": 1, "affects": "enemies" }
+        {
+          "kind": "damage",
+          "amount": 12,
+          "element": "piercing",
+          "affects": "enemies"
+        },
+        {
+          "kind": "grant_status",
+          "status": "Immobilized",
+          "duration": 1,
+          "affects": "enemies"
+        }
       ],
       "_comment": "What Trap Maker leaves on a tile. A trap is a zone that waits — nothing happens until somebody steps on it, which is the one thing an aura could never do. Enemies only: you know where you put it."
     },
-
     "mud": {
       "name": "Mud",
       "affects": "all",
       "while_inside": [
-        { "kind": "grant_status", "status": "Slowed", "duration": 1 }
+        {
+          "kind": "grant_status",
+          "status": "Slowed",
+          "duration": 1
+        }
       ],
       "_comment": "What Rain of Mud leaves behind. Affects everyone — mud does not care whose side you are on, and that is the interesting half of casting it."
     },
-
     "tornado": {
       "name": "Tornado",
       "affects": "all",
       "drift": "random",
       "while_inside": [
-        { "kind": "damage", "amount": 20, "element": "physical" }
+        {
+          "kind": "damage",
+          "amount": 20,
+          "element": "physical"
+        }
       ],
       "on_enter": [
-        { "kind": "damage", "amount": 10, "element": "physical" }
+        {
+          "kind": "damage",
+          "amount": 10,
+          "element": "physical"
+        }
       ],
       "_comment": "A zone that will not stay where you put it. Hits everyone, including the caster's own people, and wanders a tile a round — which is the whole character of the spell and the reason its `special` keys sat unread for months. It dealt `air` until 2026-10-15; air stopped being a damage type in the resistance rebuild, and wind that throws people is debris, so it is physical, like the spell."
     }

@@ -1,21 +1,57 @@
 {
 	"_comment": "All 35 skills organized by element (7 per element). Fill in descriptions and attributes as needed.",
-
 	"skill_categories": {
 		"combat": {
 			"name": "Combat Skills",
-			"skills": ["swords", "martial_arts", "ranged", "daggers", "axes", "unarmed", "spears", "maces", "armor"]
+			"skills": [
+				"swords",
+				"martial_arts",
+				"ranged",
+				"daggers",
+				"axes",
+				"unarmed",
+				"spears",
+				"maces",
+				"armor"
+			]
 		},
 		"magic": {
 			"name": "Magic Skills",
-			"skills": ["space_magic", "white_magic", "black_magic", "air_magic", "fire_magic", "sorcery", "water_magic", "enchantment", "earth_magic", "summoning"]
+			"skills": [
+				"space_magic",
+				"white_magic",
+				"black_magic",
+				"air_magic",
+				"fire_magic",
+				"sorcery",
+				"water_magic",
+				"enchantment",
+				"earth_magic",
+				"summoning"
+			]
 		},
 		"general": {
 			"name": "General Skills",
-			"skills": ["persuasion", "yoga", "ritual", "learning", "comedy", "guile", "might", "leadership", "performance", "grace", "medicine", "alchemy", "thievery", "logistics", "trade", "smithing"]
+			"skills": [
+				"persuasion",
+				"yoga",
+				"ritual",
+				"learning",
+				"comedy",
+				"guile",
+				"might",
+				"leadership",
+				"performance",
+				"grace",
+				"medicine",
+				"alchemy",
+				"thievery",
+				"logistics",
+				"trade",
+				"smithing"
+			]
 		}
 	},
-
 	"skills": {
 		"swords": {
 			"name": "Swords",
@@ -25,7 +61,6 @@
 			"primary_attribute": "finesse",
 			"secondary_attribute": "strength"
 		},
-
 		"martial_arts": {
 			"name": "Martial Arts",
 			"category": "combat",
@@ -34,7 +69,6 @@
 			"primary_attribute": "finesse",
 			"secondary_attribute": "awareness"
 		},
-
 		"space_magic": {
 			"name": "Space Magic",
 			"category": "magic",
@@ -43,7 +77,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "awareness"
 		},
-
 		"white_magic": {
 			"name": "White Magic",
 			"category": "magic",
@@ -52,7 +85,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "charm"
 		},
-
 		"black_magic": {
 			"name": "Black Magic",
 			"category": "magic",
@@ -61,7 +93,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "constitution"
 		},
-
 		"persuasion": {
 			"name": "Persuasion",
 			"category": "general",
@@ -70,7 +101,6 @@
 			"primary_attribute": "charm",
 			"secondary_attribute": "awareness"
 		},
-
 		"yoga": {
 			"name": "Yoga",
 			"category": "general",
@@ -79,7 +109,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "constitution"
 		},
-
 		"ranged": {
 			"name": "Ranged",
 			"category": "combat",
@@ -88,7 +117,6 @@
 			"primary_attribute": "finesse",
 			"secondary_attribute": "awareness"
 		},
-
 		"daggers": {
 			"name": "Daggers",
 			"category": "combat",
@@ -97,7 +125,6 @@
 			"primary_attribute": "finesse",
 			"secondary_attribute": "awareness"
 		},
-
 		"air_magic": {
 			"name": "Air Magic",
 			"category": "magic",
@@ -106,7 +133,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "finesse"
 		},
-
 		"ritual": {
 			"name": "Ritual",
 			"category": "general",
@@ -115,7 +141,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "awareness"
 		},
-
 		"learning": {
 			"name": "Learning",
 			"category": "general",
@@ -124,7 +149,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "awareness"
 		},
-
 		"comedy": {
 			"name": "Comedy",
 			"category": "general",
@@ -133,7 +157,6 @@
 			"primary_attribute": "charm",
 			"secondary_attribute": "awareness"
 		},
-
 		"guile": {
 			"name": "Guile",
 			"category": "general",
@@ -142,7 +165,6 @@
 			"primary_attribute": "finesse",
 			"secondary_attribute": "awareness"
 		},
-
 		"axes": {
 			"name": "Axes",
 			"category": "combat",
@@ -151,7 +173,6 @@
 			"primary_attribute": "strength",
 			"secondary_attribute": "constitution"
 		},
-
 		"unarmed": {
 			"name": "Unarmed",
 			"category": "combat",
@@ -160,7 +181,6 @@
 			"primary_attribute": "strength",
 			"secondary_attribute": "finesse"
 		},
-
 		"fire_magic": {
 			"name": "Fire Magic",
 			"category": "magic",
@@ -169,7 +189,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "strength"
 		},
-
 		"sorcery": {
 			"name": "Sorcery",
 			"category": "magic",
@@ -178,7 +197,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "strength"
 		},
-
 		"might": {
 			"name": "Might",
 			"category": "general",
@@ -187,7 +205,6 @@
 			"primary_attribute": "strength",
 			"secondary_attribute": "constitution"
 		},
-
 		"leadership": {
 			"name": "Leadership",
 			"category": "general",
@@ -196,7 +213,6 @@
 			"primary_attribute": "charm",
 			"secondary_attribute": "strength"
 		},
-
 		"performance": {
 			"name": "Performance",
 			"category": "general",
@@ -205,7 +221,6 @@
 			"primary_attribute": "charm",
 			"secondary_attribute": "finesse"
 		},
-
 		"spears": {
 			"name": "Spears",
 			"category": "combat",
@@ -214,7 +229,6 @@
 			"primary_attribute": "strength",
 			"secondary_attribute": "finesse"
 		},
-
 		"water_magic": {
 			"name": "Water Magic",
 			"category": "magic",
@@ -223,7 +237,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "awareness"
 		},
-
 		"enchantment": {
 			"name": "Enchantment",
 			"category": "magic",
@@ -232,7 +245,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "charm"
 		},
-
 		"grace": {
 			"name": "Grace",
 			"category": "general",
@@ -241,7 +253,6 @@
 			"primary_attribute": "finesse",
 			"secondary_attribute": "awareness"
 		},
-
 		"medicine": {
 			"name": "Medicine",
 			"category": "general",
@@ -250,7 +261,6 @@
 			"primary_attribute": "awareness",
 			"secondary_attribute": "focus"
 		},
-
 		"alchemy": {
 			"name": "Alchemy",
 			"category": "general",
@@ -259,7 +269,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "awareness"
 		},
-
 		"thievery": {
 			"name": "Thievery",
 			"category": "general",
@@ -268,7 +277,6 @@
 			"primary_attribute": "finesse",
 			"secondary_attribute": "luck"
 		},
-
 		"maces": {
 			"name": "Maces",
 			"category": "combat",
@@ -277,7 +285,6 @@
 			"primary_attribute": "strength",
 			"secondary_attribute": "constitution"
 		},
-
 		"armor": {
 			"name": "Armor",
 			"category": "combat",
@@ -286,7 +293,6 @@
 			"primary_attribute": "constitution",
 			"secondary_attribute": "strength"
 		},
-
 		"earth_magic": {
 			"name": "Earth Magic",
 			"category": "magic",
@@ -295,7 +301,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "constitution"
 		},
-
 		"summoning": {
 			"name": "Summoning",
 			"category": "magic",
@@ -304,7 +309,6 @@
 			"primary_attribute": "focus",
 			"secondary_attribute": "charm"
 		},
-
 		"logistics": {
 			"name": "Logistics",
 			"category": "general",
@@ -313,7 +317,6 @@
 			"primary_attribute": "awareness",
 			"secondary_attribute": "charm"
 		},
-
 		"trade": {
 			"name": "Trade",
 			"category": "general",
@@ -322,7 +325,6 @@
 			"primary_attribute": "charm",
 			"secondary_attribute": "awareness"
 		},
-
 		"smithing": {
 			"name": "Smithing",
 			"category": "general",
@@ -332,7 +334,6 @@
 			"secondary_attribute": "finesse"
 		}
 	},
-
 	"elements": {
 		"space": {
 			"name": "Space",
@@ -356,7 +357,10 @@
 					"initiative": 0.5
 				},
 				"per_threshold": {
-					"movement": {"every": 10, "amount": 1}
+					"movement": {
+						"every": 10,
+						"amount": 1
+					}
 				}
 			}
 		},
