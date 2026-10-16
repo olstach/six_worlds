@@ -427,7 +427,7 @@ func _apply_combat_start_perks() -> void:
 	for unit in all_units:
 		_fire_perk_triggers(unit, "combat_start", {})
 		var char_data = unit.character_data if "character_data" in unit else {}
-		# Rousing Display (Performance 1): allies within 3 tiles gain +5 Initiative for round 1.
+		# Rousing Display (Performance 1): allies within 3 tiles gain +2 Initiative for round 1.
 		# Duration 1 is right: _begin_first_round() sorts round 1 after this,
 		# and the buff ticks away at the ally's first turn start — before
 		# round 2's order is sorted.
@@ -435,7 +435,7 @@ func _apply_combat_start_perks() -> void:
 			for ally in get_team_units(unit.team if "team" in unit else 0):
 				if ally == unit: continue
 				if _grid_distance(unit.grid_position, ally.grid_position) <= 3:
-					_apply_stat_modifier(ally, "initiative", 5, 1)
+					_apply_stat_modifier(ally, "initiative", 2, 1)
 
 
 ## DoT statuses that can persist from combat into the overworld
@@ -1250,8 +1250,13 @@ func can_manually_deploy() -> bool:
 
 
 ## Calculate turn order based on initiative (highest first)
+##
+## A unit bleeding out keeps its place: it takes no actions, but its slot is
+## where its bleed-out counts down and its statuses and modifiers tick (see
+## _start_current_turn). Filtering on is_alive() dropped it at the next round,
+## so a downed unit never counted down and a buff on it rode on indefinitely.
 func _calculate_turn_order() -> void:
-	turn_order = all_units.filter(func(u): return u.is_alive())
+	turn_order = all_units.filter(func(u): return not u.is_dead)
 	turn_order.sort_custom(func(a, b): return a.get_initiative() > b.get_initiative())
 
 
@@ -1260,6 +1265,36 @@ func get_current_unit() -> Node:
 	if turn_order.is_empty() or current_unit_index >= turn_order.size():
 		return null
 	return turn_order[current_unit_index]
+
+
+## Count down a unit's statuses and stat modifiers WITHOUT running anything
+## else a turn start does — no damage or healing over time, no saving throws,
+## no auras. For units that are skipped for actions (bleeding out, decoys):
+## their time still passes. Expiry callbacks still run, since a status that
+## does something when it runs out (Doomed) runs out on the downed as well.
+func _tick_durations_only(unit: Node) -> void:
+	if "status_effects" in unit:
+		for i in range(unit.status_effects.size() - 1, -1, -1):
+			if i >= unit.status_effects.size():
+				continue   # an expiry above shortened the list
+			var effect: Dictionary = unit.status_effects[i]
+			var status_name: String = str(effect.get("status", ""))
+			var effect_def: Dictionary = _status_effects.get(status_name, {})
+			if effect_def.get("duration_type", "") == "until_save":
+				continue   # only a save removes these, and the downed make none
+			effect["duration"] = int(effect.get("duration", 1)) - 1
+			if effect["duration"] > 0:
+				continue
+			_on_status_expired(unit, status_name, effect_def, effect)
+			# The expiry callback can change the list (Doomed kills); find the
+			# entry again rather than trusting the index.
+			var idx: int = unit.status_effects.find(effect)
+			if idx != -1:
+				unit.status_effects.remove_at(idx)
+			if unit.has_method("show_status_expired"):
+				unit.show_status_expired(status_name)
+			status_effect_expired.emit(unit, status_name)
+	_process_stat_modifiers(unit)
 
 
 ## Start the current unit's turn
@@ -1276,13 +1311,26 @@ func _start_current_turn() -> void:
 			if not Reaction.of(_status_effects.get(str(entry.get("status", "")), {})).is_empty():
 				Reaction.refresh(entry)
 
-	# Units with no actions (illusions/decoys) skip their turn automatically
+	# Units with no actions (illusions/decoys) skip their turn automatically —
+	# but their statuses and modifiers still count down here, the moment the
+	# turn would have come, or a buff on them would never end.
 	if unit.get_max_actions() == 0:
+		_tick_durations_only(unit)
 		_advance_turn()
 		return
 
 	# Process bleed-out for dying units
 	if unit.is_bleeding_out:
+		# Time passes for the fallen too: statuses and modifiers tick at the
+		# point the turn would have come, so a buff on a downed ally does not
+		# ride on into later rounds. Durations only — no DoT, healing or saves
+		# on a body that is not taking turns.
+		_tick_durations_only(unit)
+		if unit.is_dead:
+			# Something ran out that finished them (Doomed); _kill_unit has
+			# already taken them out of the order.
+			_advance_turn()
+			return
 		unit.bleed_out_turns -= 1
 		unit_bleeding_out.emit(unit, unit.bleed_out_turns)
 
@@ -2054,7 +2102,13 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			var imbued_id: String = str(attacker.get_meta("imbued_spell"))
 			attacker.remove_meta("imbued_spell")
 			var imbued: Dictionary = get_spell(imbued_id)
-			if not imbued.is_empty():
+			# Spare the fallen: if the arrow itself dropped the defender, the
+			# spell spends itself on nothing — no statuses ride a downed body
+			# into its revive (same rule as _apply_on_hit_status).
+			if not imbued.is_empty() and not defender.is_alive():
+				combat_log.emit("%s's %s fades — the target is already down."
+					% [attacker.unit_name, imbued.get("name", imbued_id)])
+			elif not imbued.is_empty():
 				var bonus: int = _calculate_spell_bonus(attacker, imbued)
 				var delivered: Dictionary = _apply_spell_effects(
 					attacker, defender, imbued, bonus)
@@ -2149,6 +2203,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			var miss_margin: float = maxf(0.0, result.roll - result.hit_chance)
 			var dev = _resolve_projectile_deviation(attacker, defender, miss_margin)
 			result.merge(dev, true)
+
+	# "Your next attack gains…" buffs (Borrowed Force, Borrowed Opening) have
+	# now been used by this blow — hit or miss — whatever turn they had left.
+	_spend_next_attack_modifiers(attacker)
 
 	# Track per-turn attack type counters (after resolving, so 'first attack' checks work)
 	_count_weapon_attack(attacker)
@@ -4816,14 +4874,18 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 	var schools = spell.get("schools", [])
 	var has_damage = result.effects_applied.any(func(e): return e.get("type") == "damage")
 	var has_debuff = result.effects_applied.any(func(e): return e.get("type") == "status")
+	# Elements here are damage TYPES (damage_types.json): there is no "air",
+	# "water" or "earth" damage any more. Air's is lightning, Water's is ice;
+	# Earth deals crushing, but so do Water's waves, so Earth perks key on the
+	# Earth SCHOOL only. Stat penalties on the target go through
+	# _apply_on_hit_stat_modifier, which spares a target this spell just dropped.
 
 	# Touch of Gloom: debuff spells also apply -1 Movement and -3 Initiative for 2 turns
 	if PerkSystem.has_perk(caster_char, "touch_of_gloom") and has_debuff:
-		var black_schools = ["Black", "black"]
 		var is_black_spell = schools.any(func(s): return s.to_lower() == "black")
 		if is_black_spell:
-			_apply_stat_modifier(target, "movement", -1, 2)
-			_apply_stat_modifier(target, "initiative", -3, 2)
+			_apply_on_hit_stat_modifier(target, "movement", -1, 2)
+			_apply_on_hit_stat_modifier(target, "initiative", -3, 2)
 
 	# Measured Radiance: white damage spells have 25% chance to blind for 1 turn
 	if PerkSystem.has_perk(caster_char, "measured_radiance") and has_damage:
@@ -4836,14 +4898,14 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		var is_space = element == "space" or schools.any(func(s): return s.to_lower() == "space")
 		if is_space:
 			# -3 initiative as stat modifier; -10% focus as a flat -1 (focus is usually ~10)
-			_apply_stat_modifier(target, "initiative", -3, 2)
-			_apply_stat_modifier(target, "focus", -1, 2)
+			_apply_on_hit_stat_modifier(target, "initiative", -3, 2)
+			_apply_on_hit_stat_modifier(target, "focus", -1, 2)
 
 	# Creeping Cold: ice/cold spells that deal damage also apply -1 Movement for 2 turns
 	if PerkSystem.has_perk(caster_char, "creeping_cold") and has_damage:
 		var is_cold = element == "ice" or schools.any(func(s): return s.to_lower() == "water")
 		if is_cold:
-			_apply_stat_modifier(target, "movement", -1, 2)
+			_apply_on_hit_stat_modifier(target, "movement", -1, 2)
 
 	# No Warning (Sorcery 3): first combat round only, Sorcery spells deal +30% bonus damage
 	if PerkSystem.has_perk(caster_char, "no_warning") and has_damage and combat_round == 1:
@@ -4908,21 +4970,21 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Crystalline Edge (Earth 2): Earth damage spells have 20% chance to apply Brittle (-15% Armor, 2 turns)
 	if PerkSystem.has_perk(caster_char, "crystalline_edge") and has_damage:
-		var is_earth = element == "earth" or schools.any(func(s): return s.to_lower() == "earth")
+		var is_earth = schools.any(func(s): return s.to_lower() == "earth")
 		if is_earth and randf() < 0.20:
 			var brittle_amt = int(target.get_armor() * 0.15)
 			if brittle_amt > 0:
-				_apply_stat_modifier(target, "armor", -brittle_amt, 2)
+				_apply_on_hit_stat_modifier(target, "armor", -brittle_amt, 2)
 
 	# Weight of the Mountain (Earth 3): Earth damage spells apply -1 Movement for 2 turns
 	if PerkSystem.has_perk(caster_char, "weight_of_the_mountain") and has_damage:
-		var is_earth_wm = element == "earth" or schools.any(func(s): return s.to_lower() == "earth")
+		var is_earth_wm = schools.any(func(s): return s.to_lower() == "earth")
 		if is_earth_wm:
-			_apply_stat_modifier(target, "movement", -1, 2)
+			_apply_on_hit_stat_modifier(target, "movement", -1, 2)
 
 	# Tidal Surge (Water 2): after casting a Water spell, caster gains +1 Movement for 1 turn
 	if PerkSystem.has_perk(caster_char, "tidal_surge"):
-		var is_water_ts = element in ["water", "ice"] or schools.any(func(s): return s.to_lower() == "water")
+		var is_water_ts = element == "ice" or schools.any(func(s): return s.to_lower() == "water")
 		if is_water_ts:
 			_apply_stat_modifier(caster, "movement", 1, 1)
 
@@ -4930,7 +4992,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 	# Wired in get_continuous_stat_bonus; here we add it as a bonus damage proc on spell hits
 	# Chain Spark (Air 3): Lightning spells have 30% chance to chain to 1 adjacent target
 	if PerkSystem.has_perk(caster_char, "chain_spark") and has_damage:
-		var is_lightning = element in ["air", "lightning"] or schools.any(func(s): return s.to_lower() == "air")
+		var is_lightning = element == "lightning" or schools.any(func(s): return s.to_lower() == "air")
 		if is_lightning and randf() < 0.30:
 			var chain_targets = _get_enemies_in_range(target, 2)
 			chain_targets.erase(target)
@@ -4950,7 +5012,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 			if not target.status_effects.is_empty():
 				var last_effect = target.status_effects[-1]
 				if last_effect.get("status", "") != "":
-					var enc_lv: int = caster_char.get("skills", {}).get("enchantment", 0)
+					var enc_lv: int = CharacterSystem.get_effective_skill_level(caster_char, "enchantment")
 					last_effect["duration"] = last_effect.get("duration", 1) + maxi(1, int(enc_lv / 3))
 
 	# Sudden Silence (Sorcery 3): Sorcery damage spells reduce target Spellpower by 25% for 1 turn
@@ -4959,7 +5021,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		if is_sorcery:
 			var sp_pen = int(target.get_spellpower() * 0.25) if target.has_method("get_spellpower") else 3
 			if sp_pen > 0:
-				_apply_stat_modifier(target, "spellpower", -sp_pen, 1)
+				_apply_on_hit_stat_modifier(target, "spellpower", -sp_pen, 1)
 
 	# Snap Decision (Sorcery 4): Sorcery spells reduce target Initiative by 25% for 1 turn
 	if PerkSystem.has_perk(caster_char, "snap_decision") and has_damage:
@@ -4967,7 +5029,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 		if is_sorcery_sd:
 			var init_pen = int(target.get_initiative() * 0.25) if target.has_method("get_initiative") else 3
 			if init_pen > 0:
-				_apply_stat_modifier(target, "initiative", -init_pen, 1)
+				_apply_on_hit_stat_modifier(target, "initiative", -init_pen, 1)
 
 	# No Follow-Up Needed (Sorcery 4): Killing with a Sorcery spell refunds 50% of its mana cost
 	if PerkSystem.has_perk(caster_char, "no_follow_up_needed") and has_damage:
@@ -5019,6 +5081,15 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 				combat_log.emit("%s's Damaru builds rhythm (%d/3)." % [caster.unit_name, caster.damaru_charges])
 
 
+## A stat penalty an on-hit or on-cast proc lays on its target. Spares the
+## fallen exactly as _apply_on_hit_status does: a spell that drops its target
+## must not leave a -3 Initiative waiting for whoever revives them.
+func _apply_on_hit_stat_modifier(target: Node, stat: String, value: int, duration: int) -> void:
+	if not is_instance_valid(target) or not target.is_alive():
+		return
+	_apply_stat_modifier(target, stat, value, duration)
+
+
 ## Apply a temporary stat modifier
 func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -> void:
 	# Refuse a stat no getter reads back rather than storing it forever. A
@@ -5038,6 +5109,46 @@ func _apply_stat_modifier(unit: Node, stat: String, value: int, duration: int) -
 		"value": value,
 		"duration": duration
 	})
+
+
+## A modifier that lasts until the unit's NEXT ATTACK, or failing that through
+## its next turn. "When you dodge, your next attack…" fires on the ENEMY's turn;
+## with one tick per turn a duration-1 buff counted down at the start of the
+## holder's own turn and was gone before it could swing. Duration 2 survives
+## that tick, and attack_unit() spends it on the first blow (hit or miss) via
+## _spend_next_attack_modifiers.
+func _apply_next_attack_modifier(unit: Node, stat: String, value: int) -> void:
+	_apply_stat_modifier(unit, stat, value, 2)
+	if "stat_modifiers" in unit and not unit.stat_modifiers.is_empty() \
+			and unit.stat_modifiers[-1].get("stat", "") == stat:
+		unit.stat_modifiers[-1]["until_next_attack"] = true
+
+
+## Remove every "until your next attack" modifier — called once the attack
+## that used them has been resolved.
+func _spend_next_attack_modifiers(unit: Node) -> void:
+	if not "stat_modifiers" in unit:
+		return
+	for i in range(unit.stat_modifiers.size() - 1, -1, -1):
+		if unit.stat_modifiers[i].get("until_next_attack", false):
+			unit.stat_modifiers.remove_at(i)
+
+
+## A modifier that is REFRESHED rather than stacked: re-applying the same `key`
+## resets the existing entry's duration instead of adding a second copy. For a
+## buff some unit re-casts every turn (Avatar of the Wind), so it never doubles.
+func _refresh_stat_modifier(unit: Node, stat: String, value: int, duration: int,
+		key: String) -> void:
+	if "stat_modifiers" in unit:
+		for mod in unit.stat_modifiers:
+			if mod.get("key", "") == key and mod.get("stat", "") == stat:
+				mod["value"] = value
+				mod["duration"] = maxi(int(mod.get("duration", 0)), duration)
+				return
+	_apply_stat_modifier(unit, stat, value, duration)
+	if "stat_modifiers" in unit and not unit.stat_modifiers.is_empty() \
+			and unit.stat_modifiers[-1].get("stat", "") == stat:
+		unit.stat_modifiers[-1]["key"] = key
 
 
 ## Check if a unit's talisman perks grant immunity or resistance to a status.
@@ -5185,7 +5296,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	# Enchantment skill (1 extra turn per 3 levels, minimum 1).
 	if def.get("type", "") == "buff" and source != null and "character_data" in source:
 		if PerkSystem.has_perk(source.character_data, "lingering_touch"):
-			var enc_lv: int = source.character_data.get("skills", {}).get("enchantment", 0)
+			var enc_lv: int = CharacterSystem.get_effective_skill_level(source.character_data, "enchantment")
 			duration += maxi(1, int(enc_lv / 3))
 
 	# Check if already present and handle stacking
@@ -9970,8 +10081,14 @@ func _apply_trigger_effect(unit: Node, perk_id: String, payload: Dictionary,
 
 	match payload.get("type", ""):
 		"buff":
-			_apply_stat_modifier(target, payload.get("stat", ""),
-				int(payload.get("value", 0)), int(payload.get("duration", 1)))
+			# `until_next_attack`: lasts until the target's next attack (see
+			# _apply_next_attack_modifier) instead of a number of turns.
+			if payload.get("until_next_attack", false):
+				_apply_next_attack_modifier(target, payload.get("stat", ""),
+					int(payload.get("value", 0)))
+			else:
+				_apply_stat_modifier(target, payload.get("stat", ""),
+					int(payload.get("value", 0)), int(payload.get("duration", 1)))
 		"status":
 			_apply_status_effect(target, payload.get("status", ""),
 				int(payload.get("duration", 1)), 0, unit)
@@ -10066,7 +10183,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 				])
 				result["persistent_disease"] = disease_id
 		elif "poison" in attacker_tags and randf() < 0.15 * proc_scale \
-				and not _check_perk_status_immunity(defender, "poisoned"):
+				and not _check_perk_status_immunity(defender, "poisoned", attacker):
 			var char_data = defender.character_data
 			var disease_id = WoundSystem.apply_random_poison_disease(char_data)
 			if disease_id != "":
@@ -10537,14 +10654,16 @@ func _process_on_dodge_perks(unit: Node, attacker: Node) -> void:
 		if unit.has_method("get_equipped_weapon"):
 			if unit.get_equipped_weapon().get("type", "") == "sword":
 				# Apply a temporary riposte buff (stored as status effect for tracking)
-				_apply_status_effect(unit, "Riposte_Ready", 1, 25)  # value = damage bonus %
+				# Duration 2: this fires on the enemy's turn, and a 1-turn status
+				# would tick away at the start of yours, before the sword moved.
+				_apply_status_effect(unit, "Riposte_Ready", 2, 25)  # value = damage bonus %
 
 	# Borrowed Force: +30% damage bonus on next attack after dodging a melee attack
 	if _unit_has_perk(unit, "borrowed_force"):
 		var is_melee = _grid_distance(unit.grid_position, attacker.grid_position) <= 1
 		if is_melee:
 			var bonus = int(unit.get_attack_damage() * 0.3) if unit.has_method("get_attack_damage") else 5
-			_apply_stat_modifier(unit, "damage", bonus, 1)
+			_apply_next_attack_modifier(unit, "damage", bonus)
 
 	# Opportunist: when a melee attack misses you and you're holding a dagger, make a free counterattack
 	if _unit_has_perk(unit, "opportunist"):
@@ -10604,13 +10723,18 @@ func _process_turn_start_perks(unit: Node) -> void:
 					_apply_status_effect(unit, "Frozen", 1, 0, caster_u)
 					break
 
-	# Avatar of the Wind (Air 5): all allies gain +1 Move, +2 Initiative, +5% Dodge each round
+	# Avatar of the Wind (Air 5): all allies gain +1 Move, +2 Initiative, +5% Dodge each round.
+	# Duration 2, refreshed rather than stacked: modifiers tick at the start of
+	# their OWNER's turn, so a duration-1 buff laid on an ally here expired at
+	# that ally's next turn start — before it ever acted with it. Two survives
+	# that one tick, so every ally gets exactly one turn of its own with the
+	# wind behind it, and the holder's next turn tops it back up.
 	if _unit_has_perk(unit, "avatar_of_the_wind"):
 		for ally in get_team_units(unit.team if "team" in unit else 0):
 			if ally == unit: continue
-			_apply_stat_modifier(ally, "movement", 1, 1)
-			_apply_stat_modifier(ally, "initiative", 2, 1)
-			_apply_stat_modifier(ally, "dodge", 5, 1)
+			_refresh_stat_modifier(ally, "movement", 1, 2, "avatar_of_the_wind")
+			_refresh_stat_modifier(ally, "initiative", 2, 2, "avatar_of_the_wind")
+			_refresh_stat_modifier(ally, "dodge", 5, 2, "avatar_of_the_wind")
 
 	# Hungry Flames (Fire 2): Burning enemies have 25% chance/turn to spread to 1 adjacent enemy
 	# Processed on the perk-holder's turn rather than each burning enemy's turn

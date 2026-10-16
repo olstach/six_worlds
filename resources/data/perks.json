@@ -4779,18 +4779,21 @@
       "skill": "unarmed",
       "required_level": 6,
       "requires_perks": [],
-      "description": "Passive. When an enemy's melee attack misses you, your next unarmed attack this turn gains +20% crit chance.",
+      "description": "Passive. When an enemy's melee attack misses you, your next unarmed attack gains +20% crit chance.",
       "flavor": "You learn the shape of the miss.",
       "is_mantra": false,
       "effects": [
         {
           "type": "on_trigger",
           "trigger": "dodge_success",
+          "conditions": [
+            "unarmed"
+          ],
           "effect": {
             "type": "buff",
-            "stat": "damage",
+            "stat": "crit_chance",
             "value": 20,
-            "duration": 1
+            "until_next_attack": true
           }
         }
       ]
@@ -5665,7 +5668,7 @@
       "skill": "performance",
       "required_level": 1,
       "requires_perks": [],
-      "description": "When combat starts, allies within 3 tiles gain +5% morale and +2 Initiative for the first round.",
+      "description": "When combat starts, allies within 3 tiles gain +2 Initiative for the first round.",
       "flavor": "",
       "is_mantra": false
     },
@@ -7331,7 +7334,7 @@
           {
             "stat": "accuracy",
             "value": 10,
-            "duration": 1
+            "duration": 2
           }
         ],
         "push": {
@@ -7376,7 +7379,7 @@
           {
             "stat": "armor",
             "value": 25,
-            "duration": 2
+            "duration": 1
           }
         ]
       }
