@@ -15,6 +15,7 @@ rendered text. That is why the current data is rendered and parsed again
 before comparing (see _doc_view_index): whatever rendering does to a value
 (trailing spaces, line breaks), d and j go through exactly the same steps.
 """
+import difflib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -29,14 +30,43 @@ MISSING_BASE = ("content_base.json is missing — restore it from git "
                 "(`git checkout -- tools/content_base.json`); "
                 "refusing to guess which side is newer.")
 PENDING_HINT = "run python3 tools/content_sync.py --write"
+BROKEN = ("could not read this entry — nothing imported; fix it here and "
+          "paste it back, or edit the original below")
+DUPLICATE = "duplicate id — nothing imported"
 
 
 # ===========================================================================
 # The report
 # ===========================================================================
+def _text(value) -> str:
+    return ", ".join(value) if isinstance(value, list) else str(value)
+
+
 def _short(value, limit=200) -> str:
-    text = ", ".join(value) if isinstance(value, list) else str(value)
+    text = _text(value)
     return text if len(text) <= limit else text[:limit] + "…"
+
+
+def preview_change(old, new, width=60) -> list:
+    """[old, new] as two short, quoted previews for the report.
+
+    When the two texts start the same way, both previews start a little
+    before the first character that differs, so the owner can SEE the
+    change, e.g. a paragraph cut off at the end (which a preview of just the
+    first 60 characters would hide). Lengths are added when they differ."""
+    a, b = _text(old), _text(new)
+    same = 0
+    while same < min(len(a), len(b)) and a[same] == b[same]:
+        same += 1
+    start = same - 20 if same > 20 else 0
+    out = []
+    for t in (a, b):
+        piece = t[start:start + width]
+        shown = ("…" if start else "") + repr(piece) + ("…" if len(t) > start + width else "")
+        if len(a) != len(b):
+            shown += f" ({len(t)} chars)"
+        out.append(shown)
+    return out
 
 
 @dataclass
@@ -45,6 +75,7 @@ class Report:
     ignored: list = field(default_factory=list)     # (key, field)
     to_inbox: list = field(default_factory=list)    # (location, reason)
     conflicts: list = field(default_factory=list)   # (key, field, doc, json)
+    invalid: list = field(default_factory=list)     # (key, field, message)
     doc_changed: bool = False
     check: bool = False
     message: str = ""                               # a fatal problem, if any
@@ -57,7 +88,7 @@ class Report:
 
     @property
     def exit_code(self) -> int:
-        if self.message or self.conflicts:
+        if self.message or self.conflicts or self.invalid:
             return 1
         if self.check and self.pending:
             return 2
@@ -72,7 +103,8 @@ class Report:
         if self.imported:
             print("IMPORTED")
             for key, name, old, new in self.imported:
-                print(f"  {key} {name}: {_short(old, 60)!r} -> {_short(new, 60)!r}")
+                was, now = preview_change(old, new)
+                print(f"  {key} {name}: {was} -> {now}")
         if self.ignored:
             print("IGNORED (context field)")
             for key, name in self.ignored:
@@ -87,12 +119,16 @@ class Report:
                 print(f"  {key} {name}")
                 print(f"    doc:  {_short(d)}")
                 print(f"    json: {_short(j)}")
+        if self.invalid:
+            print("UNKNOWN IDS (nothing was written)")
+            for key, name, message in self.invalid:
+                print(f"  {key} {name}: {message}")
         summary = (f"{len(self.imported)} imported, {len(self.ignored)} ignored, "
                    f"{len(self.to_inbox)} moved to inbox, {len(self.conflicts)} conflicts, "
                    f"CONTENT.md {'changes' if self.doc_changed else 'unchanged'}"
                    + (" (first run)" if self.first_run else ""))
         print(summary)
-        if self.check and self.pending and not self.conflicts:
+        if self.check and self.pending and not (self.conflicts or self.invalid):
             print(PENDING_HINT)
 
 
@@ -147,6 +183,24 @@ def _read(raw: str, kind: str):
     return mdformat.split_list(raw) if kind == "list" else raw
 
 
+def _norm_id(text: str) -> str:
+    """How an id typed by hand is read: 'Martial Arts' -> 'martial_arts'.
+    Case is ignored, runs of spaces become one underscore and a trailing
+    full stop is dropped."""
+    return "_".join(text.strip().rstrip(".").strip().lower().split())
+
+
+def _unknown_ids(f: Field, items: list) -> list:
+    """Messages for every item of an id-list field the game does not know."""
+    out = []
+    for x in items:
+        if x not in f.ids:
+            near = difflib.get_close_matches(x, sorted(f.ids), n=1)
+            hint = f"; did you mean '{near[0]}'?" if near else ""
+            out.append(f"'{x}' is not an id in {f.ids_from}{hint}")
+    return out
+
+
 def _base_fields(doc: Doc, text: str) -> dict:
     """The base snapshot's "fields": every writing field (and editable title)
     of `doc`, read back from its rendered `text`."""
@@ -188,8 +242,10 @@ def _field_text(name: str, value: str) -> str:
 class _Merge:
     """Walks the parsed doc against the current data, filling a Report."""
 
-    def __init__(self, ds, base: dict, owner: dict, report: Report):
+    def __init__(self, ds, base: dict, owner: dict, report: Report,
+                 current_index: dict = None):
         self.ds, self.base, self.owner, self.report = ds, base, owner, report
+        self.current_index = current_index or {}   # location -> built Entry
         self.notes: dict = {}        # the doc's notes, which always win
         self.moved: list = []        # text blocks for the Inbox
         self._base_kids: dict = {}   # cache for base_children()
@@ -209,6 +265,45 @@ class _Merge:
                     stack.extend(c.children)
             self._base_kids[top] = out
         return self._base_kids[top]
+
+    def keep_base_notes(self, built) -> None:
+        """Nothing was read from the doc for this built entry (and its
+        children), so its notes are the ones the last sync saved: the
+        regenerated original then looks exactly as it did."""
+        for e in _walk([built]):
+            if e.key in self.base["notes"]:
+                self.notes[e.key] = self.base["notes"][e.key]
+
+    def top(self, location: str, copies: list, cur) -> None:
+        """All the doc's top-level entries found at one location.
+
+        One readable copy: merge it as usual. Otherwise import NOTHING:
+          - several copies (a pasted template, say): any one of them could
+            be the "real" one, so every copy that differs from what the last
+            sync wrote goes to the Inbox, and the original is regenerated;
+          - one copy with an unreadable line (`broken`): its fields may be
+            cut short, so the whole entry goes to the Inbox as one chunk.
+        """
+        if len(copies) == 1 and not copies[0].broken:
+            pe = copies[0]
+            if location in self.current_index and cur is not None:
+                self.entry(self.current_index[location], pe, cur, location)
+            else:
+                self.gone(location, pe, pe.raw == self.base["rendered"].get(location))
+            return
+        # what the last sync wrote here (a "(duplicate N)" key only exists
+        # if the data itself renders two entries at one location)
+        before = {raw for k, raw in self.base["rendered"].items()
+                  if k == location or k.startswith(location + " (duplicate ")}
+        reason = DUPLICATE if len(copies) > 1 else BROKEN
+        for pe in copies:
+            if pe.raw in before and not pe.broken:
+                if location not in self.current_index:
+                    self.gone(location, pe, True)    # record deleted meanwhile
+                continue                             # untouched: regenerated
+            self.move(location, reason, pe.raw)
+        if location in self.current_index:
+            self.keep_base_notes(self.current_index[location])
 
     def gone(self, location: str, pe, untouched: bool) -> None:
         """A doc entry with no record in the data. Dropped silently only
@@ -232,6 +327,11 @@ class _Merge:
         key = f"{entry.key}#{f.name}"
         b = self.base["fields"].get(key)
         if key in self.base["fields"] and d != b and j == b:
+            if f.ids is not None:
+                bad = _unknown_ids(f, d)
+                if bad:              # a typo must never reach the game data
+                    self.report.invalid += [(entry.key, f.name, m) for m in bad]
+                    return
             section = self.owner.get(entry.key)
             if hasattr(section, "import_field"):
                 section.import_field(self.ds, entry.key, f, d)
@@ -269,19 +369,33 @@ class _Merge:
                 if d_raw != j_raw:
                     self.report.ignored.append((e.key, f.name))
             else:
-                self.three_way(e, f, _read(d_raw, f.kind), _read(j_raw, f.kind))
-        for name, value in pe.fields.items():
-            if name not in known and value.strip():
-                self.move(pe.location, f"unknown field '{name}'", _field_text(name, value))
+                d = _read(d_raw, f.kind)
+                if f.ids is not None:            # "Martial Arts" -> martial_arts
+                    d = [_norm_id(x) for x in d]
+                self.three_way(e, f, d, _read(j_raw, f.kind))
+        unknown = [(n, v) for n, v in pe.fields.items() if n not in known and v.strip()]
+        if unknown:                  # all of them as one chunk, one comment
+            names = ", ".join(f"'{n}'" for n, _ in unknown)
+            self.move(pe.location, f"unknown field{'s' if len(unknown) > 1 else ''} {names}",
+                      "\n".join(_field_text(n, v) for n, v in unknown))
         if pe.notes:
             self.notes[e.key] = pe.notes
         built, current = _by_ident(e.children), _by_ident(cur.children)
-        seen = set()
+        copies: dict = {}            # ident -> [ParsedEntry], in doc order
         for pc in pe.children:
-            if pc.ident in seen:     # a copy would overwrite the original
-                self.move(pc.location, "duplicate id", pc.raw)
+            copies.setdefault(pc.ident, []).append(pc)
+        for ident, group in copies.items():
+            if len(group) > 1:
+                # A copy pasted above the original would overwrite it, so no
+                # copy imports; each one that differs from the last sync's
+                # text goes to the Inbox, and the original is regenerated.
+                for pc in group:
+                    if self.base_children(top).get(pc.location[len(top):]) != pc.raw:
+                        self.move(pc.location, DUPLICATE, pc.raw)
+                if ident in built:
+                    self.keep_base_notes(built[ident])
                 continue
-            seen.add(pc.ident)
+            pc = group[0]
             if pc.ident in built and pc.ident in current:
                 self.entry(built[pc.ident], pc, current[pc.ident], top)
             else:
@@ -344,22 +458,22 @@ def run(root: Path, write: bool, check: bool = False) -> Report:
     parsed = mdformat.parse(on_disk or "")
 
     # 3-5. merge every parsed entry; move what has no home to the Inbox
-    merge = _Merge(ds, base, owner, report)
+    merge = _Merge(ds, base, owner, report, current_index)
     if on_disk is None:
         # nothing to merge: rebuild the doc from the data and the saved notes
         report.notice = ("CONTENT.md is missing — regenerated from the data and "
                          "the notes in content_base.json, with an empty Inbox.")
         merge.notes = dict(base["notes"])
-    for loc, pe in parsed.entries.items():
-        if loc in current_index and loc in current_view:
-            merge.entry(current_index[loc], pe, current_view[loc], loc)
-        else:
-            merge.gone(loc, pe, pe.raw == base["rendered"].get(loc))
+    by_location: dict = {}       # location -> every copy found there, in order
+    for pe in parsed.entries.values():
+        by_location.setdefault(pe.location, []).append(pe)
+    for loc, copies in by_location.items():
+        merge.top(loc, copies, current_view.get(loc))
     for loc, raw in parsed.stray:
         merge.move(loc, "unrecognised line", raw)
 
-    # 6. a conflict stops everything
-    if report.conflicts:
+    # 6. a conflict, or an id the game does not know, stops everything
+    if report.conflicts or report.invalid:
         return report
 
     # 7. regenerate from the (possibly updated, in memory) data

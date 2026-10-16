@@ -7,6 +7,8 @@ from content import sections as sections_pkg
 from content.model import Entry, Field, Group
 ROOT = Path(__file__).resolve().parent.parent
 TRAITS = "resources/data/traits.json"
+COMPANIONS = "resources/data/companions.json"
+TABLES = "resources/data/equipment_tables.json"
 
 
 class SyncTests(unittest.TestCase):
@@ -169,14 +171,122 @@ class SyncTests(unittest.TestCase):
         self.assertIn("not allowed with", p.stderr)
 
     def test_stray_line_goes_to_inbox(self):
-        self.edit_doc("# Traits\n", "# Traits\n\nsome loose thought\n")
+        # two loose lines in one stretch move as ONE chunk, under one comment
+        self.edit_doc("# Traits\n", "# Traits\n\nsome loose thought\n\nand another\n")
         r = sync.run(self.tmp, write=True)
         self.assertEqual([why for _, why in r.to_inbox], ["unrecognised line"])
         inbox = self.doc.read_text(encoding="utf-8").split("\n# Traits")[0]
         self.assertIn("some loose thought", inbox)
         self.assertIn("<!-- moved by content_sync: found under", inbox)
+        self.assertEqual(inbox.count("<!-- moved by content_sync"), 1)
+        self.assertIn("some loose thought\n\nand another", inbox)
         # once moved, the next run is clean
         self.assertEqual(sync.run(self.tmp, write=False, check=True).exit_code, 0)
+
+
+    # --- final review: duplicates, list ids, heading renames ----------------
+    def companions(self):
+        return json.loads((self.tmp / COMPANIONS).read_text(encoding="utf-8"))["companions"]
+
+    def snapshot(self):
+        return {p: (self.tmp / p).read_text(encoding="utf-8")
+                for p in ("CONTENT.md", "tools/content_base.json", COMPANIONS, TABLES)}
+
+    def karnak(self):
+        """Karnak's lines exactly as the last sync wrote them."""
+        text = self.doc.read_text(encoding="utf-8")
+        start = text.index("- **Brother Karnak** `karnak`")
+        end = text.index("\n- **", start + 1)
+        return text[start:end + 1]
+
+    def test_pasted_template_copy_imports_nothing(self):
+        # The owner pastes a copy of Karnak ABOVE the original as a template
+        # and edits the copy. Neither copy may import; the original stays.
+        orig = self.karnak()
+        copy = orig.replace("A red devil cast out", "A NEW companion cast out")
+        self.edit_doc(orig, copy + orig)
+        before = self.companions()["karnak"]
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.imported, [])
+        self.assertEqual(r.to_inbox, [("Companions › hell › red_devil › karnak",
+                                       "duplicate id — nothing imported")])
+        self.assertEqual(self.companions()["karnak"], before)
+        text = self.doc.read_text(encoding="utf-8")
+        inbox, rest = text.split("\n# World")
+        self.assertIn("A NEW companion cast out", inbox)
+        self.assertEqual(rest.count("`karnak`"), 1)
+        self.assertIn(orig, rest)                          # notes and all
+        self.assertEqual(sync.run(self.tmp, write=False, check=True).exit_code, 0)
+
+    def test_two_edited_copies_both_go_to_inbox(self):
+        orig = self.karnak()
+        one = orig.replace("A red devil cast out", "Copy one")
+        two = orig.replace("A red devil cast out", "Copy two")
+        self.edit_doc(orig, one + two)
+        before = self.companions()["karnak"]
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(len(r.to_inbox), 2)
+        self.assertEqual(r.imported, [])
+        self.assertEqual(self.companions()["karnak"], before)
+        text = self.doc.read_text(encoding="utf-8")
+        inbox, rest = text.split("\n# World")
+        self.assertIn("Copy one", inbox)
+        self.assertIn("Copy two", inbox)
+        self.assertIn(orig, rest)          # regenerated from the data + saved notes
+
+    def test_list_split_on_bare_comma_and_names_normalised(self):
+        self.edit_doc("  - skills: martial_arts, unarmed, yoga, fire_magic",
+                      "  - skills: Martial Arts,yoga ,unarmed, Fire Magic")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.exit_code, 0)
+        self.assertEqual(self.companions()["karnak"]["build_weights"],
+                         {"martial_arts": 5, "yoga": 4, "unarmed": 3, "fire_magic": 2})
+        self.assertIn("  - skills: martial_arts, yoga, unarmed, fire_magic",
+                      self.doc.read_text(encoding="utf-8"))
+        self.assertEqual(sync.run(self.tmp, write=False, check=True).exit_code, 0)
+
+    def test_normalised_but_unchanged_list_imports_nothing(self):
+        self.edit_doc("  - traits: devout, brave", "  - traits: Devout, BRAVE")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.imported, [])
+        self.assertTrue(r.doc_changed)          # shown again in its canonical form
+
+    def assert_refused(self, old, new, bad):
+        self.edit_doc(old, new)
+        before = self.snapshot()
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.exit_code, 1)
+        self.assertTrue(any(bad in msg for _, _, msg in r.invalid), r.invalid)
+        self.assertEqual(self.snapshot(), before)        # nothing written at all
+
+    def test_unknown_skill_id_refuses(self):
+        self.assert_refused("  - skills: martial_arts, unarmed, yoga, fire_magic",
+                            "  - skills: martial_arts, kung_fu", "kung_fu")
+
+    def test_unknown_trait_id_refuses(self):
+        self.assert_refused("  - traits: devout, brave", "  - traits: devout, braveheart",
+                            "braveheart")
+
+    def test_unknown_equipment_type_refuses(self):
+        self.assert_refused("  - allowed_types: staff, club", "  - allowed_types: staff, clubb",
+                            "clubb")
+
+    def test_renamed_heading_title_keeps_its_entries(self):
+        self.edit_doc("### Red Devil `red_devil`", "### Red devils, renamed `red_devil`")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual((r.to_inbox, r.imported, r.conflicts), ([], [], []))
+        text = self.doc.read_text(encoding="utf-8")
+        self.assertNotIn("karnak", text.split("\n# World")[0])
+        self.assertIn("### Red Devil `red_devil`", text)     # title regenerated
+        self.assertEqual(sync.run(self.tmp, write=False, check=True).exit_code, 0)
+
+    def test_report_preview_shows_where_a_truncation_starts(self):
+        old = "The first paragraph is long enough to fill a preview. " * 3 + "LOST TAIL"
+        new = old[:len(old) - len("LOST TAIL")]
+        lines = sync.preview_change(old, new)
+        joined = "\n".join(lines)
+        self.assertIn("LOST TAIL", joined)
+        self.assertNotEqual(lines[0], lines[1])
 
 
 # --- children (event choices etc.), via a tiny stand-in section -------------
@@ -196,7 +306,9 @@ def _fake_build(ds):
         top.entries.append(Entry(key=f"fake:{eid}", title=ev["name"], ident=eid,
                                  title_path=(FAKE_FILE, eid, "name"),
                                  fields=[Field("tags", ev["tags"], "list",
-                                               (FAKE_FILE, eid, "tags"))],
+                                               (FAKE_FILE, eid, "tags")),
+                                         Field("lore", ev["lore"], "text",
+                                               (FAKE_FILE, eid, "lore"))],
                                  children=kids, children_label="choices"))
     return top
 
@@ -207,7 +319,8 @@ class ChildSyncTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, self.tmp)
         (self.tmp / "resources/data").mkdir(parents=True)
         (self.tmp / "tools").mkdir()
-        self.data = {"_comment": "x", "goat": {"name": "Goat", "tags": ["a", "b"], "choices": [
+        self.data = {"_comment": "x", "goat": {"name": "Goat", "tags": ["a", "b"],
+                                               "lore": "Para one.\nPara two.", "choices": [
             {"id": "watch", "text": "Watch", "result": "Nothing."},
             {"id": "pet", "text": "Pet", "result": "It bites."}]}}
         self.save(self.data)
@@ -258,10 +371,81 @@ class ChildSyncTests(unittest.TestCase):
                       "    - [grey] Pet `pet`\n      - result: It bites.\n"
                       "    - [grey] Pet `pet`\n      - result: A copy.\n")
         r = sync.run(self.tmp, write=True)
-        self.assertEqual(r.to_inbox, [("Fakes › goat/pet", "duplicate id")])
+        self.assertEqual(r.to_inbox, [("Fakes › goat/pet", "duplicate id — nothing imported")])
         self.assertEqual(r.imported, [])
         self.assertEqual(self.load()["goat"]["choices"][1]["result"], "It bites.")
         self.assertIn("A copy.", self.doc.read_text(encoding="utf-8").split("\n# Fakes")[0])
+
+    def test_duplicate_child_pasted_above_imports_nothing(self):
+        self.edit_doc("    - [grey] Pet `pet`\n",
+                      "    - [grey] Pet `pet`\n      - result: Overwritten!\n"
+                      "    - [grey] Pet `pet`\n")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.imported, [])
+        self.assertEqual(self.load()["goat"]["choices"][1]["result"], "It bites.")
+        self.assertIn("Overwritten!", self.doc.read_text(encoding="utf-8").split("\n# Fakes")[0])
+
+    # --- final review CRITICAL 1: a broken ">" block -------------------------
+    REASON = ("could not read this entry — nothing imported; fix it here and "
+              "paste it back, or edit the original below")
+
+    def test_sentence_typed_inside_a_quote_imports_nothing(self):
+        self.edit_doc("    > Para one.\n",
+                      "    > Para one.\nA plain sentence the owner typed.\n")
+        self.edit_doc("tags: a, b", "tags: a, b, c")     # also edited: must NOT import
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.imported, [])
+        self.assertEqual(r.to_inbox, [("Fakes › goat", self.REASON)])
+        self.assertEqual(self.load()["goat"]["lore"], "Para one.\nPara two.")
+        self.assertEqual(self.load()["goat"]["tags"], ["a", "b"])
+        text = self.doc.read_text(encoding="utf-8")
+        inbox, rest = text.split("\n# Fakes")
+        self.assertEqual(inbox.count("<!-- moved by content_sync"), 1)   # ONE chunk
+        for part in ("A plain sentence the owner typed.", "Para two.", "It bites.",
+                     "tags: a, b, c"):
+            self.assertIn(part, inbox)
+        self.assertIn("    > Para one.\n    > Para two.\n", rest)       # original back
+        self.assertEqual(sync.run(self.tmp, write=False, check=True).exit_code, 0)
+
+    def test_quote_at_margin_imports_nothing(self):
+        self.edit_doc("    > Para one.\n", "    > Para one.\n> at the margin\n")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.imported, [])
+        self.assertEqual(r.to_inbox, [("Fakes › goat", self.REASON)])
+        self.assertEqual(self.load()["goat"]["lore"], "Para one.\nPara two.")
+
+    def test_broken_entry_keeps_its_notes(self):
+        self.edit_doc("      - result: It bites.\n",
+                      "      - result: It bites.\n      - notes: cat?\n")
+        self.edit_doc("  - lore:\n", "  - notes: top note\n  - lore:\n")
+        sync.run(self.tmp, write=True)
+        self.edit_doc("    > Para one.\n", "    > Para one.\noops\n")
+        sync.run(self.tmp, write=True)
+        rest = self.doc.read_text(encoding="utf-8").split("\n# Fakes")[1]
+        self.assertIn("cat?", rest)
+        self.assertIn("top note", rest)
+        self.assertEqual(sync.run(self.tmp, write=False, check=True).exit_code, 0)
+
+    def test_indented_plain_line_continues_the_quote(self):
+        self.edit_doc("    > Para one.\n", "    > Para one.\n    typed without the marker\n")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.to_inbox, [])
+        self.assertEqual(self.load()["goat"]["lore"],
+                         "Para one.\ntyped without the marker\nPara two.")
+        self.assertIn("    > typed without the marker\n", self.doc.read_text(encoding="utf-8"))
+
+    def test_choices_indented_four_deeper_still_import(self):
+        # an editor pastes every choice 4 deeper than `choices:` (not 2), and
+        # their fields 4 deeper again
+        t = self.doc.read_text(encoding="utf-8")
+        head, rest = t.split("  - choices:\n")
+        rest = "\n".join("    " + l if l.startswith("    ") else l for l in rest.split("\n"))
+        rest = rest.replace("          - result:", "            - result:")
+        self.doc.write_text(head + "  - choices:\n" + rest, encoding="utf-8")
+        self.edit_doc("It bites.", "It purrs.")
+        r = sync.run(self.tmp, write=True)
+        self.assertEqual(r.to_inbox, [])
+        self.assertEqual(self.load()["goat"]["choices"][1]["result"], "It purrs.")
 
     def test_deleted_child_with_notes_goes_to_inbox(self):
         self.edit_doc("      - result: It bites.\n",

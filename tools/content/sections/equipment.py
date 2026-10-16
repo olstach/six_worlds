@@ -43,7 +43,7 @@ def _items_group(ds) -> Group:
         t = it.get("type", "")
         cat = cat_of.get(t, "Other")       # unknown type -> the Other group
         by_cat.setdefault(cat, {}).setdefault(t or "(none)", []).append((iid, it))
-    top = Group("Items", 2)
+    top = Group("Items", 2, "items")
     cats = [c for c in by_cat if c != "Other"] + (["Other"] if "Other" in by_cat else [])
     for cat in cats:
         cg = Group(pretty(cat), 3, cat)
@@ -72,16 +72,26 @@ def _scalars(rec: dict, skip=()) -> str:
 
 def _tables_group(ds) -> Group:
     data = ds.get(TABLES)
-    top = Group("Equipment tables", 2)
-    # (table, heading, field holding the name text or None, list field or None)
-    specs = [("materials", "Materials", "name_prefix", "allowed_types"),
-             ("quality_levels", "Quality levels", "name_prefix", None),
-             ("enchantment_levels", "Enchantment levels", "name_suffix", None),
-             ("weapon_bases", "Weapon bases", None, None),
-             ("armor_bases", "Armor bases", None, None),
-             ("weapon_traits", "Weapon traits", None, "types"),
-             ("armor_traits", "Armor traits", None, "types")]
-    for table, heading, name_key, list_key in specs:
+    top = Group("Equipment tables", 2, "tables")
+
+    def keys(*tables) -> frozenset:
+        """Every record id in the named tables: the item types they define."""
+        return frozenset(k for t in tables if isinstance(data.get(t), dict)
+                         for k, _ in real_items(data[t]))
+    # Which item types a list may name. A material can be allowed on any
+    # weapon, armor, accessory or ritual implement; a weapon trait only on a
+    # weapon base, an armor trait only on an armor base.
+    any_type = keys("weapon_bases", "armor_bases", "accessory_bases", "ritual_implements")
+    # (table, heading, field holding the name text or None, list field or None,
+    #  ids that list may contain)
+    specs = [("materials", "Materials", "name_prefix", "allowed_types", any_type),
+             ("quality_levels", "Quality levels", "name_prefix", None, None),
+             ("enchantment_levels", "Enchantment levels", "name_suffix", None, None),
+             ("weapon_bases", "Weapon bases", None, None, None),
+             ("armor_bases", "Armor bases", None, None, None),
+             ("weapon_traits", "Weapon traits", None, "types", keys("weapon_bases")),
+             ("armor_traits", "Armor traits", None, "types", keys("armor_bases"))]
+    for table, heading, name_key, list_key, ids in specs:
         if not isinstance(data.get(table), dict):
             continue
         g = Group(heading, 3, table)
@@ -92,7 +102,7 @@ def _tables_group(ds) -> Group:
                 fields.append(Field(name_key, rec[name_key], "text", path + (name_key,)))
             if list_key and isinstance(rec.get(list_key), list):
                 fields.append(Field(list_key, [str(x) for x in rec[list_key]],
-                                    "list", path + (list_key,)))
+                                    "list", path + (list_key,), ids=ids, ids_from=TABLES))
             g.entries.append(Entry(
                 key=f"equipment:{table}:{rid}", title=pretty(rid), ident=rid,
                 context=_scalars(rec, skip=(name_key,)), fields=fields))
@@ -102,7 +112,7 @@ def _tables_group(ds) -> Group:
 
 def _talisman_group(ds) -> Group:
     data = ds.get(TALISMAN)
-    top = Group("Talisman tables", 2)
+    top = Group("Talisman tables", 2, "talismans")
     pg = Group("Talisman perks", 3, "perks")
     for i, p in enumerate(data.get("perks", [])):
         if not isinstance(p, dict):
@@ -136,7 +146,7 @@ def _flat_group(ds, title, file, path_keys, key_prefix) -> Group:
     node = ds.get(file)
     for k in path_keys:
         node = node[k]
-    g = Group(title, 2)
+    g = Group(title, 2, key_prefix)
     for rid, rec in real_items(node):
         g.entries.append(_named_entry(
             key_prefix, rid, rec, (file, *path_keys, rid),

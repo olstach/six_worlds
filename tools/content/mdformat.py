@@ -18,9 +18,14 @@ The grammar (see the plan, Task 2):
           - result: You learn nothing.
       - notes: free text
 
-The parser NEVER raises on content and never drops text: anything it cannot
-place goes to ParsedDoc.stray.
+The parser NEVER raises on content and never drops text. A line it cannot
+read inside an entry marks that whole entry `broken` (so the sync imports
+nothing from it); anything else it cannot place goes to ParsedDoc.stray.
+
+Location keys are built from each heading's `ident` (its title when it has
+none) plus the entry ident, so a heading's title can be renamed freely.
 """
+import bisect
 import re
 from dataclasses import dataclass, field
 
@@ -129,6 +134,13 @@ def _location(titles: list, ident_path: str) -> str:
     return SEP.join(titles + [ident_path])
 
 
+def _heading_key(title: str, ident) -> str:
+    """The part of a location key one heading contributes: its `ident` when
+    it has one, otherwise its title. Using the ident means the owner can
+    rename a heading's title freely: its entries keep their location."""
+    return ident if ident else _clean_title(title)
+
+
 def location_index(doc: Doc) -> dict:
     """{location key: Entry} for every TOP-LEVEL entry of a Doc.
 
@@ -139,12 +151,12 @@ def location_index(doc: Doc) -> dict:
     """
     index: dict = {}
 
-    def walk(group: Group, titles: list) -> None:
-        titles = titles + [_clean_title(group.title)]
+    def walk(group: Group, keys: list) -> None:
+        keys = keys + [_heading_key(group.title, group.ident)]
         for entry in group.entries:
-            index.setdefault(_location(titles, entry.ident), entry)
+            index.setdefault(_location(keys, entry.ident), entry)
         for sub in group.groups:
-            walk(sub, titles)
+            walk(sub, keys)
 
     for g in doc.sections:
         walk(g, [])
@@ -165,8 +177,15 @@ class ParsedEntry:
     children: list = field(default_factory=list)
     children_label: str = ""
     raw: str = ""                 # exact source lines, moveable to the Inbox
+    # The entry's real location key. Two copies of one entry share it (the
+    # ParsedDoc.entries dict files the second under "... (duplicate 2)").
     location: str = ""
     context: str = ""             # the read-only text after " — "
+    # True when a line inside this TOP-LEVEL entry (or inside any of its
+    # children) could not be read. Its fields may then be cut short or
+    # mixed up, so the sync must import NOTHING from it; `raw` then holds
+    # every line of the entry, the unreadable ones included.
+    broken: bool = False
 
     @property
     def notes(self) -> str:
@@ -179,18 +198,27 @@ class ParsedEntry:
 class ParsedDoc:
     inbox: str = ""
     entries: dict = field(default_factory=dict)   # location key -> ParsedEntry
-    stray: list = field(default_factory=list)     # [(location label, raw text)]
+    # [(location label, raw text)]: unreadable text OUTSIDE any entry, one
+    # chunk per stretch (e.g. lines typed between a heading and its first
+    # entry). Unreadable text INSIDE an entry marks the entry `broken`.
+    stray: list = field(default_factory=list)
 
 
 def split_list(raw: str) -> list:
-    """Read a list field's text: comma + space separated, '(empty)' -> []."""
+    """Read a list field's text: comma separated, '(empty)' -> [].
+
+    Each item is stripped, so "a,b", "a, b" and "a ,  b" all read the same.
+    Empty items (from "a,,b" or a trailing comma) carry no text and are
+    skipped."""
     if raw.strip() in ("", EMPTY):
         return []
-    return [p.strip() for p in raw.split(", ")]
+    return [p.strip() for p in raw.split(",") if p.strip()]
 
 
 def _expand_tabs(line: str) -> str:
-    """Each leading tab counts as 2 spaces (one indent level)."""
+    """Each leading tab counts as 2 spaces. Only RELATIVE indentation matters
+    to the parser (deeper than the line it belongs under), so 2 spaces, 4
+    spaces and tabs all work for one level."""
     m = re.match(r"[ \t]*", line)
     return m.group(0).replace("\t", "  ") + line[m.end():]
 
@@ -225,10 +253,21 @@ class _Block:
     def __init__(self, key, indent, owner, line):
         self.key, self.indent, self.owner, self.lines = key, indent, owner, []
         self.first = self.last = line      # source line range, for stray
+        self.quote_indent = None           # indent of its first ">" line
 
 
 def parse(text: str) -> ParsedDoc:
-    """Read CONTENT.md text. Never raises on content."""
+    """Read CONTENT.md text. Never raises on content.
+
+    Nesting is decided by RELATIVE indentation: a field belongs to the
+    nearest entry above it that is indented less, a ">" line to the open
+    field when it is indented deeper than that field's line, and a child
+    entry to its parent's children label when it is deeper than the label.
+    So 2 spaces, 4 spaces or a tab per level all read the same.
+
+    A line that cannot be read is never dropped. Inside an entry it marks
+    that whole top-level entry `broken` (see ParsedEntry); outside any entry
+    it goes to `stray`."""
     src = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     result = ParsedDoc()
     inbox, first, preamble = _split_inbox(src)
@@ -236,23 +275,20 @@ def parse(text: str) -> ParsedDoc:
     if any(p.strip() for p in preamble):
         result.stray.append(("(before the Inbox)", "\n".join(preamble).strip("\n")))
 
-    headings: list = []          # [(level, title)]
-    stack: list = []             # [(indent, ParsedEntry, start line, [last line])]
+    headings: list = []          # [(level, title, location-key part)]
+    stack: list = []             # [(indent, ParsedEntry)]
     ends: dict = {}              # id(entry) -> last line index belonging to it
     starts: dict = {}
     block = None                 # the open _Block, if any
     label_ind: dict = {}         # id(parent entry) -> indent of its children label
+    bad: list = []               # [(first line, last line, label)] unreadable
+    tops: list = []              # [(start line, ParsedEntry)] top-level entries
+    boundaries: list = []        # lines that end an entry's range: headings, tops
 
     def where() -> str:
-        titles = [t for _, t in headings]
-        label = SEP.join(titles) if titles else "(no section)"
-        if stack:
-            label += SEP + stack[-1][1].location.split(SEP)[-1]
-        return label
-
-    def where_of(owner: ParsedEntry) -> str:
-        titles = [t for _, t in headings]
-        return SEP.join(titles) + SEP + owner.location.split(SEP)[-1]
+        """A readable label for an unreadable line (titles, not idents)."""
+        titles = [t for _, t, _ in headings]
+        return SEP.join(titles) if titles else "(no section)"
 
     def close_block() -> None:
         """A block ends: store its text, unless it was a children label."""
@@ -263,8 +299,7 @@ def parse(text: str) -> ParsedDoc:
             else:
                 if not _set_field(block.owner, block.key,
                                   "\n".join(block.lines), True):
-                    result.stray.append((where_of(block.owner), "\n".join(
-                        src[block.first:block.last + 1])))
+                    bad.append((block.first, block.last, where()))
         block = None
 
     def touch(i: int) -> None:
@@ -272,7 +307,7 @@ def parse(text: str) -> ParsedDoc:
             ends[id(e)] = i
 
     def stray(i: int) -> None:
-        result.stray.append((where(), src[i]))
+        bad.append((i, i, where()))
 
     for i in range(first, len(src)):
         raw_line = src[i]
@@ -287,16 +322,20 @@ def parse(text: str) -> ParsedDoc:
             level = len(m.group("hashes"))
             while headings and headings[-1][0] >= level:
                 headings.pop()
-            headings.append((level, m.group("title")))
+            headings.append((level, m.group("title"),
+                             _heading_key(m.group("title"), m.group("ident"))))
             stack.clear()
+            boundaries.append(i)
             continue
 
         # --- block lines (">") ---------------------------------------------
         m = BLOCK_RE.match(line)
         if m:
-            if block is not None and block.owner is not None and \
-                    len(m.group("ind")) > block.indent:
+            ind = len(m.group("ind"))
+            if block is not None and block.owner is not None and ind > block.indent:
                 block.lines.append(m.group("txt") or "")
+                if block.quote_indent is None:
+                    block.quote_indent = ind
                 block.last = i
                 touch(i)
             else:
@@ -321,7 +360,7 @@ def parse(text: str) -> ParsedDoc:
                 block = _Block(m.group("key"), ind, owner, i)
             else:
                 if not _set_field(owner, m.group("key"), val, False):
-                    stray(i)                # repeated key: first value stays
+                    stray(i)                # repeated key: ambiguous
             touch(i)
             continue
 
@@ -340,24 +379,25 @@ def parse(text: str) -> ParsedDoc:
                                 context=m.group("ctx") or "")
             if parent is None:
                 close_block()
-                entry.location = _location([t for _, t in headings], entry.ident)
+                entry.location = _location([k for _, _, k in headings], entry.ident)
                 key = entry.location
                 n = 2
                 while key in result.entries:   # duplicate: keep it, never drop
                     key = f"{entry.location} (duplicate {n})"
                     n += 1
-                entry.location = key
                 result.entries[key] = entry
+                tops.append((i, entry))
+                boundaries.append(i)
             else:
-                # a child: only valid under a children label key line
+                # A child is only valid under a children label key line of
+                # its parent, indented deeper than that label.
                 label = None
-                # children sit exactly one indent level under the label line
                 if block is not None and block.owner is parent \
-                        and ind == block.indent + 2:
+                        and not block.lines and ind > block.indent:
                     label = block.key
                     label_ind[id(parent)] = block.indent
                 elif parent.children_label and \
-                        ind == label_ind.get(id(parent), -9) + 2:
+                        ind > label_ind.get(id(parent), ind):
                     label = parent.children_label
                 if label is None:
                     stray(i)             # block stays open for later children
@@ -370,11 +410,28 @@ def parse(text: str) -> ParsedDoc:
             touch(i)
             continue
 
+        # --- a plain line that continues a ">" block ------------------------
+        # Forgiving, because the meaning is unambiguous: the line comes
+        # DIRECTLY after a ">" line of an open block (no blank line between)
+        # and is indented at least as deep as that block's ">" lines. Then it
+        # can only be more of the same text, typed without its "> " prefix,
+        # so it is read as if the prefix were there (leading spaces dropped).
+        # Anything less certain (a shallower indent, a blank line before it,
+        # a block with no ">" line yet) stays unreadable.
+        ind = len(line) - len(line.lstrip(" "))
+        if block is not None and block.owner is not None and block.lines \
+                and block.last == i - 1 and ind >= block.quote_indent:
+            block.lines.append(line.strip())
+            block.last = i
+            touch(i)
+            continue
+
         # --- anything else -------------------------------------------------
         close_block()
         stray(i)
 
     close_block()
+
     # raw text of every entry (top-level and children) from the source lines
     def fill_raw(e: ParsedEntry) -> None:
         e.raw = "\n".join(src[starts[id(e)]:ends.get(id(e), starts[id(e)]) + 1])
@@ -382,6 +439,37 @@ def parse(text: str) -> ParsedDoc:
             fill_raw(c)
     for e in list(result.entries.values()):
         fill_raw(e)
+
+    # Each top-level entry owns every line from its entry line up to the next
+    # heading or top-level entry. An unreadable line in that range breaks
+    # the entry; one outside every range is stray, collected per stretch.
+    # (boundaries were appended in line order, so the list is sorted and
+    # bisect can find "the next boundary after line s" quickly)
+    boundaries.append(len(src))
+    ranges = []                                         # [(start, end, entry)]
+    for s, e in tops:
+        end = boundaries[bisect.bisect_right(boundaries, s)] - 1
+        while end > s and not src[end].strip():
+            end -= 1
+        ranges.append((s, end, e))
+    range_starts = [s for s, _, _ in ranges]
+    chunks: dict = {}                    # stretch start -> [label, first, last]
+    for a, b, label in bad:
+        n = bisect.bisect_right(range_starts, a) - 1
+        if n >= 0 and ranges[n][0] <= a <= ranges[n][1]:
+            ranges[n][2].broken = True
+            continue
+        n = bisect.bisect_right(boundaries, a) - 1
+        stretch = boundaries[n] if n >= 0 else -1
+        if stretch in chunks:
+            chunks[stretch][2] = max(chunks[stretch][2], b)
+        else:
+            chunks[stretch] = [label, a, b]
+    for s, end, e in ranges:
+        if e.broken:
+            e.raw = "\n".join(src[s:end + 1])
+    for label, a, b in chunks.values():
+        result.stray.append((label, "\n".join(src[a:b + 1]).strip("\n")))
     return result
 
 

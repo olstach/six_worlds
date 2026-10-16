@@ -60,6 +60,8 @@ class SectionRoundTrip(unittest.TestCase):
                 text = mdformat.render(doc)
                 parsed = mdformat.parse(text)
                 self.assertEqual(parsed.stray, [], mod.TITLE)
+                self.assertEqual([loc for loc, pe in parsed.entries.items() if pe.broken],
+                                 [], mod.TITLE)
                 keys = [e.key for e in walk(group)]
                 self.assertEqual(len(keys), len(set(keys)), "duplicate entry keys")
                 for e in walk(group):

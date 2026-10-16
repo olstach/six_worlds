@@ -141,7 +141,7 @@ def _lore_entries(realm, region, fname, ident, title, path, record) -> list:
         label = "design" if key == "_comment" else field_name(LABELS.get(key, key))
         if isinstance(val, str):
             fields.append(Field(label, val, "text", path + (key,)))
-        elif isinstance(val, list) and all(isinstance(x, str) and x and ", " not in x
+        elif isinstance(val, list) and all(isinstance(x, str) and x and "," not in x
                                            and "\n" not in x for x in val):
             fields.append(Field(label, list(val), "list", path + (key,)))
         elif isinstance(val, list):

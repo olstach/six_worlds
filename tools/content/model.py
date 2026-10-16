@@ -16,6 +16,11 @@ class Field:
     value: object                 # str for text/context, list[str] for list
     kind: Literal["text", "list", "context"] = "text"
     path: tuple = ()              # JSON address; () for context fields
+    # For a list of ids (skills, traits, item types): every id the game
+    # knows, and where they come from (for the error message). The sync
+    # refuses to import an id that is not in this set. None = free text.
+    ids: object = None            # frozenset[str] or None
+    ids_from: str = ""            # e.g. "resources/data/skills.json"
 
 
 @dataclass

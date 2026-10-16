@@ -1,12 +1,14 @@
 """Companions, grouped realm -> birth. The flavor text is writing, and so is
 the skills list, which is a readable view of `build_weights`."""
 from ..model import Entry, Field, Group
-from ._common import (clean, realm_title, sort_realms, text_field,
-                      title_and_path)
+from ._common import (clean, real_items, realm_title, sort_realms,
+                      text_field, title_and_path)
 
 TITLE = "Companions"
 FILE = "resources/data/companions.json"
 RACES = "resources/data/races.json"
+SKILLS = "resources/data/skills.json"
+TRAITS = "resources/data/traits.json"
 
 
 def _skills(c: dict) -> list:
@@ -34,6 +36,9 @@ def _context(c: dict) -> str:
 def build(ds) -> Group:
     comps = ds.get(FILE)["companions"]
     races = ds.get(RACES)["races"]
+    # every id the game knows, so the sync can refuse a typo like "kung_fu"
+    skill_ids = frozenset(k for k, _ in real_items(ds.get(SKILLS).get("skills", {})))
+    trait_ids = frozenset(k for k, _ in real_items(ds.get(TRAITS)))
     # realm -> birth -> [(id, record)], in data order
     tree: dict = {}
     for cid, c in comps.items():
@@ -51,9 +56,11 @@ def build(ds) -> Group:
             for cid, c in items:
                 title, tpath = title_and_path(c, "name", cid, (FILE, "companions", cid, "name"))
                 fields = text_field("flavor", c, "flavor_text", (FILE, "companions", cid, "flavor_text"))
-                fields.append(Field("skills", _skills(c), "list", (FILE, "companions", cid, "build_weights")))
+                fields.append(Field("skills", _skills(c), "list", (FILE, "companions", cid, "build_weights"),
+                                    ids=skill_ids, ids_from=SKILLS))
                 fields.append(Field("traits", [str(t) for t in c.get("traits", [])], "list",
-                                    (FILE, "companions", cid, "traits")))
+                                    (FILE, "companions", cid, "traits"),
+                                    ids=trait_ids, ids_from=TRAITS))
                 # older prose fields, shown only where a companion has them
                 for key in ("description", "recruitment_text"):
                     if key in c:
