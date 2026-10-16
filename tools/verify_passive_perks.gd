@@ -35,6 +35,7 @@ func _ready() -> void:
 	_check_terrain_condition()
 	_check_conditional_crit_reaches_the_getter()
 	_check_living_fortress()
+	_check_shield_wall()
 	_check_trigger_conditions()
 	_check_combat_start_and_turn_start()
 	_check_take_damage_and_ally_damaged()
@@ -587,6 +588,37 @@ func _check_living_fortress() -> void:
 	if crits_bare != 8:
 		_fail("living_fortress: the probe attacker critted %d of 8 against bare skin — test is not testing"
 			% crits_bare)
+
+
+## Shield Wall: "Until next turn, gain +25% Armor and adjacent allies gain
+## +10% Armor." Percentages of each unit's own Armor (not the flat +25 it
+## used to give), the cover reaches adjacent allies only, and it lasts one
+## turn — gone when the user's next turn ticks its statuses.
+func _check_shield_wall() -> void:
+	var wall := _make_unit(Vector2i(10, 5), 0, ["shield_wall"])
+	var ally := _make_unit(Vector2i(11, 5), 0)       # adjacent
+	var far_ally := _make_unit(Vector2i(10, 8), 0)   # three tiles off
+	var foe := _make_unit(Vector2i(9, 5), 1)         # adjacent, wrong side
+	for u in [wall, ally, far_ally, foe]:
+		u.character_data["derived"]["armor"] = 40
+		u.status_effects = []
+	var before: Array = [wall.get_armor(), ally.get_armor(), far_ally.get_armor(), foe.get_armor()]
+	var cd: Dictionary = PerkSystem.get_perk_data("shield_wall").get("combat_data", {})
+	if cd.has("buffs"):
+		_fail("shield_wall: still carries a flat armour buff %s" % [cd["buffs"]])
+	CombatManager._resolve_stance(wall, cd)
+	var after: Array = [wall.get_armor(), ally.get_armor(), far_ally.get_armor(), foe.get_armor()]
+	var gained: Array = []
+	for i in range(4):
+		gained.append(after[i] - before[i])
+	if gained != [10, 4, 0, 0]:
+		_fail("shield_wall: Armor gained [self, adjacent ally, far ally, adjacent foe] = %s, expected [10, 4, 0, 0] (25%% and 10%% of 40)"
+			% [gained])
+	# One turn: the user's next turn start ticks the status away.
+	CombatManager._process_status_effects(wall)
+	if wall.get_armor() != before[0] or ally.get_armor() != before[1]:
+		_fail("shield_wall: still up after the user's next turn began (%d, %d)"
+			% [wall.get_armor(), ally.get_armor()])
 
 
 ## An on_trigger effect with conditions fires only when they hold.

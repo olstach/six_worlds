@@ -1278,7 +1278,9 @@ _zone_ids = {k for k in _zones if not k.startswith("_")}
 # two cannot drift — plus `raise`, which summons rather than modifying a unit.
 _aura_src_for_zones = open(os.path.join(ROOT, "scripts/combat/aura_system.gd"),
     encoding="utf-8").read()
-_zone_payload_kinds = _gd_list(_aura_src_for_zones, "PAYLOAD_KINDS") | {"raise"}
+# `stat_pct` is aura-only: CombatManager._zone_stat_bonus reads flat `stat`
+# payloads and nothing reads a percentage off the ground.
+_zone_payload_kinds = (_gd_list(_aura_src_for_zones, "PAYLOAD_KINDS") - {"stat_pct"}) | {"raise"}
 
 for _zid in sorted(_zone_ids):
     _zdef = _zones[_zid]

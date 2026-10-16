@@ -9849,6 +9849,12 @@ func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 
 	# --- Auras projected by any unit on the field, including this one ---
 	total += int(round(AuraSystem.stat_bonus(unit, stat, all_units, _aura_distance)))
+	# Percentage auras (Shield Wall: +25% Armor, adjacent allies +10%) are a
+	# share of this unit's own sheet value — equipment, skills, perks.
+	var aura_pct: float = AuraSystem.stat_pct_bonus(unit, stat, all_units, _aura_distance)
+	if aura_pct != 0.0:
+		var sheet_value: float = float(char_data.get("derived", {}).get(stat, 0))
+		total += int(round(sheet_value * aura_pct / 100.0))
 
 	# --- And the ground underfoot, which uses the same payload vocabulary ---
 	total += int(round(_zone_stat_bonus(unit, stat)))

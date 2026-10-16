@@ -7409,10 +7409,9 @@
       "combat_data": {
         "effect": "stance",
         "targeting": "self",
-        "buffs": [
+        "statuses": [
           {
-            "stat": "armor",
-            "value": 25,
+            "status": "Shield_Wall",
             "duration": 1
           }
         ]
