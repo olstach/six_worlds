@@ -290,10 +290,12 @@ func reset_for_new_life() -> void:
 	# would yank the new one "home" to it.
 	last_healing_location = {}
 	planar_return = {}
-	# NOTE: `flags` and `completed_quest_ids` are NOT reset here (only a New
-	# Game clears them). Every flag in the data today is per-world quest/event
-	# state, so they probably should be — but that is a design call, logged in
-	# TODO.md §15 rather than made silently.
+	# Quest and event state belongs to the world that just ended: a new life
+	# rolls a new world, so nothing in it can be half-done or already finished.
+	# (Decided by Olaf 2026-10-16. If a flag ever needs to outlive a death —
+	# a memory carried between lives — it will need its own store.)
+	flags = {}
+	completed_quest_ids = []
 	# The map stash, explored tiles and the rest of the per-map state.
 	MapManager.reset_for_new_life()
 	# Transient hand-offs between the overworld and combat.
