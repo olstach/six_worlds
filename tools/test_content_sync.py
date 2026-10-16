@@ -55,6 +55,23 @@ class SyncTests(unittest.TestCase):
         sync.run(self.tmp, write=True)
         self.assertIn("Changed by code.", self.doc.read_text(encoding="utf-8"))
 
+    def test_rebase_base_keeps_notes_when_the_base_is_deleted(self):
+        self.edit_doc("`strong`", "`strong`")
+        t = self.doc.read_text(encoding="utf-8")
+        i = t.index("`strong`")
+        j = t.index("\n", i)
+        self.doc.write_text(t[:j] + "\n  - notes: keep me" + t[j:], encoding="utf-8")
+        sync.run(self.tmp, write=True)
+        base = self.tmp / "tools/content_base.json"
+        saved = base.read_text(encoding="utf-8")
+        self.assertIn("keep me", saved)
+        base.unlink()
+        self.assertEqual(sync.run(self.tmp, write=True).exit_code, 1)   # refuses
+        self.assertFalse(base.exists())
+        r = sync.run(self.tmp, write=True, rebase_base=True)
+        self.assertEqual(r.exit_code, 0)
+        self.assertEqual(base.read_text(encoding="utf-8"), saved)
+
     def test_conflict_writes_nothing(self):
         desc = self.traits()["strong"]["description"]
         self.edit_doc(desc, "Doc version.")

@@ -130,6 +130,21 @@ class FormatTests(unittest.TestCase):
         (e,) = mdformat.parse(text).entries.values()
         self.assertEqual(e.fields["note"], "see `fire`")
 
+    def test_blank_line_between_quoted_lines_is_a_paragraph_break(self):
+        # A typed blank line between two ">" lines acts like a lone ">".
+        text = ("# Inbox\n\n# T\n\n- **X** `x`\n  - bio:\n"
+                "    > one\n\n    > two\n\n\n    > three\n  - other: y\n")
+        (e,) = mdformat.parse(text).entries.values()
+        self.assertEqual(e.fields["bio"], "one\n\ntwo\n\nthree")
+        self.assertEqual(e.fields["other"], "y")
+
+    def test_blank_line_after_the_last_quoted_line_still_ends_the_block(self):
+        text = ("# Inbox\n\n# T\n\n- **X** `x`\n  - bio:\n"
+                "    > one\n\n  - other: y\n")
+        (e,) = mdformat.parse(text).entries.values()
+        self.assertEqual(e.fields["bio"], "one")
+        self.assertEqual(e.fields["other"], "y")
+
     def test_long_and_odd_text_uses_blocks(self):
         d = sample_doc()
         d.sections[0].groups[0].entries[0].fields[0].value = "x" * 200

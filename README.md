@@ -113,6 +113,11 @@ the JSON in `resources/data/`, and a sync keeps the two in agreement.
 - The **name** on an entry line is editable; the id in backticks is not.
 - **`notes:`** works on any entry. It is kept by the sync and never reaches the
   game.
+- **Merge conflict in `tools/content_base.json`?** It is only a snapshot: take
+  either side, fix the JSON/CONTENT.md conflicts, then run
+  `python3 tools/content_sync.py --rebase-base --write`, which rebuilds it from
+  the JSON and the notes in CONTENT.md. (A plain `--write` refuses if it is missing.)
+- **A blank line between two `>` lines** is a paragraph break, same as a lone `>`.
 - **The Inbox** at the top is yours: write anything there, any shape, and use
   `##` for headings inside it. The sync never touches it. When you want Inbox
   items turned into data, ask Claude.

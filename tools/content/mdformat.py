@@ -312,7 +312,21 @@ def parse(text: str) -> ParsedDoc:
     for i in range(first, len(src)):
         raw_line = src[i]
         if not raw_line.strip():
-            continue                                    # blank lines carry nothing
+            # A blank line carries nothing, EXCEPT between two ">" lines of
+            # the same open block: there it is a paragraph break, the same as
+            # a lone ">". (A blank line before anything else ends nothing
+            # by itself; the next line decides, as before.)
+            if block is not None and block.owner is not None and block.lines \
+                    and block.last == i - 1:
+                j = i + 1
+                while j < len(src) and not src[j].strip():
+                    j += 1
+                if j < len(src):
+                    nxt = BLOCK_RE.match(_expand_tabs(src[j].rstrip()))
+                    if nxt and len(nxt.group("ind")) > block.indent \
+                            and src[i - 1].lstrip().startswith(">"):
+                        block.lines.append("")
+            continue
         line = _expand_tabs(raw_line.rstrip())
 
         # --- headings ----------------------------------------------------

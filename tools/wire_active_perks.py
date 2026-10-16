@@ -112,15 +112,11 @@ NON_COMBAT = [
     "inspiring_sermon",                 # cross, non-combat speech
 ]
 
-# `host_of_the_winds` reads "Active Air summons also provide ..." — it describes
-# summons that are active, not an activated ability, and only landed in the
-# combat panel because `_get_active_skills()` matches on the "Active" prefix.
-DESCRIPTION_FIXES = {
-    "host_of_the_winds": (
-        "Passive. Your active Air summons also provide +5% Dodge and "
-        "+2 Initiative to allies within 2 tiles."
-    ),
-}
+# `host_of_the_winds` once read "Active Air summons also provide ..." — it
+# describes summons that are active, not an activated ability. Its description
+# was reworded to "Passive. ..." and CONTENT.md owns that text now, so this
+# script only records that the perk is accounted for; it never writes it.
+RECLASSIFIED = ["host_of_the_winds"]
 
 # ---------------------------------------------------------------------------
 # The mapping.  perk_id -> combat_data
@@ -666,7 +662,7 @@ def validate(data, status_names):
             if entry.get("stat") == "movement_mode" and entry.get("status") not in status_names:
                 errors.append(f"{pid}: unknown movement_mode status '{entry.get('status')}'")
 
-    for pid in list(NON_COMBAT) + list(DESCRIPTION_FIXES) + list(DEFERRED):
+    for pid in list(NON_COMBAT) + list(RECLASSIFIED) + list(DEFERRED):
         if pid not in perks:
             errors.append(f"{pid}: no such perk")
 
@@ -683,8 +679,6 @@ def apply(data):
         perks[pid]["combat_data"] = cd
     for pid in NON_COMBAT:
         perks[pid]["non_combat"] = True
-    for pid, desc in DESCRIPTION_FIXES.items():
-        perks[pid]["description"] = desc
 
 
 def main():
@@ -704,13 +698,13 @@ def main():
 
     perks = all_perks(data)
     active = [p for p, v in perks.items() if v["description"].startswith("Active")]
-    accounted = set(COMBAT_DATA) | set(NON_COMBAT) | set(DEFERRED) | set(DESCRIPTION_FIXES)
+    accounted = set(COMBAT_DATA) | set(NON_COMBAT) | set(DEFERRED) | set(RECLASSIFIED)
     unaccounted = sorted(set(active) - accounted)
 
     print(f"active perks:        {len(active)}")
     print(f"  wired:             {len(COMBAT_DATA)}")
     print(f"  non-combat flag:   {len(NON_COMBAT)}")
-    print(f"  reclassified:      {len(DESCRIPTION_FIXES)}")
+    print(f"  reclassified:      {len(RECLASSIFIED)}")
     print(f"  deferred:          {len(DEFERRED)}")
     print(f"  unaccounted for:   {len(unaccounted)}")
     for pid in unaccounted:

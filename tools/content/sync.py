@@ -430,12 +430,44 @@ def _write_base(path: Path, doc: Doc, text: str, notes: dict) -> None:
     _write(path, json.dumps(base, indent=2, sort_keys=True, ensure_ascii=False) + "\n")
 
 
-def run(root: Path, write: bool, check: bool = False) -> Report:
+def _collect_notes(pe, built, notes: dict) -> None:
+    """Copy notes from a parsed entry (and its children, matched by id) into
+    `notes`, keyed the way the base keys them."""
+    if pe.notes:
+        notes[built.key] = pe.notes
+    kids = {c.ident: c for c in built.children}
+    for c in pe.children:
+        if c.ident in kids:
+            _collect_notes(c, kids[c.ident], notes)
+
+
+def _rebuilt_base(ds, doc_path: Path):
+    """A base made from scratch (--rebase-base): "what both said at the last
+    sync" is taken to be the JSON as it is now, and the notes are read back
+    out of CONTENT.md, where every note is also written. So an edit made in
+    CONTENT.md since then still imports. Returns None when there is no
+    CONTENT.md (nothing to lose; the normal first-run path applies)."""
+    if not doc_path.exists():
+        return None
+    notes: dict = {}
+    parsed = mdformat.parse(doc_path.read_text(encoding="utf-8"))
+    index = mdformat.location_index(_build(ds, "", {})[0])
+    for loc, pe in parsed.entries.items():
+        if loc in index:
+            _collect_notes(pe, index[loc], notes)
+    doc = export_doc(ds, "", notes)
+    text = mdformat.render(doc)
+    return {"version": 1, "fields": _base_fields(doc, text), "notes": notes,
+            "rendered": {loc: pe.raw for loc, pe in _doc_view_index(text).items()}}
+
+
+def run(root: Path, write: bool, check: bool = False,
+        rebase_base: bool = False) -> Report:
     root = Path(root)
     report = Report(check=check)
     doc_path, base_path = root / DOC_FILE, root / BASE_FILE
     ds = DataSet.load(root)
-    base = _load_base(base_path)
+    base = _rebuilt_base(ds, doc_path) if rebase_base else _load_base(base_path)
 
     # 1. no base: a first run, or a refusal
     if base is None:
