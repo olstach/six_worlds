@@ -798,16 +798,18 @@ the Earth/Black plant line — so the work went where the gaps were:
 - [ ] **53 events are grey-only** (of 347 with choices) — no blue or yellow
   option at all. The stated target is ≥2 meaningful checks per event. The trait
   sweep reduced this from 63 by giving some of them their first gated choice.
-- [ ] **500 of 600 perks have empty `flavor`.** Better in your voice than mine.
+- [ ] **500 of 605 perks have empty `flavor`** (counted 2026-10-16). Better in your voice than mine.
 - [ ] **Quests: 3 total, all hell.** The board works and the validator now
   guarantees every step flag is settable, but hungry ghost and animal have none.
 - [ ] **Hell event chains still unwritten** from the original list: soul caravan
   ambush, devil deserter, contraband deal, corrupted simple, chained pilgrim,
   rival party.
-- [ ] **Realm-specific wounds** — 5 base types exist (3 wounds, 2 diseases);
-  target ~8–10. Wanted: arrow wound, poisoned wound, spiritual corruption
-  (resists medicine, needs Ritual/Yoga), HG malnutrition, animal parasites,
-  hell frostbite/burns. Design notes in `EDIT_LATER.md`.
+- [ ] **Realm-specific wounds** — 10 base types exist (6 wounds, 4 diseases)
+  plus 7 escalated forms (`wound_system.gd`, counted 2026-10-16). Arrow
+  (`barbed_wound`), poison (`poisoned_blood`), spiritual corruption and burns
+  are built. Still wanted: HG malnutrition, animal parasites, hell frostbite.
+  Design notes and the open wiring items: the `CONTENT.md` Inbox, under
+  "Wounds — design notes (recovered)".
 - [ ] **Consumables and equipment are thin** in realm-specific flavour — 68
   legendary-rarity items exist, so the tier itself is covered.
 - [ ] **Astrological spells (Space)** — divination, eclipse/conjunction
@@ -2553,7 +2555,7 @@ a full session's first hour before it was checked against the code.
 | `docs/plans/2026-03-01-companions-*.md` (4) | Completed plans; the system shipped. Specs now live in `docs/superpowers/specs/`. |
 | `docs/plans/2026-03-02-recruitment-*.md` (2) | Same. |
 
-Kept (the first three since retired for `CONTENT.md`, 2026-10-16): `PERKS.md` and `CHARACTERS.md` (hand-maintained design sources),
+Kept at the time (PERKS.md, CHARACTERS.md and docs/review/ since retired for CONTENT.md): `PERKS.md` and `CHARACTERS.md` (hand-maintained design sources),
 `docs/review/` (round-trips to JSON), `docs/plans/PERK_WIRING_PLAN.md`
 (corrected and current), `CLAUDE.md` (agent working agreement).
 

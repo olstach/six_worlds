@@ -145,12 +145,18 @@ else
     bad "CONTENT.md and the data disagree - run: python3 tools/content_sync.py --write"
     echo "$out" | tail -15 | sed 's/^/        /'
 fi
-if python3 tools/test_content_model.py >/dev/null 2>&1 \
-   && python3 tools/test_content_sections.py >/dev/null 2>&1 \
-   && python3 tools/test_content_sync.py >/dev/null 2>&1; then
+# Every tools/test_content_*.py runs, so a new test file is picked up
+# without editing this script. Each failing file is named.
+content_failed=""
+for t in tools/test_content_*.py; do
+    python3 "$t" >/dev/null 2>&1 || content_failed="$content_failed $t"
+done
+if [ -z "$content_failed" ]; then
     ok "content sync tests"
 else
-    bad "content sync tests - run python3 tools/test_content_sync.py -v"
+    for t in $content_failed; do
+        bad "content sync tests: $t failed - run python3 $t -v"
+    done
 fi
 
 if [ "$QUICK" -eq 0 ]; then
