@@ -704,7 +704,7 @@ func luck_jackpot_chance(best_luck: int, party: Array) -> float:
 ##   - `loot_chance_pct` (Comedy's luck_pct, the Shivering Cairn shrine) —
 ##     multiplies the chance of both Luck rolls, jackpot and lucky find alike,
 ##     because both go through luck_jackpot_chance.
-func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: int) -> Array[String]:
+func _generate_loot_drops(enemy_count: int, fight_size: float, best_luck: int) -> Array[String]:
 	var drops: Array[String] = []
 
 	# Collect enemy roles and boss archetype IDs
@@ -752,7 +752,7 @@ func _generate_loot_drops(enemy_count: int, difficulty_ratio: float, best_luck: 
 	# same loot_chance_pct boost) but independently of it. Luck then weights
 	# the rarity of what turns up — this is where "Luck: loot quality" lives.
 	if randf() < luck_jackpot_chance(best_luck, CharacterSystem.get_party()):
-		var found := lucky_find(difficulty_ratio, best_luck)
+		var found := lucky_find(fight_size, best_luck)
 		if found != "":
 			drops.append(found)
 
@@ -770,9 +770,9 @@ func _lucky_find_types() -> Array[String]:
 
 ## One piece of equipment found by luck, its rarity weighted by Luck and by
 ## the size of the fight. Returns an item id, or "" when nothing could be made.
-func lucky_find(difficulty_ratio: float, luck: int) -> String:
+func lucky_find(fight_size: float, luck: int) -> String:
 	return _pick_item_from_types(_lucky_find_types(),
-		_get_modified_rarity_weights(difficulty_ratio, luck))
+		_get_modified_rarity_weights(fight_size, luck))
 
 
 ## Collect loot from dead enemy inventories using a budget-based system.
@@ -879,26 +879,30 @@ func _collect_enemy_loot() -> Dictionary:
 	return {"items": result_items, "bonus_gold": bonus_gold}
 
 
-## Adjust rarity weights based on difficulty ratio and Luck.
-## Higher difficulty shifts weight toward uncommon+.
-## Luck above 10 shifts weight toward rare+.
-func _get_modified_rarity_weights(difficulty_ratio: float, luck: int) -> Dictionary:
-	var weights = RARITY_DROP_WEIGHTS.duplicate()
+## Adjust rarity weights by fight size and Luck.
+## A bigger fight (`fight_size`, 1.0 = a normal one; it is enemy XP / 1000,
+## clamped) shifts weight toward uncommon+. Luck above 10 shifts weight toward
+## rare+. Weights stay FLOATS: the old int() rounding meant legendary (base 1)
+## did not move at all until Luck ~17.
+func _get_modified_rarity_weights(fight_size: float, luck: int) -> Dictionary:
+	var weights: Dictionary = {}
+	for rarity in RARITY_DROP_WEIGHTS:
+		weights[rarity] = float(RARITY_DROP_WEIGHTS[rarity])
 
-	# Difficulty bonus: each 0.1 above 1.0 adds 10% to uncommon+ weights
-	var diff_bonus = maxf(0.0, difficulty_ratio - 1.0) * 10.0
-	if diff_bonus > 0:
-		weights["uncommon"] = int(weights["uncommon"] * (1.0 + diff_bonus * 0.10))
-		weights["rare"] = int(weights["rare"] * (1.0 + diff_bonus * 0.15))
-		weights["epic"] = int(weights["epic"] * (1.0 + diff_bonus * 0.20))
-		weights["legendary"] = int(weights["legendary"] * (1.0 + diff_bonus * 0.25))
+	# Fight-size bonus: each 0.1 above 1.0 adds 10% to uncommon+ weights
+	var size_bonus: float = maxf(0.0, fight_size - 1.0) * 10.0
+	if size_bonus > 0.0:
+		weights["uncommon"] *= 1.0 + size_bonus * 0.10
+		weights["rare"] *= 1.0 + size_bonus * 0.15
+		weights["epic"] *= 1.0 + size_bonus * 0.20
+		weights["legendary"] *= 1.0 + size_bonus * 0.25
 
 	# Luck bonus: each point above 10 boosts rare+ weights
-	var luck_bonus = maxi(0, luck - 10)
+	var luck_bonus: int = maxi(0, luck - 10)
 	if luck_bonus > 0:
-		weights["rare"] = int(weights["rare"] * (1.0 + luck_bonus * 0.08))
-		weights["epic"] = int(weights["epic"] * (1.0 + luck_bonus * 0.12))
-		weights["legendary"] = int(weights["legendary"] * (1.0 + luck_bonus * 0.15))
+		weights["rare"] *= 1.0 + luck_bonus * 0.08
+		weights["epic"] *= 1.0 + luck_bonus * 0.12
+		weights["legendary"] *= 1.0 + luck_bonus * 0.15
 
 	return weights
 
@@ -909,19 +913,19 @@ func _get_modified_rarity_weights(difficulty_ratio: float, luck: int) -> Diction
 func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Dictionary) -> String:
 	# Build weighted rarity list in descending order of quality
 	var rarity_order: Array[String] = ["legendary", "epic", "rare", "uncommon", "common"]
-	var total_weight := 0
+	var total_weight: float = 0.0
 	for rarity in rarity_order:
-		total_weight += rarity_weights.get(rarity, 0)
+		total_weight += float(rarity_weights.get(rarity, 0.0))
 
-	if total_weight <= 0:
+	if total_weight <= 0.0:
 		return ""
 
-	# Roll for rarity
-	var roll = randi() % total_weight
+	# Roll for rarity (a float roll, since the weights are floats)
+	var roll: float = randf() * total_weight
 	var rolled_rarity := "common"
-	var cumulative := 0
+	var cumulative: float = 0.0
 	for rarity in rarity_order:
-		cumulative += rarity_weights.get(rarity, 0)
+		cumulative += float(rarity_weights.get(rarity, 0.0))
 		if roll < cumulative:
 			rolled_rarity = rarity
 			break
@@ -953,6 +957,11 @@ func _pick_item_from_types(allowed_types: Array[String], rarity_weights: Diction
 			for item in items:
 				# Skip template items — they're blueprints, not real drops
 				if ItemSystem.is_template_item(item.get("id", "")):
+					continue
+				# Only this realm's own gear (a lucky find in hell is not
+				# a damascene blade). Shops never stock fixed items from
+				# the wrong realm either; they generate by realm.
+				if not ItemSystem.item_fits_realm(item.get("id", ""), current_realm):
 					continue
 				if item.get("rarity", "") == check_rarity:
 					candidates.append(item.get("id", ""))

@@ -294,6 +294,31 @@ func _check_luck_weights_a_lucky_find() -> void:
 		_fail("Luck 25 gave rare+ share %.3f, Luck 10 gives %.3f"
 			% [share.call(lucky), share.call(base)])
 
+	# The weights are floats: a small Luck gain must move even the rarest
+	# tier (base weight 1), which int() rounding used to flatten until Luck ~17.
+	var w10: Dictionary = CombatManager._get_modified_rarity_weights(1.0, 10)
+	var w12: Dictionary = CombatManager._get_modified_rarity_weights(1.0, 12)
+	if float(w12["legendary"]) <= float(w10["legendary"]):
+		_fail("Luck 12 left the legendary weight at %s (Luck 10: %s)"
+			% [w12["legendary"], w10["legendary"]])
+
+	# A lucky find stays in its realm: in hell, never a steel or damascene
+	# blade (those belong to the human realm and above); bone is fine.
+	if ItemSystem.item_fits_realm("steel_longsword", "hell"):
+		_fail("a steel longsword fits hell")
+	if not ItemSystem.item_fits_realm("bone_sword", "hell"):
+		_fail("a bone sword does not fit hell")
+	var saved_world: String = GameState.current_world
+	GameState.current_world = "hell"
+	var weights: Dictionary = CombatManager._get_modified_rarity_weights(1.0, 25)
+	for i in range(300):
+		var found_id: String = CombatManager._pick_item_from_types(
+			CombatManager._lucky_find_types(), weights)
+		if found_id != "" and not ItemSystem.item_fits_realm(found_id, "hell"):
+			_fail("a lucky find in hell turned up %s" % found_id)
+			break
+	GameState.current_world = saved_world
+
 	# And the roll is actually made: with the chance pushed past 1 the fight
 	# must turn up a piece of equipment nobody was carrying.
 	var saved_party: Array[Dictionary] = CharacterSystem.party.duplicate()

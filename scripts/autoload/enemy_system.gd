@@ -201,6 +201,9 @@ const TOOL_TIERS: Array = [
 	{"prefix": "legendary", "cost": 2000},
 ]
 
+## Realm-like labels that name a kind of encounter rather than a rebirth realm.
+const NON_BIRTH_REALMS: Array[String] = ["domain"]
+
 ## Skill -> consumables that skill's owner would plausibly be carrying, for
 ## their own use in a fight and as loot afterwards.
 const SKILL_TO_CONSUMABLES: Dictionary = {
@@ -298,10 +301,20 @@ func _weapon_types_for_skills(skills: Dictionary) -> Array[Dictionary]:
 	return ranked
 
 
-## Consumables the character's own skills imply — a medic's herbs, a caster's
-## mana. Theirs to use in the fight, and the player's afterwards. Spends up to
-## the consumable share of the kit budget.
-func _generate_skill_consumables(skills: Dictionary, kit_budget: int) -> Array:
+## Consumables an enemy carries — the ONE place they come from. Theirs to use
+## in the fight, and the player's afterwards. Everything here is bought out of
+## the consumable share of the kit budget, so a poorly kitted enemy carries
+## little and a rich one carries more.
+##
+## What the money buys is decided in two passes, so flavour survives:
+##   1. the character's own SKILLS (a medic's herbs, a caster's mana);
+##   2. the archetype's ROLE wishlist (_role_consumable_wants: frontline
+##      fighters like bombs, archers oils, healers herb bundles...), each item
+##      only if it is still affordable and not already bought in pass 1.
+## (This replaces a separate free-of-charge role pass that also handed out
+## potions, so enemies were paid twice.)
+func _generate_skill_consumables(skills: Dictionary, kit_budget: int,
+		archetype: Dictionary = {}, power_scale: float = 1.0) -> Array:
 	var cfg: Dictionary = budgets.get("equipment", {})
 	var spend: int = int(round(float(kit_budget) * float(cfg.get("consumable_share", 0.25))))
 	var out: Array = []
@@ -314,8 +327,6 @@ func _generate_skill_consumables(skills: Dictionary, kit_budget: int) -> Array:
 		var level: int = int(skills.get(skill, 0))
 		if level > 0:
 			ranked.append({"skill": String(skill), "level": level})
-	if ranked.is_empty():
-		return out
 	ranked.sort_custom(func(a, b): return int(a["level"]) > int(b["level"]))
 
 	for entry in ranked:
@@ -331,7 +342,67 @@ func _generate_skill_consumables(skills: Dictionary, kit_budget: int) -> Array:
 			spend -= afford * cost
 		if spend <= 0:
 			break
+
+	# Pass 2: the role wishlist, one of each, whatever the money still covers.
+	var already: Array[String] = []
+	for entry in out:
+		already.append(String(entry["item_id"]))
+	for want_entry in _role_consumable_wants(archetype, power_scale):
+		var want_id: String = String(want_entry["item_id"])
+		if want_id in already or randf() >= float(want_entry["chance"]):
+			continue
+		var want_cost: int = maxi(1, int(ItemSystem.get_item(want_id).get("value", 10)))
+		if want_cost > spend:
+			continue
+		out.append({"item_id": want_id, "quantity": 1})
+		already.append(want_id)
+		spend -= want_cost
 	return out
+
+
+## What an archetype's ROLES would like to carry, in priority order, as
+## [{"item_id", "chance"}]. Pure flavour: it only says what the budget buys
+## first; _generate_skill_consumables decides what is affordable. Better-kitted
+## enemies (power_scale above 0.75) ask for the greater potions.
+func _role_consumable_wants(archetype: Dictionary, power_scale: float) -> Array:
+	var wants: Array = []
+	var roles: Array = archetype.get("roles", [])
+	var strong: bool = power_scale > 0.75
+
+	# Everybody: a health potion.
+	wants.append({"item_id": "greater_health_potion" if strong else "health_potion",
+		"chance": 0.6})
+
+	var has_magic := false
+	var is_melee := false
+	var is_ranged := false
+	var is_healer := false
+	for role in roles:
+		if role in ["caster", "support"]:
+			has_magic = true
+		if role in ["frontline", "melee", "brute"]:
+			is_melee = true
+		if role in ["ranged", "assassin", "skirmisher"]:
+			is_ranged = true
+		if role in ["support", "healer"]:
+			is_healer = true
+
+	if has_magic:
+		wants.append({"item_id": "greater_mana_potion" if strong else "mana_potion",
+			"chance": 0.5})
+		wants.append({"item_id": "raw_reagents", "chance": 0.3})
+	if is_melee:
+		var bombs: Array = ["fire_bomb", "smoke_bomb", "acid_flask"]
+		wants.append({"item_id": String(bombs[randi() % bombs.size()]), "chance": 0.3})
+	if is_ranged:
+		var oils: Array = ["flame_oil", "frost_oil", "poison_oil"]
+		wants.append({"item_id": String(oils[randi() % oils.size()]), "chance": 0.25})
+	if is_healer:
+		wants.append({"item_id": "herb_bundle", "chance": 0.45})
+	# Heavy armour: scrap to repair it in the field.
+	if archetype.get("equipment_template", {}).get("armor_type", "none") == "heavy":
+		wants.append({"item_id": "scrap_metal", "chance": 0.35})
+	return wants
 
 
 ## Everyday things a character of this budget would be carrying: food, and a
@@ -771,7 +842,15 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	var power_scale: float = float(kit_budget) / 180.0
 
 	# Birth and background first — the same two steps a player character takes.
-	var birth: String = CharacterSystem.roll_birth_for_realm(realm)
+	# "domain" is a content bucket (realm-agnostic guardian encounters), not a
+	# place anyone is reborn into, so it has no births to roll. In play the
+	# arena passes the party's real realm; only callers that hand over an
+	# encounter's own stamped realm (the verifiers) arrive here with "domain".
+	# They get the plain human the roll used to fall back to, without the
+	# "no births defined" warning, which stays for genuine realm gaps.
+	var birth: String = "human"
+	if not realm in NON_BIRTH_REALMS:
+		birth = CharacterSystem.roll_birth_for_realm(realm)
 	var background: String = KarmaSystem.select_random_background(birth)
 
 	var built: Dictionary = CharacterSystem.create_blank_character()
@@ -831,8 +910,9 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	for key in arch_resists:
 		resistances[key] = resistances.get(key, 0) + arch_resists[key]
 
-	# Generate consumable inventory, then merge any archetype-guaranteed items
-	var inventory = _generate_enemy_inventory(archetype, power_scale)
+	# Everyday items and archetype-guaranteed items first (consumables are bought
+	# later, from what the kit budget has left)
+	var inventory: Array = []
 	for everyday in _generate_everyday_items(skills, xp_budget):
 		inventory.append(everyday)
 	for item in archetype.get("starting_inventory", []):
@@ -953,7 +1033,7 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 				inventory.append({"item_id": tali_id, "quantity": 1})
 
 	# Consumables come last, out of whatever the kit did not spend on gear.
-	for consumable in _generate_skill_consumables(skills, kit_budget):
+	for consumable in _generate_skill_consumables(skills, kit_budget, archetype, power_scale):
 		inventory.append(consumable)
 
 	# Generate a procedural name from realm/region/tags, unless this is a named boss.
@@ -1338,87 +1418,6 @@ func generate_enemy_name(realm: String, tags: Array = [], region: String = "", r
 		return prefix + " " + root.capitalize() + suffix
 	else:
 		return prefix + "-" + root + "-" + suffix
-
-
-## Generate consumable inventory for an enemy based on archetype and power_scale
-## (the kit-budget scale from _build_enemy, where 1.0 is a mid-game character).
-## Better-equipped enemies get more/better items. Roles determine item types.
-## The thresholds are the old power-number ones (60, 80, 100 out of a mid-game
-## 80) converted onto that scale: 0.75, 1.0 and 1.25.
-func _generate_enemy_inventory(archetype: Dictionary, power_scale: float) -> Array:
-	var inventory: Array = []
-	var roles = archetype.get("roles", [])
-
-	# Chance to have items at all increases with power
-	var item_chance = clampf(power_scale * 0.8, 0.2, 0.9)
-	if randf() > item_chance:
-		return inventory  # No items this enemy
-
-	# All enemies: chance for a health potion
-	if randf() < 0.6:
-		if power_scale > 0.75:
-			inventory.append({"item_id": "greater_health_potion", "quantity": 1})
-		else:
-			inventory.append({"item_id": "health_potion", "quantity": 1})
-
-	# Casters get mana potions
-	var has_magic = false
-	for role in roles:
-		if role in ["caster", "support"]:
-			has_magic = true
-			break
-	if has_magic and randf() < 0.5:
-		if power_scale > 0.75:
-			inventory.append({"item_id": "greater_mana_potion", "quantity": 1})
-		else:
-			inventory.append({"item_id": "mana_potion", "quantity": 1})
-
-	# Frontline/melee enemies may have bombs or oils
-	var is_melee = false
-	for role in roles:
-		if role in ["frontline", "melee", "brute"]:
-			is_melee = true
-			break
-
-	if is_melee and randf() < 0.3:
-		# Pick a random bomb
-		var bombs = ["fire_bomb", "smoke_bomb", "acid_flask"]
-		inventory.append({"item_id": bombs[randi() % bombs.size()], "quantity": 1})
-
-	# Ranged/assassin enemies may have oils
-	var is_ranged_type = false
-	for role in roles:
-		if role in ["ranged", "assassin", "skirmisher"]:
-			is_ranged_type = true
-			break
-
-	if is_ranged_type and randf() < 0.25:
-		var oils = ["flame_oil", "frost_oil", "poison_oil"]
-		inventory.append({"item_id": oils[randi() % oils.size()], "quantity": 1})
-
-	# Higher power enemies get an extra potion
-	if power_scale > 1.0 and randf() < 0.4:
-		inventory.append({"item_id": "health_potion", "quantity": 1})
-
-	# Healer/support types carry herb bundles (useful in combat; also lootable)
-	var is_healer = false
-	for role in roles:
-		if role in ["support", "healer"]:
-			is_healer = true
-			break
-	if is_healer and randf() < 0.45:
-		inventory.append({"item_id": "herb_bundle", "quantity": 1})
-
-	# Heavily armored fighters accumulate scrap — they repair equipment in the field
-	var armor_cat = archetype.get("equipment_template", {}).get("armor_type", "none")
-	if armor_cat == "heavy" and randf() < 0.35:
-		inventory.append({"item_id": "scrap_metal", "quantity": 1})
-
-	# Casters and supports carry raw reagents for their rituals
-	if has_magic and randf() < 0.30:
-		inventory.append({"item_id": "raw_reagents", "quantity": 1})
-
-	return inventory
 
 
 ## Pick a random archetype that matches a given role, region, tier, and realm.

@@ -1682,6 +1682,32 @@ func can_generate_type(item_type: String) -> bool:
 	return item_type in WEAPON_TYPES or item_type in ARMOR_TYPES or item_type in TALISMAN_TYPES
 
 
+## Does a fixed (hand-written) item belong in this realm?
+## Items carry no realm tag; their realm is their MATERIAL. equipment_tables
+## `realm_material_weights` says which materials each realm produces (hell:
+## bone/obsidian/bronze; human: iron/steel/...). A material that some realm
+## table lists but this realm's does not (a steel sword in hell) is out of
+## place; a material no realm table mentions (cloth, silver, beads) and items
+## with no material at all are realm-neutral. Empty realm = no filtering.
+func item_fits_realm(item_id: String, realm: String) -> bool:
+	if realm == "":
+		return true
+	if _equipment_tables.is_empty():
+		_load_equipment_tables()  # lazy, like get_base_for_type
+	var realm_weights: Dictionary = _equipment_tables.get("realm_material_weights", {})
+	if not realm in realm_weights:
+		return true  # a realm with no table yet filters nothing
+	var material: String = str(_item_database.get(item_id, {}).get("material", ""))
+	if material == "":
+		return true
+	if realm_weights[realm].has(material):
+		return true
+	for other_realm in realm_weights:
+		if realm_weights[other_realm].has(material):
+			return false  # another realm's material
+	return true
+
+
 ## Check if a static item is a random_generate template
 func is_template_item(item_id: String) -> bool:
 	var item = _item_database.get(item_id, {})
