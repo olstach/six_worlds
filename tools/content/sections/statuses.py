@@ -23,6 +23,21 @@ def _context(s: dict) -> str:
     return clean(" · ".join(p for p in parts if p))
 
 
+# Readable words for the short category ids. A category made of several
+# parts ("dot_cc") is read part by part and joined with "and".
+CATEGORY_WORDS = {"cc": "crowd control", "dot": "damage over time",
+                  "hot": "healing over time"}
+
+
+def category_title(cat: str) -> str:
+    """'cc' -> 'Crowd control', 'dot_cc' -> 'Damage over time and crowd
+    control', 'buff' -> 'Buff'. The id itself stays on the heading as its
+    `ident`, so this title is only for reading (renaming it moves nothing)."""
+    parts = [CATEGORY_WORDS.get(p, p) for p in str(cat).split("_") if p]
+    text = " and ".join(parts) if parts else str(cat)
+    return text[:1].upper() + text[1:]
+
+
 def build(ds) -> Group:
     rows = ds.get(FILE).get("statuses", [])
     by_cat: dict = {}
@@ -37,7 +52,7 @@ def build(ds) -> Group:
         by_cat.setdefault(s.get("category", "other"), []).append((i, ident, s))
     top = Group(TITLE, 1)
     for cat, items in by_cat.items():
-        g = Group(cat.replace("_", " ").capitalize(), 2, cat)
+        g = Group(category_title(cat), 2, cat)
         for i, ident, s in items:
             # Always emit the field: an absent key shows as (empty) and the
             # sync creates the key when the owner writes text there.

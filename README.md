@@ -116,9 +116,22 @@ the JSON in `resources/data/`, and a sync keeps the two in agreement.
 - **The Inbox** at the top is yours: write anything there, any shape, and use
   `##` for headings inside it. The sync never touches it. When you want Inbox
   items turned into data, ask Claude.
-- **Don't rename the group headings** (`## …`, `### …`). A renamed heading
-  can't be placed, so its entries move to the Inbox. To rename something, edit
-  the title on its entry line.
+- **Group headings** (`## …`, `### …`) are placed by the id in backticks at
+  their end, not by their title. Renaming a heading's title is harmless (the
+  sync puts the generated title back); changing or deleting its backtick id
+  is not — its entries can't be placed and move to the Inbox. To rename
+  something, edit the title on its entry line.
+- **Inside a `>` block**, every line should start with `>`. A line typed
+  without it is still read as part of the block when it sits directly under
+  a `>` line and is indented at least as far. Anything else the sync can't
+  read inside an entry (a line at the left margin, a repeated field) means
+  nothing from that entry is imported: the whole entry is copied to the
+  Inbox to fix and paste back, and the original is put back as it was.
+- **Two entries with the same id** (say, a pasted copy used as a template)
+  import nothing; the edited copies go to the Inbox.
+- **Lists** (`skills:`, `traits:`, item types) are comma separated. Ids are
+  checked against the game's data: `Martial Arts` is read as `martial_arts`,
+  and an id the game doesn't know stops the sync before anything is written.
 
 After editing:
 

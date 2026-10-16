@@ -86,6 +86,19 @@ class RulesRoundTrip(unittest.TestCase):
                    for x in v.values() if isinstance(x, str))
         self.assertEqual(sum(len(e.fields) for e in notes), want)
 
+    def test_status_category_titles_are_readable(self):
+        self.assertEqual(statuses.category_title("cc"), "Crowd control")
+        self.assertEqual(statuses.category_title("dot"), "Damage over time")
+        self.assertEqual(statuses.category_title("hot"), "Healing over time")
+        self.assertEqual(statuses.category_title("dot_cc"),
+                         "Damage over time and crowd control")
+        self.assertEqual(statuses.category_title("debuff_dot"),
+                         "Debuff and damage over time")
+        self.assertEqual(statuses.category_title("buff"), "Buff")
+        ds = jsonio.DataSet.load(ROOT)
+        heads = {g.ident: g.title for g in statuses.build(ds).groups}
+        self.assertEqual(heads["cc"], "Crowd control")     # the id stays the ident
+
     def test_statuses_cover_every_status(self):
         ds = jsonio.DataSet.load(ROOT)
         es = list(walk(statuses.build(ds)))

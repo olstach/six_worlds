@@ -6947,7 +6947,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 # Statuses
 
-## Cc `cc`
+## Crowd control `cc`
 
 - **Frozen** `Frozen` — debuff · turns 1 · skip_turn
   - desc: (empty)
@@ -7020,7 +7020,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Time_Stopped** `Time_Stopped` — debuff · turns 1 · skip_turn, cannot_act
   - desc: Held outside the moment. Not stunned, not held — simply not yet. Nothing shakes this off, because there is no time in which to do so.
 
-## Dot `dot`
+## Damage over time `dot`
 
 - **Burning** `Burning` — debuff · turns 3 · fire_damage_per_turn
   - desc: (empty)
@@ -7084,7 +7084,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Disoriented** `Disoriented` — debuff · turns 1 · all_stats_penalty
   - desc: Ears ringing, footing uncertain. Everything is a little harder for a moment.
 
-## Dot cc `dot_cc`
+## Damage over time and crowd control `dot_cc`
 
 - **Drowning** `Drowning` — debuff · spellpower · physical_damage_per_turn, immobilized
   - desc: (empty)
@@ -7098,7 +7098,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Doomed** `Doomed` — debuff · fixed · death_on_expire
   - desc: (empty)
 
-## Dot disruption `dot_disruption`
+## Damage over time and disruption `dot_disruption`
 
 - **Swarmed** `Swarmed` — debuff · spellpower · physical_damage_per_turn, focus_save_on_damage
   - desc: (empty)
@@ -7271,7 +7271,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Rahulas_Cloak** `Rahulas_Cloak` — buff · spellpower
   - desc: Nothing on the road notices the party pass. Rāhu swallows the sun and is not observed doing it.
 
-## Hot `hot`
+## Healing over time `hot`
 
 - **Regenerating** `Regenerating` — buff · spellpower · heal_per_turn
   - desc: (empty)
@@ -7343,7 +7343,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Water_Immune** `Water_Immune` — buff · spellpower
   - desc: (empty)
 
-## Dot debuff `dot_debuff`
+## Damage over time and debuff `dot_debuff`
 
 - **Diseased** `Diseased` — debuff · spellpower · poison_damage_per_turn, stat_penalties
   - desc: (empty)
@@ -7355,12 +7355,12 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Glass_Globe** `Glass_Globe` — buff · spellpower · armor_bonus_minor
   - desc: Encased in a globe of conjured glass. Shatters on any damage received, dealing slashing AoE + guaranteed bleed to all within 2 tiles.
 
-## Cc dot `cc_dot`
+## Crowd control and damage over time `cc_dot`
 
 - **Wrathfully_Bound** `Wrathfully_Bound` — debuff · spellpower · space_damage_per_turn, cannot_teleport, cannot_flee
   - desc: (empty)
 
-## Debuff dot `debuff_dot`
+## Debuff and damage over time `debuff_dot`
 
 - **Rotting** `Rotting` — debuff · spellpower · all_stats_penalty, black_damage_per_turn
   - desc: (empty)
@@ -7652,7 +7652,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 # Equipment
 
-## Items
+## Items `items`
 
 ### Weapon `weapon`
 
@@ -9502,7 +9502,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Legendary War Standard** `legendary_war_standard` — epic · cloth · weapon_main · value 2000
   - description: A pole, a crosspiece, and a rag that has been somewhere. Men who cannot hear an order can see this.
 
-## Ammo
+## Ammo `ammo`
 
 - **Bone Arrow** `bone_arrow` — tier 1
   - description: Crude but freely available. Always replenished between fights.
@@ -9537,7 +9537,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Silencing Arrow** `silencing_arrow` — tier 4
   - description: Disrupts spellcasting concentration on impact.
 
-## Equipment tables
+## Equipment tables `tables`
 
 ### Materials `materials`
 
@@ -9792,7 +9792,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Steadfast** `steadfast` — debuff_resistance 15 · budget_cost 3
   - types: armor, helmet, shield, boots
 
-## Talisman tables
+## Talisman tables `talismans`
 
 ### Talisman perks `perks`
 
@@ -9917,7 +9917,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - poison_resistance: of Serpent Ward
   - physical_resistance: of Iron Skin
 
-## Upgrades
+## Upgrades `upgrades`
 
 - **Tactician** `tactician` — leadership · uncommon
   - description: Your strategic mind allows precise positioning of allies before battle. Enables manual deployment of party members.
@@ -9940,7 +9940,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 - **Ambush Master** `ambush_master` — combat · rare
   - description: Strike first, strike hard. +50% damage on first attack in combat.
 
-## Supplies
+## Supplies `supplies`
 
 - **Food** `food`
   - description: Consumed each overworld step per party member. Without food, passive healing stops; prolonged starvation drains HP.
