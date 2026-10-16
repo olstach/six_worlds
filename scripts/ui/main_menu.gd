@@ -63,6 +63,12 @@ const EQUIPMENT_SLOTS := {
 	"chest": {"name": "Chest", "types": ["armor", "robe", "vest"]},
 	"hand_l": {"name": "Hands", "types": ["gloves", "gauntlets", "bracers"]},
 	"hand_r": {"name": "Hands", "types": ["gloves", "gauntlets", "bracers"]},
+	# A four-armed body's second pair of hands. The boxes exist for everyone
+	# but are only shown when the body plan has these slots (see
+	# _update_equipment_slots). Like hand_l/hand_r, one pair of gloves is one
+	# item: hand_l2 holds it and hand_r2 mirrors it.
+	"hand_l2": {"name": "Second Hands", "types": ["gloves", "gauntlets", "bracers"]},
+	"hand_r2": {"name": "Second Hands", "types": ["gloves", "gauntlets", "bracers"]},
 	"legs": {"name": "Legs", "types": ["pants", "greaves", "leggings"]},
 	"feet": {"name": "Feet", "types": ["boots", "shoes", "sandals"]},
 	"weapon_main": {"name": "Main Hand", "types": ["sword", "axe", "mace", "spear", "dagger", "staff", "bow", "focus"]},
@@ -2662,6 +2668,11 @@ func _setup_equipment_doll() -> void:
 	_create_equipment_slot("hand_l", Vector2(center_x - slot_size.x/2 - 65, 80), slot_size)
 	_create_equipment_slot("hand_r", Vector2(center_x + slot_size.x/2 + 13, 80), slot_size)
 
+	# Second pair of hands (four-armed bodies only) - under the first pair,
+	# level with the legs. Hidden for everyone else by _update_equipment_slots.
+	_create_equipment_slot("hand_l2", Vector2(center_x - slot_size.x/2 - 65, 140), slot_size)
+	_create_equipment_slot("hand_r2", Vector2(center_x + slot_size.x/2 + 13, 140), slot_size)
+
 	# Legs - below chest
 	_create_equipment_slot("legs", Vector2(center_x - slot_size.x/2, 140), slot_size)
 
@@ -2775,6 +2786,8 @@ func _create_equipment_slot(slot_id: String, pos: Vector2, size: Vector2) -> voi
 		"chest": "BODY",
 		"hand_l": "L",
 		"hand_r": "R",
+		"hand_l2": "L2",
+		"hand_r2": "R2",
 		"legs": "LEGS",
 		"feet": "FEET",
 		"weapon_main": "MAIN",
@@ -2797,8 +2810,8 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 	var player = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
 
 	# hand_r is a visual mirror of hand_l — redirect all clicks to hand_l
-	if slot_id == "hand_r":
-		slot_id = "hand_l"
+	# (and hand_r2 to hand_l2, for the second pair of hands)
+	slot_id = GLOVE_MIRROR_OF.get(slot_id, slot_id)
 
 	# If slot has an item equipped, offer to unequip on double-click or show items
 	var equipped_item_id = ""
@@ -2809,8 +2822,8 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 	if selected_equipment_slot == slot_id and equipped_item_id != "":
 		ItemSystem.unequip_item(player, slot_id)
 		# Also clear the mirror slot (no inventory return — gloves are one item)
-		if slot_id == "hand_l":
-			player.get("equipment", {})["hand_r"] = ""
+		if slot_id in GLOVE_MIRRORS:
+			_set_glove_mirror(player, GLOVE_MIRRORS[slot_id], "", equipped_item_id)
 		_update_equipment_slots()
 		_update_equipment_display()
 		return
@@ -2830,6 +2843,30 @@ func _on_equipment_slot_pressed(slot_id: String) -> void:
 		else:
 			btn.remove_theme_color_override("font_color")
 
+## Glove slots that hold the item -> the slot that mirrors it. One pair of
+## gloves is one inventory item, worn on both hands of a pair.
+const GLOVE_MIRRORS := {"hand_l": "hand_r", "hand_l2": "hand_r2"}
+## And back again: clicking a mirror box acts on the box that holds the item.
+const GLOVE_MIRROR_OF := {"hand_r": "hand_l", "hand_r2": "hand_l2"}
+
+
+## Put `item_id` (or "" to clear) in a mirror glove slot. If that slot holds a
+## DIFFERENT item of its own — starting gear fills every hand slot separately
+## — it goes back to the inventory first instead of being overwritten and lost.
+## `pair_item` is what the holding slot had before this change: a mirror
+## showing that is just the copy, and is not returned (that would duplicate it).
+func _set_glove_mirror(player: Dictionary, mirror_slot: String, item_id: String,
+		pair_item: String) -> void:
+	var equipment: Dictionary = player.get("equipment", {})
+	var held: String = str(equipment.get(mirror_slot, ""))
+	var is_own_item: bool = held != "" and held != item_id and held != pair_item
+	if is_own_item:
+		ItemSystem.unequip_item(player, mirror_slot)
+	equipment[mirror_slot] = item_id
+	if CharacterSystem:
+		CharacterSystem.update_derived_stats(player)
+
+
 ## Update equipment slot buttons to show equipped items
 func _update_equipment_slots() -> void:
 	var player = _current_character if not _current_character.is_empty() else CharacterSystem.get_player()
@@ -2842,6 +2879,8 @@ func _update_equipment_slots() -> void:
 		"chest": "BODY",
 		"hand_l": "L",
 		"hand_r": "R",
+		"hand_l2": "L2",
+		"hand_r2": "R2",
 		"legs": "LEGS",
 		"feet": "FEET",
 		"weapon_main": "MAIN",
@@ -2857,6 +2896,15 @@ func _update_equipment_slots() -> void:
 			continue
 
 		var btn = equipment_slot_buttons[slot_id]
+		# Slots the body does not have (the second pair of hands on anyone
+		# but a four-armed birth) are hidden, and cannot stay selected.
+		var has_slot: bool = BodySystem.body_has_slot(player, slot_id) if BodySystem else true
+		btn.visible = has_slot
+		if not has_slot:
+			if selected_equipment_slot == slot_id:
+				selected_equipment_slot = ""
+				_update_equipment_display()
+			continue
 		var equipped_item_id = ItemSystem.get_equipped_item(player, slot_id)
 
 		# Disconnect old hover signals if any
@@ -3060,11 +3108,14 @@ func _on_equipment_item_pressed(item: Dictionary) -> void:
 		AudioManager.play("ui_denied")
 		return
 
-	# Equip the item
+	# Equip the item. Remember what the slot held first: its mirror is a copy
+	# of that, not an item of its own (see _set_glove_mirror).
+	var old_pair: String = ItemSystem.get_equipped_item(player, selected_equipment_slot)
 	if ItemSystem.equip_item(player, item_id, selected_equipment_slot):
 		# Mirror gloves/gauntlets/bracers to hand_r (one pair = one inventory item)
-		if selected_equipment_slot == "hand_l":
-			player.get("equipment", {})["hand_r"] = item_id
+		if selected_equipment_slot in GLOVE_MIRRORS:
+			_set_glove_mirror(player, GLOVE_MIRRORS[selected_equipment_slot], item_id,
+				old_pair)
 		_update_equipment_slots()
 		_update_equipment_display()
 
