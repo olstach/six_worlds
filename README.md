@@ -156,9 +156,10 @@ where it was found — never dropped.
 and the JSON disagree, so nothing written in the document can be missing from
 a build.
 
-Perk mechanics are authored through `tools/wire_active_perks.py` and
-`tools/wire_passive_perks.py`, which regenerate `perks.json` and refuse data the
-engine cannot consume.
+Perk mechanics (`combat_data` for actives, `effects` for passives) are edited
+in `perks.json` directly. `validate_data.py` refuses what the engine cannot
+consume — unknown stats, targeting, saves, statuses, triggers, payloads — and
+`verify_passive_perks` refuses a perk wired both in data and by id in code.
 
 ### How to tune fight difficulty
 

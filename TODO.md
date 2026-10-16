@@ -1638,10 +1638,11 @@ perks: **168** are implemented by hand in `scripts/` (checked by id with
 array, **297** are still description-only.
 
 **The rule everything rests on:** a hand-implemented perk must never *also*
-carry an `effects` array, or it fires twice. `tools/wire_passive_perks.py`
+carry an `effects` array, or it fires twice. `verify_passive_perks`
 derives the hardcoded set by scanning `scripts/` rather than keeping a list, so
-a perk hardcoded tomorrow is protected without anyone remembering, and
-`verify_passive_perks` re-checks it against shipped data. Note that **Parry and
+a perk hardcoded tomorrow is protected without anyone remembering. (The
+`wire_*_perks.py` authoring scripts were deleted 2026-10-16; perks are edited
+in `perks.json` and `validate_data.py` holds their rules.) Note that **Parry and
 Improved Parry — the plan document's own worked example of a
 `stat_conversion` — are both hardcoded** and must stay that way.
 
@@ -2158,7 +2159,7 @@ Done 2026-10-16 (branch `claude/round-3`), plus three new enemies:
 
 #### Round 4 — found during Round 3
 
-- [ ] **`tools/wire_passive_perks.py` and `wire_active_perks.py` are stale
+- [x] **`tools/wire_passive_perks.py` and `wire_active_perks.py` are stale
       and destructive**: `--write` would undo Aegis of Tranquility's elements,
       Borrowed Opening and more. Their work is all in the data — delete them
       (or strip them to a read-only checker).
@@ -2168,10 +2169,10 @@ Done 2026-10-16 (branch `claude/round-3`), plus three new enemies:
       lone target is never bombed.
 - [ ] Hell kit budgets are so small that a grenadier at `normal` buys no
       bombs (powder train set to `hard` for now). Consider a consumable floor.
-- [ ] Chain Spark text says 50% damage, code deals 60%.
+- [x] Chain Spark text says 50% damage, code deals 60%. (Now 50%, Olaf.)
 - [ ] Magnetizing Aura spell: `special.triggers_on` and
       `special.effect: "charm_chance"` are unread.
-- [ ] Mirrored glove pairs count their stats on both hands — intended?
+- [x] Mirrored glove pairs count their stats on both hands — no: a pair is one item and counts once (Olaf). Done.
 - [ ] Heavy Armor Training's movement half does nothing yet: no heavy
       armour has a movement penalty.
 

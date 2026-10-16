@@ -13,7 +13,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 13
+const EXPECTED_CHECKS: int = 14
 var grid: CombatGrid
 
 
@@ -35,6 +35,7 @@ func _ready() -> void:
 	_check_severing_with_a_full_pack_keeps_the_item()
 	_check_four_armed_bodies_wear_four_gloves()
 	_check_equipment_screen_has_second_hands()
+	_check_a_glove_pair_counts_once()
 	_check_unbroken_downgrades_wounds()
 	_check_unbroken_leaves_diseases_alone()
 
@@ -199,10 +200,11 @@ func _check_each_arm_is_logged_once_with_hp_lost() -> void:
 		if line.begins_with("Arm "):
 			_fail("CombatManager still logs an arm itself: '%s'" % line)
 	var lost: int = 100000 - defender.current_hp
-	var reported: int = int(result.get("damage_taken", -1))
+	var reported: int = int(result.get("damage_taken", 0))
 	for extra in result.get("extra_arm_results", []):
 		reported += int(extra.get("damage_taken", 0))
-	if not result.has("damage_taken"):
+	# A miss carries no damage_taken; only a landed blow must report it.
+	if result.get("hit", false) and not result.has("damage_taken"):
 		_fail("the primary hit's result has no damage_taken")
 	elif reported != lost:
 		_fail("hits report %d HP lost but the defender lost %d" % [reported, lost])
@@ -348,6 +350,30 @@ func _check_four_armed_bodies_wear_four_gloves() -> void:
 ## of its own comes off with the pair; and a companion's starting kit naming a
 ## glove for each hand is settled into one pair — unequipping it used to
 ## return only one of the two. The equipment screen's boxes include the
+## A pair of gloves is one item and counts once, though it sits in both hands
+## (Olaf, 2026-10-16). A different glove of the right hand's own still counts.
+func _check_a_glove_pair_counts_once() -> void:
+	var probe := "__verify_armour_glove__"
+	var other := "__verify_other_glove__"
+	ItemSystem._item_database[probe] = {"name": "Probe gloves", "type": "gloves",
+		"slot": "hand_l", "stats": {"armor": 3}}
+	ItemSystem._item_database[other] = {"name": "Other glove", "type": "gloves",
+		"slot": "hand_l", "stats": {"armor": 2}}
+	var c: Dictionary = CharacterSystem.create_blank_character()
+	c["equipment"]["hand_l"] = probe
+	c["equipment"]["hand_r"] = probe
+	var armor: int = int(ItemSystem.calculate_equipment_stats(c).get("armor", 0))
+	if armor != 3:
+		_fail("a glove pair worth 3 Armor gave %d — counted per hand" % armor)
+	c["equipment"]["hand_r"] = other
+	armor = int(ItemSystem.calculate_equipment_stats(c).get("armor", 0))
+	if armor != 5:
+		_fail("two different gloves (3 + 2 Armor) gave %d" % armor)
+	ItemSystem._item_database.erase(probe)
+	ItemSystem._item_database.erase(other)
+	_done()
+
+
 ## second pair of hands.
 func _check_equipment_screen_has_second_hands() -> void:
 	var menu_script: GDScript = load("res://scripts/ui/main_menu.gd")

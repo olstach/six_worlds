@@ -5038,7 +5038,8 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 
 	# Static Edge (Air 1): all attacks deal +10% weapon damage as Air damage
 	# Wired in get_continuous_stat_bonus; here we add it as a bonus damage proc on spell hits
-	# Chain Spark (Air 3): Lightning spells have 30% chance to chain to 1 adjacent target
+	# Chain Spark (Air 7): lightning spells have a 30% chance to chain to 1 more
+	# target within 2 tiles, for 50% of the damage.
 	if PerkSystem.has_perk(caster_char, "chain_spark") and has_damage:
 		# Lightning damage only: an Air spell dealing physical damage is not lightning.
 		var is_lightning = element == "lightning"
@@ -5048,7 +5049,7 @@ func _process_spell_cast_perks(caster: Node, target: Node, spell: Dictionary, re
 			chain_targets.erase(caster)
 			if not chain_targets.is_empty():
 				var chain_target = chain_targets[randi() % chain_targets.size()]
-				var chain_dmg = int(result.get("damage", 0) * 0.60)
+				var chain_dmg = int(result.get("damage", 0) * 0.50)
 				chain_dmg = maxi(1, chain_dmg)
 				apply_damage(chain_target, chain_dmg, "lightning")
 				result["chain_spark_damage"] = chain_dmg
@@ -10036,8 +10037,8 @@ func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 ## Sits alongside _process_on_hit_perks() and friends, which stay as the home
 ## for the 164 perks wired by id. This is for perks that describe themselves in
 ## an `effects` array instead. A perk uses one mechanism or the other — never
-## both, or it fires twice — and tools/wire_passive_perks.py enforces that by
-## refusing to write `effects` for any perk id it finds referenced in scripts/.
+## both, or it fires twice — verify_passive_perks (_check_no_double_wiring)
+## fails on any perk that is both.
 func _fire_perk_triggers(unit: Node, trigger: String, context: Dictionary = {}) -> void:
 	if unit == null or not "character_data" in unit or not PerkSystem:
 		return

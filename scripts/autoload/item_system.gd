@@ -637,7 +637,7 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 	var equipment = character.get("equipment", {})
 
 	# Standard slots — driven by body plan so multi-armed characters pick up extra hand slots.
-	# hand_r mirrors hand_l for glove stats; BodySystem.get_equipment_slots skips empty equip_slots.
+	# BodySystem.get_equipment_slots skips empty equip_slots.
 	var slots_to_check: Array[String] = BodySystem.get_equipment_slots(character) if BodySystem else [
 		"head", "chest", "hand_l", "hand_r", "legs", "feet",
 		"ring1", "ring2", "amulet", "trinket1", "trinket2"
@@ -648,6 +648,12 @@ func calculate_equipment_stats(character: Dictionary) -> Dictionary:
 	var heavy_penalty: Dictionary = {"dodge": 0, "movement": 0}
 	for slot in slots_to_check:
 		var item_id = equipment.get(slot, "")
+		# A pair of gloves is ONE item: equipped, it sits in the left hand and
+		# is mirrored into the right. Count it once (Olaf, 2026-10-16) — the
+		# right hand adds only a glove of its own, different from the left's.
+		if item_id != "" and slot in GLOVE_MIRROR_OF \
+				and equipment.get(GLOVE_MIRROR_OF[slot], "") == item_id:
+			continue
 		if item_id != "":
 			_add_item_stats(item_id, bonuses)
 			if is_armour_slot(slot) and is_heavy_armor_piece(get_item(item_id)):

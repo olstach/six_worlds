@@ -1547,6 +1547,89 @@ for _section in ("skill_perks", "cross_perks"):
                 err("data->code", f"perk '{_pid}' has condition '{_c}', which "
                     "CombatUnit._perk_condition_met() does not answer")
 
+# ── Perk effect rules (moved here from wire_*_perks.py, 2026-10-16) ─────────
+# Those two scripts authored perks.json once and checked what they wrote; their
+# work now lives in the data and CONTENT.md, so the checks live here instead,
+# against every perk rather than only the ones the scripts listed. Vocabularies
+# are read from the code that consumes them, never restated.
+_ss_src = open(os.path.join(ROOT, "scripts/combat/save_system.gd"), encoding="utf-8").read()
+_save_attrs = _gd_list(_ss_src, "ATTRIBUTES")
+_m_tiers = re.search(r"const TIERS: Dictionary = \{(.*?)\n\}", _ss_src, re.S)
+_save_tiers = set(re.findall(r'"([^"]+)"', _m_tiers.group(1))) if _m_tiers else set()
+_targeting = _gd_list(_cs_src, "TARGETING")
+_live_stats = _gd_list(_cs_src, "MODIFIABLE") | _gd_list(_cs_src, "DATA_KEYWORDS")
+_derived_stats = _gd_list(_cs_src, "DERIVED")
+_pk_src = open(os.path.join(ROOT, "scripts/autoload/perk_system.gd"), encoding="utf-8").read()
+_sheet_conditions = _gd_list(_pk_src, "SHEET_CONDITIONS")
+_cm_src_fx = open(os.path.join(ROOT, "scripts/autoload/combat_manager.gd"), encoding="utf-8").read()
+_m_apply = re.search(r"func _apply_trigger_effect\(.*?(?=\nfunc )", _cm_src_fx, re.S)
+_payload_targets, _payload_types = set(), set()
+if _m_apply:
+    _body = _m_apply.group(0)
+    _split = _body.find('match payload.get("type"')
+    _payload_targets = {"self"} | set(re.findall(r'^\t\t"([a-z_]+)":', _body[:_split], re.M))
+    _payload_types = set(re.findall(r'^\t\t"([a-z_]+)":', _body[_split:], re.M))
+_resist_types = {k for k, v in load("resources/data/damage_types.json").get("damage_types", {}).items()
+                 if isinstance(v, dict)} | set(load("resources/data/damage_types.json").get("other_resistances", {}))
+if not (_save_attrs and _save_tiers and _targeting and _live_stats and _derived_stats
+        and _sheet_conditions and _payload_targets and _payload_types):
+    err("data->code", "could not read a perk-rule vocabulary from code — perk rules unchecked")
+else:
+    for _section in ("skill_perks", "cross_perks"):
+        for _pid, _pk in perks_data.get(_section, {}).items():
+            if not isinstance(_pk, dict):
+                continue
+            # Active: combat_data must be something a resolver can consume.
+            _cd = _pk.get("combat_data", {})
+            if _cd:
+                if _cd.get("targeting") is not None and _cd["targeting"] not in _targeting:
+                    err("perk->rule", f"perk '{_pid}': targeting '{_cd['targeting']}' yields no tiles")
+                for _key in ("buffs", "ally_buffs", "debuffs", "enemy_debuffs"):
+                    for _e in _cd.get(_key, []):
+                        if isinstance(_e, dict) and _e.get("stat", "") not in _live_stats:
+                            err("perk->rule", f"perk '{_pid}': {_key} stat '{_e.get('stat')}' is never read back")
+                for _e in (_cd.get("self_buff"), _cd.get("target_debuff")):
+                    if isinstance(_e, dict) and _e.get("stat") not in _live_stats:
+                        err("perk->rule", f"perk '{_pid}': stat '{_e.get('stat')}' is never read back")
+                for _key in ("dc_stat", "save_type", "enemy_save_type"):
+                    # SaveSystem lower-cases at its boundary, so "Constitution" is fine.
+                    if _key in _cd and str(_cd[_key]).lower() not in _save_attrs:
+                        err("perk->rule", f"perk '{_pid}': {_key} '{_cd[_key]}' is not an attribute")
+                if "save_tier" in _cd and _cd["save_tier"] not in _save_tiers:
+                    err("perk->rule", f"perk '{_pid}': unknown save_tier '{_cd['save_tier']}'")
+                if _cd.get("aoe") and "aoe_radius" in _cd:
+                    err("perk->rule", f"perk '{_pid}': declares both an aoe block and aoe_radius")
+                for _e in _cd.get("statuses", []):
+                    if isinstance(_e, dict) and _e.get("status") not in _status_names:
+                        err("perk->rule", f"perk '{_pid}': unknown status '{_e.get('status')}'")
+            # Passive: effects arrays.
+            for _fx in _pk.get("effects", []):
+                if not isinstance(_fx, dict):
+                    continue
+                _kind = _fx.get("type", "")
+                if _kind == "stat_bonus" and _fx.get("stat") not in _derived_stats:
+                    err("perk->rule", f"perk '{_pid}': '{_fx.get('stat')}' is not a derived stat")
+                if _kind == "stat_conversion":
+                    for _k in ("source_stat", "target_stat"):
+                        if _fx.get(_k) not in _derived_stats:
+                            err("perk->rule", f"perk '{_pid}': {_k} '{_fx.get(_k)}' is not a derived stat")
+                if _kind == "resistance":
+                    if _fx.get("damage_type") not in _resist_types:
+                        err("perk->rule", f"perk '{_pid}': resistance to unknown type '{_fx.get('damage_type')}'")
+                    for _c in _fx.get("conditions", []):
+                        if _c not in _sheet_conditions:
+                            err("perk->rule", f"perk '{_pid}': resistance gated on '{_c}', which "
+                                "PerkSystem cannot judge off the character sheet")
+                if _kind == "on_trigger":
+                    _pl = _fx.get("effect", {})
+                    if _pl.get("target", "self") not in _payload_targets:
+                        err("perk->rule", f"perk '{_pid}': payload target '{_pl.get('target')}' is not "
+                            "one _apply_trigger_effect() resolves")
+                    if _pl.get("type") not in _payload_types:
+                        err("perk->rule", f"perk '{_pid}': payload type '{_pl.get('type')}' has no handler")
+                    if _pl.get("type") == "buff" and _pl.get("stat") not in _live_stats:
+                        err("perk->rule", f"perk '{_pid}': trigger buffs '{_pl.get('stat')}', never read back")
+
 # ── report ───────────────────────────────────────────────────────────────────
 print(f"TOTAL ISSUES: {len(errors)}")
 for category, count in Counter(c for c, _ in errors).most_common():

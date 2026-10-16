@@ -507,10 +507,9 @@ func get_perk_data(perk_id: String) -> Dictionary:
 #
 # Many perks (176 on 2026-10-15) are instead wired by id directly in combat
 # code, because their effects are reactive or too specific to describe in data.
-# The number drifts; tools/wire_passive_perks.py computes the live set. Those
-# must NOT also carry an `effects` array or the perk would fire twice;
-# tools/wire_passive_perks.py refuses to write one for any perk id it finds
-# referenced in scripts/.
+# Those must NOT also carry an `effects` array or the perk would fire twice;
+# verify_passive_perks (_check_no_double_wiring) fails on any perk id that
+# has one and is also referenced in scripts/.
 #
 # Where each effect type is consumed:
 #
@@ -608,8 +607,7 @@ func get_passive_resistances(character: Dictionary) -> Dictionary:
 ## Conditions a resistance effect may carry: the ones answerable from the
 ## character sheet alone, without a combat unit. (Combat conditions such as
 ## `not_flanked` change from moment to moment and cannot gate a resistance
-## that is baked into derived stats.) tools/wire_passive_perks.py keeps the
-## same list.
+## that is baked into derived stats.) validate_data.py reads this list.
 const SHEET_CONDITIONS: Array[String] = ["wearing_heavy_armor"]
 
 
