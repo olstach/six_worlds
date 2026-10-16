@@ -2146,6 +2146,9 @@ And still no race uses the plan.
 - Vajra & Bell `active_set_bonus` opener — not needed with the current set
   bonuses; left unbuilt (the stored key is still unread).
 
+- **Investment payouts, ritual tooltip wording and the parry definition**
+  (a melee miss against someone holding a melee weapon) are all first drafts.
+
 ### Round 3 — found during Round 2 (2026-10-16)
 
 - [ ] `generate_armor` ignores which item types a material allows ("Iron
@@ -2165,8 +2168,6 @@ And still no race uses the plan.
       choices (`trait_gambler_game/play_deep`, `trait_secret_bearer_slip/draw_it_out`).
 - [ ] Bardo screen's own `current_map_id = ""` / `visited_tiles.clear()`
       are redundant now.
-- **Investment payouts, ritual tooltip wording and the parry definition**
-  (a melee miss against someone holding a melee weapon) are all first drafts.
 
 ### Round 2 — found while fixing the above (2026-10-15)
 
