@@ -39,18 +39,6 @@ const COLOR_AOE_PREVIEW = Color(0.9, 0.5, 0.2, 0.5)  # Orange for AoE preview
 const COLOR_SELECTED = Color(0.9, 0.9, 0.3, 0.5)
 const COLOR_HOVER = Color(1.0, 1.0, 1.0, 0.3)
 
-# Terrain effect colors (overlays)
-const COLOR_EFFECT_FIRE = Color(1.0, 0.4, 0.1, 0.5)
-const COLOR_EFFECT_ICE = Color(0.4, 0.7, 1.0, 0.5)
-const COLOR_EFFECT_POISON = Color(0.4, 0.8, 0.2, 0.5)
-const COLOR_EFFECT_ACID = Color(0.7, 0.9, 0.1, 0.5)
-const COLOR_EFFECT_BLESSED = Color(1.0, 0.95, 0.6, 0.4)
-const COLOR_EFFECT_CURSED = Color(0.3, 0.1, 0.3, 0.5)
-const COLOR_EFFECT_WET = Color(0.2, 0.4, 0.85, 0.55)
-const COLOR_EFFECT_STORMY = Color(0.55, 0.45, 0.75, 0.6)
-const COLOR_EFFECT_VOID = Color(0.12, 0.04, 0.22, 0.72)
-const COLOR_EFFECT_SMOKE = Color(0.55, 0.55, 0.55, 0.65)
-
 # Current highlights
 var highlighted_tiles: Array[Vector2i] = []
 var current_highlight_color: Color = COLOR_MOVE_RANGE
@@ -101,6 +89,9 @@ enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED, WET, STORMY
 ## the other lie. Now changing a number here changes both.
 ##
 ## Keys (all optional):
+##   name           — display name (tooltips, log)
+##   color          — overlay diamond colour
+##   default_value  — damage/heal per turn when the caller passes none
 ##   damage_type    — deals the tile's effect_value as this damage type
 ##   heals          — true: heals the tile's effect_value instead
 ##   status         — status applied (only if the unit does not have it yet)
@@ -112,21 +103,31 @@ enum TerrainEffect { NONE, FIRE, ICE, POISON, ACID, BLESSED, CURSED, WET, STORMY
 ## Blessed ground is the one benign effect: levitators and ground-immune
 ## statuses still receive its healing. Flyers ignore every effect.
 const TERRAIN_HAZARDS: Dictionary = {
-	TerrainEffect.FIRE: {"damage_type": "fire", "status": "Burning", "status_turns": 2},
+	TerrainEffect.FIRE: {"name": "Fire", "color": Color(1.0, 0.4, 0.1, 0.5), "default_value": 5,
+		"damage_type": "fire", "status": "Burning", "status_turns": 2},
 	# Poison ground deals POISON, so poison resistance answers it and armour
 	# does not. There is no `acid` damage type: acid is poison too, because the
 	# acid bomb and flask already deal poison and the puddle is the same stuff.
-	TerrainEffect.POISON: {"damage_type": "poison", "status": "Poisoned", "status_turns": 3},
-	TerrainEffect.ACID: {"damage_type": "poison"},
-	TerrainEffect.CURSED: {"damage_type": "black", "status": "Cursed", "status_turns": 2, "status_chance": 0.3},
-	TerrainEffect.BLESSED: {"heals": true},
-	TerrainEffect.ICE: {"status": "Slowed", "status_turns": 1, "status_blocked_by": ["Frozen"], "water": true},
+	TerrainEffect.POISON: {"name": "Poison", "color": Color(0.4, 0.8, 0.2, 0.5), "default_value": 3,
+		"damage_type": "poison", "status": "Poisoned", "status_turns": 3},
+	TerrainEffect.ACID: {"name": "Acid", "color": Color(0.7, 0.9, 0.1, 0.5), "default_value": 4,
+		"damage_type": "poison"},
+	TerrainEffect.CURSED: {"name": "Cursed Ground", "color": Color(0.3, 0.1, 0.3, 0.5), "default_value": 2,
+		"damage_type": "black", "status": "Cursed", "status_turns": 2, "status_chance": 0.3},
+	TerrainEffect.BLESSED: {"name": "Blessed Ground", "color": Color(1.0, 0.95, 0.6, 0.4), "default_value": 3,
+		"heals": true},
+	TerrainEffect.ICE: {"name": "Ice", "color": Color(0.4, 0.7, 1.0, 0.5), "default_value": 0,
+		"status": "Slowed", "status_turns": 1, "status_blocked_by": ["Frozen"], "water": true},
 	# Wet ground slows you AND leaves you Soaked: +25% lightning damage taken
 	# (statuses.json says why lightning and not ice).
-	TerrainEffect.WET: {"status": "Slowed", "status_turns": 1, "also_status": "Soaked", "water": true},
-	TerrainEffect.STORMY: {"damage_type": "lightning", "status": "Stunned", "status_turns": 1, "status_chance": 0.2},
-	TerrainEffect.VOID: {"damage_type": "space"},
-	TerrainEffect.SMOKE: {"blocks_sight": true},
+	TerrainEffect.WET: {"name": "Wet Ground", "color": Color(0.2, 0.4, 0.85, 0.55), "default_value": 0,
+		"status": "Slowed", "status_turns": 1, "also_status": "Soaked", "water": true},
+	TerrainEffect.STORMY: {"name": "Storm", "color": Color(0.55, 0.45, 0.75, 0.6), "default_value": 3,
+		"damage_type": "lightning", "status": "Stunned", "status_turns": 1, "status_chance": 0.2},
+	TerrainEffect.VOID: {"name": "Void Rift", "color": Color(0.12, 0.04, 0.22, 0.72), "default_value": 5,
+		"damage_type": "space"},
+	TerrainEffect.SMOKE: {"name": "Smoke", "color": Color(0.55, 0.55, 0.55, 0.65), "default_value": 0,
+		"blocks_sight": true},
 }
 
 # Obstacle types (objects sitting on tiles that provide cover)
@@ -828,27 +829,9 @@ func add_terrain_effect(grid_pos: Vector2i, effect: int, duration: int = 3, valu
 	if tile == null:
 		return
 
-	# Set default values based on effect type
+	# Default damage/heal per turn comes from the TERRAIN_HAZARDS table
 	if value == 0:
-		match effect:
-			TerrainEffect.FIRE:
-				value = 5  # Fire damage per turn
-			TerrainEffect.ICE:
-				value = 0  # Ice slows movement
-			TerrainEffect.POISON:
-				value = 3  # Poison damage per turn
-			TerrainEffect.ACID:
-				value = 4  # Acid damage per turn
-			TerrainEffect.BLESSED:
-				value = 3  # Healing per turn
-			TerrainEffect.CURSED:
-				value = 2  # Damage per turn
-			TerrainEffect.WET:
-				value = 0  # No damage; slows and Soaks (lightning vulnerability)
-			TerrainEffect.STORMY:
-				value = 3  # Air damage per turn, stun chance
-			TerrainEffect.VOID:
-				value = 5  # Space damage per turn
+		value = int(TERRAIN_HAZARDS.get(effect, {}).get("default_value", 0))
 
 	tile.set_effect(effect, duration, value)
 
@@ -945,18 +928,7 @@ func has_beneficial_effect(grid_pos: Vector2i) -> bool:
 
 ## Get effect name for display
 func get_effect_name(effect: int) -> String:
-	match effect:
-		TerrainEffect.FIRE: return "Fire"
-		TerrainEffect.ICE: return "Ice"
-		TerrainEffect.POISON: return "Poison"
-		TerrainEffect.ACID: return "Acid"
-		TerrainEffect.BLESSED: return "Blessed Ground"
-		TerrainEffect.CURSED: return "Cursed Ground"
-		TerrainEffect.WET: return "Wet Ground"
-		TerrainEffect.STORMY: return "Storm"
-		TerrainEffect.VOID: return "Void Rift"
-		TerrainEffect.SMOKE: return "Smoke"
-		_: return ""
+	return str(TERRAIN_HAZARDS.get(effect, {}).get("name", ""))
 
 
 ## Update visual display of terrain effects
@@ -994,30 +966,7 @@ func _create_effect_visual(grid_pos: Vector2i, effect: int) -> Control:
 	diamond.rotation_degrees = 45
 	diamond.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var color: Color
-	match effect:
-		TerrainEffect.FIRE:
-			color = COLOR_EFFECT_FIRE
-		TerrainEffect.ICE:
-			color = COLOR_EFFECT_ICE
-		TerrainEffect.POISON:
-			color = COLOR_EFFECT_POISON
-		TerrainEffect.ACID:
-			color = COLOR_EFFECT_ACID
-		TerrainEffect.BLESSED:
-			color = COLOR_EFFECT_BLESSED
-		TerrainEffect.CURSED:
-			color = COLOR_EFFECT_CURSED
-		TerrainEffect.WET:
-			color = COLOR_EFFECT_WET
-		TerrainEffect.STORMY:
-			color = COLOR_EFFECT_STORMY
-		TerrainEffect.VOID:
-			color = COLOR_EFFECT_VOID
-		TerrainEffect.SMOKE:
-			color = COLOR_EFFECT_SMOKE
-		_:
-			color = Color(0, 0, 0, 0)
+	var color: Color = TERRAIN_HAZARDS.get(effect, {}).get("color", Color(0, 0, 0, 0))
 
 	diamond.color = color
 	container.add_child(diamond)

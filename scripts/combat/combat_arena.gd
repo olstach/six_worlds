@@ -2695,7 +2695,19 @@ func _on_unit_moved(unit: Node, from: Vector2i, to: Vector2i) -> void:
 
 
 func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> void:
-	# Multi-arm chain: show each extra arm's outcome in the combat log...
+	# Multi-arm chain: log each extra arm's outcome... but AFTER the caller has
+	# logged the main hit. This signal fires from inside attack_unit(), before
+	# the "X attacks Y" line is written, so the arm lines are deferred to the
+	# end of the frame to land beneath it.
+	_log_arm_results.call_deferred(defender, result)
+	# ...and as floating popups over whoever each arm struck ("Arm 2: 12",
+	# "Arm 3: miss"), staggered so they don't overlap the primary hit's number.
+	CombatUnit.show_arm_chain_popups(attacker, defender, result)
+	_update_action_buttons()
+
+
+## Write one combat-log line per extra arm (see _on_unit_attacked).
+func _log_arm_results(defender: Node, result: Dictionary) -> void:
 	for extra in result.get("extra_arm_results", []):
 		var arm_num: int = extra.get("arm_number", 0)
 		# The arm's own target — Coordinated Strikes can move the chain on to
@@ -2722,10 +2734,6 @@ func _on_unit_attacked(attacker: Node, defender: Node, result: Dictionary) -> vo
 				AudioManager.play("hit_crit", -3.0)
 		else:
 			_log_message("  Arm %d: misses %s" % [arm_num, struck_name])
-	# ...and as floating popups over whoever each arm struck ("Arm 2: 12",
-	# "Arm 3: miss"), staggered so they don't overlap the primary hit's number.
-	CombatUnit.show_arm_chain_popups(attacker, defender, result)
-	_update_action_buttons()
 
 
 func _on_unit_damaged(unit: Node, damage: int, damage_type: String) -> void:

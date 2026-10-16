@@ -1376,9 +1376,6 @@
       "statuses_caused": [
         "Fire_Vulnerable"
       ],
-      "special": {
-        "cumulative": true
-      },
       "target": {
         "type": "single",
         "eligible": "enemy",
@@ -3273,7 +3270,6 @@
         "Fireshield"
       ],
       "special": {
-        "retaliation_damage": "fire",
         "triggers_on": "melee_attack_received"
       },
       "target": {
