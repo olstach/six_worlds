@@ -659,9 +659,6 @@ func create_player_character(char_name: String, birth: String, background: Strin
 	# Add to party at index 0 (player always first)
 	if party.is_empty():
 		party.append(character)
-	fallen.clear()
-	for f in data.get("fallen", []):
-		fallen.append((f as Dictionary).duplicate(true))
 	else:
 		party[0] = character
 
@@ -1625,3 +1622,8 @@ func load_save_data(data: Dictionary) -> void:
 		# Recalculate derived stats to pick up any formula changes
 		update_derived_stats(character)
 		party.append(character)
+	# The companions who fell earlier in this life, so they can still be
+	# raised after a load.
+	fallen.clear()
+	for f in data.get("fallen", []):
+		fallen.append((f as Dictionary).duplicate(true))

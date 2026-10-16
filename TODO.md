@@ -2116,82 +2116,107 @@ And still no race uses the plan.
   fixed.** The status scope is `magic` now (was `non_physical`) and mantras
   cover magic types only. Poison is not magic.
   - [ ] Idea from Olaf: a Yoga and/or Might perk that resists poison.
+
+### Round 3 — found during Round 2 (2026-10-16)
+
+- [ ] `generate_armor` ignores which item types a material allows ("Iron
+      Robe", "Bone Hat"); the weapon generator checks.
+- [ ] Unequipping a pair of gloves that starting gear put in both hands as
+      two separate items returns only one.
+- [ ] Heavy Armor Training, Armored Skin, Living Fortress: description only.
+- [ ] Shield Wall gives flat +25 armour, not "+25%"; the adjacent-ally +10%
+      half is not built.
+- [ ] Borrowed Opening's trigger fires on ranged misses; the text says melee.
+- [ ] Chain Spark fires for Air-school spells dealing physical damage.
+- [ ] Unread: Fireshield spell `triggers_on`, Domain Crystal
+      `special.attack_type: "laser"`, `active_set_bonus`.
+- [ ] `cure_all`, `smelling_salts`, `spirit_salt` list statuses that do not
+      exist (`Burned`, `Chilled`, `Unconscious`, `Haunted`, `Possessed`).
+- [ ] `content_sync` reports "IGNORED (context field)" for two domain event
+      choices (`trait_gambler_game/play_deep`, `trait_secret_bearer_slip/draw_it_out`).
+- [ ] Bardo screen's own `current_map_id = ""` / `visited_tiles.clear()`
+      are redundant now.
 - **Investment payouts, ritual tooltip wording and the parry definition**
   (a melee miss against someone holding a melee weapon) are all first drafts.
 
 ### Round 2 — found while fixing the above (2026-10-15)
 
+Done 2026-10-16 in seven groups (branch `claude/round-2`), except the
+duplicated keys, which need Olaf. Spells cannot crit, so "spell crits"
+was really combat-skill hits; those now show the crit marker. The
+`active_set_bonus` (Vajra & Bell opener) is left: nothing says what it does.
+
 **Bugs**
 
-- [ ] **`fallen` is never cleared on a new life or New Game, and not saved**
+- [x] **`fallen` is never cleared on a new life or New Game, and not saved**
       (`character_system.gd:29`) — a previous life's companions can be
       raised, and the list is lost on load.
-- [ ] **`planar_return` is not saved** (`game_state.gd` `get_save_data`) —
+- [x] **`planar_return` is not saved** (`game_state.gd` `get_save_data`) —
       loading mid-Planar-Shift strands the party in the other realm.
-- [ ] **`load_map` keeps `searched_tiles`** (`map_manager.gd:~479`), so a
+- [x] **`load_map` keeps `searched_tiles`** (`map_manager.gd:~479`), so a
       searched spot carries over to the same coordinates on another map.
-- [ ] **The bardo screen's "less gold than the first run" never happens** —
+- [x] **The bardo screen's "less gold than the first run" never happens** —
       `GameState.gold = 50` (`bardo_screen.gd:~312`) is overwritten by
       `start_new_run()`'s 100.
-- [ ] **Trishula's `on_crit_status: "pinned"` is lowercase**
+- [x] **Trishula's `on_crit_status: "pinned"` is lowercase**
       (`items.json:~1177/~1205`); the status is `Pinned`. Probably never applies.
-- [ ] **The acid bomb and flask apply `Corroded`, which is not a status**,
+- [x] **The acid bomb and flask apply `Corroded`, which is not a status**,
       and the flask's `armor_reduction` has no reader — "eats through armour"
       does nothing.
-- [ ] **`domain_events.json` uses the roll word `"moderate"`** twice; the DC
+- [x] **`domain_events.json` uses the roll word `"moderate"`** twice; the DC
       table does not know it (silently normal) and the validator misses it.
-- [ ] **Imbued arrows still apply their spell to a defender the arrow just
+- [x] **Imbued arrows still apply their spell to a defender the arrow just
       dropped** (`combat_manager.gd:~1902`); Touch of Gloom's stat penalties
       likewise land on a downed target (`~4685`).
-- [ ] **Downed and actionless units (bleeding out, decoys) never tick
+- [x] **Downed and actionless units (bleeding out, decoys) never tick
       statuses or stat modifiers**, so a buff on a downed ally rides into
       later rounds.
-- [ ] **Avatar of the Wind's 1-turn ally buffs expire at each ally's own turn
+- [x] **Avatar of the Wind's 1-turn ally buffs expire at each ally's own turn
       start** (`_process_turn_start_perks`), so allies acting after the perk
       holder never benefit.
-- [ ] **Buffs tuned around the old double tick** — `shield_wall` (2, "until
+- [x] **Buffs tuned around the old double tick** — `shield_wall` (2, "until
       next turn": now a turn longer), `shield_bash` (1-turn debuff on an enemy
       ticks off before it attacks; always did), `borrowed_opening` / Borrowed
       Force (gone before your attack). `borrowed_opening` also says "+20%
       crit" and gives +20 damage. Rousing Display says "+5% morale and +2
       Initiative" and gives +5 Initiative, no morale.
-- [ ] **Heavy armour means only the chest** (`combat_unit.gd:~1023`
+- [x] **Heavy armour means only the chest** (`combat_unit.gd:~1023`
       `is_wearing_heavy_armor`), and `generate_armor` (`item_system.gd:~1522`)
       gives a Strength requirement only at base armour ≥ 3 — generated
       gauntlets and helmets are always "light".
-- [ ] **`unbroken`'s first half** (stop at 25% HP once per combat, armour
+- [x] **`unbroken`'s first half** (stop at 25% HP once per combat, armour
       doubled) is not built.
-- [ ] **Weakening Gaze and Lingering Touch read raw Enchantment**
+- [x] **Weakening Gaze and Lingering Touch read raw Enchantment**
       (`combat_manager.gd:~4785/~5020`), ignoring item and race bonuses.
 
 **Loose ends and dead code**
 
-- [ ] `shop_system.gd:498` `barter_buy_item` is never called, and would not
+- [x] `shop_system.gd:498` `barter_buy_item` is never called, and would not
       pay the purse or stock supplies if it were. Delete or fix.
-- [ ] `_pick_item_from_types`' fixed-item branch ignores realm, so a lucky
+- [x] `_pick_item_from_types`' fixed-item branch ignores realm, so a lucky
       find can be another realm's item.
-- [ ] `_get_modified_rarity_weights` rounds to whole numbers — legendary
+- [x] `_get_modified_rarity_weights` rounds to whole numbers — legendary
       weight does not move until Luck ~17; its "difficulty_ratio" is really
       fight size.
-- [ ] `_generate_enemy_inventory` (free, by role) and
+- [x] `_generate_enemy_inventory` (free, by role) and
       `_generate_skill_consumables` (paid from the kit budget) both hand
       enemies consumables — double-dipping.
-- [ ] `combat_manager.gd:~4676-4765` still compares `element` with
+- [x] `combat_manager.gd:~4676-4765` still compares `element` with
       `"air"`/`"water"`/`"earth"`, which can no longer match.
-- [ ] Unread: `summon_templates.json:~1963` `attack_damage_type`, Fireshield's
+- [x] Unread: `summon_templates.json:~1963` `attack_damage_type`, Fireshield's
       `special.retaliation_damage` (`spells.json:~3277`), Oily Skin's
       `cumulative`, and `item_system.gd` `active_set_bonus` (the Vajra & Bell
       opener was never built).
-- [ ] `combat_grid.gd` `add_terrain_effect` (~845), `get_effect_name` (~935)
+- [x] `combat_grid.gd` `add_terrain_effect` (~845), `get_effect_name` (~935)
       and the effect colours (~990) are still hand-written beside
       `TERRAIN_HAZARDS`; fold them in.
-- [ ] `tooltip_text.gd` calls the private `CombatManager._spread_chance_to_float()`.
-- [ ] The baseline lists `space_damage_per_turn`, which `_dot_element` probably
+- [x] `tooltip_text.gd` calls the private `CombatManager._spread_chance_to_float()`.
+- [x] The baseline lists `space_damage_per_turn`, which `_dot_element` probably
       reads by name — the validator's text search cannot see that.
-- [ ] Poison's `_check_perk_status_immunity` call (`~9822`) passes no attacker.
-- [ ] Every `verify_enemy_xp` run prints ~165 "no births defined for realm
+- [x] Poison's `_check_perk_status_immunity` call (`~9822`) passes no attacker.
+- [x] Every `verify_enemy_xp` run prints ~165 "no births defined for realm
       'domain'" warnings (`character_system.gd:~554`).
-- [ ] **items.json: 52 items (cape, tool, herb, medicine, eyewear, face_cloth)
+- [x] **items.json: 52 items (cape, tool, herb, medicine, eyewear, face_cloth)
       have types missing from `item_types`** — 40 tools, 6 capes, 2 herbs, 2
       medicines, 1 eyewear, 1 face cloth. Found building `CONTENT.md`
       (2026-10-16).
@@ -2206,25 +2231,25 @@ And still no race uses the plan.
 
 **UI**
 
-- [ ] **The equipment screen has no `hand_l2`/`hand_r2` boxes**
+- [x] **The equipment screen has no `hand_l2`/`hand_r2` boxes**
       (`main_menu.gd:~2662`) — the slots exist but only starting gear fills them.
-- [ ] **Arm lines are logged above the main hit** — the `unit_attacked`
+- [x] **Arm lines are logged above the main hit** — the `unit_attacked`
       handler runs before the arena logs "X attacks Y" (`combat_arena.gd:~2733`).
-- [ ] **Oil damage on an extra arm shows as a separate plain number.**
-- [ ] **Spell crits show a plain damage number** (`combat_manager.gd:~7956/~8042`).
+- [x] **Oil damage on an extra arm shows as a separate plain number.**
+- [x] **Spell crits show a plain damage number** (`combat_manager.gd:~7956/~8042`).
 
 ### CONTENT.md — left open (2026-10-16)
 
-- [ ] **A blank line inside a `>` quote block loses the paragraph break.**
+- [x] **A blank line inside a `>` quote block loses the paragraph break.**
       Typing an empty line between quoted paragraphs, instead of a lone `>`,
       joins them in the JSON — no text lost, but the break is. The parser
       should read a blank line between two `>` lines as `>`.
-- [ ] **`tools/wire_active_perks.py` still holds `DESCRIPTION_FIXES`**, a
+- [x] **`tools/wire_active_perks.py` still holds `DESCRIPTION_FIXES`**, a
       second source for `host_of_the_winds`'s description. Re-running it
       would quietly overwrite a CONTENT.md edit to that one perk (code
       edits to the JSON win by design). Drop the description from the
       script, or make it skip descriptions that differ from its old value.
-- [ ] **`content_base.json` is ~3 MB and rewritten on every sync** — expect
+- [x] **`content_base.json` is ~3 MB and rewritten on every sync** — expect
       merge conflicts in it when two branches both sync. Regenerate it
       (`content_sync.py --write`) rather than hand-merging.
 
