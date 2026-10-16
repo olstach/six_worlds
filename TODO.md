@@ -2151,22 +2151,46 @@ And still no race uses the plan.
 
 ### Round 3 — found during Round 2 (2026-10-16)
 
-- [ ] `generate_armor` ignores which item types a material allows ("Iron
+Done 2026-10-16 (branch `claude/round-3`), plus three new enemies:
+`hell_yellow_devil_grenadier` (powder train, hard), `animal_bhramara_honey_keeper`
+(honeycomb) and `animal_vanara_tinkerer` (workshop). The content_sync
+"IGNORED" report did not reproduce.
+
+#### Round 4 — found during Round 3
+
+- [ ] **`tools/wire_passive_perks.py` and `wire_active_perks.py` are stale
+      and destructive**: `--write` would undo Aegis of Tranquility's elements,
+      Borrowed Opening and more. Their work is all in the data — delete them
+      (or strip them to a read-only checker).
+- [ ] Enemy AI throws bombs only at 2+ clustered party members
+      (`_ai_try_use_bomb`) and drinks potions only itself
+      (`_ai_try_use_potion`), so the honey-keeper never heals allies and a
+      lone target is never bombed.
+- [ ] Hell kit budgets are so small that a grenadier at `normal` buys no
+      bombs (powder train set to `hard` for now). Consider a consumable floor.
+- [ ] Chain Spark text says 50% damage, code deals 60%.
+- [ ] Magnetizing Aura spell: `special.triggers_on` and
+      `special.effect: "charm_chance"` are unread.
+- [ ] Mirrored glove pairs count their stats on both hands — intended?
+- [ ] Heavy Armor Training's movement half does nothing yet: no heavy
+      armour has a movement penalty.
+
+- [x] `generate_armor` ignores which item types a material allows ("Iron
       Robe", "Bone Hat"); the weapon generator checks.
-- [ ] Unequipping a pair of gloves that starting gear put in both hands as
+- [x] Unequipping a pair of gloves that starting gear put in both hands as
       two separate items returns only one.
-- [ ] Heavy Armor Training, Armored Skin, Living Fortress: description only.
-- [ ] Shield Wall gives flat +25 armour, not "+25%"; the adjacent-ally +10%
+- [x] Heavy Armor Training, Armored Skin, Living Fortress: description only.
+- [x] Shield Wall gives flat +25 armour, not "+25%"; the adjacent-ally +10%
       half is not built.
-- [ ] Borrowed Opening's trigger fires on ranged misses; the text says melee.
-- [ ] Chain Spark fires for Air-school spells dealing physical damage.
-- [ ] Unread: Fireshield spell `triggers_on`, Domain Crystal
+- [x] Borrowed Opening's trigger fires on ranged misses; the text says melee.
+- [x] Chain Spark fires for Air-school spells dealing physical damage.
+- [x] Unread: Fireshield spell `triggers_on`, Domain Crystal
       `special.attack_type: "laser"`, `active_set_bonus`.
-- [ ] `cure_all`, `smelling_salts`, `spirit_salt` list statuses that do not
+- [x] `cure_all`, `smelling_salts`, `spirit_salt` list statuses that do not
       exist (`Burned`, `Chilled`, `Unconscious`, `Haunted`, `Possessed`).
-- [ ] `content_sync` reports "IGNORED (context field)" for two domain event
+- [x] `content_sync` reports "IGNORED (context field)" for two domain event
       choices (`trait_gambler_game/play_deep`, `trait_secret_bearer_slip/draw_it_out`).
-- [ ] Bardo screen's own `current_map_id = ""` / `visited_tiles.clear()`
+- [x] Bardo screen's own `current_map_id = ""` / `visited_tiles.clear()`
       are redundant now.
 
 ### Round 2 — found while fixing the above (2026-10-15)
