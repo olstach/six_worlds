@@ -494,69 +494,6 @@ func analyze_barter_offer(target_price: int, offered_items: Array, offered_gold:
 	}
 
 
-## Buy an item using barter (items from inventory + optional gold)
-func barter_buy_item(item_id: String, offered_items: Array, offered_gold: int = 0) -> Dictionary:
-	var price = get_buy_price(item_id)
-
-	# Validate offered items exist in inventory
-	for offered_id in offered_items:
-		if ItemSystem.get_inventory_count(offered_id) <= 0:
-			return {"success": false, "reason": "Item not in inventory: " + offered_id}
-
-	# Check if shop accepts these items
-	if not _current_shop.is_empty() and shop_buys_items():
-		for offered_id in offered_items:
-			if not can_sell_item_here(offered_id):
-				var item = ItemSystem.get_item(offered_id)
-				return {"success": false, "reason": "Shop won't accept: " + item.get("name", offered_id)}
-
-	# Analyze the offer
-	var analysis = analyze_barter_offer(price, offered_items, offered_gold)
-
-	if not analysis.is_sufficient:
-		return {"success": false, "reason": "Offer insufficient by %d gold" % analysis.difference}
-
-	# Check gold portion
-	if offered_gold > 0 and not GameState.can_afford(offered_gold):
-		return {"success": false, "reason": "Not enough gold"}
-
-	# Check if shop has item in stock
-	if not _current_shop.is_empty():
-		var stock = _current_shop.get("items", {})
-		if item_id in stock:
-			if stock[item_id] <= 0:
-				return {"success": false, "reason": "Out of stock"}
-			stock[item_id] -= 1
-			# `_current_shop` is a deep copy that dies with the visit, so the
-			# decrement above is only good for this session of the shop UI.
-			# The rack is what the next visit reads.
-			_remove_from_rack(item_id)
-
-	# Process the barter - remove offered items
-	for offered_id in offered_items:
-		ItemSystem.remove_from_inventory(offered_id)
-
-	# Spend gold portion
-	if offered_gold > 0:
-		GameState.spend_gold(offered_gold)
-
-	# Give purchased item
-	ItemSystem.add_to_inventory(item_id)
-
-	barter_completed.emit(offered_items, offered_gold, item_id)
-	item_purchased.emit(item_id, price)
-
-	var item = ItemSystem.get_item(item_id)
-	return {
-		"success": true,
-		"item_name": item.get("name", item_id),
-		"price": price,
-		"items_traded": offered_items,
-		"gold_paid": offered_gold,
-		"overpayment": analysis.overpayment
-	}
-
-
 ## Buy a spell using barter
 func barter_buy_spell(character: Dictionary, spell_id: String, offered_items: Array, offered_gold: int = 0) -> Dictionary:
 	# Check if character already knows spell
@@ -641,8 +578,8 @@ func buy_item(item_id: String) -> Dictionary:
 	_adjust_shop_purse(price)
 
 	# Only now that it's paid for does it leave the shop. The decrement is for
-	# this visit's UI; the rack is what the next visit reads (barter_buy_item
-	# already did this — plain gold purchases didn't, so racks never emptied).
+	# this visit's UI; the rack is what the next visit reads (plain gold
+	# purchases once skipped it, so racks never emptied).
 	if not _current_shop.is_empty():
 		var stock = _current_shop.get("items", {})
 		if item_id in stock:
