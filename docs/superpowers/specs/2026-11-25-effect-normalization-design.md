@@ -530,3 +530,88 @@ Recorded for later:
   enemies" applies.
 - Whether `persistent` statuses should be visible in the party screen. They
   will exist after stage 5 and want a home.
+
+---
+
+## 10. Addendum — temporary boosts, uncapped skills, and seven extensions (2026-11-25)
+
+Decided with Olaf after stage 1 merged. Order: **10.1 and 10.2 first** (stage
+2a, its own plan), then statuses (stage 2b) carrying 10.3.
+
+### 10.1 A temporary boost counts everywhere a real one does
+
+Olaf: *a mantra yoga state giving a temporary +5 to a kind of magic — the
+perks are not given, but the incremental stat bonuses are calculated, allowing
+for extremely high stats for a bit. OP is good when it requires understanding
+the system and playing it well.*
+
+Stage 1 built `attribute.`/`skill.` holds, but a review found they reach only
+part of the game. Every reader of a skill level or attribute must read the
+**effective** value (base + equipment + traits + holds − damage):
+
+| Reader | Today | After |
+|---|---|---|
+| `CombatManager._can_cast_spell` / `meets_spell_skill` in combat | raw `skills` | effective |
+| `CombatManager._calculate_spell_bonus` (spellpower from skill levels) | raw `skills` | effective |
+| Per-level skill bonuses (`update_derived_stats`, `EnemySystem`, `PartyBonuses`) | recomputed only outside combat | recomputed when a skill hold changes, mid-fight |
+| Elemental affinity totals (`PerkSystem.calculate_element_affinity`) | raw skills | effective |
+| Attribute readers outside the 8 derived terms: saves (`SaveSystem._attribute_of`), spell save DC, Strength damage, event/roll checks | raw attributes | effective |
+
+**Not** counted (Olaf: "the perks of course are not given"): owning or being
+offered perks, and *learning* a spell in a shop. Those use the bought (base)
+level. *(My call for spell learning: a boost lets you cast above your level,
+not buy above it.)*
+
+### 10.2 Skill bonuses become a formula, with no cap (approach A)
+
+Olaf: *no cap; values calculated by a formula, not stored statically — games
+that expect and reward min-maxing are more fun and hackable.*
+
+Today `perks.json → base_bonuses` stores a table per skill for levels 1–15 that
+**stops growing at 10** (11–15 repeat 10), and the effective level is clamped to
+[-5, 15]. After:
+
+- Each stat of each skill is `{"curve": "climb"|"steady", "at_5": n, "at_10": n}`
+  plus optional `"base"`, `"integer": true`, `"limit"`.
+  - **climb** (59 of 70 stats): level ≤ 5 → `at_5 × L(L+1)/30`; level > 5 →
+    `at_5 + (at_10 − at_5) × (L − 5)/5`. Continues past 10 at the same slope.
+  - **steady** (11 of 70): `base + at_10 × L/10` (`at_5` unused).
+  - `integer: true` floors the result (party size, skill-check bonus, duration turns).
+  - `limit` is a natural bound, not a cap — set only where a value stops making
+    sense: `mana_cost_reduction` stops at −100, and percentage *reductions* stop
+    at 100. Every other stat is unbounded.
+- The upper clamp on effective level is removed; the lower bound (−5, and
+  `NEGATIVE_SKILL_PENALTIES`) stays.
+- **Numbers at levels 1–10 move.** Fitted from the current tables, 66 of 70 stats
+  land within 10% at every level. The common Swords-style curve is exact at
+  1–5 and 10 and up to 4 lower at 6–9 (86/97/108/119 for 90/100/110/120). The migration
+  produces a before/after table (`docs/plans/SKILL_CURVES_2026-11.md`) for Olaf to
+  check, and `at_5`/`at_10` are the two numbers to tune per stat.
+- XP purchase is unchanged — you still buy up to 10. Only boosts go beyond.
+
+### 10.3 Seven extensions (all approved)
+
+Built in stage 2b alongside statuses unless noted.
+
+1. **Group targets.** Value paths naming a family: `skills.element.<element>`
+   (the 7 skills of that element), `skills.magic`, `skills.combat`,
+   `skills.general` (the categories in CLAUDE.md / skills.json), `attributes.all`.
+   A hold on a group applies to each member.
+2. **Affinity as a value.** `affinity.<element>` — fortify/drain the element
+   total directly, without touching skills.
+3. **Borrowed values.** A magnitude may read another unit's value path:
+   `{"from": "caster.skill.leadership", "pct": 50}` — "allies gain half your
+   Leadership". This is the `party_` bonus idea, as a status.
+4. **Building states.** `stacking: {"mode": "stack", "max": N, "grow": {"on": <trigger>, "by": 1}}`
+   — a state that grows each time a trigger fires (+1 Fire magic per fire spell
+   cast, to +5).
+5. **The comedown.** Statuses already get `triggers` with `on: expire`; the
+   addendum makes it a documented pattern and tests it: a strong state whose
+   expiry applies a drain or a pressure cost.
+6. **Upkeep.** `upkeep: {"mana"|"stamina"|"hp": n, "per": "turn"}` on a status:
+   paid at turn start; if it cannot be paid the status ends (and its comedown
+   fires). This is the concentration idea, for states.
+7. **Psychology as values.** `pressure.<element>` as a `modify` target, routed
+   through `PsychologySystem.apply_pressure(character, element, amount)` —
+   instant only (pressure is a resource, not a held stat). Prepares the klesha
+   system in TODO Part II.
