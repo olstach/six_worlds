@@ -204,3 +204,8 @@ The largest remaining gaps, for orientation only:
    Designed, not built - see TODO. The older "logistics train" framing
    (support-only party members) is retired; every character runs on the
    same system now.
+7. **Skill bonuses are a formula, not a table** - `perks.json -> base_bonuses`
+   gives each stat `curve` (`climb` or `steady`), `at_5` and `at_10`, and
+   `PerkSystem.curve_value` works out the number; there is no level cap.
+   Boosts (holds) count everywhere except perks, XP purchase and learning a
+   spell in a shop, which use the bought level.

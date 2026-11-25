@@ -615,3 +615,21 @@ Built in stage 2b alongside statuses unless noted.
    through `PsychologySystem.apply_pressure(character, element, amount)` —
    instant only (pressure is a resource, not a held stat). Prepares the klesha
    system in TODO Part II.
+
+### 10.4 As built (stage 2a, 2026-11-25)
+
+Names and details that differ from, or fill in, 10.1 and 10.2:
+
+- The formula lives in `PerkSystem.curve_value`. The old table script
+  `tools/update_perks_bonuses.py` is gone; `perks.json` is edited directly.
+  The before/after table is `docs/plans/SKILL_CURVES_2026-11.md`.
+- Attribute holds are written to
+  `character_data.attribute_bonuses[attr]["effects"]`, next to the skill
+  version. `ValuePaths.refresh_character(unit)` replaces the stage-1
+  `refresh_attribute_deltas` and refreshes mid-fight, enemies included
+  (through `EnemySystem.recalculate_derived`).
+- `CharacterSystem.get_effective_attribute` is the single definition of an
+  effective attribute, floored at 1.
+- Bonus-only skills (a hold on a skill the character never bought) count
+  fully, in `get_effective_skills` and `CombatManager.apply_skill_mana_reduction`.
+- Known gaps are listed in TODO.md section 17, "Found during 2a".

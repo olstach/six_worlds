@@ -2375,9 +2375,43 @@ Moving content onto one shared effect language. The design is at
         `tools/verify_effects.tscn` has 41 in-engine checks. `verify_all.sh`
         now runs every `tools/test_*.py`. No spell, status or item uses any of
         this yet.
-  - [ ] **Stage 2, statuses and auras/zones.** Next: move statuses and
-        auras/zones onto the resolver.
-  - **Carried into stage 2** (things stage 1 found and left alone):
+  - [x] **Stage 2a, boosts and skill formulas (done 2026-11-25).** A
+        temporary boost now counts everywhere a real one does (spec 10.1), and
+        skill bonuses are a formula with no level cap (spec 10.2). Skill
+        bonuses in `perks.json -> base_bonuses` are
+        `{curve: climb|steady, at_5, at_10}` (plus optional `base`, `integer`,
+        `limit`), worked out by `PerkSystem.curve_value`. Attribute holds are
+        written to the character, `ValuePaths.refresh_character` refreshes a
+        unit mid-fight (enemies too), and `CharacterSystem.get_effective_attribute`
+        is the one definition of an effective attribute. Perks, XP purchase and
+        learning a spell in a shop still use the bought level.
+    - **Olaf's review item:** `docs/plans/SKILL_CURVES_2026-11.md` lists the
+      before/after numbers for every skill stat at levels 1 to 10. `at_5` and
+      `at_10` in `perks.json` are the two knobs to tune per stat.
+    - **Found during 2a, waiting on Olaf:**
+      - Enemies get no skill bonuses for accuracy, armour pierce, mana cost or
+        stamina. `EnemySystem._calculate_derived_stats` reads `attack`,
+        `armor_penetration`, `mana_cost`, `stamina`, `strength_weapon_damage`
+        and `initiative_bonus`, but `perks.json` uses `accuracy`,
+        `armor_pierce`, `mana_cost_reduction`, `max_stamina` and
+        `weapon_damage_from_strength`. Fixing it rebalances every enemy, so it
+        needs your call.
+      - Effective values include gear and traits, so some numbers moved even
+        with no boost active. For example a Strong trait now adds to attack
+        damage and saves, and enemy saves now include their trait modifiers.
+      - Stealth detection never reads Awareness (`combat_manager.gd` around
+        lines 8255 and 8270). This bug was already there.
+      - The shop Charm discount, map discovery and the overworld passives still
+        read raw values, not effective ones. They need a decision.
+      - A negative effective skill counts as 0. Only skills in
+        `NEGATIVE_SKILL_PENALTIES` are penalised, so a negative alchemy, trade,
+        logistics, smithing and so on does nothing.
+      - Removing a curse trait now also counts persistent skill damage,
+        because the purge reads the effective level.
+  - [ ] **Stage 2b, statuses and auras/zones.** Next: move statuses and
+        auras/zones onto the resolver, carrying the seven extensions in spec
+        10.3.
+  - **Carried into stage 2b** (things stage 1 found and left alone):
     - Ritual's `status_save_dc_bonus` is not applied to resolver saves, and
       the save has no `dc_stat` (spells default to Focus, skills to Strength).
     - `kill` does not give the kill reward, so a spell's `on_kill` would be
@@ -2397,12 +2431,6 @@ Moving content onto one shared effect language. The design is at
     - A party-screen line showing lasting damage belongs to stage 2 (spec
       section 4.2).
     - A damage-type split truncates each part, losing up to 1 point.
-    - `EnemySystem._calculate_derived_stats` reads old skill-bonus key names
-      (`attack`, `strength_weapon_damage`, `armor_penetration`, `mana_cost`,
-      `stamina`, `initiative_bonus`) that `perks.json` no longer uses, so
-      enemies get no accuracy, armour pierce, mana-cost or stamina from their
-      skills, and an enemy's skill hold moves only damage/crit/armour/HP/
-      spellpower/dodge/initiative. Fixing it is a balance change for every enemy.
     - `EffectContext.for_spell` keeps only the first school, so a multi-school
       heal matches `cleared_by` on one school only.
 - [ ] **Perk normalization**: the ~175 hard-coded `has_perk` branches and the
