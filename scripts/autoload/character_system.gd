@@ -1153,6 +1153,46 @@ func get_known_spells(character: Dictionary) -> Array:
 	return character.known_spells
 
 
+## The attribute `attr` as everything else in the game should see it:
+## base + equipment + traits + attribute_bonuses - persistent damage, never
+## below 1. This is the same number update_derived_stats() feeds the formulas.
+##
+## attribute_bonuses has the same shape as skill_bonuses:
+##   {"finesse": {"effects": 4, ...}, ...}
+## ValuePaths writes the "effects" key from a unit's `attribute.` holds during
+## a fight and erases it when the fight ends.
+func get_effective_attribute(character: Dictionary, attr: String) -> int:
+	var equip_bonus: Dictionary = ItemSystem.calculate_equipment_stats(character) if ItemSystem else {}
+	var trait_bonus: Dictionary = TraitSystem.get_attribute_bonus(character) if TraitSystem else {}
+	return _attribute_value(character, attr, equip_bonus, trait_bonus)
+
+
+## Sum of every source in character["attribute_bonuses"][attr] (0 if none).
+## EnemySystem.recalculate_derived reads holds through this too.
+func get_attribute_bonus_total(character: Dictionary, attr: String) -> int:
+	var sources: Dictionary = character.get("attribute_bonuses", {}).get(attr, {})
+	var total: int = 0
+	for source in sources:
+		total += int(sources[source])
+	return total
+
+
+## The one definition behind get_effective_attribute(). Takes the equipment
+## and trait bonus dictionaries already worked out, so update_derived_stats()
+## does not recompute them once per attribute.
+func _attribute_value(character: Dictionary, attr: String,
+		equip_bonus: Dictionary, trait_bonus: Dictionary) -> int:
+	var value: int = int(character.get("attributes", {}).get(attr, 10)) \
+		+ int(equip_bonus.get(attr, 0)) + int(trait_bonus.get(attr, 0)) \
+		+ get_attribute_bonus_total(character, attr)
+	# Persistent damage (damaged_values) lowers it. Entries whose loss a combat
+	# hold is carrying ("held") are skipped by damaged_total, so a loss that is
+	# already in attribute_bonuses is not counted a second time.
+	var hurt: int = int(ValuePaths.damaged_total(character, "attribute." + attr))
+	# Nothing takes an attribute below 1: not damage, not a drain.
+	return maxi(1, value - hurt)
+
+
 ## Update all derived stats based on attributes, equipment, and affinity bonuses
 func update_derived_stats(character: Dictionary) -> void:
 	var attrs = character.attributes
@@ -1173,14 +1213,13 @@ func update_derived_stats(character: Dictionary) -> void:
 	if TraitSystem:
 		trait_attr_bonus = TraitSystem.get_attribute_bonus(character)
 
-	# Apply equipment + trait attribute bonuses to get effective attributes
+	# Effective attributes: base + equipment + traits + attribute_bonuses
+	# (combat holds) - persistent damage. _attribute_value is the one
+	# definition, shared with get_effective_attribute().
 	var effective_attrs = {}
 	for attr_key in attrs:
-		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + trait_attr_bonus.get(attr_key, 0)
-		# Persistent damage (damaged_values) lowers it, but never below 1.
-		var hurt: int = int(ValuePaths.damaged_total(character, "attribute." + str(attr_key)))
-		if hurt > 0:
-			effective_attrs[attr_key] = maxi(1, effective_attrs[attr_key] - hurt)
+		effective_attrs[attr_key] = _attribute_value(character, str(attr_key),
+			equip_bonus, trait_attr_bonus)
 
 	# Refresh trait skill bonuses (clear old pass first, then re-add from current traits)
 	if not "skill_bonuses" in character:

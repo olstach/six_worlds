@@ -1223,6 +1223,71 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	enemy["ai"] = resolve_ai(archetype)
 
 	return enemy
+## Key in an enemy's character_data recording what recalculate_derived last
+## added to each derived stat, so the next call can take it back off exactly.
+const HOLD_DELTA_KEY: String = "hold_derived_delta"
+
+
+## Bring an enemy's derived stats in line with its combat holds, and return
+## its `derived` dictionary.
+##
+## An enemy's `derived` is not just the formula: _build_enemy() folds armour,
+## gear and other extras into it after _calculate_derived_stats(). So this does
+## not rebuild it from scratch. It runs the formula twice, once on the
+## attributes and skills as built and once with the holds added
+## (attribute_bonuses and skill_bonuses "effects", the same keys a party member
+## reads), and applies only the DIFFERENCE. The difference it applied is kept
+## under HOLD_DELTA_KEY, so a later call replaces it rather than stacking, and
+## with no holds left every number returns to exactly what it was.
+##
+## current_hp / current_mana / current_stamina are never touched here: the
+## caller (ValuePaths.refresh_character) owns those and only clamps them down.
+## Reads EnemySystem's tables but never writes to them.
+func recalculate_derived(character_data: Dictionary) -> Dictionary:
+	if not character_data.has("derived"):
+		character_data["derived"] = {}
+	var derived: Dictionary = character_data["derived"]
+
+	# Built values, and the same values with the holds on top.
+	var plain_attrs: Dictionary = character_data.get("attributes", {}).duplicate()
+	var held_attrs: Dictionary = {}
+	for attr in plain_attrs:
+		held_attrs[attr] = maxi(1, int(plain_attrs[attr])
+			+ CharacterSystem.get_attribute_bonus_total(character_data, str(attr)))
+	var plain_skills: Dictionary = character_data.get("skills", {}).duplicate()
+	var held_skills: Dictionary = {}
+	for skill_id in plain_skills:
+		var hold: int = int(character_data.get("skill_bonuses", {}).get(skill_id, {}).get(
+			ValuePaths.SKILL_EFFECTS_KEY, 0))
+		held_skills[skill_id] = int(plain_skills[skill_id]) + hold
+
+	var plain: Dictionary = _calculate_derived_stats(plain_attrs, plain_skills)
+	var held: Dictionary = _calculate_derived_stats(held_attrs, held_skills)
+
+	var now: Dictionary = {}
+	for key in held:
+		if str(key).begins_with("current_"):
+			continue
+		var change = held[key] - plain.get(key, 0)
+		if change != 0:
+			now[key] = change
+
+	# Take off what was added last time, put on what applies now.
+	var applied: Dictionary = character_data.get(HOLD_DELTA_KEY, {})
+	var keys: Array = applied.keys()
+	for key in now:
+		if not key in keys:
+			keys.append(key)
+	for key in keys:
+		derived[key] = derived.get(key, 0) - applied.get(key, 0) + now.get(key, 0)
+
+	if now.is_empty():
+		character_data.erase(HOLD_DELTA_KEY)
+	else:
+		character_data[HOLD_DELTA_KEY] = now
+	return derived
+
+
 ## Calculate derived stats using the same formulas as CharacterSystem.
 ## This ensures enemies feel consistent with player characters.
 func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dictionary:

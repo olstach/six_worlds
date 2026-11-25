@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 48
+const EXPECTED_CHECKS: int = 51
 
 var grid: CombatGrid
 
@@ -84,6 +84,11 @@ func _ready() -> void:
 	_check_effective_skill_level_uncapped()
 	_check_integer_curve_floors()
 	_check_purge_uses_uncapped_effective_level()
+
+	# Stage 2a: attribute holds live on the character; refreshed mid-fight.
+	_check_skill_hold_raises_per_level_bonus_midfight()
+	_check_attribute_hold_no_current_hp_jump()
+	_check_enemy_refresh()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1187,4 +1192,116 @@ func _check_purge_uses_uncapped_effective_level() -> void:
 	if not TraitSystem.try_purge(c, "_probe_trait", "yoga"):
 		_fail("a purge needing 17 failed at effective level 18")
 	TraitSystem._traits.erase("_probe_trait")
+	_done()
+
+
+# ── Stage 2a: holds live on the character, refreshed mid-fight ───────────────
+
+## A party unit with Swords 10 gets a +5 skill hold mid-fight: its accuracy
+## must rise by exactly what the Swords curve pays between level 10 and 15,
+## because refresh_character re-runs the per-level skill bonuses at once.
+func _check_skill_hold_raises_per_level_bonus_midfight() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	ch.skills["swords"] = 10
+	CharacterSystem.update_derived_stats(ch)
+	var spec: Dictionary = PerkSystem._base_bonuses["swords"]["stats"]["accuracy"]
+	var want_rise: int = int(PerkSystem.curve_value(spec, 15) - PerkSystem.curve_value(spec, 10))
+	var before: int = u.get_accuracy()
+	ValuePaths.add_hold(u, "skill.swords", "fortify", 5, "t1")
+	if u.get_accuracy() - before != want_rise:
+		_fail("swords +5 mid-fight: accuracy rose %d, wanted %d"
+			% [u.get_accuracy() - before, want_rise])
+	ValuePaths.release(u, "t1")
+	if u.get_accuracy() != before:
+		_fail("release did not restore accuracy: %d, wanted %d" % [u.get_accuracy(), before])
+	_leave_party(u)
+	_cleanup([u])
+	_done()
+
+
+## Review Focus 3: a Constitution hold raises the maximum, never the current
+## HP, on the unit or in derived. Releasing it clamps current HP to the old max.
+func _check_attribute_hold_no_current_hp_jump() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	u.max_hp = int(ch.derived.max_hp)
+	u.current_hp = u.max_hp - 20
+	var old_max: int = u.max_hp
+	var old_current: int = u.current_hp
+	var derived_current: int = int(ch.derived.current_hp)
+	var con: int = CharacterSystem.get_effective_attribute(ch, "constitution")
+	ValuePaths.add_hold(u, "attribute.constitution", "fortify", 5, "t1")
+	if int(ch.get("attribute_bonuses", {}).get("constitution", {}).get("effects", 0)) != 5:
+		_fail("attribute_bonuses.constitution.effects should be 5: %s" % [ch.get("attribute_bonuses", {})])
+	if CharacterSystem.get_effective_attribute(ch, "constitution") != con + 5:
+		_fail("effective constitution: %d, wanted %d"
+			% [CharacterSystem.get_effective_attribute(ch, "constitution"), con + 5])
+	if int(ch.derived.max_hp) != old_max + 50:
+		_fail("derived.max_hp: %d, wanted %d" % [int(ch.derived.max_hp), old_max + 50])
+	if u.max_hp != old_max + 50:
+		_fail("unit max_hp: %d, wanted %d" % [u.max_hp, old_max + 50])
+	if u.current_hp != old_current:
+		_fail("current_hp jumped: %d, wanted %d" % [u.current_hp, old_current])
+	if int(ch.derived.current_hp) > derived_current:
+		_fail("derived.current_hp jumped: %d, was %d" % [int(ch.derived.current_hp), derived_current])
+	u.current_hp = u.max_hp
+	ValuePaths.release(u, "t1")
+	if u.max_hp != old_max:
+		_fail("release max_hp: %d, wanted %d" % [u.max_hp, old_max])
+	if u.current_hp != old_max:
+		_fail("release current_hp: %d, wanted the old max %d" % [u.current_hp, old_max])
+	if ch.get("attribute_bonuses", {}).has("constitution"):
+		_fail("attribute_bonuses entry left behind: %s" % [ch.attribute_bonuses])
+	_leave_party(u)
+	_cleanup([u])
+	_done()
+
+
+## Review Focus 4: an attribute hold on an enemy changes its stats through
+## EnemySystem.recalculate_derived, leaves the archetype tables alone, and
+## release puts every derived number back exactly.
+func _check_enemy_refresh() -> void:
+	var archetypes_before: Dictionary = EnemySystem.archetypes.duplicate(true)
+	var archetype_id: String = str(EnemySystem.archetypes.keys()[0])
+	var enemy: Dictionary = EnemySystem._build_enemy(archetype_id, 400, "hell")
+	var u := CombatUnit.new()
+	add_child(u)
+	u.init_as_enemy(enemy)
+	u.grid_position = Vector2i(7, 7)
+	grid.unit_positions[u.grid_position] = u
+	CombatManager.all_units.append(u)
+	var ch: Dictionary = u.character_data
+	var derived_before: Dictionary = ch.derived.duplicate(true)
+	var max_hp: int = u.max_hp
+	var dodge: int = u.get_dodge()
+	var init: int = u.get_initiative()
+
+	ValuePaths.add_hold(u, "attribute.finesse", "fortify", 4, "t1")
+	ValuePaths.add_hold(u, "attribute.constitution", "fortify", 3, "t2")
+	if int(ch.get("attribute_bonuses", {}).get("finesse", {}).get("effects", 0)) != 4:
+		_fail("enemy attribute_bonuses.finesse.effects should be 4: %s" % [ch.get("attribute_bonuses", {})])
+	if int(ch.derived.dodge) != int(derived_before.dodge) + 4:
+		_fail("enemy derived.dodge: %s, wanted %d" % [ch.derived.dodge, int(derived_before.dodge) + 4])
+	if u.get_dodge() != dodge + 4 or u.get_initiative() != init + 4:
+		_fail("enemy finesse +4: dodge %d (want %d), initiative %d (want %d)"
+			% [u.get_dodge(), dodge + 4, u.get_initiative(), init + 4])
+	if u.max_hp != max_hp + 30:
+		_fail("enemy con +3 max_hp: %d, wanted %d" % [u.max_hp, max_hp + 30])
+	if EnemySystem.archetypes != archetypes_before:
+		_fail("EnemySystem.archetypes changed by a hold")
+
+	ValuePaths.release(u, "t1")
+	ValuePaths.release(u, "t2")
+	if ch.derived != derived_before:
+		_fail("enemy derived not restored: %s vs %s" % [ch.derived, derived_before])
+	if u.max_hp != max_hp or u.get_dodge() != dodge or u.get_initiative() != init:
+		_fail("enemy unit stats not restored after release")
+	if ch.get("attribute_bonuses", {}).has("finesse") or ch.get("attribute_bonuses", {}).has("constitution"):
+		_fail("enemy attribute_bonuses left behind: %s" % [ch.get("attribute_bonuses", {})])
+	if EnemySystem.archetypes != archetypes_before:
+		_fail("EnemySystem.archetypes changed after release")
+	_cleanup([u])
 	_done()

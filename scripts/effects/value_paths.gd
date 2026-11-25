@@ -21,22 +21,18 @@ extends RefCounted
 ## fortify and drain there; the persistent `damage` mode and its `restore` have
 ## their own homes, apply_damage_mode() and clear_damage(), further down.
 ##
-## `attribute.` holds do not change a getter directly. refresh_attribute_deltas()
-## re-runs the shared attribute formula (CombatStats.attribute_terms) with and
-## without the holds and stores the difference as internal `stat.` holds under
-## the source id "__attr". Only that function may release "__attr".
-## `skill.` holds are summed into character_data["skill_bonuses"][skill]["effects"],
-## which CharacterSystem.get_effective_skill_level already adds up.
+## `attribute.` and `skill.` holds live ON THE CHARACTER, so every reader of an
+## attribute or skill level sees them, not just the combat getters:
+##   attribute. holds are summed into character_data["attribute_bonuses"][attr]["effects"]
+##   skill.     holds are summed into character_data["skill_bonuses"][skill]["effects"]
+## CharacterSystem.get_effective_attribute / get_effective_skill_level add
+## those up. After any such change refresh_character() recomputes the unit's
+## derived stats (per-level skill bonuses included) mid-fight.
 
-## Source id of the internal stat holds derived from attribute holds.
-const ATTR_SOURCE: String = "__attr"
-## Key under skill_bonuses[skill] that holds the summed skill. holds.
+## Key under skill_bonuses[skill] / attribute_bonuses[attr] holding the summed holds.
 const SKILL_EFFECTS_KEY: String = "effects"
-## Stats an attribute change can move through a `stat.` hold.
-const _ATTR_STAT_TERMS: Array[String] = ["initiative", "movement", "dodge",
-	"spellpower", "crit_chance"]
-## Resource maxima an attribute change can move (applied to the unit's max_*).
-const _ATTR_MAX_TERMS: Array[String] = ["max_hp", "max_mana", "max_stamina"]
+## The resource maxima refresh_character() carries from derived to the unit.
+const _MAX_TERMS: Array[String] = ["hp", "mana", "stamina"]
 
 
 ## Give `unit` a hold on `value`. A second hold with the same (value, source_id)
@@ -81,29 +77,28 @@ static func release(unit: Node, source_id: String) -> void:
 	_after_change(unit, touched)
 
 
-## Drop every hold on `unit` and put everything they touched back: the skill
-## "effects" keys, the internal "__attr" stat holds and the max_* changes.
-## Called when a fight ends. In stage 1 every hold is combat-scoped; a
-## `persistent` scope arrives with statuses in stage 2.
+## Drop every hold on `unit` and put everything they touched back: the
+## attribute_bonuses / skill_bonuses "effects" keys, the derived stats and the
+## unit's max_* fields. Called when a fight ends. In stage 1 every hold is
+## combat-scoped; a `persistent` scope arrives with statuses in stage 2.
 static func release_all_combat(unit: Node) -> void:
 	if unit == null or not "effect_holds" in unit:
 		return
-	# Note which skills had holds so their "effects" keys can be erased.
-	var skills: Array[String] = []
+	# Note every attribute. / skill. value that had holds, so its "effects"
+	# key can be erased below.
+	var touched: Array[String] = []
 	for hold in unit.effect_holds:
 		var v: String = str(hold.value)
-		if v.begins_with("skill.") and not v.get_slice(".", 1) in skills:
-			skills.append(v.get_slice(".", 1))
-	unit.effect_holds.clear()   # includes the "__attr" holds
+		if (v.begins_with("attribute.") or v.begins_with("skill.")) and not v in touched:
+			touched.append(v)
+	unit.effect_holds.clear()
 	# The holds that carried persistent damage are gone: let the entries count.
 	if "character_data" in unit:
 		for entry in unit.character_data.get("damaged_values", []):
 			entry.erase("held")
-	for skill in skills:
-		_refresh_skill(unit, skill)   # no holds left, so the key is erased
-	# With no attribute holds left this removes any __attr remnants and
-	# returns max_hp / max_mana / max_stamina to base.
-	refresh_attribute_deltas(unit)
+	# No holds are left, so this erases each "effects" key and refreshes the
+	# character once.
+	_after_change(unit, touched)
 
 
 ## `base` after every hold on `value` has been applied (see the order above).
@@ -158,70 +153,33 @@ static func _remove(unit: Node, value: String, source_id: String) -> void:
 			unit.effect_holds.remove_at(i)
 
 
-## Bring the unit's derived numbers in line with its `attribute.` holds.
-## Computes attribute_terms(attrs + holds) - attribute_terms(attrs) and stores
-## each stat difference as a "__attr" `stat.` hold; the max_hp / max_mana /
-## max_stamina differences are added to the unit's max_* fields (and current_*
-## is clamped when a maximum shrinks). Safe to call at any time; it works from
-## the holds as they stand, so calling it twice changes nothing.
-static func refresh_attribute_deltas(unit: Node) -> void:
-	if unit == null or not "effect_holds" in unit:
-		return
-	# Drop the old internal holds directly (not via release(), which would
-	# call back into us).
-	for i in range(unit.effect_holds.size() - 1, -1, -1):
-		if str(unit.effect_holds[i].get("source_id", "")) == ATTR_SOURCE:
-			unit.effect_holds.remove_at(i)
-
-	var base_attrs: Dictionary = _effective_attributes(unit)
-	var held_attrs: Dictionary = base_attrs.duplicate()
-	for hold in unit.effect_holds:
-		var value: String = str(hold.value)
-		if not value.begins_with("attribute."):
-			continue
-		var attr: String = value.get_slice(".", 1)
-		var amount: int = int(round(float(hold.amount)))
-		match str(hold.mode):
-			"fortify": held_attrs[attr] = int(held_attrs.get(attr, 10)) + amount
-			"drain": held_attrs[attr] = int(held_attrs.get(attr, 10)) - amount
-
-	var before: Dictionary = CombatStats.attribute_terms(base_attrs)
-	var after: Dictionary = CombatStats.attribute_terms(held_attrs)
-
-	for stat in _ATTR_STAT_TERMS:
-		var delta: int = int(after[stat]) - int(before[stat])
-		if delta != 0:
-			unit.effect_holds.append({"value": "stat." + stat, "mode": "fortify",
-				"amount": delta, "source_id": ATTR_SOURCE})
-
-	# Resource maxima: remember what we added last time so the change is exact.
-	var applied: Dictionary = unit.get_meta("attr_max_applied", {})
-	var now: Dictionary = {}
-	for term in _ATTR_MAX_TERMS:
-		now[term] = int(after[term]) - int(before[term])
-		var change: int = int(now[term]) - int(applied.get(term, 0))
-		if change == 0:
-			continue
-		var current_field: String = "current_" + term.trim_prefix("max_")
-		unit.set(term, int(unit.get(term)) + change)
-		if int(unit.get(current_field)) > int(unit.get(term)):
-			unit.set(current_field, int(unit.get(term)))
-	if _all_zero(now):
-		if unit.has_meta("attr_max_applied"):
-			unit.remove_meta("attr_max_applied")
-	else:
-		unit.set_meta("attr_max_applied", now)
-
-
 ## Rewrite character_data["skill_bonuses"][skill]["effects"] from the unit's
 ## `skill.` holds. A total of zero erases the key (and the skill's entry if it
 ## ends up empty), so a released hold leaves the dictionary as it was found.
 static func _refresh_skill(unit: Node, skill: String) -> void:
+	_write_hold_total(unit, "skill_bonuses", "skill.", skill, false)
+
+
+## The same for `attribute.` holds and character_data["attribute_bonuses"].
+## A held `damage` loss ("__damage:<source>" drain) is summed here like any
+## drain; its damaged_values entry is marked "held" meanwhile, so
+## CharacterSystem counts that loss once, through this key.
+static func _refresh_attribute(unit: Node, attr: String) -> void:
+	_write_hold_total(unit, "attribute_bonuses", "attribute.", attr, true)
+
+
+## Sum the fortify/drain holds on `prefix + name` and write the total into
+## character_data[bonus_key][name]["effects"], or erase it when the total is 0.
+## `drop_empty_dict` also erases character_data[bonus_key] once it is empty
+## (attribute_bonuses exists only while something is held; skill_bonuses is a
+## standing key of every character and stays).
+static func _write_hold_total(unit: Node, bonus_key: String, prefix: String,
+		name: String, drop_empty_dict: bool) -> void:
 	if not "character_data" in unit:
 		return
 	var data: Dictionary = unit.character_data
 	var total: int = 0
-	var value: String = "skill." + skill
+	var value: String = prefix + name
 	for hold in unit.effect_holds:
 		if hold.value != value:
 			continue
@@ -230,57 +188,95 @@ static func _refresh_skill(unit: Node, skill: String) -> void:
 			"fortify": total += amount
 			"drain": total -= amount
 	if total != 0:
-		if not data.has("skill_bonuses"):
-			data["skill_bonuses"] = {}
-		if not data["skill_bonuses"].has(skill):
-			data["skill_bonuses"][skill] = {}
-		data["skill_bonuses"][skill][SKILL_EFFECTS_KEY] = total
+		if not data.has(bonus_key):
+			data[bonus_key] = {}
+		if not data[bonus_key].has(name):
+			data[bonus_key][name] = {}
+		data[bonus_key][name][SKILL_EFFECTS_KEY] = total
 		return
-	if data.has("skill_bonuses") and data["skill_bonuses"].has(skill):
-		data["skill_bonuses"][skill].erase(SKILL_EFFECTS_KEY)
-		if data["skill_bonuses"][skill].is_empty():
-			data["skill_bonuses"].erase(skill)
+	if data.has(bonus_key) and data[bonus_key].has(name):
+		data[bonus_key][name].erase(SKILL_EFFECTS_KEY)
+		if data[bonus_key][name].is_empty():
+			data[bonus_key].erase(name)
+	if drop_empty_dict and data.has(bonus_key) and data[bonus_key].is_empty():
+		data.erase(bonus_key)
 
 
-## After holds on `values` changed, refresh whatever is derived from them.
+## Recompute `unit`'s derived stats from its character, mid-fight, and carry
+## the new maxima onto the unit.
+##   - A party member goes through CharacterSystem.update_derived_stats, the
+##     full player formula (per-level skill bonuses, perks, wounds...).
+##   - Anyone else (enemies, summons) goes through
+##     EnemySystem.recalculate_derived, which applies only what the holds change.
+## The unit's max_hp / max_mana / max_stamina move by the CHANGE in the derived
+## maxima rather than being overwritten, because auras and statuses also shift
+## them in place during a fight. Current HP, mana and stamina are never raised
+## (a +Constitution buff gives room to heal, not free HP), only clamped down
+## when a maximum shrinks; derived's own current_* values get the same rule,
+## since update_derived_stats would otherwise raise them with the maximum.
+static func refresh_character(unit: Node) -> void:
+	if unit == null or not "character_data" in unit:
+		return
+	var data: Dictionary = unit.character_data
+	if not data.has("derived"):
+		data["derived"] = {}
+	var derived: Dictionary = data["derived"]
+	var max_before: Dictionary = {}
+	var current_before: Dictionary = {}
+	for term in _MAX_TERMS:
+		if derived.has("max_" + term):
+			max_before[term] = int(derived["max_" + term])
+		if derived.has("current_" + term):
+			current_before[term] = derived["current_" + term]
+
+	if _in_party(data):
+		CharacterSystem.update_derived_stats(data)
+	else:
+		EnemySystem.recalculate_derived(data)
+
+	for term in _MAX_TERMS:
+		var max_key: String = "max_" + term
+		var current_key: String = "current_" + term
+		# derived.current_*: back to what it was, or the new maximum if lower.
+		if current_before.has(term):
+			derived[current_key] = mini(int(current_before[term]), int(derived.get(max_key, current_before[term])))
+		if not max_before.has(term) or not derived.has(max_key):
+			continue
+		var change: int = int(derived[max_key]) - int(max_before[term])
+		if change != 0 and max_key in unit:
+			unit.set(max_key, int(unit.get(max_key)) + change)
+		# The unit's current value: clamp down only.
+		if current_key in unit and max_key in unit \
+				and int(unit.get(current_key)) > int(unit.get(max_key)):
+			unit.set(current_key, int(unit.get(max_key)))
+
+
+## After holds on `values` changed, write their totals onto the character and
+## refresh the derived stats ONCE, however many values changed together.
 static func _after_change(unit: Node, values: Array) -> void:
-	var attr_changed: bool = false
-	var skills: Array[String] = []
+	var changed: bool = false
+	var done: Array[String] = []
 	for value in values:
 		var v: String = str(value)
+		if v in done:
+			continue
+		done.append(v)
 		if v.begins_with("attribute."):
-			attr_changed = true
+			_refresh_attribute(unit, v.get_slice(".", 1))
+			changed = true
 		elif v.begins_with("skill."):
-			var skill: String = v.get_slice(".", 1)
-			if not skill in skills:
-				skills.append(skill)
-	if attr_changed:
-		refresh_attribute_deltas(unit)
-	for skill in skills:
-		_refresh_skill(unit, skill)
+			_refresh_skill(unit, v.get_slice(".", 1))
+			changed = true
+	if changed:
+		refresh_character(unit)
 
 
-## The unit's attributes as the derived-stat formula sees them: base attributes
-## plus gear and trait bonuses, like CharacterSystem.update_derived_stats.
-static func _effective_attributes(unit: Node) -> Dictionary:
-	var data: Dictionary = unit.character_data if "character_data" in unit else {}
-	var out: Dictionary = data.get("attributes", {}).duplicate()
-	if ItemSystem and data.has("equipment"):
-		var equip: Dictionary = ItemSystem.calculate_equipment_stats(data)
-		for key in out:
-			out[key] = int(out[key]) + int(equip.get(key, 0))
-	if TraitSystem and data.has("traits"):
-		var bonus: Dictionary = TraitSystem.get_attribute_bonus(data)
-		for key in out:
-			out[key] = int(out[key]) + int(bonus.get(key, 0))
-	return out
-
-
-static func _all_zero(d: Dictionary) -> bool:
-	for k in d:
-		if int(d[k]) != 0:
-			return false
-	return true
+## True when `data` is one of the party's own character dictionaries.
+static func _in_party(data: Dictionary) -> bool:
+	for member in CharacterSystem.get_party():
+		if is_same(member, data):
+			return true
+	return false
 
 
 # ── Persistent damage ────────────────────────────────────────────────────────
@@ -302,10 +298,13 @@ const _REST_TIER: Dictionary = {"quick": 1, "camp": 2, "full": 3}
 ## the default, [{rest: full}, {restore: <value>}]. `source` names the cause.
 ##
 ## Party unit: writes the entry AND, for attributes, a combat drain hold
-## "__damage:<source>" so the loss bites this fight too (derived stats are not
-## recomputed mid-fight). End of combat releases the hold and recomputes the
-## derived stats from the entry, so the loss is counted once. A skill needs no
-## hold: get_effective_skill_level reads the entry at once.
+## "__damage:<source>" so the loss bites this fight too. While that hold lives
+## the entry is marked "held": the loss reaches the character through the
+## hold's attribute_bonuses "effects" key, and damaged_total() skips the entry,
+## so it is counted once. End of combat releases the hold, clears the mark and
+## recomputes the derived stats from the entry, still once. A skill needs no
+## hold: get_effective_skill_level reads the entry at once, and the character
+## is refreshed so its per-level skill bonuses drop now.
 ## Anyone else: only the drain hold, which ends with the fight.
 static func apply_damage_mode(unit: Node, value: String, amount: float,
 		cleared_by: Array, source: String) -> void:
@@ -331,6 +330,8 @@ static func apply_damage_mode(unit: Node, value: String, amount: float,
 	if namespace_name == "attribute":
 		entry["held"] = true
 	data["damaged_values"].append(entry)
+	if namespace_name == "skill":
+		refresh_character(unit)
 	if namespace_name == "attribute":
 		# A second hit from the same source this fight adds to its hold.
 		var total: float = amount
