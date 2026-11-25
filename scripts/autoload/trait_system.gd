@@ -324,13 +324,9 @@ func try_purge(character: Dictionary, trait_id: String, skill_used: String, diff
 	if skill_used not in t.get("purgeable_by", []):
 		return false
 	var required_level: int = maxi(1, t.get("purge_difficulty", 1) - difficulty_modifier)
-	# Use effective skill level (base + equipment/race/trait bonuses) for consistency
-	var base_skill: int = character.get("skills", {}).get(skill_used, 0)
-	var bonus_sources: Dictionary = character.get("skill_bonuses", {}).get(skill_used, {})
-	var skill_bonus: int = 0
-	for src in bonus_sources:
-		skill_bonus += int(bonus_sources[src])
-	var skill_level: int = clampi(base_skill + skill_bonus, 0, 15)
+	# The one effective-level accessor (base + equipment/race/trait holds,
+	# uncapped above). A purge never reads a negative level, hence the floor.
+	var skill_level: int = maxi(0, CharacterSystem.get_effective_skill_level(character, skill_used))
 	if skill_level < required_level:
 		return false
 	remove_trait(character, trait_id)

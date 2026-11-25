@@ -1304,7 +1304,7 @@ func update_derived_stats(character: Dictionary) -> void:
 			"crafting_yield_pct", "loot_quality_pct", "trap_detection_pct"]:
 		derived[accumulated] = 0.0
 
-	# Apply base skill bonuses from PerkSystem (data-driven per_level tables)
+	# Apply base skill bonuses from PerkSystem (data-driven curve formulas)
 	# Each skill contributes its cumulative bonuses at the character's effective level.
 	if PerkSystem:
 		var all_skills = character.get("skills", {})

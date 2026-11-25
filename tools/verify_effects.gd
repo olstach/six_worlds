@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 47
+const EXPECTED_CHECKS: int = 48
 
 var grid: CombatGrid
 
@@ -83,6 +83,7 @@ func _ready() -> void:
 	_check_curve_limit_holds()
 	_check_effective_skill_level_uncapped()
 	_check_integer_curve_floors()
+	_check_purge_uses_uncapped_effective_level()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1169,4 +1170,21 @@ func _check_integer_curve_floors() -> void:
 		values.append(v)
 	if values.size() == 20 and not values[19] > values[9]:
 		_fail("party_max_companions did not grow past level 10: %s vs %s" % [values[9], values[19]])
+	_done()
+
+
+## Purging a trait asks for the effective skill level, which is not capped at 15:
+## Yoga 10 + a +8 bonus is 18, enough for a requirement of 17 (and 16 is not).
+func _check_purge_uses_uncapped_effective_level() -> void:
+	TraitSystem._traits["_probe_trait"] = {"purgeable_by": ["yoga"], "purge_difficulty": 17}
+	var c: Dictionary = CharacterSystem.create_blank_character()
+	c["traits"] = ["_probe_trait"]
+	c["skills"] = {"yoga": 10}
+	c["skill_bonuses"] = {"yoga": {"test": 6}}
+	if TraitSystem.try_purge(c, "_probe_trait", "yoga"):
+		_fail("a purge needing 17 succeeded at effective level 16")
+	c["skill_bonuses"] = {"yoga": {"test": 8}}
+	if not TraitSystem.try_purge(c, "_probe_trait", "yoga"):
+		_fail("a purge needing 17 failed at effective level 18")
+	TraitSystem._traits.erase("_probe_trait")
 	_done()
