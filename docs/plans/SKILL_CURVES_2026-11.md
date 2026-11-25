@@ -37,7 +37,7 @@ The curve for each stat is whichever of climb/steady has the smaller maximum err
 | `initiative` | no limit | a plain gain or chance; nothing inverts past 100 |
 | `weapon_damage_from_strength` | no limit | a plain gain or chance; nothing inverts past 100 |
 | `max_stamina` | no limit | a plain gain or chance; nothing inverts past 100 |
-| `party_max_companions` | no limit | a plain gain or chance; nothing inverts past 100 |
+| `party_max_companions` | `limit: 7` (ceiling) | `scripts/combat/combat_grid.gd` `PLAYER_DEPLOY_SLOTS` (8): leader + companions must fit the arena's deploy slots, or members are silently not placed; `get_max_party_size` clamps to it too |
 | `effect_duration_turns` | no limit | a plain gain or chance; nothing inverts past 100 |
 | `movement_pct` | no limit | scripts/autoload/character_system.gd:1430 multiplies by (1 + pct/100); a gain, not a reduction |
 | `party_healing_pct` | no limit | a plain gain or chance; nothing inverts past 100 |
@@ -102,7 +102,7 @@ Cells are `old -> new`. A `*` marks the cell where the difference is largest for
 | sorcery.initiative | climb | 5 -> 3* | 20 -> 18* | 45 -> 45 | 58 -> 57 | 75 -> 75 | 105 | 135 |
 | might.weapon_damage_from_strength | climb | 5 -> 5 | 30 -> 30 | 75 -> 75 | 100 -> 97* | 130 -> 130 | 185 | 240 |
 | might.max_stamina | climb | 5 -> 3* | 20 -> 18* | 45 -> 45 | 58 -> 57 | 75 -> 75 | 105 | 135 |
-| leadership.party_max_companions | steady | 2 -> 2 | 3 -> 3 | 3 -> 3 | 4 -> 4 | 5 -> 5 | 7 | 9 |
+| leadership.party_max_companions | steady | 2 -> 2 | 3 -> 3 | 3 -> 3 | 4 -> 4 | 5 -> 5 | 7 | 7 |
 | performance.party_social_roll_pct | climb | 1 -> 0.67* | 4 -> 4 | 10 -> 10 | 12 -> 12 | 15 -> 15 | 20 | 25 |
 | spears.damage | climb | 5 -> 5 | 30 -> 30 | 75 -> 75 | 100 -> 97* | 130 -> 130 | 185 | 240 |
 | spears.initiative | climb | 3 -> 1.67* | 10 -> 10 | 25 -> 25 | 35 -> 35 | 50 -> 50 | 75 | 100 |

@@ -1256,10 +1256,16 @@ func recalculate_derived(character_data: Dictionary) -> Dictionary:
 			+ CharacterSystem.get_attribute_bonus_total(character_data, str(attr)))
 	var plain_skills: Dictionary = character_data.get("skills", {}).duplicate()
 	var held_skills: Dictionary = {}
-	for skill_id in plain_skills:
-		var hold: int = int(character_data.get("skill_bonuses", {}).get(skill_id, {}).get(
-			ValuePaths.SKILL_EFFECTS_KEY, 0))
-		held_skills[skill_id] = int(plain_skills[skill_id]) + hold
+	# Union of the skills the enemy has and the ones only a hold names, so a
+	# hold on a skill it never had still counts (same as get_effective_skills).
+	var skill_ids: Array = plain_skills.keys()
+	var bonuses: Dictionary = character_data.get("skill_bonuses", {})
+	for skill_id in bonuses:
+		if not skill_id in skill_ids and bonuses[skill_id].has(ValuePaths.SKILL_EFFECTS_KEY):
+			skill_ids.append(skill_id)
+	for skill_id in skill_ids:
+		var hold: int = int(bonuses.get(skill_id, {}).get(ValuePaths.SKILL_EFFECTS_KEY, 0))
+		held_skills[skill_id] = int(plain_skills.get(skill_id, 0)) + hold
 
 	var plain: Dictionary = _calculate_derived_stats(plain_attrs, plain_skills)
 	var held: Dictionary = _calculate_derived_stats(held_attrs, held_skills)

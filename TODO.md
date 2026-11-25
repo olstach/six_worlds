@@ -1182,7 +1182,10 @@ should mean.
 
 
 - [ ] **Party size may still be undercosted, and Leadership may still want
-      nerfing.** The cap is 3 free, 6 at Leadership 9. The reason it is that low:
+      nerfing.** The curve is uncapped now, but `party_max_companions` carries `limit: 7`
+      and `get_max_party_size` clamps to `CombatGrid.PLAYER_DEPLOY_SLOTS` (8, the
+      arena's start tiles): at most 8 in the party. Before stage 2a it was 3
+      free, 6 at Leadership 9. The reason it is that low:
       party size is arguably the strongest stat in the game. The party-check
       rule opens a choice when *any* member qualifies, and every `PartyBonuses`
       payout resolves to the best member — so each extra character is another
@@ -2399,8 +2402,8 @@ Moving content onto one shared effect language. The design is at
       - Effective values include gear and traits, so some numbers moved even
         with no boost active. For example a Strong trait now adds to attack
         damage and saves, and enemy saves now include their trait modifiers.
-      - Stealth detection never reads Awareness (`combat_manager.gd` around
-        lines 8255 and 8270). This bug was already there.
+      - Stealth detection never reads Awareness (`combat_manager.gd` at
+        lines 8266 and 8281). This bug was already there.
       - The shop Charm discount, map discovery and the overworld passives still
         read raw values, not effective ones. They need a decision.
       - A negative effective skill counts as 0. Only skills in

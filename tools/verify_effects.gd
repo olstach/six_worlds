@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 57
+const EXPECTED_CHECKS: int = 59
 
 var grid: CombatGrid
 
@@ -97,6 +97,8 @@ func _ready() -> void:
 	_check_skill_hold_reaches_affinity()
 	_check_shop_learning_ignores_boost()
 	_check_hold_on_unbought_skill_counts_fully()
+	_check_party_size_capped_at_deploy_slots()
+	_check_unknown_attribute_reads_zero()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1311,6 +1313,21 @@ func _check_enemy_refresh() -> void:
 		_fail("enemy attribute_bonuses left behind: %s" % [ch.get("attribute_bonuses", {})])
 	if EnemySystem.archetypes != archetypes_before:
 		_fail("EnemySystem.archetypes changed after release")
+
+	# A hold on a skill the enemy never had counts fully. Fire magic +5 raises
+	# spellpower (swords' accuracy would not show: the enemy bonus loop still
+	# reads the stale key names, see TODO 17).
+	ch["skills"].erase("fire_magic")
+	ch.get("skill_bonuses", {}).erase("fire_magic")
+	var sp_before: int = int(ch.derived.get("spellpower", 0))
+	var fire_sp: Dictionary = PerkSystem._base_bonuses["fire_magic"]["stats"]["spellpower"]
+	ValuePaths.add_hold(u, "skill.fire_magic", "fortify", 5, "t3")
+	var sp_want: int = sp_before + int(PerkSystem.curve_value(fire_sp, 5))
+	if int(ch.derived.get("spellpower", 0)) != sp_want:
+		_fail("enemy unbought fire_magic +5: spellpower %s, wanted %d" % [ch.derived.get("spellpower", 0), sp_want])
+	ValuePaths.release(u, "t3")
+	if ch.derived != derived_before:
+		_fail("enemy derived not restored after unbought-skill hold")
 	_cleanup([u])
 	_done()
 
@@ -1457,4 +1474,31 @@ func _check_hold_on_unbought_skill_counts_fully() -> void:
 		_fail("mud cost not restored after release")
 	_leave_party(u)
 	_cleanup([u])
+	_done()
+
+
+## Party size can never pass the combat arena's deploy slots, however high
+## Leadership gets (here 40, far past anything the curve reaches the cap at).
+func _check_party_size_capped_at_deploy_slots() -> void:
+	var leader: Dictionary = CharacterSystem.create_blank_character()
+	leader["skills"] = {"leadership": 40}
+	CharacterSystem.get_party().append(leader)
+	var got: int = CharacterSystem.get_max_party_size()
+	CharacterSystem.get_party().erase(leader)
+	if got != CombatGrid.PLAYER_DEPLOY_SLOTS:
+		_fail("max party size at Leadership 40: %d, wanted %d" % [got, CombatGrid.PLAYER_DEPLOY_SLOTS])
+	# The data limit alone reaches the cap too (the clamp is the second guard).
+	var comp: float = float(PerkSystem.get_base_skill_bonuses_at_level("leadership", 40).get("party_max_companions", 0))
+	if int(comp) != CombatGrid.PLAYER_DEPLOY_SLOTS - 1:
+		_fail("party_max_companions at 40: %s, wanted %d" % [comp, CombatGrid.PLAYER_DEPLOY_SLOTS - 1])
+	_done()
+
+
+## A name that is not one of the 7 attributes reads 0, as it did before
+## stage 2a, not 10 (push_error also logs it).
+func _check_unknown_attribute_reads_zero() -> void:
+	var c: Dictionary = CharacterSystem.create_blank_character()
+	var got: int = CharacterSystem.get_effective_attribute(c, "wisdom")
+	if got != 0:
+		_fail("unknown attribute 'wisdom' read as %d, wanted 0" % got)
 	_done()

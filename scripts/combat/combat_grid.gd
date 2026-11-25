@@ -53,6 +53,9 @@ const COLOR_DEPLOY_ENEMY = Color(0.6, 0.3, 0.3, 0.3)  # Red tint for enemy zone
 # a gap, enemy block, all centred horizontally, inside a band of rows centred
 # vertically. The rest of the field is room to flank, retreat and manoeuvre.
 # deploy_bounds() is the one place this geometry is computed.
+## Most player units the auto-deploy in combat_arena.gd has start tiles for.
+## CharacterSystem.get_max_party_size() never exceeds this.
+const PLAYER_DEPLOY_SLOTS: int = 8
 const PLAYER_DEPLOY_COLUMNS: int = 4  # how many columns wide the player zone is
 const ENEMY_DEPLOY_COLUMNS: int = 4   # how many columns wide the enemy zone is
 const DEPLOY_GAP_COLUMNS: int = 4     # empty columns between the two front lines

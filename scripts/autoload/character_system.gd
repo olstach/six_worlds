@@ -32,6 +32,10 @@ var fallen: Array[Dictionary] = []
 ## Leadership buys is the party beyond the ones who would come anyway.
 const BASE_COMPANIONS: int = 2
 
+## The seven attribute names; anything else is a typo in data or code.
+const ATTRIBUTE_NAMES: Array[String] = ["strength", "constitution", "finesse",
+		"focus", "awareness", "charm", "luck"]
+
 # Birth and background data loaded from JSON
 var _birth_data: Dictionary = {}
 
@@ -1204,6 +1208,11 @@ func get_attribute_bonus_total(character: Dictionary, attr: String) -> int:
 ## does not recompute them once per attribute.
 func _attribute_value(character: Dictionary, attr: String,
 		equip_bonus: Dictionary, trait_bonus: Dictionary) -> int:
+	# Not one of the 7 attributes: fail loudly and read 0 (as event checks did
+	# before stage 2a), instead of quietly reading 10.
+	if not attr in ATTRIBUTE_NAMES:
+		push_error("CharacterSystem: '%s' is not an attribute" % attr)
+		return 0
 	var value: int = int(character.get("attributes", {}).get(attr, 10)) \
 		+ int(equip_bonus.get(attr, 0)) + int(trait_bonus.get(attr, 0)) \
 		+ get_attribute_bonus_total(character, attr)
@@ -1580,17 +1589,18 @@ func get_player() -> Dictionary:
 ## Two companions come free; Leadership adds one at 3, 6 and 9, so a
 ## Leadership-9 leader fields six in total.
 ##
-## The ceiling is deliberately low. Party size is the strongest stat in the
-## game: the party-check rule opens a choice when ANY member qualifies, and
-## every PartyBonuses payout resolves to the best member — so each extra
-## character is another roll of the dice on having every specialist at once,
-## across all 35 skills. XP dilution is the existing counterweight, but it
-## costs combat power while the benefit is in non-combat checks, of which there
-## are far more. Raising this is not a small change.
+## Leadership is uncapped by the formula, and gear can add levels, so the
+## number is bounded twice: the stat carries a `limit` in perks.json
+## (base_bonuses.leadership) and the result is clamped here to
+## CombatGrid.PLAYER_DEPLOY_SLOTS, the number of units the combat arena has
+## start tiles for. A bigger party would have members silently left out of
+## the fight. Party size is also the strongest stat in the game (the party-check
+## rule opens a choice when ANY member qualifies), which is why it stays bounded.
 func get_max_party_size() -> int:
 	if not PartyBonuses:
-		return 1 + BASE_COMPANIONS
-	return 1 + maxi(BASE_COMPANIONS, int(PartyBonuses.best("party_max_companions")))
+		return mini(CombatGrid.PLAYER_DEPLOY_SLOTS, 1 + BASE_COMPANIONS)
+	var companions: int = maxi(BASE_COMPANIONS, int(PartyBonuses.best("party_max_companions")))
+	return mini(CombatGrid.PLAYER_DEPLOY_SLOTS, 1 + companions)
 
 
 ## Add companion to party

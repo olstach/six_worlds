@@ -32,7 +32,10 @@ COUNT_STATS = {"party_max_companions", "party_skill_check_bonus",
 
 # Stats whose value past a bound would invert meaning. Each decision (including
 # the "no limit" ones) is explained in the report below.
-LIMITS = {"mana_cost_reduction": -100.0}
+# party_max_companions is bounded by game design, not by inversion: the whole
+# party (leader + companions) must fit the combat arena's deploy slots
+# (CombatGrid.PLAYER_DEPLOY_SLOTS = 8), so companions top out at 7.
+LIMITS = {"mana_cost_reduction": -100.0, "party_max_companions": 7.0}
 
 # Why each non-limited stat has no `limit` (consumer file:line, as read in 2026-11).
 # Stats not in this table are plain "more is simply more" gains.
@@ -104,8 +107,8 @@ def fit(stat, table):
         # its limit before level 10 (mana: -100 at 9), so aim the line far
         # enough that it crosses the limit at that same level.
         lim = LIMITS[stat]
-        first = next(l for l in range(1, 11) if vals[l - 1] == lim)
-        if first > 5:
+        first = next((l for l in range(1, 11) if vals[l - 1] == lim), None)
+        if first is not None and first > 5:
             a["at_10"] = vals[4] + (lim - vals[4]) * 5.0 / (first - 5)
         a["limit"] = lim
     # Candidate B: steady. Counts search `base` and the slope so that levels 1
@@ -114,6 +117,8 @@ def fit(stat, table):
     if integer:
         b = fit_integer(vals)
         a["integer"] = True
+        if stat in LIMITS:
+            b["limit"] = LIMITS[stat]
     else:
         b = {"curve": "steady", "at_10": vals[9]}
         if stat in LIMITS:
@@ -199,6 +204,10 @@ def write_report(rows):
         if stat in LIMITS:
             out.append("| `%s` | `limit: %g` (floor) | `scripts/autoload/combat_manager.gd:3906` "
                        "reads it as a reduction; below -100 the cost would go negative |"
+                       % (stat, LIMITS[stat]) if stat == "mana_cost_reduction" else
+                       "| `%s` | `limit: %g` (ceiling) | `scripts/combat/combat_grid.gd` `PLAYER_DEPLOY_SLOTS` (8): "
+                       "leader + companions must fit the arena's deploy slots, "
+                       "or members are silently not placed; `get_max_party_size` clamps to it too |"
                        % (stat, LIMITS[stat]))
         else:
             note = NO_LIMIT_NOTES.get(stat, "a plain gain or chance; nothing inverts past 100")

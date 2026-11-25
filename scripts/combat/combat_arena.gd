@@ -469,6 +469,7 @@ func _start_overworld_combat(mob_data: Dictionary) -> void:
 			Vector2i(pz, cy - 2), Vector2i(pz, cy), Vector2i(pz + 1, cy - 1),
 			Vector2i(pz + 1, cy + 1), Vector2i(pz, cy + 2), Vector2i(pz + 1, cy - 3),
 			Vector2i(pz + 1, cy + 3), Vector2i(pz, cy - 4)]
+		assert(player_start_positions.size() == CombatGrid.PLAYER_DEPLOY_SLOTS)
 
 		for i in range(mini(party.size(), player_start_positions.size())):
 			var char_data = party[i]

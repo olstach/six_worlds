@@ -271,7 +271,8 @@
           "curve": "steady",
           "base": 1.85,
           "at_10": 3.9,
-          "integer": true
+          "integer": true,
+          "limit": 7
         }
       }
     },
