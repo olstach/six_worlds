@@ -352,6 +352,12 @@ func get_status_definition(status_name: String) -> Dictionary:
 	return _status_effects.get(status_name, {})
 
 
+## True when summon_templates.json defines this template id. EffectVocab uses
+## it to check `summon` effects without reaching into the private table.
+func has_summon_template(template_id: String) -> bool:
+	return _summon_templates.has(template_id)
+
+
 ## Load summon templates from summon_templates.json
 func _load_summon_templates() -> void:
 	var file_path = "res://resources/data/summon_templates.json"
