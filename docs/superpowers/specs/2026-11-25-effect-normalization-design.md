@@ -422,6 +422,21 @@ propagation for attacks is stage 5; the vocabulary includes it from day one.
   regenerated from the new fields. Writing fields (name, description, notes)
   are unchanged, so the content sync keeps working.
 
+**As built in stage 1 (2026-11-25).** Names and scope that differ from the
+list above:
+
+- `effect_context.gd` (`EffectContext`) was added: it carries source, target,
+  container, cast power, save result and `target_pos`. The resolver takes it as
+  its second argument.
+- `value_paths.gd` also holds the attribute and skill holds (through the shared
+  `CombatStats.attribute_terms`), release at combat end, and the lasting
+  `damaged_values` with `cleared_by`.
+- `propagation.gd` and the loader check are not built yet; they belong to
+  later stages. `EffectVocab.validate` exists and is mirrored in
+  `tools/effect_check.py`.
+- The resolver exposes `POSITION_OPS` and `target_pos`; `CombatManager` gained
+  shared `zone_footprint()` and `zone_turns()` helpers.
+
 ## 6. Migration, in stages
 
 Each stage ends with `verify_all.sh` green, the game booting and a fight

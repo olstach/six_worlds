@@ -96,6 +96,9 @@ stat or an area shape:
 - `scripts/combat/aura_system.gd` — proximity effects. Equipment, statuses,
   perks and units all declare an aura by naming one in
   `resources/data/auras.json`; spells reach them through the status they apply.
+- `scripts/effects/` — the shared effect language (stage 1 of the effect
+  normalization): the approved vocabulary, value holds, and the resolver that
+  runs effects. Nothing in the game content uses it yet.
 
 ---
 

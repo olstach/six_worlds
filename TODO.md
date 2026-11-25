@@ -2365,6 +2365,37 @@ Moving content onto one shared effect language. The design is at
 
 - [ ] **Effect normalization**: spells, statuses, auras/zones, items,
       upgrades, traits, affixes, mantras, events/quests. In progress.
+  - [x] **Stage 1, the engine (done 2026-11-25).** `scripts/effects/` holds
+        `effect_vocab.gd` (the approved lists and `validate`), `value_paths.gd`
+        (fortify, drain, set and multiply holds; attribute and skill holds;
+        release at combat end; lasting damage that rest, heal or restore
+        clears), `effect_context.gd` and `effect_resolver.gd` (the ops
+        damage, heal, modify, status, move, kill, summon, zone and resurrect).
+        `tools/effect_check.py` mirrors the vocabulary in Python, and
+        `tools/verify_effects.tscn` has 41 in-engine checks. `verify_all.sh`
+        now runs every `tools/test_*.py`. No spell, status or item uses any of
+        this yet.
+  - [ ] **Stage 2, statuses and auras/zones.** Next: move statuses and
+        auras/zones onto the resolver.
+  - **Carried into stage 2** (things stage 1 found and left alone):
+    - Ritual's `status_save_dc_bonus` is not applied to resolver saves, and
+      the save has no `dc_stat` (spells default to Focus, skills to Strength).
+    - `kill` does not give the kill reward, so a spell's `on_kill` would be
+      lost when spells move over. It also skips bleeding-out units, which
+      the old spell code finishes off.
+    - Nothing sets `target_pos` yet, so ground-aimed spells must set it
+      when they move over.
+    - `Resistance.breakdown()` does not list effect holds, so tooltips will
+      not show them.
+    - The `status` op logs `applied: true` even when the status was resisted
+      or there was nothing to remove.
+    - A lasting-damage entry marked `held` would survive into a save made
+      mid-combat. If mid-fight saving is added, loading must clear the flag.
+    - Push slams from the `move` op are always physical damage; spells use
+      their own damage type.
+    - Zone `aoe` and `duration` shapes are not validated yet.
+    - A party-screen line showing lasting damage belongs to stage 2 (spec
+      section 4.2).
 - [ ] **Perk normalization**: the ~175 hard-coded `has_perk` branches and the
       ~101 `combat_data` active perks, moved onto the same vocabulary. Olaf asks
       for this once effect normalization is finished; not before.
