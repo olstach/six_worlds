@@ -74,6 +74,27 @@ static func release(unit: Node, source_id: String) -> void:
 	_after_change(unit, touched)
 
 
+## Drop every hold on `unit` and put everything they touched back: the skill
+## "effects" keys, the internal "__attr" stat holds and the max_* changes.
+## Called when a fight ends. In stage 1 every hold is combat-scoped; a
+## `persistent` scope arrives with statuses in stage 2.
+static func release_all_combat(unit: Node) -> void:
+	if unit == null or not "effect_holds" in unit:
+		return
+	# Note which skills had holds so their "effects" keys can be erased.
+	var skills: Array[String] = []
+	for hold in unit.effect_holds:
+		var v: String = str(hold.value)
+		if v.begins_with("skill.") and not v.get_slice(".", 1) in skills:
+			skills.append(v.get_slice(".", 1))
+	unit.effect_holds.clear()   # includes the "__attr" holds
+	for skill in skills:
+		_refresh_skill(unit, skill)   # no holds left, so the key is erased
+	# With no attribute holds left this removes any __attr remnants and
+	# returns max_hp / max_mana / max_stamina to base.
+	refresh_attribute_deltas(unit)
+
+
 ## `base` after every hold on `value` has been applied (see the order above).
 ## Called from hot getters, so the no-holds case returns at once.
 static func apply_to(unit: Node, value: String, base: float) -> float:

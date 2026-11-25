@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 10
+const EXPECTED_CHECKS: int = 11
 
 var grid: CombatGrid
 
@@ -36,6 +36,9 @@ func _ready() -> void:
 	_check_fortify_finesse_moves_dodge_and_initiative()
 	_check_fortify_constitution_raises_max_hp_and_clamps_on_release()
 	_check_skill_hold_reaches_effective_level()
+
+	# Holds are combat-scoped: end_combat must wipe them.
+	_check_holds_do_not_survive_end_combat()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -284,5 +287,55 @@ func _check_skill_hold_reaches_effective_level() -> void:
 		_fail("release did not restore the skill level")
 	if ch.get("skill_bonuses", {}).has("swords") != had_entry:
 		_fail("skill_bonuses entry for swords left behind after release")
+	_cleanup([u])
+	_done()
+
+
+# ── Holds end with the fight ─────────────────────────────────────────────────
+
+## A fortify/drain applied in combat must be gone from character_data once the
+## real end_combat() has run. end_combat() returns early unless combat_active,
+## so the flag is set the way verify_combat_systems.gd does it.
+func _check_holds_do_not_survive_end_combat() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var ch: Dictionary = u.character_data
+	var attrs_before: Dictionary = ch.attributes.duplicate()
+	var derived_before: Dictionary = ch.derived.duplicate()
+	var skill_before: int = CharacterSystem.get_effective_skill_level(ch, "swords")
+	var bonuses_before: Dictionary = ch.get("skill_bonuses", {}).duplicate(true)
+	var max_hp_before: int = u.max_hp
+
+	ValuePaths.add_hold(u, "attribute.strength", "fortify", 4, "t1")
+	ValuePaths.add_hold(u, "attribute.constitution", "fortify", 3, "t2")
+	ValuePaths.add_hold(u, "skill.swords", "fortify", 2, "t3")
+	ValuePaths.add_hold(u, "stat.dodge", "fortify", 2, "t4")
+	if u.max_hp == max_hp_before:
+		_fail("setup: constitution hold did not raise max_hp")
+
+	CombatManager.combat_active = true
+	CombatManager.end_combat(true)
+	CombatManager.combat_grid = grid   # end_combat nulls it; later checks need it
+
+	if not u.effect_holds.is_empty():
+		_fail("holds left after end_combat: %s" % [u.effect_holds])
+	if ch.attributes != attrs_before:
+		_fail("attributes changed: %s vs %s" % [ch.attributes, attrs_before])
+	if CharacterSystem.get_effective_skill_level(ch, "swords") != skill_before:
+		_fail("swords level not restored after end_combat")
+	if ch.get("skill_bonuses", {}) != bonuses_before:
+		_fail("skill_bonuses not restored: %s" % [ch.get("skill_bonuses", {})])
+	if u.max_hp != max_hp_before:
+		_fail("max_hp after end_combat: %d, wanted %d" % [u.max_hp, max_hp_before])
+	# Every derived key must match exactly, except current_hp: end_combat
+	# legitimately copies the unit's HP into derived (the unit starts at 100,
+	# the blank character's own value may differ), so expect that copy.
+	for key in derived_before:
+		var want = derived_before[key]
+		if key == "current_hp":
+			want = u.current_hp
+		if ch.derived.get(key) != want:
+			_fail("derived.%s: got %s, wanted %s" % [key, ch.derived.get(key), want])
+	if u.current_hp > u.max_hp:
+		_fail("current_hp %d above max_hp %d" % [u.current_hp, u.max_hp])
 	_cleanup([u])
 	_done()

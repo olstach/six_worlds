@@ -460,6 +460,11 @@ func end_combat(victory: bool) -> void:
 	else:
 		last_combat_rewards = {}
 
+	# Every effect hold is combat-scoped: drop them all (and restore maxima and
+	# skill bonuses) BEFORE syncing, so nothing borrowed leaks into character_data.
+	for unit in all_units:
+		ValuePaths.release_all_combat(unit)
+
 	# Sync player unit state back to character_data before clearing units
 	_sync_combat_state_to_characters()
 
