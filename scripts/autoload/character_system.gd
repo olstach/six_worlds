@@ -1368,9 +1368,11 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Apply base skill bonuses from PerkSystem (data-driven curve formulas)
 	# Each skill contributes its cumulative bonuses at the character's effective level.
 	if PerkSystem:
-		var all_skills = character.get("skills", {})
+		# Every skill at its effective level, including one that exists only
+		# in skill_bonuses (a hold on a school never bought still pays).
+		var all_skills: Dictionary = get_effective_skills(character)
 		for skill_id in all_skills:
-			var effective_level = get_effective_skill_level(character, skill_id)
+			var effective_level: int = all_skills[skill_id]
 			if effective_level == 0:
 				continue
 			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, effective_level)

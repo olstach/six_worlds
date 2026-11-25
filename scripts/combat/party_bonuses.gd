@@ -35,8 +35,11 @@ static func for_character(character: Dictionary, stat_key: String) -> float:
 	if not PerkSystem or not CharacterSystem:
 		return 0.0
 	var total: float = 0.0
-	for skill_id in character.get("skills", {}):
-		var level: int = CharacterSystem.get_effective_skill_level(character, skill_id)
+	# Effective levels of every skill, bonus-only ones included (a hold on a
+	# skill never bought still pays).
+	var levels: Dictionary = CharacterSystem.get_effective_skills(character)
+	for skill_id in levels:
+		var level: int = levels[skill_id]
 		if level <= 0:
 			continue
 		var bonus: Dictionary = PerkSystem.get_base_skill_bonuses_at_level(skill_id, level)

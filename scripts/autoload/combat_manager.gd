@@ -3647,10 +3647,11 @@ func unit_attribute(unit: Node, attr: String) -> int:
 
 ## A unit's skill level as combat formulas should read it: the EFFECTIVE level
 ## (CharacterSystem.get_effective_skill_level), so a mid-fight skill hold
-## counts. Counted from 0 upward: a negative level (a trait like Forgetful)
-## is already punished once through NEGATIVE_SKILL_PENALTIES in the derived
-## stats, so a formula that scales with the level sees it as 0, not as a
-## second penalty. 0 for a unit with no character_data.
+## counts. Counted from 0 upward, the same as the old raw reads: a negative
+## level (a trait like Forgetful) reads as 0 here. Only the skills listed in
+## CharacterSystem.NEGATIVE_SKILL_PENALTIES are penalised for going negative,
+## and that happens in the derived stats, not here.
+## 0 for a unit with no character_data.
 func unit_skill(unit: Node, skill_id: String) -> int:
 	if unit == null or not "character_data" in unit:
 		return 0
@@ -3925,29 +3926,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	if ground_mana_pct != 0:
 		mana_cost = maxi(1, int(mana_cost * (1.0 + float(ground_mana_pct) / 100.0)))
 
-	# Skill-level mana cost reduction: apply only when at least one spell school
-	# matches a magic skill the caster has invested in (school-specific efficiency).
-	# Reduction is flat (e.g. space_magic 5 → -75), capped at 90% of base cost.
-	var skill_mana_reduction: int = caster.character_data.get("derived", {}).get("mana_cost_reduction", 0)
-	if skill_mana_reduction < 0:
-		var spell_schools_lower: Array = spell.get("schools", []).map(func(s): return s.to_lower())
-		var caster_skills: Dictionary = caster.character_data.get("skills", {})
-		const MAGIC_SKILL_TO_SCHOOL = {
-			"space_magic": "space", "air_magic": "air", "fire_magic": "fire",
-			"water_magic": "water", "earth_magic": "earth", "sorcery": "sorcery",
-			"enchantment": "enchantment", "white_magic": "white", "black_magic": "black",
-			"summoning": "summoning", "ritual": "ritual"
-		}
-		var school_matches := false
-		for sk in caster_skills:
-			if MAGIC_SKILL_TO_SCHOOL.has(sk) and MAGIC_SKILL_TO_SCHOOL[sk] in spell_schools_lower:
-				school_matches = true
-				break
-		if school_matches:
-			var base_cost: int = spell.get("mana_cost", 0)
-			var max_reduction: int = int(base_cost * 0.90)
-			mana_cost = max(int(base_cost * 0.10), mana_cost + skill_mana_reduction)
-			mana_cost = max(mana_cost, int(spell.get("mana_cost", 0)) - max_reduction)
+	# Skill-level mana cost reduction (see apply_skill_mana_reduction).
+	mana_cost = apply_skill_mana_reduction(caster, spell, int(mana_cost))
 
 	# Deduct mana (sync to character_data so it persists after combat)
 	caster.current_mana -= mana_cost
@@ -4429,6 +4409,37 @@ func _eligible_reaches(eligible: String, caster: Node, unit: Node) -> bool:
 		"living_enemy":
 			return not same_team and not ("undead" in unit.character_data.get("tags", []))
 	return not same_team   # "enemy", and the default
+
+
+## Skill-level mana cost reduction, applied to `mana_cost` and returned.
+## It applies only when at least one of the spell's schools matches a magic
+## skill the caster has (school-specific efficiency): bought, or held only for
+## this fight. The reduction is flat (e.g. space_magic 5 → -75) and never takes
+## the cost below 10% of the spell's base cost.
+func apply_skill_mana_reduction(caster: Node, spell: Dictionary, mana_cost: int) -> int:
+	var skill_mana_reduction: int = caster.character_data.get("derived", {}).get("mana_cost_reduction", 0)
+	if skill_mana_reduction < 0:
+		var spell_schools_lower: Array = spell.get("schools", []).map(func(s): return s.to_lower())
+		# Every skill the caster has at an effective level, bonus-only ones
+		# included, so a +5 hold on a school never bought still counts.
+		var caster_skills: Dictionary = CharacterSystem.get_effective_skills(caster.character_data)
+		const MAGIC_SKILL_TO_SCHOOL = {
+			"space_magic": "space", "air_magic": "air", "fire_magic": "fire",
+			"water_magic": "water", "earth_magic": "earth", "sorcery": "sorcery",
+			"enchantment": "enchantment", "white_magic": "white", "black_magic": "black",
+			"summoning": "summoning", "ritual": "ritual"
+		}
+		var school_matches := false
+		for sk in caster_skills:
+			if MAGIC_SKILL_TO_SCHOOL.has(sk) and MAGIC_SKILL_TO_SCHOOL[sk] in spell_schools_lower:
+				school_matches = true
+				break
+		if school_matches:
+			var base_cost: int = spell.get("mana_cost", 0)
+			var max_reduction: int = int(base_cost * 0.90)
+			mana_cost = max(int(base_cost * 0.10), mana_cost + skill_mana_reduction)
+			mana_cost = max(mana_cost, int(spell.get("mana_cost", 0)) - max_reduction)
+	return mana_cost
 
 
 ## Calculate total spell bonus from all applicable schools

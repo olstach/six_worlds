@@ -655,9 +655,10 @@ func calculate_element_affinity(character: Dictionary, element: String,
 	##
 	## effective = true (the default, and what the affinity BONUSES use) adds
 	## each skill's EFFECTIVE level, so a +4 Fire magic hold is +4 Fire
-	## affinity. A negative effective level counts as 0 here: it is already
-	## penalised through NEGATIVE_SKILL_PENALTIES, and should not drag the
-	## element down a second time.
+	## affinity. Levels are counted from 0, the same as the old raw reads: a
+	## negative effective level (a trait like Forgetful) adds nothing. Only the
+	## skills listed in CharacterSystem.NEGATIVE_SKILL_PENALTIES are penalised
+	## for going negative, and that happens in update_derived_stats.
 	## effective = false adds the BOUGHT levels in character["skills"]; perk
 	## eligibility ("fire_affinity_25") uses that, because perks are never
 	## given for a temporary boost.

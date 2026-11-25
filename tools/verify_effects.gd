@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 56
+const EXPECTED_CHECKS: int = 57
 
 var grid: CombatGrid
 
@@ -96,6 +96,7 @@ func _ready() -> void:
 	_check_attribute_hold_reaches_saves()
 	_check_skill_hold_reaches_affinity()
 	_check_shop_learning_ignores_boost()
+	_check_hold_on_unbought_skill_counts_fully()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1407,4 +1408,53 @@ func _check_shop_learning_ignores_boost() -> void:
 		_fail("fireball missing from the spell database")
 	elif CharacterSystem.meets_spell_skill(c, fireball):
 		_fail("meets_spell_skill counted a temporary boost: shop learning must use the bought level")
+	_done()
+
+
+## Fix round 1: a hold on a skill the character never bought (no key in
+## `skills` at all) must count everywhere a bought level does, mid-fight:
+##   (b) the per-level bonuses — Fire magic +5 pays Fire magic's level-5
+##       spellpower;
+##   (a) the school-matched mana-cost reduction — Water magic +5 pays its
+##       level-5 reduction AND that reduction applies to a Water spell.
+## Fire magic's table has no mana_cost_reduction row, so (a) uses Water magic.
+func _check_hold_on_unbought_skill_counts_fully() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	ch["skills"] = {}   # nothing bought, not even a 0 entry
+	CharacterSystem.update_derived_stats(ch)
+
+	# (b) per-level bonuses from a bonus-only skill
+	var fire_sp: Dictionary = PerkSystem._base_bonuses["fire_magic"]["stats"]["spellpower"]
+	var sp_before: int = int(ch.derived.spellpower)
+	ValuePaths.add_hold(u, "skill.fire_magic", "fortify", 5, "t1")
+	var sp_want: int = sp_before + int(PerkSystem.curve_value(fire_sp, 5))
+	if int(ch.derived.spellpower) != sp_want:
+		_fail("unbought fire_magic +5: derived.spellpower %d, wanted %d"
+			% [int(ch.derived.spellpower), sp_want])
+	ValuePaths.release(u, "t1")
+
+	# (a) school-matched mana reduction from a bonus-only skill
+	var mud: Dictionary = CombatManager.get_spell("mud")   # Water + Enchantment
+	var cost: int = int(mud.get("mana_cost", 0))
+	if CombatManager.apply_skill_mana_reduction(u, mud, cost) != cost:
+		_fail("no magic skills: mud should cost its full %d" % cost)
+	var water_mcr: Dictionary = PerkSystem._base_bonuses["water_magic"]["stats"]["mana_cost_reduction"]
+	var mcr_before: int = int(ch.derived.get("mana_cost_reduction", 0))
+	ValuePaths.add_hold(u, "skill.water_magic", "fortify", 5, "t2")
+	var mcr_want: int = mcr_before + int(PerkSystem.curve_value(water_mcr, 5))
+	if int(ch.derived.get("mana_cost_reduction", 0)) != mcr_want:
+		_fail("unbought water_magic +5: mana_cost_reduction %d, wanted %d"
+			% [int(ch.derived.get("mana_cost_reduction", 0)), mcr_want])
+	# The reduction is capped: never below 10% of base, never more than 90% off.
+	var cost_want: int = maxi(maxi(int(cost * 0.10), cost + mcr_want), cost - int(cost * 0.90))
+	var got: int = CombatManager.apply_skill_mana_reduction(u, mud, cost)
+	if got != cost_want:
+		_fail("unbought water_magic +5: mud costs %d, wanted %d" % [got, cost_want])
+	ValuePaths.release(u, "t2")
+	if CombatManager.apply_skill_mana_reduction(u, mud, cost) != cost:
+		_fail("mud cost not restored after release")
+	_leave_party(u)
+	_cleanup([u])
 	_done()
