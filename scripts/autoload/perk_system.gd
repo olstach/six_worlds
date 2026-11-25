@@ -725,16 +725,41 @@ func get_base_skill_bonuses(character: Dictionary, skill_id: String) -> Dictiona
 
 
 func get_base_skill_bonuses_at_level(skill_id: String, level: int) -> Dictionary:
-	## Get base stat bonuses for a skill at the specified level (1-15).
-	## Level 11-15 is for item/race-enhanced display only.
-	## Returns empty dict if no bonus data or level is 0.
+	## Get base stat bonuses for a skill at ANY level >= 1. The bonus is a
+	## formula (see curve_value), so a boosted level of 15 or 25 just keeps
+	## climbing; nothing is capped except where a stat declares a `limit`.
+	## Returns {stat: float}, or an empty dict if there is no data or level < 1.
 	if level <= 0:
 		return {}
 
-	var bonus_data = _base_bonuses.get(skill_id, {})
-	if bonus_data.is_empty():
-		return {}
+	var stats: Dictionary = _base_bonuses.get(skill_id, {}).get("stats", {})
+	var result: Dictionary = {}
+	for stat in stats:
+		result[stat] = curve_value(stats[stat], level)
+	return result
 
-	var per_level = bonus_data.get("per_level", {})
-	var clamped = mini(level, 15)  # cap at 15 (max item-enhanced range)
-	return per_level.get(str(clamped), {})
+
+static func curve_value(spec: Dictionary, level: int) -> float:
+	## One stat's bonus at `level`, from its curve spec in perks.json:
+	##   climb:  level <= 5 -> at_5 * L(L+1)/30   (a slow start, 1/15 at level 1)
+	##           level  > 5 -> at_5 + (at_10 - at_5) * (L - 5) / 5   (a straight line on)
+	##   steady: base + at_10 * L / 10             (the same step every level)
+	## `integer: true` rounds down (counts like companions); `limit` stops the
+	## value at that number in its own direction (-100 is a floor, 100 a ceiling).
+	var at_10: float = float(spec.get("at_10", 0.0))
+	var value: float
+	if str(spec.get("curve", "steady")) == "climb":
+		var at_5: float = float(spec.get("at_5", 0.0))
+		if level <= 5:
+			value = at_5 * level * (level + 1) / 30.0
+		else:
+			value = at_5 + (at_10 - at_5) * (level - 5) / 5.0
+	else:
+		value = float(spec.get("base", 0.0)) + at_10 * level / 10.0
+	if bool(spec.get("integer", false)):
+		# The tiny nudge keeps 1.9999999 (float noise) from flooring to 1.
+		value = floorf(value + 0.000001)
+	if spec.has("limit"):
+		var limit: float = float(spec["limit"])
+		value = maxf(value, limit) if limit < 0.0 else minf(value, limit)
+	return value

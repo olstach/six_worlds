@@ -1053,7 +1053,7 @@ func upgrade_skill(character: Dictionary, skill: String) -> bool:
 
 ## Get effective skill level including item/race bonuses.
 ## Returns the effective skill level for a character including all bonuses
-## from quirks, equipment, and race. Clamped to [-5, 15].
+## from quirks, equipment, and race. Floored at -5; there is no upper cap.
 ## Negative values (from quirks like Forgetful) apply penalties in update_derived_stats.
 ## skill_bonuses format: {"skill_id": {"source_name": amount, ...}, ...}
 func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
@@ -1062,7 +1062,7 @@ func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	var bonus = 0
 	for source in bonus_sources:
 		bonus += int(bonus_sources[source])
-	var level: int = clampi(base + bonus, -5, 15)
+	var level: int = maxi(base + bonus, -5)
 	# Persistent `damage` (ValuePaths.apply_damage_mode) lowers the level but
 	# never below 0; a level already negative is left as it is.
 	var hurt: int = int(ValuePaths.damaged_total(character, "skill." + skill_id))

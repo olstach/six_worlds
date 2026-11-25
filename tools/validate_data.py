@@ -698,8 +698,31 @@ _stat_keys = set()
 for _skill, _tbl in perks_data.get("base_bonuses", {}).items():
     if _skill.startswith("_"):
         continue  # "_comment" section dividers are strings, not tables
-    for _stats in _tbl.get("per_level", {}).values():
-        _stat_keys.update(_stats)
+    _stat_specs = _tbl.get("stats", {})
+    if not isinstance(_stat_specs, dict):
+        err("perks", f"base_bonuses.{_skill}.stats must be a {{stat: spec}} object")
+        continue
+    if "per_level" in _tbl:
+        err("perks", f"base_bonuses.{_skill} still has a per_level table — "
+            "run tools/migrate_skill_curves.py")
+    for _stat, _spec in _stat_specs.items():
+        _stat_keys.add(_stat)
+        _where = f"base_bonuses.{_skill}.{_stat}"
+        _num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)
+        if not isinstance(_spec, dict):
+            err("perks", f"{_where} must be an object")
+            continue
+        if _spec.get("curve") not in ("climb", "steady"):
+            err("perks", f"{_where}.curve must be 'climb' or 'steady'")
+        if not _num(_spec.get("at_10")):
+            err("perks", f"{_where}.at_10 must be a number")
+        if _spec.get("curve") == "climb" and not _num(_spec.get("at_5")):
+            err("perks", f"{_where}.at_5 must be a number for a climb curve")
+        if "integer" in _spec and not isinstance(_spec["integer"], bool):
+            err("perks", f"{_where}.integer must be true or false")
+        for _opt in ("base", "limit"):
+            if _opt in _spec and not _num(_spec[_opt]):
+                err("perks", f"{_where}.{_opt} must be a number")
 # `bonus` is the per-level dict inside update_derived_stats; PartyBonuses is
 # the path for `party_` keys, which are resolved across the party instead.
 check_vocabulary("base_bonuses stat", _stat_keys, [

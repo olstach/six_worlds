@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 42
+const EXPECTED_CHECKS: int = 47
 
 var grid: CombatGrid
 
@@ -76,6 +76,13 @@ func _ready() -> void:
 	_check_summon_once_for_area_recipients()
 	_check_summon_from_target_pos_only()
 	_check_position_op_without_position_refused()
+
+	# Stage 2a: skill bonuses are an uncapped formula.
+	_check_curve_climb_swords()
+	_check_curve_continues_past_ten()
+	_check_curve_limit_holds()
+	_check_effective_skill_level_uncapped()
+	_check_integer_curve_floors()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1091,4 +1098,75 @@ func _check_position_op_without_position_refused() -> void:
 	if log.size() != 1 or log[0].applied or log[0].reason != "no position":
 		_fail("no position: %s" % [log])
 	_cleanup([caster])
+	_done()
+
+
+# ── Skill bonus curves (stage 2a) ────────────────────────────────────────────
+
+func _near(a: float, b: float) -> bool:
+	return absf(a - b) <= 0.01
+
+
+## Swords damage follows the climb formula: 5/15/30/50/75 up to level 5, then
+## +11 a level to 130 at 10 (the old table said 90/100/110/120 at 6-9).
+func _check_curve_climb_swords() -> void:
+	var expected: Array = [5, 15, 30, 50, 75, 86, 97, 108, 119, 130]
+	for lvl in range(1, 11):
+		var got: float = float(PerkSystem.get_base_skill_bonuses_at_level("swords", lvl).get("damage", -999))
+		if not _near(got, float(expected[lvl - 1])):
+			_fail("swords damage at %d: expected %s, got %s" % [lvl, expected[lvl - 1], got])
+	_done()
+
+
+## The formula does not stop at 10 (or 15): +11 a level continues.
+func _check_curve_continues_past_ten() -> void:
+	var at_15: float = float(PerkSystem.get_base_skill_bonuses_at_level("swords", 15).get("damage", -999))
+	var at_25: float = float(PerkSystem.get_base_skill_bonuses_at_level("swords", 25).get("damage", -999))
+	if not _near(at_15, 185.0):
+		_fail("swords damage at 15: expected 185, got %s" % at_15)
+	if not _near(at_25, 295.0):
+		_fail("swords damage at 25: expected 295, got %s" % at_25)
+	_done()
+
+
+## Mana cost reduction has a limit of -100: it holds at 9, 10 and 30. Level 6
+## sits on the climb line (-75 at 5, falling 6.25 a step to hit -100 at 9), which proves the
+## values come from the formula and not from a leftover table.
+func _check_curve_limit_holds() -> void:
+	var at_6: float = float(PerkSystem.get_base_skill_bonuses_at_level("space_magic", 6).get("mana_cost_reduction", 0.0))
+	if not _near(at_6, -81.25):
+		_fail("space_magic mana_cost_reduction at 6: expected -81.25, got %s" % at_6)
+	for lvl in [9, 10, 30]:
+		var got: float = float(PerkSystem.get_base_skill_bonuses_at_level("space_magic", lvl).get("mana_cost_reduction", 0.0))
+		if not _near(got, -100.0):
+			_fail("space_magic mana_cost_reduction at %d: expected -100, got %s" % [lvl, got])
+	_done()
+
+
+## Base Swords 10 plus a +12 bonus is effective level 22, not 15.
+func _check_effective_skill_level_uncapped() -> void:
+	var c: Dictionary = CharacterSystem.create_blank_character()
+	c["skills"] = {"swords": 10}
+	c["skill_bonuses"] = {"swords": {"test": 12}}
+	var got: int = CharacterSystem.get_effective_skill_level(c, "swords")
+	if got != 22:
+		_fail("effective Swords level: expected 22, got %d" % got)
+	_done()
+
+
+## Companion count is a count: whole numbers at every level 1..20, and it
+## keeps growing past 10 (uncapped).
+func _check_integer_curve_floors() -> void:
+	var values: Array[float] = []
+	for lvl in range(1, 21):
+		var b: Dictionary = PerkSystem.get_base_skill_bonuses_at_level("leadership", lvl)
+		if not b.has("party_max_companions"):
+			_fail("leadership has no party_max_companions at level %d" % lvl)
+			continue
+		var v: float = float(b["party_max_companions"])
+		if v != floorf(v):
+			_fail("party_max_companions at level %d is %s, not whole" % [lvl, v])
+		values.append(v)
+	if values.size() == 20 and not values[19] > values[9]:
+		_fail("party_max_companions did not grow past level 10: %s vs %s" % [values[9], values[19]])
 	_done()
