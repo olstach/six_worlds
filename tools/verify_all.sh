@@ -145,17 +145,17 @@ else
     bad "CONTENT.md and the data disagree - run: python3 tools/content_sync.py --write"
     echo "$out" | tail -15 | sed 's/^/        /'
 fi
-# Every tools/test_content_*.py runs, so a new test file is picked up
+# Every tools/test_*.py runs, so a new test file is picked up
 # without editing this script. Each failing file is named.
-content_failed=""
-for t in tools/test_content_*.py; do
-    python3 "$t" >/dev/null 2>&1 || content_failed="$content_failed $t"
+py_test_failed=""
+for t in tools/test_*.py; do
+    python3 "$t" >/dev/null 2>&1 || py_test_failed="$py_test_failed $t"
 done
-if [ -z "$content_failed" ]; then
-    ok "content sync tests"
+if [ -z "$py_test_failed" ]; then
+    ok "python tool tests"
 else
-    for t in $content_failed; do
-        bad "content sync tests: $t failed - run python3 $t -v"
+    for t in $py_test_failed; do
+        bad "python tool tests: $t failed - run python3 $t -v"
     done
 fi
 
