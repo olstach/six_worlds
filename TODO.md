@@ -2396,6 +2396,13 @@ Moving content onto one shared effect language. The design is at
     - Zone `aoe` and `duration` shapes are not validated yet.
     - A party-screen line showing lasting damage belongs to stage 2 (spec
       section 4.2).
+    - A hold has no floor, while `update_derived_stats` floors attributes at
+      1, so a damage bigger than the attribute differs in-fight vs after.
+    - `refresh_attribute_deltas` ignores damage entries, so non-linear terms
+      such as movement can be off by 1.
+    - A damage-type split truncates each part, losing up to 1 point.
+    - `EffectContext.for_spell` keeps only the first school, so a multi-school
+      heal matches `cleared_by` on one school only.
 - [ ] **Perk normalization**: the ~175 hard-coded `has_perk` branches and the
       ~101 `combat_data` active perks, moved onto the same vocabulary. Olaf asks
       for this once effect normalization is finished; not before.

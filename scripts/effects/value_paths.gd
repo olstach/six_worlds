@@ -460,9 +460,12 @@ static func _entry_cleared_by(entry: Dictionary, kind: String, detail: Dictionar
 			"heal":
 				var rule: Dictionary = want if want is Dictionary else {}
 				var schools = detail.get("school", "")
+				# Validators accept "white_magic" as well as "white"; heal schools
+				# are stored bare, so strip the suffix here, the one place.
+				var want_school: String = str(rule.get("school", "")).trim_suffix("_magic")
 				var school_ok: bool = not rule.has("school") \
-					or (schools is Array and rule["school"] in schools) \
-					or str(schools) == str(rule["school"])
+					or (schools is Array and want_school in schools) \
+					or str(schools) == want_school
 				if school_ok and int(detail.get("level", 0)) >= int(rule.get("min_level", 0)):
 					return true
 			"restore":

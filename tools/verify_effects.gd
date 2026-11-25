@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 41
+const EXPECTED_CHECKS: int = 42
 
 var grid: CombatGrid
 
@@ -47,6 +47,7 @@ func _ready() -> void:
 	_check_midfight_recompute_does_not_double_count()
 	_check_full_rest_clears_but_camp_does_not()
 	_check_heal_clear_respects_school_and_level()
+	_check_heal_clear_accepts_white_magic_spelling()
 	_check_restore_clears_all_or_by_amount()
 	_check_damage_mode_on_enemy_is_fight_only()
 	_check_damaged_values_survive_save_round_trip()
@@ -516,6 +517,17 @@ func _check_heal_clear_respects_school_and_level() -> void:
 		_fail("a white L5 heal should clear it")
 	if not ch.damaged_values.is_empty():
 		_fail("the cleared entry is still there")
+	_done()
+
+
+## The validators accept "white_magic" as well as "white"; both must match a
+## heal whose school is stored as "white".
+func _check_heal_clear_accepts_white_magic_spelling() -> void:
+	var ch: Dictionary = CharacterSystem.create_blank_character()
+	ch["damaged_values"] = [{"value": "attribute.focus", "amount": 2, "source": "curse",
+		"cleared_by": [{"heal": {"school": "white_magic", "min_level": 5}}]}]
+	if ValuePaths.clear_damage(ch, "heal", {"school": "white", "level": 5}) != 1:
+		_fail("a white L5 heal should clear a white_magic-spelled entry")
 	_done()
 
 
