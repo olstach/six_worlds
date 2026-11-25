@@ -359,8 +359,13 @@ static func damaged_total(character: Dictionary, value: String) -> float:
 ##            with an amount it takes off that many points in total, oldest
 ##            entry first, and removes the entries that reach 0 (a partly
 ##            reduced entry is kept and does not count).
+## `unit` is the combat unit carrying `character`, when this happens mid-fight.
+## Pass it so that clearing a HELD attribute entry (one whose combat drain hold
+## "__damage:<source>" is carrying the loss this fight) also lowers or releases
+## that hold, and the heal is felt at once rather than only after the fight.
 ## The caller refreshes derived stats afterwards (update_derived_stats).
-static func clear_damage(character: Dictionary, kind: String, detail: Dictionary) -> int:
+static func clear_damage(character: Dictionary, kind: String, detail: Dictionary,
+		unit: Node = null) -> int:
 	if not kind in EffectVocab.CLEARED_BY:
 		push_error("ValuePaths.clear_damage: unknown kind '%s'" % kind)
 		return 0
@@ -369,11 +374,15 @@ static func clear_damage(character: Dictionary, kind: String, detail: Dictionary
 	var budget: float = float(detail.get("amount", INF)) if kind == "restore" else INF
 	# Entries are stored oldest first, so a limited restore heals the oldest first.
 	var keep: Array = []
+	# How much was taken off held entries, so their holds can follow: a list of
+	# {value, source, amount}.
+	var held_cleared: Array[Dictionary] = []
 	for entry in entries:
 		if not _entry_cleared_by(entry, kind, detail) or budget <= 0.0:
 			keep.append(entry)
 			continue
 		var amount: float = float(entry.get("amount", 0))
+		var taken: float = minf(amount, budget)
 		if amount <= budget:
 			budget -= amount
 			removed += 1
@@ -381,9 +390,58 @@ static func clear_damage(character: Dictionary, kind: String, detail: Dictionary
 			entry["amount"] = amount - budget
 			budget = 0.0
 			keep.append(entry)
+		if entry.get("held", false):
+			held_cleared.append({"value": str(entry.get("value", "")),
+				"source": str(entry.get("source", "")), "amount": taken})
 	if character.has("damaged_values"):
 		character["damaged_values"] = keep
+	if unit != null:
+		for cleared in held_cleared:
+			_reduce_hold(unit, cleared.value, "__damage:" + cleared.source, cleared.amount)
 	return removed
+
+
+## Lower the hold (value, source_id) on `unit` by `by`, removing it when it
+## reaches 0, then refresh whatever is derived from `value`.
+static func _reduce_hold(unit: Node, value: String, source_id: String, by: float) -> void:
+	if unit == null or not "effect_holds" in unit or by <= 0.0:
+		return
+	for i in range(unit.effect_holds.size() - 1, -1, -1):
+		var hold: Dictionary = unit.effect_holds[i]
+		if hold.value != value or str(hold.source_id) != source_id:
+			continue
+		var left: float = float(hold.amount) - by
+		if left <= 0.0:
+			unit.effect_holds.remove_at(i)
+		else:
+			hold["amount"] = left
+	_after_change(unit, [value])
+
+
+## A `restore` on a unit that keeps no damaged_values (an enemy): its
+## `damage`-mode losses are only "__damage:<source>" drain holds, so lower
+## those on `value` by up to `amount` in total, oldest first. Returns how much
+## was restored.
+static func reduce_damage_holds(unit: Node, value: String, amount: float) -> float:
+	if unit == null or not "effect_holds" in unit or amount <= 0.0:
+		return 0.0
+	var budget: float = amount
+	for hold in holds_on(unit, value):
+		if budget <= 0.0:
+			break
+		var source_id: String = str(hold.source_id)
+		if not source_id.begins_with("__damage:") or hold.mode != "drain":
+			continue
+		var taken: float = minf(float(hold.amount), budget)
+		budget -= taken
+		_reduce_hold(unit, value, source_id, taken)
+	return amount - budget
+
+
+## True for a player-team unit whose character is in the party: the case where
+## `damage` mode writes a persistent entry and a heal may clear one.
+static func is_party_unit(unit: Node) -> bool:
+	return _is_party_unit(unit)
 
 
 ## Does `entry` say that `kind` with `detail` heals it?

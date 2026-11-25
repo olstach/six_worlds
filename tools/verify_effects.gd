@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 20
+const EXPECTED_CHECKS: int = 31
 
 var grid: CombatGrid
 
@@ -50,6 +50,19 @@ func _ready() -> void:
 	_check_restore_clears_all_or_by_amount()
 	_check_damage_mode_on_enemy_is_fight_only()
 	_check_damaged_values_survive_save_round_trip()
+
+	# EffectResolver: shared fields and the damage / heal / modify ops.
+	_check_resolver_damage_and_split()
+	_check_resolver_heal_full()
+	_check_resolver_absorb_mana()
+	_check_resolver_modify_needs_hold_source()
+	_check_save_rolled_once_for_both_branches()
+	_check_chance_zero_and_hundred()
+	_check_bonus_vs_and_scale()
+	_check_if_condition_blocks()
+	_check_resolver_refuses_invalid_effect()
+	_check_heal_clearing_held_damage_lifts_it_now()
+	_check_resolver_restore_by_amount()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -596,4 +609,274 @@ func _check_damaged_values_survive_save_round_trip() -> void:
 	MapManager.load_save_data(snap_map)
 	SaveManager.current_slot = old_slot
 	_cleanup([u])
+	_done()
+
+
+# ── EffectResolver ───────────────────────────────────────────────────────────
+
+## A context for `caster` acting on `target`, as a spell of `school`/`level`.
+## hold_source is left empty unless a check sets it.
+func _ctx(caster: CombatUnit, target: CombatUnit, school: String = "fire",
+		level: int = 1) -> EffectContext:
+	var ctx := EffectContext.new()
+	ctx.caster = caster
+	ctx.target = target
+	ctx.container_kind = "test"
+	ctx.container_id = "verify"
+	ctx.school = school
+	ctx.level = level
+	return ctx
+
+
+## How many entries entries were applied.
+func _applied(entries: Array[Dictionary]) -> int:
+	var n: int = 0
+	for entry in entries:
+		if entry.get("applied", false):
+			n += 1
+	return n
+
+
+func _check_resolver_damage_and_split() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	EffectResolver.resolve([{"op": "damage", "amount": 40, "type": "fire"}], _ctx(caster, foe))
+	if foe.current_hp != 60:
+		_fail("40 fire on an unresisted enemy: HP %d, wanted 60" % foe.current_hp)
+	foe.current_hp = 100
+	# `set`, not `fortify`: Resistance caps buffs below immunity on purpose
+	# (REDUCTION_CAP), so only a declared 100 makes black do nothing at all.
+	ValuePaths.add_hold(foe, "resist.black", "set", 100, "t1")
+	EffectResolver.resolve([{"op": "damage", "amount": 40,
+		"type": {"fire": 0.5, "black": 0.5}}], _ctx(caster, foe))
+	if foe.current_hp != 80:
+		_fail("40 split fire/black vs black 100%%: HP %d, wanted 80" % foe.current_hp)
+	_cleanup([caster, foe])
+	_done()
+
+
+func _check_resolver_heal_full() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var friend := _make_unit(Vector2i(3, 3), CombatManager.Team.PLAYER)
+	friend.current_hp = 30
+	var entries := EffectResolver.resolve([{"op": "heal", "amount": "full"}], _ctx(caster, friend))
+	if friend.current_hp != friend.max_hp:
+		_fail("heal full: HP %d, wanted %d" % [friend.current_hp, friend.max_hp])
+	if _applied(entries) != 1:
+		_fail("heal full: entries %s" % [entries])
+	_cleanup([caster, friend])
+	_done()
+
+
+func _check_resolver_absorb_mana() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	foe.max_mana = 100
+	foe.current_mana = 50
+	caster.max_mana = 100
+	caster.current_mana = 10
+	var absorb := {"op": "modify", "value": "resource.mana", "mode": "absorb", "amount": 20}
+	EffectResolver.resolve([absorb], _ctx(caster, foe))
+	if foe.current_mana != 30 or caster.current_mana != 30:
+		_fail("absorb 20 mana: target %d (want 30), caster %d (want 30)"
+			% [foe.current_mana, caster.current_mana])
+	# The caster's gain is capped at its maximum.
+	caster.current_mana = 95
+	EffectResolver.resolve([absorb], _ctx(caster, foe))
+	if foe.current_mana != 10 or caster.current_mana != 100:
+		_fail("absorb at the cap: target %d (want 10), caster %d (want 100)"
+			% [foe.current_mana, caster.current_mana])
+	_cleanup([caster, foe])
+	_done()
+
+
+func _check_resolver_modify_needs_hold_source() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	var dodge: int = foe.get_dodge()
+	var fortify := {"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 5}
+	var entries := EffectResolver.resolve([fortify], _ctx(caster, foe))
+	if entries.size() != 1 or entries[0].get("applied", true):
+		_fail("fortify with no hold_source must be refused: %s" % [entries])
+	if foe.get_dodge() != dodge:
+		_fail("refused fortify still moved dodge: %d -> %d" % [dodge, foe.get_dodge()])
+	# With a hold_source it lands, under that source.
+	var ctx := _ctx(caster, foe)
+	ctx.hold_source = "status:Haste"
+	EffectResolver.resolve([fortify], ctx)
+	if foe.get_dodge() != dodge + 5:
+		_fail("fortify under a hold_source: dodge %d, wanted %d" % [foe.get_dodge(), dodge + 5])
+	ValuePaths.release(foe, "status:Haste")
+	_cleanup([caster, foe])
+	_done()
+
+
+func _check_save_rolled_once_for_both_branches() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	var save := {"stat": "constitution", "tier": "normal"}
+	var effects := [
+		{"op": "damage", "amount": 10, "type": "fire", "save": save, "on_save": "fail"},
+		{"op": "damage", "amount": 5, "type": "fire", "save": save, "on_save": "pass"},
+	]
+	var saw_fail: bool = false
+	var saw_pass: bool = false
+	seed(7001)
+	for i in 50:
+		foe.current_hp = 100
+		var entries := EffectResolver.resolve(effects, _ctx(caster, foe))
+		if _applied(entries) != 1:
+			_fail("run %d: %d branches applied, wanted exactly 1: %s" % [i, _applied(entries), entries])
+			break
+		var lost: int = 100 - foe.current_hp
+		if lost == 10:
+			saw_fail = true
+		elif lost == 5:
+			saw_pass = true
+		else:
+			_fail("run %d: lost %d HP, wanted 10 or 5" % [i, lost])
+	if not (saw_fail and saw_pass):
+		_fail("50 seeded runs should see both branches (fail %s, pass %s)" % [saw_fail, saw_pass])
+	_cleanup([caster, foe])
+	_done()
+
+
+func _check_chance_zero_and_hundred() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var friend := _make_unit(Vector2i(3, 3), CombatManager.Team.PLAYER)
+	seed(7002)
+	var never: int = 0
+	var always: int = 0
+	for i in 50:
+		friend.current_hp = 50
+		never += _applied(EffectResolver.resolve(
+			[{"op": "heal", "amount": 1, "chance": 0}], _ctx(caster, friend)))
+		always += _applied(EffectResolver.resolve(
+			[{"op": "heal", "amount": 1, "chance": 100}], _ctx(caster, friend)))
+	if never != 0:
+		_fail("chance 0 applied %d times in 50" % never)
+	if always != 50:
+		_fail("chance 100 applied %d times in 50" % always)
+	_cleanup([caster, friend])
+	_done()
+
+
+func _check_bonus_vs_and_scale() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	foe.character_data["tags"] = ["undead"]
+	EffectResolver.resolve([{"op": "damage", "amount": 10, "type": "fire",
+		"bonus_vs": {"undead": 2}}], _ctx(caster, foe))
+	if foe.current_hp != 80:
+		_fail("bonus_vs undead x2 on 10 fire: HP %d, wanted 80" % foe.current_hp)
+	# A tag the target lacks changes nothing.
+	foe.current_hp = 100
+	EffectResolver.resolve([{"op": "damage", "amount": 10, "type": "fire",
+		"bonus_vs": {"boss": 0.5}}], _ctx(caster, foe))
+	if foe.current_hp != 90:
+		_fail("bonus_vs boss on a non-boss: HP %d, wanted 90" % foe.current_hp)
+
+	# Two debuffs: 10 + 2 x 5 = 20.
+	foe.character_data["tags"] = []
+	foe.current_hp = 100
+	foe.status_effects.append({"status": "Slowed", "duration": 3, "value": 0})
+	foe.status_effects.append({"status": "Silenced", "duration": 3, "value": 0})
+	EffectResolver.resolve([{"op": "damage", "amount": 10, "type": "fire",
+		"scale": {"per": "debuff_on_target", "amount": 5}}], _ctx(caster, foe))
+	if foe.current_hp != 80:
+		_fail("scale 5 per debuff with 2 debuffs: HP %d, wanted 80" % foe.current_hp)
+	# And a cap of 4 holds the growth to 4.
+	foe.current_hp = 100
+	EffectResolver.resolve([{"op": "damage", "amount": 10, "type": "fire",
+		"scale": {"per": "debuff_on_target", "amount": 5, "cap": 4}}], _ctx(caster, foe))
+	if foe.current_hp != 86:
+		_fail("scale capped at 4: HP %d, wanted 86" % foe.current_hp)
+	foe.status_effects.clear()
+	_cleanup([caster, foe])
+	_done()
+
+
+func _check_if_condition_blocks() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	var effect := {"op": "damage", "amount": 10, "type": "fire",
+		"if": [{"target_has": "Burning"}]}
+	var entries := EffectResolver.resolve([effect], _ctx(caster, foe))
+	if _applied(entries) != 0 or foe.current_hp != 100:
+		_fail("target_has Burning on a non-burning target applied: %s, HP %d" % [entries, foe.current_hp])
+	foe.status_effects.append({"status": "Burning", "duration": 3, "value": 0})
+	entries = EffectResolver.resolve([effect], _ctx(caster, foe))
+	if _applied(entries) != 1 or foe.current_hp != 90:
+		_fail("target_has Burning on a burning target: %s, HP %d" % [entries, foe.current_hp])
+	foe.status_effects.clear()
+	_cleanup([caster, foe])
+	_done()
+
+
+func _check_resolver_refuses_invalid_effect() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	var entries := EffectResolver.resolve([{"op": "damage", "amount": 10, "type": "not_a_type"}],
+		_ctx(caster, foe))
+	if entries.size() != 1 or entries[0].get("applied", true) \
+			or not str(entries[0].get("reason", "")).begins_with("invalid: "):
+		_fail("an invalid effect must be refused with reason 'invalid: ...': %s" % [entries])
+	if foe.current_hp != 100:
+		_fail("the invalid effect still did damage: HP %d" % foe.current_hp)
+	_cleanup([caster, foe])
+	_done()
+
+
+## Ledger ruling: a heal that clears a HELD damage entry lifts the in-fight
+## penalty at once, and after the fight the character is back to base.
+func _check_heal_clearing_held_damage_lifts_it_now() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	var base_sp: int = u.get_spellpower()
+	var derived_sp: int = int(ch.derived.spellpower)
+	var curse := {"op": "modify", "value": "attribute.focus", "mode": "damage", "amount": 2,
+		"cleared_by": [{"heal": {"school": "white", "min_level": 3}}]}
+	EffectResolver.resolve([curse], _ctx(caster, u, "black", 5))
+	if u.get_spellpower() >= base_sp:
+		_fail("setup: 2 focus damage did not lower spellpower (%d)" % u.get_spellpower())
+	EffectResolver.resolve([{"op": "heal", "amount": 5}], _ctx(caster, u, "white", 3))
+	if u.get_spellpower() != base_sp:
+		_fail("after a qualifying heal mid-fight spellpower %d, wanted %d"
+			% [u.get_spellpower(), base_sp])
+	if not ch.get("damaged_values", []).is_empty():
+		_fail("the heal left damaged_values %s" % [ch.damaged_values])
+	_end_fight()
+	if int(ch.derived.spellpower) != derived_sp:
+		_fail("after end_combat derived spellpower %d, wanted %d"
+			% [int(ch.derived.spellpower), derived_sp])
+	_leave_party(u)
+	_cleanup([caster, u])
+	_done()
+
+
+## `restore` on attribute.: a party member's held entry shrinks and so does its
+## in-fight hold; an enemy's "__damage:" drain hold shrinks directly.
+func _check_resolver_restore_by_amount() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(6, 6), CombatManager.Team.ENEMY)
+	_join_party(u)
+	var curse := {"op": "modify", "value": "attribute.focus", "mode": "damage", "amount": 3}
+	var restore := {"op": "modify", "value": "attribute.focus", "mode": "restore", "amount": 2}
+	EffectResolver.resolve([curse], _ctx(caster, u))
+	EffectResolver.resolve([curse], _ctx(caster, foe))
+	EffectResolver.resolve([restore], _ctx(caster, u))
+	EffectResolver.resolve([restore], _ctx(caster, foe))
+	var left: Array = u.character_data.get("damaged_values", [])
+	if left.size() != 1 or float(left[0].amount) != 1.0:
+		_fail("party restore 2 of 3: entries %s" % [left])
+	for who in [u, foe]:
+		var holds := ValuePaths.holds_on(who, "attribute.focus")
+		if holds.size() != 1 or float(holds[0].amount) != 1.0:
+			_fail("%s focus hold after restore 2 of 3: %s" % [who.unit_name, holds])
+	_end_fight()
+	_leave_party(u)
+	_cleanup([caster, u, foe])
 	_done()
