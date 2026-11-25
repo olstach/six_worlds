@@ -1,6 +1,6 @@
 # Six Worlds — TODO
 
-**Last updated:** 2026-10-16
+**Last updated:** 2026-11-25
 
 The open list. Organised as: **what to do next → what is still open → designs
 waiting to be built → what got done**. The full historical checklists (every
@@ -2357,6 +2357,97 @@ an aura), `armored_skin` (conditional resistance), `hurry_betrays_distraction`
 (no party-wide payload target), `burning_blood` (needs an "attacker used ranged"
 condition). Still blocked: `the_blade_decides`, `dont_lose_the_momentum`
 (stacks, a stamina-cost stat), `terrain_mastery` (height, not ground).
+
+## 17. Normalization (2026-11-25)
+
+Moving content onto one shared effect language. The design is at
+`docs/superpowers/specs/2026-11-25-effect-normalization-design.md`.
+
+- [ ] **Effect normalization**: spells, statuses, auras/zones, items,
+      upgrades, traits, affixes, mantras, events/quests. In progress.
+- [ ] **Perk normalization**: the ~175 hard-coded `has_perk` branches and the
+      ~101 `combat_data` active perks, moved onto the same vocabulary. Olaf asks
+      for this once effect normalization is finished; not before.
+
+## 16. Spell balance and cuts (review 2026-11-23)
+
+From `docs/plans/SPELL_REVIEW_2026-11.md`, which has the reasoning and the
+numbers. Parked on purpose: the effect normalization comes first, and several
+of these get easier or change shape once it is in (bosses vs instant kill,
+crowd-control upgrade tiers). Reference curve: L1 15 mana / ~15 damage, L3 40
+/ ~25, L5 75 / ~50, L7 135 / ~80, L9 225 / ~120. Area spells deal about the same
+as single-target spells of their level.
+
+**Overpowered**
+- [ ] `stinking_cloud` (L1, 15 mana) — a radius-2 zone that stuns for
+      spellpower duration. Make it a chance with a save each turn, or a weaker
+      status.
+- [ ] Hard crowd control upgrading to "all enemies" — `dread` (Paralyzed),
+      `petrify`, `charm`, `confusion`, `chaos`, `berserk`. Cap at area, or halve
+      the duration at the all-enemies tier. **Latent:** spell upgrade tiers are
+      not built — `upgrade_scaling` is read by nothing — so this bites only
+      once they are.
+- [ ] Instant kills work on bosses — `midas_touch`, `deathfog`, `liberate`,
+      and `doom` through `death_on_expire`. `on_failed_save.instant_kill` has
+      no boss check. Bosses should take the pass branch, or a % of max HP.
+- [ ] Battlefield-wide spells beat every storm — `mudra_of_touching_the_earth`
+      (150 to all enemies + 150 heal to all allies), `sunrise` (120 + 100),
+      `wilting_curse` (150 to all living enemies), against `firestorm` (120,
+      radius 5). Price globals higher or deal about 60% of a storm.
+- [ ] Party-wide extra turn at L7 — `second_wind` (upgradable to all allies),
+      `rain_of_revival` (area, plus 60 heal). L9 at most, single target.
+- [ ] `cloudform` (L7) — physical immunity, upgradable to the whole party.
+- [ ] `ghost_shoal` (Water/Summoning L7) — 100 damage band + Confused: the
+      strongest L7 area spell, in the lowest-damage school.
+- [ ] `golden_blade` (L7, 304 mana) — 225 single-target damage, more than any
+      L9 single-target spell, plus gold on kill.
+
+**Underpowered**
+- [ ] `vaporize` (L9) — 150 single target, below golden_blade. About 250, or
+      no-corpse + ignores resistance.
+- [ ] `black_lightning` (L7, 135) — 50 + Blind against `lightning` (L5, 75): 60 +
+      stun. About 90, or let it chain.
+- [ ] `tsunami` (L9) — 30 damage + push 2. Base about 80, or add Prone.
+- [ ] `cauterize` (L1) — damages your own ally 5 to do what `herbal_remedy`
+      does while healing 15. Give it wounds, or a permanent bleed stop.
+- [ ] `ember` (L1) — Burning only, only on a recently burning target. Worse
+      than firebolt.
+- [ ] `soothing_presence` (L3) — heals 5.
+- [ ] `steam_jet` (L3) — 20 in a 3-tile line against breath_of_fire's 25 cone +
+      Burning.
+- [ ] `surge` (L1, 5) and `geyser` (L7, 30) — low even for Water.
+- [ ] `death_bolt` (L3, 20) — below curve; its raise-on-kill is unwired.
+
+**Mana-cost anomalies** — deliberate domain surcharge or error? Decide, then
+write it in `school_notes`.
+- [ ] L5 at the L9 price (225): `mindmuck`, `rain_of_mud`, `vision_of_reality`.
+- [ ] L3 at the L5 price (75): `eerie_dirge`, `sonic_boom`, `metal_to_mud`,
+      `globe_of_glass`, `heat_transfer`, `flash_of_radiance`, `fragrant_sauna`,
+      `divine_eye`, `mudling` — while `battle_chant`, eerie_dirge's sibling,
+      costs 40.
+
+**Cut or merge**
+- [ ] `grounding` (L3) vs `cleanse` (L7) — grounding removes all negatives
+      (`negative` = `all_negative` in status_ops) plus a CON buff, four levels
+      earlier. Narrow grounding to physical afflictions or one status.
+- [ ] `cloudform` (L7) vs `fluid_form` (L9) — same immunities; cloudform is
+      lower level, targets allies, upgrades to the party, and has a smaller
+      vulnerability. One of them goes self-only.
+- [ ] `clarity` vs `clear_mind` (both L3) — both remove mental debuffs. Keep
+      clear_mind (luminosity domain), give clarity another job.
+- [ ] `voidbolt` vs `bitter_word` (L1 Black/Sorcery) — cut voidbolt or give it
+      a rider.
+- [ ] `crushing_hand` vs `stone_spike` (L1 Earth, 15 damage) — merge.
+- [ ] Five short teleports — `jump` (L1, 4), `get_out` (L1, 3), `blink` (L3, 6),
+      `cloudstep` (L3, 5, ignores LOS), `flash_step` (L5). One per level band,
+      a twist each for the rest.
+- [ ] `bulwark` (L3) / `stone_skin` (L5) / `golden_armor` (L5) — three
+      physical-resist buffs, two at the same level.
+- [ ] `shrapnel_blast` vs `earthquake` (L7, 100) — shrapnel has a smaller
+      radius and no rider. Add bleed or armour-pierce.
+- [ ] `oily_skin` (L1) ⊂ `melt_armor` (L3) — fine as a ladder; oily_skin could
+      instead make burning spread.
+- [ ] `slashing_blade` — description is still "Blade damage (+50% dmg/cost)".
 
 # Part II — Designs waiting to be built
 
