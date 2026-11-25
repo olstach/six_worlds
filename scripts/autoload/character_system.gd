@@ -1062,7 +1062,13 @@ func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	var bonus = 0
 	for source in bonus_sources:
 		bonus += int(bonus_sources[source])
-	return clampi(base + bonus, -5, 15)
+	var level: int = clampi(base + bonus, -5, 15)
+	# Persistent `damage` (ValuePaths.apply_damage_mode) lowers the level but
+	# never below 0; a level already negative is left as it is.
+	var hurt: int = int(ValuePaths.damaged_total(character, "skill." + skill_id))
+	if hurt > 0:
+		level = mini(level, maxi(0, level - hurt))
+	return level
 
 
 ## Update the character's element affinity totals from their skill levels.
@@ -1171,6 +1177,10 @@ func update_derived_stats(character: Dictionary) -> void:
 	var effective_attrs = {}
 	for attr_key in attrs:
 		effective_attrs[attr_key] = attrs[attr_key] + equip_bonus.get(attr_key, 0) + trait_attr_bonus.get(attr_key, 0)
+		# Persistent damage (damaged_values) lowers it, but never below 1.
+		var hurt: int = int(ValuePaths.damaged_total(character, "attribute." + str(attr_key)))
+		if hurt > 0:
+			effective_attrs[attr_key] = maxi(1, effective_attrs[attr_key] - hurt)
 
 	# Refresh trait skill bonuses (clear old pass first, then re-add from current traits)
 	if not "skill_bonuses" in character:

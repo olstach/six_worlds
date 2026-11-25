@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 11
+const EXPECTED_CHECKS: int = 19
 
 var grid: CombatGrid
 
@@ -39,6 +39,16 @@ func _ready() -> void:
 
 	# Holds are combat-scoped: end_combat must wipe them.
 	_check_holds_do_not_survive_end_combat()
+
+	# Persistent `damage` mode and what clears it.
+	_check_add_hold_refuses_damage_and_restore()
+	_check_damage_mode_persists_past_combat()
+	_check_damage_mode_counts_once_after_combat()
+	_check_full_rest_clears_but_camp_does_not()
+	_check_heal_clear_respects_school_and_level()
+	_check_restore_clears_all_or_by_amount()
+	_check_damage_mode_on_enemy_is_fight_only()
+	_check_damaged_values_survive_save_round_trip()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -337,5 +347,231 @@ func _check_holds_do_not_survive_end_combat() -> void:
 			_fail("derived.%s: got %s, wanted %s" % [key, ch.derived.get(key), want])
 	if u.current_hp > u.max_hp:
 		_fail("current_hp %d above max_hp %d" % [u.current_hp, u.max_hp])
+	_cleanup([u])
+	_done()
+
+
+# ── Persistent `damage` mode and cleared_by ──────────────────────────────────
+
+## Make `unit`'s character a real party member (ValuePaths treats a team-0 unit
+## whose character is in the party as the persistent case). Undo with
+## _leave_party().
+func _join_party(unit: CombatUnit) -> void:
+	CharacterSystem.get_party().append(unit.character_data)
+
+
+func _leave_party(unit: CombatUnit) -> void:
+	CharacterSystem.get_party().erase(unit.character_data)
+
+
+## Run the real end_combat() on a lost fight (a loss skips the reward maths).
+func _end_fight() -> void:
+	CombatManager.combat_active = true
+	CombatManager.end_combat(false)
+	CombatManager.combat_grid = grid   # end_combat nulls it; later checks need it
+
+
+func _check_add_hold_refuses_damage_and_restore() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	ValuePaths.add_hold(u, "attribute.focus", "damage", 2, "t1")
+	ValuePaths.add_hold(u, "skill.swords", "restore", 1, "t2")
+	if not u.effect_holds.is_empty():
+		_fail("add_hold must refuse damage/restore on attribute./skill.: %s" % [u.effect_holds])
+	_cleanup([u])
+	_done()
+
+
+func _check_damage_mode_persists_past_combat() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	var before: int = int(ch.derived.spellpower)
+	var attrs: Dictionary = ch.attributes.duplicate()
+	var hurt: Dictionary = attrs.duplicate()
+	hurt["focus"] = int(hurt["focus"]) - 2
+	var lost: int = int(CombatStats.attribute_terms(attrs).spellpower) \
+		- int(CombatStats.attribute_terms(hurt).spellpower)
+	if lost <= 0:
+		_fail("setup: 2 focus should cost some spellpower")
+
+	ValuePaths.apply_damage_mode(u, "attribute.focus", 2.0, [{"rest": "full"}], "curse")
+	_end_fight()
+
+	if ValuePaths.damaged_total(ch, "attribute.focus") != 2.0:
+		_fail("damaged_total after combat: %s" % ValuePaths.damaged_total(ch, "attribute.focus"))
+	if int(ch.derived.spellpower) != before - lost:
+		_fail("spellpower after combat: %d, wanted %d" % [int(ch.derived.spellpower), before - lost])
+	if int(ch.attributes.focus) != int(attrs.focus):
+		_fail("base focus must not be edited; the damage is a separate entry")
+	_leave_party(u)
+	_cleanup([u])
+	_done()
+
+
+## The loss must bite during the fight AND after it, but only once.
+func _check_damage_mode_counts_once_after_combat() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	var before: int = u.get_spellpower()
+	var attrs: Dictionary = ch.attributes.duplicate()
+	var hurt: Dictionary = attrs.duplicate()
+	hurt["focus"] = int(hurt["focus"]) - 3
+	var lost: int = int(CombatStats.attribute_terms(attrs).spellpower) \
+		- int(CombatStats.attribute_terms(hurt).spellpower)
+
+	ValuePaths.apply_damage_mode(u, "attribute.focus", 3.0, [], "curse")
+	if u.get_spellpower() != before - lost:
+		_fail("during the fight spellpower: %d, wanted %d" % [u.get_spellpower(), before - lost])
+	_end_fight()
+	if int(ch.derived.spellpower) != before - lost:
+		_fail("after the fight spellpower: %d, wanted %d (not %d)"
+			% [int(ch.derived.spellpower), before - lost, before - 2 * lost])
+	_leave_party(u)
+	_cleanup([u])
+	_done()
+
+
+func _check_full_rest_clears_but_camp_does_not() -> void:
+	var ch: Dictionary = CharacterSystem.create_blank_character()
+	ch["damaged_values"] = [{"value": "attribute.focus", "amount": 2,
+		"cleared_by": [{"rest": "full"}], "source": "curse"}]
+	if ValuePaths.clear_damage(ch, "rest", {"tier": 2}) != 0 or ch.damaged_values.size() != 1:
+		_fail("a camp rest must not clear a full-rest damage")
+	if ValuePaths.clear_damage(ch, "rest", {"tier": 3}) != 1 or not ch.damaged_values.is_empty():
+		_fail("a full rest must clear it")
+	# A quick rest clears a {"rest": "quick"} entry, and the default is full rest.
+	ch["damaged_values"] = [
+		{"value": "skill.swords", "amount": 1, "cleared_by": [{"rest": "quick"}], "source": "a"},
+		{"value": "skill.axes", "amount": 1, "source": "b"}]
+	if ValuePaths.clear_damage(ch, "rest", {"tier": 1}) != 1:
+		_fail("a quick rest should clear only the quick-rest entry")
+	if ValuePaths.clear_damage(ch, "rest", {"tier": 2}) != 0:
+		_fail("default cleared_by is full rest, not camp")
+	if ValuePaths.clear_damage(ch, "rest", {"tier": 3}) != 1:
+		_fail("default cleared_by should clear on a full rest")
+	_done()
+
+
+func _check_heal_clear_respects_school_and_level() -> void:
+	var ch: Dictionary = CharacterSystem.create_blank_character()
+	ch["damaged_values"] = [{"value": "attribute.focus", "amount": 2, "source": "curse",
+		"cleared_by": [{"heal": {"school": "white", "min_level": 5}}]}]
+	if ValuePaths.clear_damage(ch, "heal", {"school": "white", "level": 3}) != 0:
+		_fail("a white L3 heal must not clear a min_level 5 damage")
+	if ValuePaths.clear_damage(ch, "heal", {"school": "fire", "level": 7}) != 0:
+		_fail("a fire L7 heal must not clear a white-only damage")
+	if ValuePaths.clear_damage(ch, "heal", {"school": "white", "level": 5}) != 1:
+		_fail("a white L5 heal should clear it")
+	if not ch.damaged_values.is_empty():
+		_fail("the cleared entry is still there")
+	_done()
+
+
+func _check_restore_clears_all_or_by_amount() -> void:
+	var ch: Dictionary = CharacterSystem.create_blank_character()
+	ch["damaged_values"] = [
+		{"value": "attribute.focus", "amount": 3, "source": "a"},
+		{"value": "attribute.focus", "amount": 2, "source": "b"},
+		{"value": "attribute.luck", "amount": 1, "source": "c"}]
+	# Default cleared_by includes {"restore": <own value>}.
+	if ValuePaths.clear_damage(ch, "restore", {"value": "attribute.strength"}) != 0:
+		_fail("restoring another value must clear nothing")
+	# 4 points, oldest first: the 3 goes, the 2 drops to 1.
+	var cleared: int = ValuePaths.clear_damage(ch, "restore",
+		{"value": "attribute.focus", "amount": 4})
+	if cleared != 1 or ValuePaths.damaged_total(ch, "attribute.focus") != 1.0:
+		_fail("restore amount 4: cleared %d, focus left %s" % [cleared,
+			ValuePaths.damaged_total(ch, "attribute.focus")])
+	if ValuePaths.clear_damage(ch, "restore", {"value": "attribute.focus"}) != 1:
+		_fail("restore with no amount should clear what is left")
+	if ValuePaths.damaged_total(ch, "attribute.luck") != 1.0:
+		_fail("luck damage must be untouched")
+	_done()
+
+
+func _check_damage_mode_on_enemy_is_fight_only() -> void:
+	var u := _make_unit(Vector2i(6, 6), CombatManager.Team.ENEMY)
+	var ch: Dictionary = u.character_data
+	var attrs_before: Dictionary = ch.attributes.duplicate()
+	var dodge: int = u.get_dodge()
+	ValuePaths.apply_damage_mode(u, "attribute.finesse", 4.0, [], "curse")
+	if u.get_dodge() >= dodge:
+		_fail("enemy dodge should drop during the fight: %d -> %d" % [dodge, u.get_dodge()])
+	if ch.has("damaged_values") and not ch.damaged_values.is_empty():
+		_fail("an enemy must not get persistent damaged_values")
+	if ch.attributes != attrs_before:
+		_fail("enemy base attributes were edited")
+	ValuePaths.release_all_combat(u)
+	if u.get_dodge() != dodge:
+		_fail("enemy dodge after the fight: %d, wanted %d" % [u.get_dodge(), dodge])
+	_cleanup([u])
+	_done()
+
+
+## Saves go through SaveManager slot 3, which may be Olaf's real save. The slot
+## file and meta.json are held in memory first and put back byte for byte (or
+## deleted if they did not exist), so this check never costs him a save.
+func _check_damaged_values_survive_save_round_trip() -> void:
+	var slot_path: String = SaveManager.SAVE_DIR + "slot_3.json"
+	var meta_path: String = SaveManager.SAVE_DIR + "meta.json"
+	var kept: Dictionary = {}
+	for path in [slot_path, meta_path]:
+		kept[path] = FileAccess.get_file_as_bytes(path) if FileAccess.file_exists(path) else null
+	var old_slot: int = SaveManager.current_slot
+	# Snapshot every system the save touches, to put the process back after.
+	var snap_game: Dictionary = GameState.get_save_data().duplicate(true)
+	var snap_chars: Dictionary = CharacterSystem.get_save_data().duplicate(true)
+	var snap_items: Dictionary = ItemSystem.get_save_data().duplicate(true)
+	var snap_karma: Dictionary = KarmaSystem.get_save_data().duplicate(true)
+	var snap_map: Dictionary = MapManager.get_save_data().duplicate(true)
+
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	ch["damaged_values"] = [{"value": "attribute.focus", "amount": 2,
+		"cleared_by": [{"rest": "full"}, {"heal": {"school": "white", "min_level": 5}}],
+		"source": "curse"}]
+	CharacterSystem.update_derived_stats(ch)
+	var sp: int = int(ch.derived.spellpower)
+	var name_: String = str(ch.get("name", ""))
+
+	var saved: bool = SaveManager.save_game(3)
+	CharacterSystem.get_party().erase(ch)
+	var loaded: bool = SaveManager.load_game(3)
+	if not saved or not loaded:
+		_fail("save/load of slot 3 failed (saved %s, loaded %s)" % [saved, loaded])
+	else:
+		var back: Dictionary = {}
+		for member in CharacterSystem.get_party():
+			if str(member.get("name", "")) == name_ and member.has("damaged_values"):
+				back = member
+		if back.is_empty():
+			_fail("the party member came back without damaged_values")
+		else:
+			var entry: Dictionary = back.damaged_values[0]
+			if entry.get("value") != "attribute.focus" or int(entry.get("amount", 0)) != 2 \
+					or entry.get("cleared_by", []).size() != 2 or entry.get("source") != "curse":
+				_fail("damaged_values came back as %s" % [back.damaged_values])
+			if ValuePaths.damaged_total(back, "attribute.focus") != 2.0:
+				_fail("damaged_total after load: %s" % ValuePaths.damaged_total(back, "attribute.focus"))
+			if int(back.derived.spellpower) != sp:
+				_fail("spellpower after load: %d, wanted %d" % [int(back.derived.spellpower), sp])
+
+	# Put everything back: the process state, then the files.
+	GameState.load_save_data(snap_game)
+	CharacterSystem.load_save_data(snap_chars)
+	ItemSystem.load_save_data(snap_items)
+	KarmaSystem.load_save_data(snap_karma)
+	MapManager.load_save_data(snap_map)
+	SaveManager.current_slot = old_slot
+	for path in kept:
+		if kept[path] == null:
+			if FileAccess.file_exists(path):
+				DirAccess.remove_absolute(path)
+		else:
+			var f := FileAccess.open(path, FileAccess.WRITE)
+			f.store_buffer(kept[path])
+			f.close()
 	_cleanup([u])
 	_done()

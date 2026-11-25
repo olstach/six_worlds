@@ -17,8 +17,9 @@ extends RefCounted
 ##   2. times the product of every multiply
 ##   3. the LAST-ADDED `set` replaces the result, if any set exists
 ##
-## Stage 1 wires `stat.`, `resist.`, `attribute.` and `skill.` (fortify and
-## drain only; damage/restore on attribute/skill come later).
+## Stage 1 wires `stat.`, `resist.`, `attribute.` and `skill.`. Holds take
+## fortify and drain there; the persistent `damage` mode and its `restore` have
+## their own homes, apply_damage_mode() and clear_damage(), further down.
 ##
 ## `attribute.` holds do not change a getter directly. refresh_attribute_deltas()
 ## re-runs the shared attribute formula (CombatStats.attribute_terms) with and
@@ -51,6 +52,12 @@ static func add_hold(unit: Node, value: String, mode: String, amount: float,
 	if not mode in allowed:
 		push_error("ValuePaths.add_hold: mode '%s' is not allowed for '%s' (allowed: %s)"
 			% [mode, value, allowed])
+		return
+	# `damage` and `restore` on attribute./skill. are not holds: they live on the
+	# character and are handled by apply_damage_mode() / clear_damage().
+	if mode in ["damage", "restore"] and namespace_name in ["attribute", "skill"]:
+		push_error("ValuePaths.add_hold: mode '%s' on '%s' is not a hold; use apply_damage_mode() or clear_damage()"
+			% [mode, value])
 		return
 	if not "effect_holds" in unit:
 		push_error("ValuePaths.add_hold: %s has no effect_holds" % unit)
@@ -270,3 +277,135 @@ static func _all_zero(d: Dictionary) -> bool:
 		if int(d[k]) != 0:
 			return false
 	return true
+
+
+# ── Persistent damage ────────────────────────────────────────────────────────
+#
+# A `damage`-mode modify lowers an attribute or skill until something heals it.
+# On a party member it is an ENTRY in character["damaged_values"]:
+#   {value, amount, cleared_by, source}
+# CharacterSystem.update_derived_stats subtracts the attribute entries and
+# get_effective_skill_level subtracts the skill entries, so the loss survives
+# combat and a save. On anyone else it is just a drain hold that ends with the
+# fight.
+
+## Highest rest tier each {"rest": ...} word needs (1 Quick, 2 Camp, 3 Full).
+const _REST_TIER: Dictionary = {"quick": 1, "camp": 2, "full": 3}
+
+
+## Lower `value` ("attribute.x" or "skill.x") on `unit` by `amount` until
+## `cleared_by` (a list like [{"rest": "full"}]) heals it. An empty list means
+## the default, [{rest: full}, {restore: <value>}]. `source` names the cause.
+##
+## Party unit: writes the entry AND, for attributes, a combat drain hold
+## "__damage:<source>" so the loss bites this fight too (derived stats are not
+## recomputed mid-fight). End of combat releases the hold and recomputes the
+## derived stats from the entry, so the loss is counted once. A skill needs no
+## hold: get_effective_skill_level reads the entry at once.
+## Anyone else: only the drain hold, which ends with the fight.
+static func apply_damage_mode(unit: Node, value: String, amount: float,
+		cleared_by: Array, source: String) -> void:
+	var namespace_name: String = value.get_slice(".", 0)
+	if not EffectVocab.is_value_path(value) or not namespace_name in ["attribute", "skill"]:
+		push_error("ValuePaths.apply_damage_mode: '%s' is not an attribute. or skill. path" % value)
+		return
+	if amount <= 0.0:
+		return
+	var hold_source: String = "__damage:" + source
+	if not _is_party_unit(unit):
+		add_hold(unit, value, "drain", amount, hold_source)
+		return
+	var data: Dictionary = unit.character_data
+	if not data.has("damaged_values"):
+		data["damaged_values"] = []
+	data["damaged_values"].append({"value": value, "amount": amount,
+		"cleared_by": cleared_by.duplicate(true), "source": source})
+	if namespace_name == "attribute":
+		# A second hit from the same source this fight adds to its hold.
+		var total: float = amount
+		for hold in holds_on(unit, value):
+			if str(hold.source_id) == hold_source:
+				total += float(hold.amount)
+		add_hold(unit, value, "drain", total, hold_source)
+
+
+## Total persistent damage on `value` ("attribute.focus") in `character`.
+static func damaged_total(character: Dictionary, value: String) -> float:
+	var total: float = 0.0
+	for entry in character.get("damaged_values", []):
+		if str(entry.get("value", "")) == value:
+			total += float(entry.get("amount", 0))
+	return total
+
+
+## Remove the damage entries `kind` heals and return how many entries were
+## removed. `kind` is one of EffectVocab.CLEARED_BY; `detail` says what
+## happened:
+##   rest:    {tier}              1 Quick, 2 Camp, 3 Full
+##   heal:    {school, level}     school may be a String or an Array of them
+##   restore: {value, amount?}    no amount clears every entry for that value;
+##            with an amount it takes off that many points in total, oldest
+##            entry first, and removes the entries that reach 0 (a partly
+##            reduced entry is kept and does not count).
+## The caller refreshes derived stats afterwards (update_derived_stats).
+static func clear_damage(character: Dictionary, kind: String, detail: Dictionary) -> int:
+	if not kind in EffectVocab.CLEARED_BY:
+		push_error("ValuePaths.clear_damage: unknown kind '%s'" % kind)
+		return 0
+	var entries: Array = character.get("damaged_values", [])
+	var removed: int = 0
+	var budget: float = float(detail.get("amount", INF)) if kind == "restore" else INF
+	# Entries are stored oldest first, so a limited restore heals the oldest first.
+	var keep: Array = []
+	for entry in entries:
+		if not _entry_cleared_by(entry, kind, detail) or budget <= 0.0:
+			keep.append(entry)
+			continue
+		var amount: float = float(entry.get("amount", 0))
+		if amount <= budget:
+			budget -= amount
+			removed += 1
+		else:
+			entry["amount"] = amount - budget
+			budget = 0.0
+			keep.append(entry)
+	if character.has("damaged_values"):
+		character["damaged_values"] = keep
+	return removed
+
+
+## Does `entry` say that `kind` with `detail` heals it?
+static func _entry_cleared_by(entry: Dictionary, kind: String, detail: Dictionary) -> bool:
+	var clauses: Array = entry.get("cleared_by", [])
+	if clauses.is_empty():
+		clauses = [{"rest": "full"}, {"restore": str(entry.get("value", ""))}]
+	for clause in clauses:
+		if not clause.has(kind):
+			continue
+		var want = clause[kind]
+		match kind:
+			"rest":
+				if int(detail.get("tier", 0)) >= int(_REST_TIER.get(str(want), 99)):
+					return true
+			"heal":
+				var rule: Dictionary = want if want is Dictionary else {}
+				var schools = detail.get("school", "")
+				var school_ok: bool = not rule.has("school") \
+					or (schools is Array and rule["school"] in schools) \
+					or str(schools) == str(rule["school"])
+				if school_ok and int(detail.get("level", 0)) >= int(rule.get("min_level", 0)):
+					return true
+			"restore":
+				if str(want) == str(detail.get("value", "")):
+					return true
+	return false
+
+
+## True for a player-team unit whose character is in the party.
+static func _is_party_unit(unit: Node) -> bool:
+	if unit == null or not "character_data" in unit or unit.team != CombatManager.Team.PLAYER:
+		return false
+	for member in CharacterSystem.get_party():
+		if is_same(member, unit.character_data):
+			return true
+	return false

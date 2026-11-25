@@ -468,6 +468,13 @@ func end_combat(victory: bool) -> void:
 	# Sync player unit state back to character_data before clearing units
 	_sync_combat_state_to_characters()
 
+	# Persistent `damage` entries now count through update_derived_stats (the
+	# fight's own holds are gone), so recompute those characters once.
+	for unit in all_units:
+		if unit.team == Team.PLAYER and "character_data" in unit \
+				and not unit.character_data.get("damaged_values", []).is_empty():
+			CharacterSystem.update_derived_stats(unit.character_data)
+
 	# Apply post-combat emotional pressure to all player characters
 	_apply_post_combat_pressure(victory)
 

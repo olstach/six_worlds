@@ -1471,6 +1471,12 @@ func _do_rest(tier: int, food_cost: int, herbs_cost: int, scrap_cost: int, selec
 			if _activity_camp_event_id.is_empty():
 				_activity_camp_event_id = result.get("camp_event_id", "")
 
+	# === Rest heals persistent `damage` entries that a rest of this tier clears ===
+	for char in party:
+		if not char.get("damaged_values", []).is_empty():
+			ValuePaths.clear_damage(char, "rest", {"tier": effective_tier})
+			CharacterSystem.update_derived_stats(char)
+
 	# === Tick persistent wounds (after activities so Field Surgery cures first) ===
 	var wound_messages: Array[String] = []
 	if WoundSystem:
