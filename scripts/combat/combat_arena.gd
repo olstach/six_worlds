@@ -2023,16 +2023,14 @@ func _on_flee_pressed() -> void:
 	var party_count := 0
 	for unit in player_units:
 		if unit.is_alive():
-			var attrs = unit.character_data.get("attributes", {})
-			party_finesse_sum += attrs.get("finesse", 10)
+			party_finesse_sum += CharacterSystem.get_effective_attribute(unit.character_data, "finesse")
 			party_count += 1
 
 	var enemy_finesse_sum := 0.0
 	var enemy_count := 0
 	for unit in enemy_units:
 		if unit.is_alive():
-			var attrs = unit.character_data.get("attributes", {})
-			enemy_finesse_sum += attrs.get("finesse", 10)
+			enemy_finesse_sum += CharacterSystem.get_effective_attribute(unit.character_data, "finesse")
 			enemy_count += 1
 
 	var party_avg = party_finesse_sum / maxf(party_count, 1)
@@ -4849,17 +4847,19 @@ func _show_examine_window(unit: CombatUnit) -> void:
 			var attr_order = ["strength", "constitution", "finesse", "focus", "awareness", "charm", "luck"]
 			for attr in attr_order:
 				if attr in attributes:
-					attr_pairs.append([attr.capitalize(), str(attributes[attr])])
+					# Current power: the effective value, gear and holds included.
+					attr_pairs.append([attr.capitalize(), str(CharacterSystem.get_effective_attribute(char_data, attr))])
 			var attr_grid = _create_examine_stats_grid(attr_pairs)
 			examine_content.add_child(attr_grid)
 
 	# --- SKILLS (controlled by perks for enemies) ---
 	if can_see_skills:
-		var skills = char_data.get("skills", {})
+		# Current power: effective levels, so a skill hold shows while it lasts.
+		var skills: Dictionary = CharacterSystem.get_effective_skills(char_data)
 		# Filter to non-zero skills
 		var trained: Array = []
 		for skill_id in skills:
-			var level = skills[skill_id]
+			var level: int = skills[skill_id]
 			if level > 0:
 				trained.append([skill_id.replace("_", " ").capitalize(), str(int(level))])
 		if not trained.is_empty():

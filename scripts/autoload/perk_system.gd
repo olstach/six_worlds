@@ -267,7 +267,8 @@ func _check_special_requirement(character: Dictionary, special: String) -> bool:
 	if affinity_match.size() == 2:
 		var element = affinity_match[0]
 		var required = int(affinity_match[1])
-		var total = calculate_element_affinity(character, element)
+		# The BOUGHT affinity: a perk is never offered on a temporary boost.
+		var total = calculate_element_affinity(character, element, false)
 		return total >= required
 
 	# "any_X_category_at_Y" patterns
@@ -647,15 +648,28 @@ func get_non_combat_effects(character: Dictionary, category: String = "") -> Arr
 # ELEMENTAL AFFINITIES
 # ============================================
 
-func calculate_element_affinity(character: Dictionary, element: String) -> int:
+func calculate_element_affinity(character: Dictionary, element: String,
+		effective: bool = true) -> int:
 	## Calculate total affinity for an element.
 	## Includes skill levels in that element plus innate racial affinity bonus.
+	##
+	## effective = true (the default, and what the affinity BONUSES use) adds
+	## each skill's EFFECTIVE level, so a +4 Fire magic hold is +4 Fire
+	## affinity. A negative effective level counts as 0 here: it is already
+	## penalised through NEGATIVE_SKILL_PENALTIES, and should not drag the
+	## element down a second time.
+	## effective = false adds the BOUGHT levels in character["skills"]; perk
+	## eligibility ("fire_affinity_25") uses that, because perks are never
+	## given for a temporary boost.
 	var total := 0
 	var skills = character.get("skills", {})
 	var element_skill_list = _element_skills.get(element, [])
 
 	for skill_id in element_skill_list:
-		total += skills.get(skill_id, 0)
+		if effective:
+			total += maxi(0, CharacterSystem.get_effective_skill_level(character, skill_id))
+		else:
+			total += skills.get(skill_id, 0)
 
 	# Add innate racial affinity (e.g. Red Devil has fire: 5 from birth)
 	var racial = character.get("racial_affinity_bonuses", {})
@@ -718,8 +732,9 @@ func get_affinity_bonuses(character: Dictionary) -> Dictionary:
 func get_base_skill_bonuses(character: Dictionary, skill_id: String) -> Dictionary:
 	## Get the base stat bonuses for a skill at the character's current level.
 	## Returns a dict like {"attack": 86.0, "damage": 75.0} for Swords level 10.
-	var level = character.get("skills", {}).get(skill_id, 0)
-	if level == 0:
+	## Reads the EFFECTIVE level, so holds and gear count.
+	var level: int = CharacterSystem.get_effective_skill_level(character, skill_id)
+	if level <= 0:
 		return {}
 	return get_base_skill_bonuses_at_level(skill_id, level)
 

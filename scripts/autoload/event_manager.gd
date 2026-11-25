@@ -313,13 +313,11 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 					first_attr_name = attr_name
 					first_attr_value = required_value
 				
-				# Check each party member — use effective attribute (base + quirk modifiers)
+				# Check each party member — the EFFECTIVE attribute (base + gear +
+				# traits + holds - damage), the same number combat reads.
 				for party_member in CharacterSystem.get_party():
-					var base_val: int = party_member.attributes.get(attr_name, 0)
-					var quirk_bonus: int = 0
-					if TraitSystem:
-						quirk_bonus = TraitSystem.get_attribute_bonus(party_member).get(attr_name, 0)
-					if base_val + quirk_bonus >= required_value:
+					var value: int = CharacterSystem.get_effective_attribute(party_member, attr_name)
+					if value >= required_value:
 						meets_req = true
 						passing_char = party_member
 						break
@@ -345,9 +343,9 @@ func evaluate_choice_availability(choice: Dictionary) -> Dictionary:
 				var required_level = reqs.skills[skill_name]
 				skill_labels.append(skill_name.replace("_", " ").capitalize() + " " + str(int(required_level)))
 
-				# Check each party member
+				# Check each party member, at their EFFECTIVE skill level
 				for party_member in CharacterSystem.get_party():
-					var char_skill_level = party_member.skills.get(skill_name, 0)
+					var char_skill_level: int = CharacterSystem.get_effective_skill_level(party_member, skill_name)
 					if char_skill_level >= required_level:
 						meets_req = true
 						passing_char = party_member
@@ -498,12 +496,13 @@ func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 		var best_value = 0
 		var roller = null
 
+		# Both kinds read the EFFECTIVE value (gear, traits, holds, damage).
 		if "skill" in roll_req:
 			# Skill-based roll: find best skill level in party
 			var skill_id = roll_req.skill
 			roll_label = skill_id
 			for party_member in CharacterSystem.get_party():
-				var skill_val = party_member.get("skills", {}).get(skill_id, 0)
+				var skill_val: int = CharacterSystem.get_effective_skill_level(party_member, skill_id)
 				if skill_val > best_value:
 					best_value = skill_val
 					roller = party_member
@@ -512,7 +511,7 @@ func make_choice(choice: Dictionary, passing_character = null) -> Dictionary:
 			var attribute = roll_req.attribute
 			roll_label = attribute
 			for party_member in CharacterSystem.get_party():
-				var attr_value = party_member.attributes.get(attribute, 0)
+				var attr_value: int = CharacterSystem.get_effective_attribute(party_member, attribute)
 				if attr_value > best_value:
 					best_value = attr_value
 					roller = party_member

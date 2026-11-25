@@ -548,7 +548,9 @@ static func _read_value_path(path: String, unit: Node) -> float:
 		"stat":
 			return float(unit.call("get_" + name)) if unit.has_method("get_" + name) else 0.0
 		"attribute":
-			return float(unit.character_data.get("attributes", {}).get(name, 0))
+			# Effective, like "skill." below: an amount that scales with
+			# attribute.focus sees a Focus hold.
+			return float(CharacterSystem.get_effective_attribute(unit.character_data, name))
 		"skill":
 			return float(CharacterSystem.get_effective_skill_level(unit.character_data, name))
 		"resist":

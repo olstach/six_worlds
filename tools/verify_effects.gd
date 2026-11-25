@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 51
+const EXPECTED_CHECKS: int = 56
 
 var grid: CombatGrid
 
@@ -89,6 +89,13 @@ func _ready() -> void:
 	_check_skill_hold_raises_per_level_bonus_midfight()
 	_check_attribute_hold_no_current_hp_jump()
 	_check_enemy_refresh()
+
+	# Stage 2a: every reader of ability sees the effective value.
+	_check_skill_hold_unlocks_casting()
+	_check_skill_hold_raises_spell_bonus()
+	_check_attribute_hold_reaches_saves()
+	_check_skill_hold_reaches_affinity()
+	_check_shop_learning_ignores_boost()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1304,4 +1311,100 @@ func _check_enemy_refresh() -> void:
 	if EnemySystem.archetypes != archetypes_before:
 		_fail("EnemySystem.archetypes changed after release")
 	_cleanup([u])
+	_done()
+
+
+# ── Stage 2a: boosts count wherever ability is read ─────────────────────────
+
+## Fire magic 3 cannot cast Fireball (a level-5 spell); a +2 Fire magic hold
+## lets it. Goes through get_castable_spells, which builds the skills map and
+## hands it to _can_cast_spell exactly the way cast_spell does.
+func _check_skill_hold_unlocks_casting() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var ch: Dictionary = u.character_data
+	ch.skills["fire_magic"] = 3
+	ch.skills["sorcery"] = 0
+	ch["known_spells"] = ["fireball"]
+	u.current_mana = 999   # rule out "not enough mana": only skill decides
+	var castable := func() -> bool:
+		for s in CombatManager.get_castable_spells(u):
+			if str(s.get("id", "")) == "fireball":
+				return true
+		return false
+	if castable.call():
+		_fail("Fire magic 3 should not cast fireball (level 5)")
+	ValuePaths.add_hold(u, "skill.fire_magic", "fortify", 2, "t1")
+	u.current_mana = 999   # the hold's refresh clamps mana to the max; refill
+	if not castable.call():
+		_fail("Fire magic 3 + hold 2 should cast fireball")
+	ValuePaths.release(u, "t1")
+	u.current_mana = 999
+	if castable.call():
+		_fail("fireball still castable after the hold was released")
+	_cleanup([u])
+	_done()
+
+
+## _calculate_spell_bonus counts 2 per level of every school skill. A +3 Fire
+## magic hold must add those 6, on top of whatever the hold did to spellpower.
+func _check_skill_hold_raises_spell_bonus() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var spell: Dictionary = CombatManager.get_spell("firebolt")
+	var before: int = CombatManager._calculate_spell_bonus(u, spell)
+	var sp_before: int = u.get_spellpower()
+	ValuePaths.add_hold(u, "skill.fire_magic", "fortify", 3, "t1")
+	var want: int = before + (u.get_spellpower() - sp_before) + 3 * 2
+	var after: int = CombatManager._calculate_spell_bonus(u, spell)
+	if after != want:
+		_fail("firebolt spell bonus with fire_magic +3: %d, wanted %d" % [after, want])
+	ValuePaths.release(u, "t1")
+	if CombatManager._calculate_spell_bonus(u, spell) != before:
+		_fail("spell bonus not restored after release")
+	_cleanup([u])
+	_done()
+
+
+## A Constitution save reads the effective attribute: +6 Constitution is +6 on
+## the roll, which is 30 percentage points at a DC that is not clamped.
+func _check_attribute_hold_reaches_saves() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var con: int = CharacterSystem.get_effective_attribute(u.character_data, "constitution")
+	# A DC the defender needs an 18 on the die for: 15% to save.
+	var dc: int = 18 + con + SaveSystem._bonus_for(u, "constitution")
+	var before: float = SaveSystem.success_chance(u, "constitution", dc)
+	ValuePaths.add_hold(u, "attribute.constitution", "fortify", 6, "t1")
+	var after: float = SaveSystem.success_chance(u, "constitution", dc)
+	if not _near(before, 0.15) or not _near(after, 0.45):
+		_fail("con save with +6 hold: %.2f -> %.2f, wanted 0.15 -> 0.45" % [before, after])
+	ValuePaths.release(u, "t1")
+	_cleanup([u])
+	_done()
+
+
+## Elemental affinity totals the effective level of each element skill.
+func _check_skill_hold_reaches_affinity() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var ch: Dictionary = u.character_data
+	var before: int = PerkSystem.calculate_element_affinity(ch, "fire")
+	ValuePaths.add_hold(u, "skill.fire_magic", "fortify", 4, "t1")
+	var after: int = PerkSystem.calculate_element_affinity(ch, "fire")
+	if after != before + 4:
+		_fail("fire affinity with fire_magic +4: %d, wanted %d" % [after, before + 4])
+	ValuePaths.release(u, "t1")
+	_cleanup([u])
+	_done()
+
+
+## Review Focus 5: learning a spell in a shop uses the bought level, so a boost
+## lets you cast above your level but never buy above it.
+func _check_shop_learning_ignores_boost() -> void:
+	var c: Dictionary = CharacterSystem.create_blank_character()
+	c.skills["fire_magic"] = 3
+	c.skills["sorcery"] = 0
+	c["skill_bonuses"] = {"fire_magic": {"effects": 5}}
+	var fireball: Dictionary = CharacterSystem.get_spell_database().get("fireball", {})
+	if fireball.is_empty():
+		_fail("fireball missing from the spell database")
+	elif CharacterSystem.meets_spell_skill(c, fireball):
+		_fail("meets_spell_skill counted a temporary boost: shop learning must use the bought level")
 	_done()

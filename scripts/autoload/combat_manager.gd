@@ -623,7 +623,7 @@ func _calculate_combat_rewards() -> Dictionary:
 	# Trade skill bonus: best Trade in party adds 10% per level
 	var best_trade := 0
 	for member in CharacterSystem.get_party():
-		var trade_level = member.get("skills", {}).get("trade", 0)
+		var trade_level: int = CharacterSystem.get_effective_skill_level(member, "trade")
 		if trade_level > best_trade:
 			best_trade = trade_level
 	if best_trade > 0:
@@ -1456,7 +1456,7 @@ func _start_current_turn() -> void:
 				combat_log.emit("%s is drawn helplessly toward %s!" % [unit.unit_name, lure_source.unit_name])
 
 	# Restore stamina each turn (base 5 + Finesse/5, so characters recover ~7-12/turn)
-	var finesse = unit.character_data.get("attributes", {}).get("finesse", 10)
+	var finesse: int = unit_attribute(unit, "finesse")
 	var stamina_regen = 5 + int(finesse / 5)
 	unit.restore_stamina(stamina_regen)
 
@@ -1740,7 +1740,7 @@ func arm_chain_fire_chance(char_data: Dictionary, arm_number: int) -> float:
 		return 100.0
 	if arm_number == 2 and PerkSystem.has_perk(char_data, "iron_cortex"):
 		return 100.0
-	var finesse: int = char_data.get("attributes", {}).get("finesse", 10)
+	var finesse: int = CharacterSystem.get_effective_attribute(char_data, "finesse")
 	var akimbo_bonus: float = 20.0 if PerkSystem.has_perk(char_data, "akimbo") else 0.0
 	return clampf(BodySystem.get_arm_attack_chance(finesse, arm_number) + akimbo_bonus, 0.0, 100.0)
 
@@ -2952,7 +2952,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 	# Swarmed: focus_save_on_damage — each hit forces a Focus save (DC 12) or the
 	# swarm's distraction costs the unit an action on its next turn.
 	if damage > 0 and _unit_has_effect(unit, "focus_save_on_damage"):
-		var focus_val: int = unit.character_data.get("attributes", {}).get("focus", 10) if "character_data" in unit else 10
+		var focus_val: int = unit_attribute(unit, "focus")
 		if randi() % 20 + 1 + int(focus_val / 2.0) < 12 and not unit.get_meta("swarm_distracted", false):
 			unit.set_meta("swarm_distracted", true)
 			combat_log.emit("%s loses focus amid the swarm!" % unit.unit_name)
@@ -3635,6 +3635,28 @@ func get_all_spell_ids() -> Array[String]:
 	return ids
 
 
+## A unit's attribute as every combat roll and formula should read it: the
+## EFFECTIVE value (base + gear + traits + holds - damage), from
+## CharacterSystem.get_effective_attribute. 10 for a unit with no
+## character_data, the same fallback the old raw reads used.
+func unit_attribute(unit: Node, attr: String) -> int:
+	if unit == null or not "character_data" in unit:
+		return 10
+	return CharacterSystem.get_effective_attribute(unit.character_data, attr)
+
+
+## A unit's skill level as combat formulas should read it: the EFFECTIVE level
+## (CharacterSystem.get_effective_skill_level), so a mid-fight skill hold
+## counts. Counted from 0 upward: a negative level (a trait like Forgetful)
+## is already punished once through NEGATIVE_SKILL_PENALTIES in the derived
+## stats, so a formula that scales with the level sees it as 0, not as a
+## second penalty. 0 for a unit with no character_data.
+func unit_skill(unit: Node, skill_id: String) -> int:
+	if unit == null or not "character_data" in unit:
+		return 0
+	return maxi(0, CharacterSystem.get_effective_skill_level(unit.character_data, skill_id))
+
+
 ## Get a spell by ID (normalizes data format)
 func get_spell(spell_id: String) -> Dictionary:
 	if spell_id in _spell_database:
@@ -3731,7 +3753,9 @@ func get_spell(spell_id: String) -> Dictionary:
 ## Get all spells a unit can cast (must know spell + meet requirements)
 func get_castable_spells(unit: Node) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
-	var skills = unit.character_data.get("skills", {})
+	# Effective levels: a temporary skill hold lets a unit cast above its
+	# bought level (see CharacterSystem.meets_spell_skill).
+	var skills: Dictionary = CharacterSystem.get_effective_skills(unit.character_data)
 	var known_spells = unit.character_data.get("known_spells", [])
 
 	# If no known_spells array, unit can't cast any spells
@@ -3823,7 +3847,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	if spell.is_empty():
 		return {"success": false, "reason": "Unknown spell"}
 
-	var skills = caster.character_data.get("skills", {})
+	# Effective levels, the same map get_castable_spells builds.
+	var skills: Dictionary = CharacterSystem.get_effective_skills(caster.character_data)
 	var can_cast = _can_cast_spell(caster, spell, skills)
 	if not can_cast.success:
 		return can_cast
@@ -4409,14 +4434,14 @@ func _eligible_reaches(eligible: String, caster: Node, unit: Node) -> bool:
 ## Calculate total spell bonus from all applicable schools
 func _calculate_spell_bonus(caster: Node, spell: Dictionary) -> int:
 	var total_bonus = caster.get_spellpower()
-	var skills = caster.character_data.get("skills", {})
 	var schools = spell.get("schools", [])
 
 	for school in schools:
 		# Lowercase school name for comparison (spells.json uses capitalized names)
 		var school_lower = school.to_lower()
 		var skill_name = school_lower + "_magic" if school_lower in ["earth", "water", "fire", "air", "space", "white", "black"] else school_lower
-		var skill_level = skills.get(skill_name, 0)
+		# Effective level, so a skill hold raises spell power mid-fight.
+		var skill_level: int = unit_skill(caster, skill_name)
 		total_bonus += skill_level * 2  # Each skill level adds 2 to spell power
 
 	return total_bonus
@@ -4767,9 +4792,7 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 		}
 
 	# Scale factor based on caster's Summoning skill (0.5x at skill 0, 1.0x at skill 5, 1.5x at skill 10)
-	var summoning_level: int = 0
-	if "character_data" in caster:
-		summoning_level = caster.character_data.get("skills", {}).get("summoning", 0)
+	var summoning_level: int = unit_skill(caster, "summoning")
 	var scale: float = 0.5 + summoning_level / 10.0
 
 	# Calculate scaled stats
@@ -5716,8 +5739,7 @@ func _process_status_effects(unit: Node) -> bool:
 		var saved = false
 		if effect_def.get("save_at_end_of_turn", false) or "save_at_end_of_turn" in effect_def.get("effects", []):
 			var save_type = effect_def.get("save_type", "Constitution")
-			var attrs = unit.character_data.get("attributes", {})
-			var save_attr = attrs.get(save_type.to_lower(), 10)
+			var save_attr: int = unit_attribute(unit, save_type.to_lower())
 			var roll = randi_range(1, 20) + save_attr
 			if roll >= 15:  # DC 15 base save
 				saved = true
@@ -5984,9 +6006,9 @@ func _resolve_heal_ally(user: Node, combat_data: Dictionary,
 		"spellpower":
 			amount += int(user.get_spellpower() * pct)
 		"awareness":
-			amount += int(user.character_data.get("attributes", {}).get("awareness", 10) * pct)
+			amount += int(unit_attribute(user, "awareness") * pct)
 		"focus":
-			amount += int(user.character_data.get("attributes", {}).get("focus", 10) * pct)
+			amount += int(unit_attribute(user, "focus") * pct)
 	amount = maxi(1, amount)
 	target.heal(amount)
 	unit_healed.emit(target, amount)
@@ -6013,7 +6035,7 @@ func _resolve_place_trap(user: Node, combat_data: Dictionary,
 
 	# The trap's bite scales with whoever set it, so a master trapper's snare
 	# is worth stepping around.
-	var focus: int = int(user.character_data.get("attributes", {}).get("focus", 10))
+	var focus: int = unit_attribute(user, "focus")
 	var scaled: int = maxi(1, int(focus * float(combat_data.get("damage_pct_of_focus", 30)) / 100.0))
 	active_zones[-1]["payload_scale"] = scaled
 	combat_log.emit("%s sets a trap." % user.unit_name)
@@ -7614,9 +7636,7 @@ func _use_bomb(user: Node, item: Dictionary, target_pos: Vector2i) -> Dictionary
 	# Alchemy 0 → 50% scatter chance; Alchemy 3+ → no scatter.
 	var actual_target_pos := target_pos
 	var bomb_scattered := false
-	var alchemy_level: int = 0
-	if "character_data" in user:
-		alchemy_level = user.character_data.get("skills", {}).get("alchemy", 0)
+	var alchemy_level: int = unit_skill(user, "alchemy")
 	var scatter_chance := maxf(0.0, 50.0 - alchemy_level * 17.0)
 	if scatter_chance > 0.0 and randf() * 100.0 < scatter_chance:
 		var scatter_dir: Vector2i = DIRS_8[randi() % DIRS_8.size()]
@@ -7696,8 +7716,7 @@ func _apply_oil(user: Node, item: Dictionary) -> Dictionary:
 	var attacks = effect.get("attacks", 3)
 
 	# Alchemy bonus adds extra attacks at level 3+ and 5
-	var skills = user.character_data.get("skills", {})
-	var alchemy_level = skills.get("alchemy", 0)
+	var alchemy_level: int = unit_skill(user, "alchemy")
 	if alchemy_level >= 5:
 		attacks += 2
 	elif alchemy_level >= 3:
@@ -8213,7 +8232,7 @@ func _run_stealth_detection(unit: Node) -> bool:
 		return false
 
 	var char_data = unit.character_data if "character_data" in unit else {}
-	var guile_level: int = char_data.get("skills", {}).get("guile", 0)
+	var guile_level: int = unit_skill(unit, "guile")
 	var has_soft_step: bool = PerkSystem.has_perk(char_data, "soft_step")
 	var is_invisible: bool = unit.has_status("Invisible") if unit.has_method("has_status") else false
 
@@ -8716,7 +8735,7 @@ func _resolve_heal_self(user: Node, combat_data: Dictionary) -> Dictionary:
 	if scale_stat == "spellpower":
 		heal_amount += int(user.get_spellpower() * 0.5)
 	elif scale_stat == "focus":
-		var focus = user.character_data.get("attributes", {}).get("focus", 10)
+		var focus: int = unit_attribute(user, "focus")
 		heal_amount += (focus - 10) * 2
 
 	var effects: Array = []
@@ -9577,14 +9596,13 @@ func _resolve_throw_phurba(user: Node, combat_data: Dictionary, target_pos: Vect
 		user.character_data.get("derived", {})["current_mana"] = user.current_mana
 
 	# Calculate damage: base + sorcery_skill_level * 2
-	var user_char = user.character_data if "character_data" in user else {}
-	var sorcery_level = user_char.get("skills", {}).get("sorcery", 0)
+	var sorcery_level: int = unit_skill(user, "sorcery")
 	var total_damage = base_damage + sorcery_level * 2
 	apply_damage(target, total_damage, "physical")
 	combat_log.emit("%s hurls a Phurba at %s for %d damage!" % [user.unit_name, target.unit_name, total_damage])
 
 	# Focus save vs DC — defender's Focus attribute vs DC
-	var defender_focus = target.character_data.get("attributes", {}).get("focus", 10) if "character_data" in target else 10
+	var defender_focus: int = unit_attribute(target, "focus")
 	var save_roll = randi() % 20 + 1 + defender_focus  # d20 + Focus
 	var subjugated = false
 	if save_roll < save_dc:
@@ -11439,7 +11457,7 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 			var dc = 10 + stacks * 2
 			for e in all_enemies:
 				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
-					var con = e.character_data.get("attributes", {}).get("constitution", 10) if "character_data" in e else 10
+					var con: int = unit_attribute(e, "constitution")
 					var roll = randi() % 20 + 1 + con - 10
 					if roll < dc:
 						_apply_status_effect(e, "Burning", 2, 0, unit)
@@ -11448,7 +11466,7 @@ func _apply_mantra_tick(unit: Node, perk_id: String, stacks: int, spellpower: in
 			# Enemies in 3 tiles: Focus save (DC 10 + 2×stacks) or get Charmed 2t
 			var dc_r = 10 + stacks * 2
 			for e in enemies_3:
-				var foc = e.character_data.get("attributes", {}).get("focus", 10) if "character_data" in e else 10
+				var foc: int = unit_attribute(e, "focus")
 				var roll = randi() % 20 + 1 + foc - 10
 				if roll < dc_r:
 					_apply_status_effect(e, "Charmed", 2, 0, unit)
@@ -11669,7 +11687,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 			# All enemies in LOS: Focus save vs Pacified; else -50% Attack/Damage
 			for e in all_enemies:
 				if combat_grid and combat_grid.has_line_of_sight(unit.grid_position, e.grid_position):
-					var foc = e.character_data.get("attributes", {}).get("focus", 10) if "character_data" in e else 10
+					var foc: int = unit_attribute(e, "focus")
 					var roll = randi() % 20 + 1 + foc - 10
 					if roll < 15:
 						_apply_status_effect(e, "Pacified", 2, 0, unit)
@@ -11729,7 +11747,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 		"mantra_of_the_red_lotus_lady":
 			# All enemies must Focus save vs Charmed; crit fails → Dominated (here: Confused)
 			for e in all_enemies:
-				var foc_r = e.character_data.get("attributes", {}).get("focus", 10) if "character_data" in e else 10
+				var foc_r: int = unit_attribute(e, "focus")
 				var roll_r = randi() % 20 + 1 + foc_r - 10
 				if roll_r < 8:
 					_apply_status_effect(e, "Confused", 3, 0, unit)  # Dominated approximation

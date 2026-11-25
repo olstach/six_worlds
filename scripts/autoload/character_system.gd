@@ -855,7 +855,10 @@ func grant_skill_starting_spells(character: Dictionary) -> void:
 ## True if the character's skills let them cast this spell: at least one of
 ## the spell's schools at a skill level >= the spell's circle ("level").
 ## The one copy of this rule — combat casting, spell shops and guilds all ask
-## here, so "can learn" and "can cast" can never disagree.
+## here. It reads character["skills"], the BOUGHT level, so a shop never sells
+## a spell on the strength of a temporary boost. Combat casting passes
+## {"skills": get_effective_skills(character)} instead, so a boost does let
+## you cast above your level (spec §10.1: cast above it, never buy above it).
 func meets_spell_skill(character: Dictionary, spell: Dictionary) -> bool:
 	var required_level: int = int(spell.get("level", 1))
 	var skills: Dictionary = character.get("skills", {})
@@ -1069,6 +1072,25 @@ func get_effective_skill_level(character: Dictionary, skill_id: String) -> int:
 	if hurt > 0:
 		level = mini(level, maxi(0, level - hurt))
 	return level
+
+
+## Every skill the character has, as {skill_id: effective level}.
+## This is the "skills map" for code that wants a whole dictionary rather than
+## one level at a time — combat casting passes it to _can_cast_spell, so a
+## temporary +2 Fire magic hold lets a Fire-3 caster cast a level-5 spell.
+## Covers every id in `skills` and in `skill_bonuses` (a bonus can name a
+## skill the character never bought). Each value is get_effective_skill_level.
+##
+## Do NOT use this for buying or learning: perks, XP purchases and spell shops
+## read the bought level in character["skills"] (see meets_spell_skill).
+func get_effective_skills(character: Dictionary) -> Dictionary:
+	var result: Dictionary = {}
+	for skill_id in character.get("skills", {}):
+		result[skill_id] = get_effective_skill_level(character, str(skill_id))
+	for skill_id in character.get("skill_bonuses", {}):
+		if not skill_id in result:
+			result[skill_id] = get_effective_skill_level(character, str(skill_id))
+	return result
 
 
 ## Update the character's element affinity totals from their skill levels.

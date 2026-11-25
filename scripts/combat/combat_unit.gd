@@ -820,7 +820,6 @@ func get_pack_bonus() -> int:
 ## CharacterSystem.update_derived_stats() + PerkSystem.get_base_skill_bonuses_at_level().
 ## derived.damage already includes skill-based damage at unit creation time.
 func get_attack_damage() -> int:
-	var attrs = character_data.get("attributes", {})
 	var derived = character_data.get("derived", {})
 
 	# Read weapon damage directly from the equipped weapon
@@ -833,12 +832,14 @@ func get_attack_damage() -> int:
 		weapon_damage = weapon.get("stats", {}).get("damage", 2)
 	var base_damage = weapon_damage
 
+	# The attribute is the EFFECTIVE one (gear, traits, holds, damage), so a
+	# Strength hold hits harder at once.
 	if is_ranged_weapon():
 		# Ranged weapons: Finesse as primary attribute (starts contributing at 10)
-		base_damage += (attrs.get("finesse", 10) - 5)
+		base_damage += (CharacterSystem.get_effective_attribute(character_data, "finesse") - 5)
 	else:
 		# Melee weapons: Strength as primary attribute (starts contributing at 10)
-		base_damage += (attrs.get("strength", 10) - 5)
+		base_damage += (CharacterSystem.get_effective_attribute(character_data, "strength") - 5)
 
 	# Add skill-based damage bonus from derived stats (set by update_derived_stats)
 	base_damage += derived.get("damage", 0)

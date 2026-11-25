@@ -123,10 +123,13 @@ static func roll(defender: Node, save_type: String, dc: int) -> Dictionary:
 
 # ─── Internal ────────────────────────────────────────────────────────────────
 
+## The attribute a save or a DC is built from: the EFFECTIVE value (base +
+## gear + traits + holds - damage), so a Constitution hold raises the save and
+## a Focus hold raises the caster's DC. 10 for something with no character.
 static func _attribute_of(unit: Node, attribute: String) -> int:
 	if unit == null or not "character_data" in unit:
 		return 10
-	return int(unit.character_data.get("attributes", {}).get(attribute, 10))
+	return CharacterSystem.get_effective_attribute(unit.character_data, attribute)
 
 
 ## Percentage-shaped resistances, converted to roll points.
