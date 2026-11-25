@@ -1186,9 +1186,12 @@ func update_derived_stats(character: Dictionary) -> void:
 				var prev: int = character["skill_bonuses"][skill_id].get("traits", 0)
 				character["skill_bonuses"][skill_id]["traits"] = prev + int(t["skill_modifiers"][skill_id])
 
+	# Attribute-driven terms come from the one shared formula.
+	var terms: Dictionary = CombatStats.attribute_terms(effective_attrs)
+
 	# HP from Constitution + equipment + earth affinity
 	var old_max_hp = derived.get("max_hp", 100)
-	derived.max_hp = 100 + (effective_attrs.constitution - 10) * 10 + equip_bonus.get("max_hp", 0) + affinity_bonus.get("max_hp", 0)
+	derived.max_hp = terms.max_hp + equip_bonus.get("max_hp", 0) + affinity_bonus.get("max_hp", 0)
 	# When max HP increases, increase current HP by the same amount
 	if derived.max_hp > old_max_hp:
 		derived.current_hp = derived.get("current_hp", derived.max_hp) + (derived.max_hp - old_max_hp)
@@ -1196,14 +1199,14 @@ func update_derived_stats(character: Dictionary) -> void:
 
 	# Mana from Awareness + equipment
 	var old_max_mana = derived.get("max_mana", 100)
-	derived.max_mana = 50 + (effective_attrs.awareness - 10) * 10 + equip_bonus.get("max_mana", 0)
+	derived.max_mana = terms.max_mana + equip_bonus.get("max_mana", 0)
 	if derived.max_mana > old_max_mana:
 		derived.current_mana = derived.get("current_mana", derived.max_mana) + (derived.max_mana - old_max_mana)
 	derived.current_mana = min(derived.get("current_mana", derived.max_mana), derived.max_mana)
 
 	# Stamina from Constitution + Finesse + equipment
 	var old_max_stamina = derived.get("max_stamina", 50)
-	derived.max_stamina = 50 + int((effective_attrs.constitution + effective_attrs.finesse - 20) * 2.5) + equip_bonus.get("max_stamina", 0)
+	derived.max_stamina = terms.max_stamina + equip_bonus.get("max_stamina", 0)
 	if not "current_stamina" in derived:
 		derived.current_stamina = derived.max_stamina
 	else:
@@ -1212,13 +1215,13 @@ func update_derived_stats(character: Dictionary) -> void:
 		derived.current_stamina = min(derived.current_stamina, derived.max_stamina)
 
 	# Initiative from Finesse + Awareness + equipment + air affinity
-	derived.initiative = effective_attrs.finesse + effective_attrs.awareness + equip_bonus.get("initiative", 0) + affinity_bonus.get("initiative", 0)
+	derived.initiative = terms.initiative + equip_bonus.get("initiative", 0) + affinity_bonus.get("initiative", 0)
 
 	# Movement from Finesse + equipment + air affinity
-	derived.movement = int(effective_attrs.finesse / 3) + equip_bonus.get("movement", 0) + affinity_bonus.get("movement", 0)
+	derived.movement = terms.movement + equip_bonus.get("movement", 0) + affinity_bonus.get("movement", 0)
 
 	# Dodge from Finesse + equipment + water affinity
-	derived.dodge = effective_attrs.finesse + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
+	derived.dodge = terms.dodge + equip_bonus.get("dodge", 0) + affinity_bonus.get("dodge", 0)
 
 	# Extra leg pairs: each pair beyond the first gives +2 movement, +10 dodge, +20 weight_limit
 	if BodySystem:
@@ -1229,10 +1232,10 @@ func update_derived_stats(character: Dictionary) -> void:
 			derived.weight_limit += extra_pairs * 20
 
 	# Spellpower from Focus + equipment + space affinity
-	derived.spellpower = effective_attrs.focus + equip_bonus.get("spellpower", 0) + affinity_bonus.get("spellpower", 0)
+	derived.spellpower = terms.spellpower + equip_bonus.get("spellpower", 0) + affinity_bonus.get("spellpower", 0)
 
 	# Crit chance from Awareness + Finesse + Luck + equipment + fire affinity
-	derived.crit_chance = 5 + int((effective_attrs.awareness + effective_attrs.finesse + effective_attrs.luck) / 6) + equip_bonus.get("crit_chance", 0) + affinity_bonus.get("crit_chance", 0)
+	derived.crit_chance = terms.crit_chance + equip_bonus.get("crit_chance", 0) + affinity_bonus.get("crit_chance", 0)
 
 	# Weight limit from Strength + equipment (e.g. backpack)
 	derived.weight_limit = 100 + (effective_attrs.strength - 10) * 10 + equip_bonus.get("weight_limit", 0)

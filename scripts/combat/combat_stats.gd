@@ -208,3 +208,28 @@ static func explain_unknown(stat: String) -> String:
 			+ "it reaches a stat modifier") % stat
 	return ("'%s' is not in CombatStats.MODIFIABLE, so no getter reads it back; "
 		+ "the modifier would be stored and never applied") % stat
+
+
+## The derived stats that come purely from attributes. This is the ONE place
+## the formulas live: CharacterSystem.update_derived_stats (player) and
+## EnemySystem._calculate_derived_stats (enemies) both call it, and
+## ValuePaths uses it to work out what an `attribute.` hold changes.
+## `attrs` maps attribute name -> value; a missing attribute counts as 10.
+## Returns max_hp, max_mana, max_stamina, initiative, movement, dodge,
+## spellpower and crit_chance. Equipment and perk bonuses are added by callers.
+static func attribute_terms(attrs: Dictionary) -> Dictionary:
+	var con = attrs.get("constitution", 10)
+	var fin = attrs.get("finesse", 10)
+	var foc = attrs.get("focus", 10)
+	var awa = attrs.get("awareness", 10)
+	var luc = attrs.get("luck", 10)
+	return {
+		"max_hp": 100 + (con - 10) * 10,
+		"max_mana": 50 + (awa - 10) * 10,
+		"max_stamina": 50 + int((con + fin - 20) * 2.5),
+		"initiative": fin + awa,
+		"movement": int(fin / 3),
+		"dodge": fin,
+		"spellpower": foc,
+		"crit_chance": 5 + int((awa + fin + luc) / 6),
+	}

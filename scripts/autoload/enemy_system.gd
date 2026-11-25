@@ -1226,24 +1226,21 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 ## Calculate derived stats using the same formulas as CharacterSystem.
 ## This ensures enemies feel consistent with player characters.
 func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dictionary:
-	var con = attributes.get("constitution", 10)
-	var fin = attributes.get("finesse", 10)
-	var foc = attributes.get("focus", 10)
-	var awa = attributes.get("awareness", 10)
-	var luc = attributes.get("luck", 10)
+	# Attribute-driven stats come from the one shared formula (CombatStats).
+	var terms: Dictionary = CombatStats.attribute_terms(attributes)
 
 	var derived = {
-		"max_hp": 100 + (con - 10) * 10,
-		"current_hp": 100 + (con - 10) * 10,
-		"max_mana": 50 + (awa - 10) * 10,
-		"current_mana": 50 + (awa - 10) * 10,
-		"max_stamina": 50 + int((con + fin - 20) * 2.5),
-		"current_stamina": 50 + int((con + fin - 20) * 2.5),
-		"initiative": fin + awa,
-		"movement": int(fin / 3),
-		"dodge": fin,
-		"spellpower": foc,
-		"crit_chance": 5 + int((awa + fin + luc) / 6),
+		"max_hp": terms.max_hp,
+		"current_hp": terms.max_hp,
+		"max_mana": terms.max_mana,
+		"current_mana": terms.max_mana,
+		"max_stamina": terms.max_stamina,
+		"current_stamina": terms.max_stamina,
+		"initiative": terms.initiative,
+		"movement": terms.movement,
+		"dodge": terms.dodge,
+		"spellpower": terms.spellpower,
+		"crit_chance": terms.crit_chance,
 		"damage": 0,
 		"armor": 0,
 		"accuracy": 0,

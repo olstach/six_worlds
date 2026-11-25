@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 6
+const EXPECTED_CHECKS: int = 10
 
 var grid: CombatGrid
 
@@ -30,6 +30,12 @@ func _ready() -> void:
 	_check_same_source_replaces_not_stacks()
 	_check_multiply_then_set()
 	_check_resist_hold_changes_damage_taken()
+
+	# attribute. and skill. holds, and the one shared attribute formula.
+	_check_attribute_terms_match_both_formulas()
+	_check_fortify_finesse_moves_dodge_and_initiative()
+	_check_fortify_constitution_raises_max_hp_and_clamps_on_release()
+	_check_skill_hold_reaches_effective_level()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -187,4 +193,96 @@ func _check_resist_hold_changes_damage_taken() -> void:
 	var phys_held: int = _hp_lost("resist.all_elemental", 50, "slashing")
 	if phys_held != phys_plain:
 		_fail("all_elemental must not touch slashing: %d -> %d" % [phys_plain, phys_held])
+	_done()
+
+
+# ── ValuePaths: attribute. and skill. ────────────────────────────────────────
+
+const _TERM_KEYS: Array[String] = ["max_hp", "max_mana", "max_stamina", "initiative",
+	"movement", "dodge", "spellpower", "crit_chance"]
+
+
+func _check_attribute_terms_match_both_formulas() -> void:
+	var sets: Array[Dictionary] = [
+		{},
+		{"constitution": 16, "finesse": 8, "awareness": 14, "focus": 12, "luck": 9},
+		{"finesse": 20, "awareness": 20, "luck": 20},
+	]
+	for overrides in sets:
+		var attrs: Dictionary = {"strength": 10, "constitution": 10, "finesse": 10,
+			"focus": 10, "awareness": 10, "charm": 10, "luck": 10}
+		attrs.merge(overrides, true)
+		var terms: Dictionary = CombatStats.attribute_terms(attrs)
+		# Player formula: a blank character with no gear or traits.
+		var ch: Dictionary = CharacterSystem.create_blank_character()
+		ch.attributes = attrs.duplicate()
+		ch.equipment = {}
+		ch.traits = []
+		CharacterSystem.update_derived_stats(ch)
+		var enemy: Dictionary = EnemySystem._calculate_derived_stats(attrs, {})
+		for key in _TERM_KEYS:
+			if ch.derived.get(key) != terms[key]:
+				_fail("player %s %s: derived %s vs terms %s" % [overrides, key, ch.derived.get(key), terms[key]])
+			if enemy.get(key) != terms[key]:
+				_fail("enemy %s %s: derived %s vs terms %s" % [overrides, key, enemy.get(key), terms[key]])
+	_done()
+
+
+func _check_fortify_finesse_moves_dodge_and_initiative() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var fin: int = u.character_data.attributes.finesse
+	var dodge: int = u.get_dodge()
+	var init: int = u.get_initiative()
+	var move: int = u.get_movement()
+	ValuePaths.add_hold(u, "attribute.finesse", "fortify", 6, "t1")
+	if u.get_dodge() != dodge + 6:
+		_fail("finesse +6 dodge: got %d, wanted %d" % [u.get_dodge(), dodge + 6])
+	if u.get_initiative() != init + 6:
+		_fail("finesse +6 initiative: got %d, wanted %d" % [u.get_initiative(), init + 6])
+	var want_move: int = move + int((fin + 6) / 3) - int(fin / 3)
+	if u.get_movement() != want_move:
+		_fail("finesse +6 movement: got %d, wanted %d" % [u.get_movement(), want_move])
+	ValuePaths.release(u, "t1")
+	if u.get_dodge() != dodge or u.get_initiative() != init or u.get_movement() != move:
+		_fail("release did not restore dodge/initiative/movement")
+	if not u.effect_holds.is_empty():
+		_fail("release left holds behind: %s" % [u.effect_holds])
+	_cleanup([u])
+	_done()
+
+
+func _check_fortify_constitution_raises_max_hp_and_clamps_on_release() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var old_max: int = u.max_hp
+	ValuePaths.add_hold(u, "attribute.constitution", "fortify", 5, "t1")
+	if u.max_hp != old_max + 50:
+		_fail("con +5 max_hp: got %d, wanted %d" % [u.max_hp, old_max + 50])
+	u.current_hp = u.max_hp
+	ValuePaths.release(u, "t1")
+	if u.max_hp != old_max:
+		_fail("release max_hp: got %d, wanted %d" % [u.max_hp, old_max])
+	if u.current_hp != u.max_hp:
+		_fail("current_hp should clamp to %d, got %d" % [u.max_hp, u.current_hp])
+	_cleanup([u])
+	_done()
+
+
+func _check_skill_hold_reaches_effective_level() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var ch: Dictionary = u.character_data
+	var base: int = CharacterSystem.get_effective_skill_level(ch, "swords")
+	var had_entry: bool = ch.get("skill_bonuses", {}).has("swords")
+	ValuePaths.add_hold(u, "skill.swords", "fortify", 2, "t1")
+	if CharacterSystem.get_effective_skill_level(ch, "swords") != base + 2:
+		_fail("skill.swords +2 not reflected in effective level")
+	ValuePaths.add_hold(u, "skill.swords", "drain", 1, "t2")
+	if CharacterSystem.get_effective_skill_level(ch, "swords") != base + 1:
+		_fail("fortify 2 + drain 1 should be +1")
+	ValuePaths.release(u, "t1")
+	ValuePaths.release(u, "t2")
+	if CharacterSystem.get_effective_skill_level(ch, "swords") != base:
+		_fail("release did not restore the skill level")
+	if ch.get("skill_bonuses", {}).has("swords") != had_entry:
+		_fail("skill_bonuses entry for swords left behind after release")
+	_cleanup([u])
 	_done()
