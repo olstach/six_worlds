@@ -13,7 +13,9 @@ extends Node
 # Current save format version — increment when save structure changes
 const SAVE_VERSION: int = 1
 const MAX_SLOTS: int = 3
-const SAVE_DIR: String = "user://saves/"
+## Where slots are written. A var, not a const, so a verifier can point it at a
+## scratch folder and never touch real saves. Always restore it afterwards.
+var SAVE_DIR: String = "user://saves/"
 
 # Which slot is currently active (-1 = no active save)
 var current_slot: int = -1

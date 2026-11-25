@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 19
+const EXPECTED_CHECKS: int = 20
 
 var grid: CombatGrid
 
@@ -44,6 +44,7 @@ func _ready() -> void:
 	_check_add_hold_refuses_damage_and_restore()
 	_check_damage_mode_persists_past_combat()
 	_check_damage_mode_counts_once_after_combat()
+	_check_midfight_recompute_does_not_double_count()
 	_check_full_rest_clears_but_camp_does_not()
 	_check_heal_clear_respects_school_and_level()
 	_check_restore_clears_all_or_by_amount()
@@ -432,6 +433,31 @@ func _check_damage_mode_counts_once_after_combat() -> void:
 	_done()
 
 
+## A wound (or a cure) re-runs update_derived_stats mid-fight. The loss must
+## stay N, not 2N, then still be N after the fight.
+func _check_midfight_recompute_does_not_double_count() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	var before: int = u.get_spellpower()
+	var attrs: Dictionary = ch.attributes.duplicate()
+	var hurt: Dictionary = attrs.duplicate()
+	hurt["focus"] = int(hurt["focus"]) - 3
+	var lost: int = int(CombatStats.attribute_terms(attrs).spellpower) \
+		- int(CombatStats.attribute_terms(hurt).spellpower)
+	ValuePaths.apply_damage_mode(u, "attribute.focus", 3.0, [], "curse")
+	CharacterSystem.update_derived_stats(ch)   # as the wound path does
+	if u.get_spellpower() != before - lost:
+		_fail("mid-fight recompute: spellpower %d, wanted %d (double would be %d)"
+			% [u.get_spellpower(), before - lost, before - 2 * lost])
+	_end_fight()
+	if int(ch.derived.spellpower) != before - lost:
+		_fail("after the fight spellpower: %d, wanted %d" % [int(ch.derived.spellpower), before - lost])
+	_leave_party(u)
+	_cleanup([u])
+	_done()
+
+
 func _check_full_rest_clears_but_camp_does_not() -> void:
 	var ch: Dictionary = CharacterSystem.create_blank_character()
 	ch["damaged_values"] = [{"value": "attribute.focus", "amount": 2,
@@ -509,15 +535,14 @@ func _check_damage_mode_on_enemy_is_fight_only() -> void:
 	_done()
 
 
-## Saves go through SaveManager slot 3, which may be Olaf's real save. The slot
-## file and meta.json are held in memory first and put back byte for byte (or
-## deleted if they did not exist), so this check never costs him a save.
+## The round trip runs through SaveManager slot 3, but in a scratch folder: the
+## verifier points SaveManager.SAVE_DIR at user://verify_scratch_saves/ for the
+## duration, so Olaf's real saves are never opened for writing.
 func _check_damaged_values_survive_save_round_trip() -> void:
-	var slot_path: String = SaveManager.SAVE_DIR + "slot_3.json"
-	var meta_path: String = SaveManager.SAVE_DIR + "meta.json"
-	var kept: Dictionary = {}
-	for path in [slot_path, meta_path]:
-		kept[path] = FileAccess.get_file_as_bytes(path) if FileAccess.file_exists(path) else null
+	var real_dir: String = SaveManager.SAVE_DIR
+	var scratch: String = "user://verify_scratch_saves/"
+	DirAccess.make_dir_recursive_absolute(scratch)
+	SaveManager.SAVE_DIR = scratch
 	var old_slot: int = SaveManager.current_slot
 	# Snapshot every system the save touches, to put the process back after.
 	var snap_game: Dictionary = GameState.get_save_data().duplicate(true)
@@ -558,20 +583,17 @@ func _check_damaged_values_survive_save_round_trip() -> void:
 			if int(back.derived.spellpower) != sp:
 				_fail("spellpower after load: %d, wanted %d" % [int(back.derived.spellpower), sp])
 
-	# Put everything back: the process state, then the files.
+	# Put everything back: the save folder first, then the process state.
+	SaveManager.SAVE_DIR = real_dir
+	for fname in ["slot_3.json", "meta.json"]:
+		if FileAccess.file_exists(scratch + fname):
+			DirAccess.remove_absolute(scratch + fname)
+	DirAccess.remove_absolute(scratch)
 	GameState.load_save_data(snap_game)
 	CharacterSystem.load_save_data(snap_chars)
 	ItemSystem.load_save_data(snap_items)
 	KarmaSystem.load_save_data(snap_karma)
 	MapManager.load_save_data(snap_map)
 	SaveManager.current_slot = old_slot
-	for path in kept:
-		if kept[path] == null:
-			if FileAccess.file_exists(path):
-				DirAccess.remove_absolute(path)
-		else:
-			var f := FileAccess.open(path, FileAccess.WRITE)
-			f.store_buffer(kept[path])
-			f.close()
 	_cleanup([u])
 	_done()

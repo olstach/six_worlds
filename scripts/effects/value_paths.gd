@@ -95,6 +95,10 @@ static func release_all_combat(unit: Node) -> void:
 		if v.begins_with("skill.") and not v.get_slice(".", 1) in skills:
 			skills.append(v.get_slice(".", 1))
 	unit.effect_holds.clear()   # includes the "__attr" holds
+	# The holds that carried persistent damage are gone: let the entries count.
+	if "character_data" in unit:
+		for entry in unit.character_data.get("damaged_values", []):
+			entry.erase("held")
 	for skill in skills:
 		_refresh_skill(unit, skill)   # no holds left, so the key is erased
 	# With no attribute holds left this removes any __attr remnants and
@@ -318,8 +322,15 @@ static func apply_damage_mode(unit: Node, value: String, amount: float,
 	var data: Dictionary = unit.character_data
 	if not data.has("damaged_values"):
 		data["damaged_values"] = []
-	data["damaged_values"].append({"value": value, "amount": amount,
-		"cleared_by": cleared_by.duplicate(true), "source": source})
+	var entry: Dictionary = {"value": value, "amount": amount,
+		"cleared_by": cleared_by.duplicate(true), "source": source}
+	# An attribute entry is "held" while its combat hold is live: the hold
+	# carries the loss, so damaged_total() skips it and update_derived_stats()
+	# (which can run mid-fight, e.g. after a wound) does not count it twice.
+	# release_all_combat() clears the flag when the hold goes.
+	if namespace_name == "attribute":
+		entry["held"] = true
+	data["damaged_values"].append(entry)
 	if namespace_name == "attribute":
 		# A second hit from the same source this fight adds to its hold.
 		var total: float = amount
@@ -329,11 +340,12 @@ static func apply_damage_mode(unit: Node, value: String, amount: float,
 		add_hold(unit, value, "drain", total, hold_source)
 
 
-## Total persistent damage on `value` ("attribute.focus") in `character`.
+## Total persistent damage on `value` ("attribute.focus") in `character`,
+## leaving out entries whose combat hold is still carrying the loss ("held").
 static func damaged_total(character: Dictionary, value: String) -> float:
 	var total: float = 0.0
 	for entry in character.get("damaged_values", []):
-		if str(entry.get("value", "")) == value:
+		if str(entry.get("value", "")) == value and not entry.get("held", false):
 			total += float(entry.get("amount", 0))
 	return total
 
