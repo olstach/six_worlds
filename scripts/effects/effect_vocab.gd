@@ -14,9 +14,11 @@ extends RefCounted
 ##     refactor exists to end.
 ##   * Unknown names are errors, never silently defaulted. validate() returns
 ##     human-readable strings; an empty array means the effect is valid.
-##   * tools/content/validate (Python mirror, Task 2) reads the literal
-##     `const NAME: Array[String] = [...]` lists below with a regex, so every
-##     list it needs stays a plain literal of quoted strings.
+##   * tools/effect_check.py (the Python mirror, imported by
+##     tools/validate_data.py and tested by tools/test_effect_vocab.py) reads
+##     the literal `const NAME: Array[String] = [...]` lists and the two
+##     Dictionary consts below with a regex, so every list it needs stays a
+##     plain literal of quoted strings. Change a rule here, change it there.
 
 # ── The approved lists ───────────────────────────────────────────────────────
 

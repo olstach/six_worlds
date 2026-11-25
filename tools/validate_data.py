@@ -867,6 +867,16 @@ for _sid, _sp in _spells.items():
                 "a status nor a StatusOps tag — it removes nothing")
 
 
+# ── Effect vocabulary ────────────────────────────────────────────────────────
+#
+# The shared effect language (scripts/effects/effect_vocab.gd). The Python
+# validator lives in tools/effect_check.py, which reads every list from that
+# GDScript file; importing it here makes check_effect / check_effects available
+# to the data checks of later stages. Nothing calls them on a data file yet.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from effect_check import check_effect, check_effects  # noqa: E402,F401
+
+
 # ── Resurrection ─────────────────────────────────────────────────────────────
 _res_src = open(os.path.join(ROOT, "scripts/combat/resurrection.gd"), encoding="utf-8").read()
 _tiers = _gd_list(_res_src, "TIERS")

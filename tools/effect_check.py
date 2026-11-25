@@ -1,0 +1,536 @@
+"""Python mirror of scripts/effects/effect_vocab.gd (class EffectVocab).
+
+validate_data.py runs all its checks at import time, so the effect validator
+lives here where tests and other tools can import it safely; validate_data.py
+imports it too.
+
+The GDScript file is the authority. Every list is READ from the .gd source
+(never restated here), and every name lookup that GDScript does through an
+autoload is done from the same JSON file. If you change a rule in
+effect_vocab.gd, change it here in the same commit.
+
+    check_effect(effect, where)   -> list[str]  (empty means valid)
+    check_effects(effects, where) -> list[str]
+"""
+import glob
+import json
+import os
+import re
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def _read(rel):
+    with open(os.path.join(ROOT, rel), encoding="utf-8") as fh:
+        return fh.read()
+
+
+def _json(rel):
+    return json.loads(_read(rel))
+
+
+def _strip_comments(src):
+    """Drop `# ...` comments (a '#' outside a quoted string) from GDScript."""
+    out = []
+    for line in src.split("\n"):
+        in_str = False
+        for i, ch in enumerate(line):
+            if ch == '"':
+                in_str = not in_str
+            elif ch == "#" and not in_str:
+                line = line[:i]
+                break
+        out.append(line)
+    return "\n".join(out)
+
+
+def _gd_list(src, name):
+    """Ordered list of the quoted strings in `const NAME... = [ ... ]`."""
+    m = re.search(r"const %s\b[^=]*=\s*\[(.*?)\]" % name, _strip_comments(src), re.S)
+    if not m:
+        raise RuntimeError("effect_check: cannot read const %s from GDScript source" % name)
+    return re.findall(r'"([^"]*)"', m.group(1))
+
+
+def _gd_dict_of_lists(src, name):
+    """`const NAME: Dictionary = { "k": ["a", "b"], ... }` -> {k: [a, b]}."""
+    m = re.search(r"const %s\b[^=]*=\s*\{(.*?)\n\}" % name, _strip_comments(src), re.S)
+    if not m:
+        raise RuntimeError("effect_check: cannot read const %s from GDScript source" % name)
+    return {k: re.findall(r'"([^"]*)"', v)
+            for k, v in re.findall(r'"([^"]+)"\s*:\s*\[(.*?)\]', m.group(1), re.S)}
+
+
+def _gd_dict_keys(src, name):
+    """Keys of `const NAME: Dictionary = { "k": 1, ... }`, in order."""
+    m = re.search(r"const %s\b[^=]*=\s*\{(.*?)\n\}" % name, _strip_comments(src), re.S)
+    if not m:
+        raise RuntimeError("effect_check: cannot read const %s from GDScript source" % name)
+    return re.findall(r'"([^"]+)"\s*:', m.group(1))
+
+
+def _gd_string(src, name):
+    m = re.search(r'const %s\b[^=]*=\s*"([^"]*)"' % name, src)
+    if not m:
+        raise RuntimeError("effect_check: cannot read const %s from GDScript source" % name)
+    return m.group(1)
+
+
+# ── The approved lists, read from effect_vocab.gd ───────────────────────────
+_vocab_src = _read("scripts/effects/effect_vocab.gd")
+OPS_PY = _gd_list(_vocab_src, "OPS")
+MODES_PY = _gd_list(_vocab_src, "MODES")
+MODES_BY_NAMESPACE = _gd_dict_of_lists(_vocab_src, "MODES_BY_NAMESPACE")
+NAMESPACES = _gd_list(_vocab_src, "NAMESPACES")
+ATTRIBUTES = _gd_list(_vocab_src, "ATTRIBUTES")
+RESOURCES = _gd_list(_vocab_src, "RESOURCES")
+STATS = _gd_list(_vocab_src, "STATS")
+RESIST_GROUPS = _gd_list(_vocab_src, "RESIST_GROUPS")
+SELECTORS = _gd_list(_vocab_src, "SELECTORS")
+SHARED_FIELDS = _gd_list(_vocab_src, "SHARED_FIELDS")
+SCALE_PER = _gd_list(_vocab_src, "SCALE_PER")
+SCALE_STATUS_STACK_PREFIX = _gd_string(_vocab_src, "SCALE_STATUS_STACK_PREFIX")
+CONDITION_KEYS = _gd_list(_vocab_src, "CONDITION_KEYS")
+CLEARED_BY = _gd_list(_vocab_src, "CLEARED_BY")
+REST_KINDS = _gd_list(_vocab_src, "REST_KINDS")
+OP_FIELDS = _gd_dict_of_lists(_vocab_src, "OP_FIELDS")
+BUILT_IN_CREATURE_TAGS = _gd_list(_vocab_src, "BUILT_IN_CREATURE_TAGS")
+
+# Lists EffectVocab borrows from other classes.
+_cs_src = _read("scripts/combat/combat_stats.gd")
+CONDITIONS = _gd_list(_cs_src, "PERK_CONDITIONS")          # CombatStats.PERK_CONDITIONS
+TERRAIN_CONDITION_PREFIX = _gd_string(_cs_src, "TERRAIN_CONDITION_PREFIX")
+DERIVED = _gd_list(_cs_src, "DERIVED")                     # CombatStats.DERIVED
+_save_src = _read("scripts/combat/save_system.gd")
+SAVE_ATTRIBUTES = _gd_list(_save_src, "ATTRIBUTES")        # SaveSystem.ATTRIBUTES
+SAVE_TIERS = _gd_dict_keys(_save_src, "TIERS")             # SaveSystem.TIERS keys
+STATUS_OPS = _gd_list(_read("scripts/combat/status_ops.gd"), "OPS")
+STATUS_TAGS = _gd_list(_read("scripts/combat/status_ops.gd"), "TAGS")
+REPOSITION_MODES = _gd_list(_read("scripts/combat/repositioning.gd"), "MODES")
+_res_src = _read("scripts/combat/resurrection.gd")
+RESURRECT_TIERS = _gd_list(_res_src, "TIERS")
+RESURRECT_SCOPES = _gd_list(_res_src, "SCOPES")
+MAGIC_SCHOOLS = _gd_list(_read("scripts/autoload/perk_system.gd"), "MAGIC_SCHOOLS")
+
+
+# ── Name lookups GDScript does through autoloads, here done from the JSON ───
+def _live(d):
+    """Keys of a JSON object without the `_comment*` documentation keys."""
+    return [k for k in d if not k.startswith("_")]
+
+
+SKILL_IDS = sorted(_json("resources/data/skills.json").get("skills", {}))   # PerkSystem.get_all_skill_ids
+STATUS_NAMES = [s["name"] for s in _json("resources/data/statuses.json")["statuses"]]
+SUMMON_TEMPLATES = list(_json("resources/data/summon_templates.json").get("templates", {}))
+ZONES = _live(_json("resources/data/zones.json").get("zones", {}))
+DAMAGE_TYPES = _live(_json("resources/data/damage_types.json").get("damage_types", {}))
+TERRAIN_KEYS = [k for k, v in _json("resources/data/terrain.json").get("terrain", {}).items()
+                if not k.startswith("_") and v]   # Ground.by_key(key) must be non-empty
+
+
+def _collect_tags(node, found):
+    """Every string in a "tags" array anywhere in parsed JSON (EffectVocab._collect_tags)."""
+    if isinstance(node, dict):
+        for key, val in node.items():
+            if key == "tags" and isinstance(val, list):
+                for tag in val:
+                    if isinstance(tag, str) and tag not in found:
+                        found.append(tag)
+            else:
+                _collect_tags(val, found)
+    elif isinstance(node, list):
+        for item in node:
+            _collect_tags(item, found)
+
+
+def _creature_tags():
+    found = list(BUILT_IN_CREATURE_TAGS)
+    for path in sorted(glob.glob(os.path.join(ROOT, "resources/data/enemies/*.json"))):
+        with open(path, encoding="utf-8") as fh:
+            _collect_tags(json.load(fh), found)
+    _collect_tags(_json("resources/data/races.json"), found)
+    return sorted(found)
+
+
+CREATURE_TAGS = _creature_tags()
+
+
+def _is_perk_condition(cond):
+    """CombatStats.is_perk_condition, including the on_terrain_<ground> family."""
+    if cond in CONDITIONS:
+        return True
+    if cond.startswith(TERRAIN_CONDITION_PREFIX):
+        return cond[len(TERRAIN_CONDITION_PREFIX):] in TERRAIN_KEYS
+    return False
+
+
+def _is_number(v):
+    # GDScript's int/float; a Python bool is not a number here.
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def _j(items):
+    return ", ".join(items)
+
+
+# ── Public API ──────────────────────────────────────────────────────────────
+def check_effect(effect, where):
+    """Validate one effect dict; returns error strings, empty when valid."""
+    errs = []
+    op = effect.get("op")
+    if not isinstance(op, str) or op not in OPS_PY:
+        return [f"{where}: unknown op '{op}' (approved: {_j(OPS_PY)})"]
+
+    allowed = SHARED_FIELDS + OP_FIELDS[op]
+    for key in effect:
+        if key not in allowed:
+            errs.append(f"{where}: unknown field '{key}' on a {op} effect")
+
+    _validate_shared(effect, where, errs)
+    _validate_op(op, effect, where, errs)
+    return errs
+
+
+def check_effects(effects, where):
+    """Validate a list of effects, labelling each by index."""
+    errs = []
+    for i, e in enumerate(effects):
+        label = f"{where}[{i}]"
+        if not isinstance(e, dict):
+            errs.append(f"{label}: an effect must be an object, got {type(e).__name__}")
+            continue
+        errs.extend(check_effect(e, label))
+    return errs
+
+
+# ── Shared fields ───────────────────────────────────────────────────────────
+def _validate_shared(effect, where, errs):
+    if "to" in effect and effect["to"] not in SELECTORS:
+        errs.append(f"{where}: unknown 'to' '{effect['to']}' (approved: {_j(SELECTORS)})")
+
+    if "chance" in effect:
+        c = effect["chance"]
+        if not _is_number(c) or c < 0 or c > 100:
+            errs.append(f"{where}: 'chance' must be a number from 0 to 100, got {c}")
+
+    if "save" in effect:
+        s = effect["save"]
+        if not isinstance(s, dict):
+            errs.append(f"{where}: 'save' must be {{stat, tier}}")
+        else:
+            if str(s.get("stat", "")).lower() not in SAVE_ATTRIBUTES:
+                errs.append(f"{where}: save stat '{s.get('stat', '')}' is not an attribute")
+            if s.get("tier", "") not in SAVE_TIERS:
+                errs.append(f"{where}: save tier '{s.get('tier', '')}' unknown "
+                            f"(known: {_j(SAVE_TIERS)})")
+    if "on_save" in effect:
+        if effect["on_save"] not in ["fail", "pass"]:
+            errs.append(f"{where}: 'on_save' must be \"fail\" or \"pass\"")
+        if "save" not in effect:
+            errs.append(f"{where}: 'on_save' without a 'save'")
+
+    if "if" in effect:
+        if not isinstance(effect["if"], list):
+            errs.append(f"{where}: 'if' must be a list of conditions")
+        else:
+            for cond in effect["if"]:
+                msg = _condition_error(cond)
+                if msg:
+                    errs.append(f"{where}: {msg}")
+
+    if "scale" in effect:
+        _validate_scale(effect["scale"], where, errs)
+
+    if "bonus_vs" in effect:
+        bv = effect["bonus_vs"]
+        if not isinstance(bv, dict):
+            errs.append(f"{where}: 'bonus_vs' must map creature tag to multiplier")
+        else:
+            for tag in bv:
+                if tag not in CREATURE_TAGS:
+                    errs.append(f"{where}: bonus_vs names unknown creature tag '{tag}'")
+                if not _is_number(bv[tag]):
+                    errs.append(f"{where}: bonus_vs['{tag}'] must be a number")
+
+    if "cleared_by" in effect:
+        if effect.get("op") != "modify" or effect.get("mode") != "damage":
+            errs.append(f"{where}: 'cleared_by' is only valid on a modify with mode \"damage\"")
+        _validate_cleared_by(effect["cleared_by"], where, errs)
+
+
+def _validate_scale(scale, where, errs):
+    if not isinstance(scale, dict):
+        errs.append(f"{where}: 'scale' must be {{per, amount, cap}}")
+        return
+    per = scale.get("per", "")
+    per_ok = per in SCALE_PER
+    if not per_ok and isinstance(per, str) and per.startswith(SCALE_STATUS_STACK_PREFIX):
+        per_ok = not _status_error(per[len(SCALE_STATUS_STACK_PREFIX):])
+    if not per_ok:
+        errs.append(f"{where}: scale.per '{per}' is not approved ({_j(SCALE_PER)}, "
+                    f"or {SCALE_STATUS_STACK_PREFIX}<status>)")
+    if not _is_number(scale.get("amount")):
+        errs.append(f"{where}: scale.amount must be a number")
+    if "cap" in scale and not _is_number(scale["cap"]):
+        errs.append(f"{where}: scale.cap must be a number")
+
+
+def _validate_cleared_by(lst, where, errs):
+    if not isinstance(lst, list) or not lst:
+        errs.append(f"{where}: 'cleared_by' must be a non-empty list")
+        return
+    for entry in lst:
+        if not isinstance(entry, dict) or len(entry) != 1:
+            errs.append(f"{where}: each cleared_by entry is a one-key object like {{\"rest\": \"full\"}}")
+            continue
+        kind = str(next(iter(entry)))
+        arg = entry[kind]
+        if kind == "rest":
+            if arg not in REST_KINDS:
+                errs.append(f"{where}: cleared_by rest '{arg}' unknown ({_j(REST_KINDS)})")
+        elif kind == "heal":
+            if not isinstance(arg, dict):
+                errs.append(f"{where}: cleared_by heal takes {{school?, min_level?}}")
+                continue
+            for k in arg:
+                if k not in ["school", "min_level"]:
+                    errs.append(f"{where}: cleared_by heal has unknown key '{k}'")
+            # Both "white" and "white_magic" are accepted, exactly as in GDScript.
+            if "school" in arg and not (str(arg["school"]) + "_magic" in MAGIC_SCHOOLS
+                                        or str(arg["school"]) in MAGIC_SCHOOLS):
+                errs.append(f"{where}: cleared_by heal school '{arg['school']}' is not a magic school")
+            if "min_level" in arg and not _is_number(arg["min_level"]):
+                errs.append(f"{where}: cleared_by heal min_level must be a number")
+        elif kind == "restore":
+            if not isinstance(arg, str):
+                errs.append(f"{where}: cleared_by restore takes a value path string")
+            else:
+                msg = _value_path_error(arg)
+                if msg:
+                    errs.append(f"{where}: cleared_by restore: {msg}")
+        else:
+            errs.append(f"{where}: unknown cleared_by kind '{kind}' (approved: {_j(CLEARED_BY)})")
+
+
+# ── Ops ─────────────────────────────────────────────────────────────────────
+def _require(effect, fields, where, errs):
+    for f in fields:
+        if f not in effect:
+            errs.append(f"{where}: {effect.get('op', '?')} effect needs '{f}'")
+
+
+def _validate_op(op, effect, where, errs):
+    if op == "damage":
+        _require(effect, ["amount", "type"], where, errs)
+        _validate_magnitude(effect, "amount", False, where, errs)
+        if "type" in effect:
+            _validate_damage_type(effect["type"], where, errs)
+    elif op == "heal":
+        _require(effect, ["amount"], where, errs)
+        _validate_magnitude(effect, "amount", True, where, errs)
+    elif op == "modify":
+        _require(effect, ["value", "mode", "amount"], where, errs)
+        _validate_modify(effect, where, errs)
+    elif op == "status":
+        _validate_status(effect, where, errs)
+    elif op == "move":
+        _require(effect, ["mode"], where, errs)
+        if "mode" in effect and not (isinstance(effect["mode"], str)
+                                     and effect["mode"] in REPOSITION_MODES):
+            errs.append(f"{where}: move mode '{effect['mode']}' unknown ({_j(REPOSITION_MODES)})")
+    elif op == "kill":
+        if "immune" in effect:
+            if not isinstance(effect["immune"], list):
+                errs.append(f"{where}: kill 'immune' must be a list of creature tags")
+            else:
+                for tag in effect["immune"]:
+                    if tag not in CREATURE_TAGS:
+                        errs.append(f"{where}: kill immune names unknown creature tag '{tag}'")
+    elif op == "summon":
+        _require(effect, ["as"], where, errs)
+        if "as" in effect and str(effect["as"]) not in SUMMON_TEMPLATES:
+            errs.append(f"{where}: summon template '{effect['as']}' is not in summon_templates.json")
+        if "count" in effect and not _is_number(effect["count"]):
+            errs.append(f"{where}: summon count must be a number")
+    elif op == "zone":
+        _require(effect, ["zone"], where, errs)
+        if "zone" in effect and str(effect["zone"]) not in ZONES:
+            errs.append(f"{where}: zone '{effect['zone']}' is not in zones.json")
+    elif op == "resurrect":
+        _require(effect, ["tier"], where, errs)
+        if "tier" in effect and str(effect["tier"]) not in RESURRECT_TIERS:
+            errs.append(f"{where}: '{effect['tier']}' is not in Resurrection.TIERS, so nothing "
+                        "performs it; the spell would report success and raise nobody")
+        if "scope" in effect and str(effect["scope"]) not in RESURRECT_SCOPES:
+            errs.append(f"{where}: resurrect scope '{effect['scope']}' unknown ({_j(RESURRECT_SCOPES)})")
+        if "hp_pct" in effect and not _is_number(effect["hp_pct"]):
+            errs.append(f"{where}: resurrect hp_pct must be a number")
+
+
+def _validate_modify(effect, where, errs):
+    mode = effect.get("mode")
+    if "mode" in effect and mode not in MODES_PY:
+        errs.append(f"{where}: unknown mode '{mode}' (approved: {_j(MODES_PY)})")
+    if "value" in effect:
+        msg = _value_path_error(str(effect["value"]))
+        if msg:
+            errs.append(f"{where}: {msg}")
+        elif mode in MODES_PY:
+            ns = str(effect["value"]).split(".")[0]
+            if mode not in MODES_BY_NAMESPACE[ns]:
+                errs.append(f"{where}: mode '{mode}' is not allowed on {ns}. values "
+                            f"(allowed: {_j(MODES_BY_NAMESPACE[ns])})")
+    _validate_magnitude(effect, "amount", False, where, errs)
+
+
+def _validate_status(effect, where, errs):
+    _require(effect, ["action"], where, errs)
+    action = effect.get("action", "")
+    if "action" in effect and not (action == "apply" or action in STATUS_OPS):
+        errs.append(f"{where}: status action '{action}' unknown (apply, {_j(STATUS_OPS)})")
+        return
+    if action == "apply":
+        _require(effect, ["status"], where, errs)
+        if "status" in effect:
+            msg = _status_error(str(effect["status"]))
+            if msg:
+                errs.append(f"{where}: {msg}")
+    elif "action" in effect:
+        _require(effect, ["select"], where, errs)
+        sel = effect.get("select", {})
+        if not isinstance(sel, dict):
+            errs.append(f"{where}: 'select' must be {{names}} or {{tag}} plus optional count")
+        else:
+            names = sel.get("names", [])
+            # GDScript would hit a runtime error iterating a non-list; fail loudly here.
+            if not isinstance(names, list):
+                errs.append(f"{where}: select 'names' must be a list of status names")
+                names = []
+            for n in names:
+                msg = _status_error(str(n))
+                if msg:
+                    errs.append(f"{where}: select: {msg}")
+            if "tag" in sel and str(sel["tag"]) not in STATUS_TAGS:
+                errs.append(f"{where}: select: '{sel['tag']}' is neither a status name nor a "
+                            "StatusOps.TAGS group, so it selects nothing")
+
+
+def _validate_magnitude(effect, field, allow_full, where, errs):
+    if field not in effect:
+        return
+    m = effect[field]
+    if _is_number(m):
+        return
+    if isinstance(m, str):
+        if not (allow_full and m == "full"):
+            errs.append(f"{where}: '{field}' string '{m}' not allowed"
+                        + ("" if allow_full else " (\"full\" is for heal only)"))
+        return
+    if not isinstance(m, dict):
+        errs.append(f"{where}: '{field}' must be a number or a magnitude object")
+        return
+    keys = sorted(m.keys())
+    if keys == ["base", "per_spellpower"] or keys == ["base"]:
+        if not (_is_number(m["base"]) and _is_number(m.get("per_spellpower", 0))):
+            errs.append(f"{where}: {field} base/per_spellpower must be numbers")
+    elif keys == ["max", "min"]:
+        if not (_is_number(m["min"]) and _is_number(m["max"])) or m["min"] > m["max"]:
+            errs.append(f"{where}: {field} {{min, max}} must be numbers with min <= max")
+    elif keys == ["pct_of", "value"]:
+        msg = _pct_of_error(str(m["pct_of"]))
+        if msg:
+            errs.append(f"{where}: {msg}")
+        if not _is_number(m["value"]):
+            errs.append(f"{where}: {field} pct_of value must be a number")
+    else:
+        errs.append(f"{where}: '{field}' object has keys {keys}; expected "
+                    "{base, per_spellpower}, {pct_of, value} or {min, max}")
+
+
+def _validate_damage_type(t, where, errs):
+    unknown = "'%s' is not in damage_types.json, so no resistance key can match it and the damage arrives unresisted"
+    if isinstance(t, str):
+        if t not in DAMAGE_TYPES:
+            errs.append(f"{where}: {unknown % t}")
+    elif isinstance(t, dict):
+        total = 0.0
+        for name in t:
+            if str(name) not in DAMAGE_TYPES:
+                errs.append(f"{where}: {unknown % name}")
+            if not _is_number(t[name]):
+                errs.append(f"{where}: damage split share for '{name}' must be a number")
+            else:
+                total += float(t[name])
+        if not t or abs(total - 1.0) > 0.001:
+            errs.append(f"{where}: damage split shares sum to {total}, must be 1")
+    else:
+        errs.append(f"{where}: damage 'type' must be a name or a {{type: share}} split")
+
+
+# ── Names ───────────────────────────────────────────────────────────────────
+def _value_path_error(path):
+    """Empty string when `path` is a valid value path, otherwise the reason."""
+    parts = path.split(".")
+    if len(parts) != 2:
+        return f"value path '{path}' must look like namespace.name"
+    ns, name = parts
+    if ns not in NAMESPACES:
+        return f"unknown namespace '{ns}' in '{path}' (approved: {_j(NAMESPACES)})"
+    if ns == "attribute":
+        if name not in ATTRIBUTES:
+            return f"unknown attribute '{name}' in '{path}'"
+    elif ns == "resource":
+        if name not in RESOURCES:
+            return f"unknown resource '{name}' in '{path}' (approved: {_j(RESOURCES)})"
+    elif ns == "stat":
+        if name not in STATS:
+            return f"unknown stat '{name}' in '{path}' (approved: {_j(STATS)})"
+    elif ns == "skill":
+        if not SKILL_IDS:
+            return f"skills.json is not loaded, so '{path}' cannot be checked"
+        if name not in SKILL_IDS:
+            return f"unknown skill '{name}' in '{path}'"
+    elif ns == "resist":
+        if not (name in RESIST_GROUPS or name in DAMAGE_TYPES):
+            return f"unknown resist '{name}' in '{path}' (a damage type, or {_j(RESIST_GROUPS)})"
+    return ""
+
+
+def _pct_of_error(source):
+    """pct_of names a value path, or target./caster. plus a CombatStats.DERIVED key."""
+    for prefix in ("target.", "caster."):
+        if source.startswith(prefix):
+            key = source[len(prefix):]
+            if key in DERIVED:
+                return ""
+            return f"pct_of '{source}': '{key}' is not a derived stat"
+    return _value_path_error(source)
+
+
+def _status_error(status_name):
+    if not STATUS_NAMES:
+        return f"statuses.json is not loaded, so '{status_name}' cannot be checked"
+    if status_name not in STATUS_NAMES:
+        return f"status '{status_name}' is not in statuses.json"
+    return ""
+
+
+def _condition_error(cond):
+    """One entry of an `if` list. Empty string means valid."""
+    if isinstance(cond, str):
+        if _is_perk_condition(cond):
+            return ""
+        return f"unknown condition '{cond}'"
+    if isinstance(cond, dict) and len(cond) == 1:
+        key = str(next(iter(cond)))
+        arg = str(cond[key])
+        if key == "target_has":
+            if arg in STATUS_TAGS or not _status_error(arg):
+                return ""
+            return f"target_has '{arg}' is neither a status nor a status tag"
+        if key == "target_is":
+            if arg in CREATURE_TAGS:
+                return ""
+            return f"target_is '{arg}' is not a creature tag"
+        return f"unknown condition form '{key}' (approved: {_j(CONDITION_KEYS)})"
+    return f"a condition is a name or a one-key object, got {cond}"
