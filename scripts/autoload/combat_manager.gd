@@ -3300,6 +3300,26 @@ func place_gate(zone_id: String, here: Array, there: Array, source: Node,
 	return true
 
 
+## The tiles a zone covers: the container's own `aoe` block, defaulting to a
+## circle of size 2 on the target. `container` is a spell or a zone effect.
+## Shared by cast_spell and EffectResolver so the default lives once.
+func zone_footprint(container: Dictionary, caster: Node, target_pos: Vector2i) -> Array:
+	var grid_sz := Vector2i(16, 10)
+	if combat_grid:
+		grid_sz = combat_grid.grid_size
+	var footprint: Dictionary = container.get("aoe",
+		{"type": "circle", "size": 2, "origin": "target"})
+	return AoEResolver.get_tiles(footprint, caster.grid_position, target_pos, grid_sz)
+
+
+## How many rounds a zone lasts: `duration` (a number, or "spellpower" for the
+## cast's spellpower bonus), default 3, clamped to 2..12.
+func zone_turns(container: Dictionary, spellpower_bonus: int) -> int:
+	var turns: int = spellpower_bonus if str(container.get("duration", 0)) == "spellpower" \
+		else int(container.get("duration", 3))
+	return clampi(turns, 2, 12)
+
+
 func place_zone(zone_id: String, tiles: Array, source: Node, turns: int) -> bool:
 	var def: Dictionary = Zone.get_definition(zone_id)
 	if def.is_empty():
@@ -4042,16 +4062,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	var zone_left: Dictionary = {}
 	if spell.has("zone"):
 		var zone_id: String = str(spell["zone"])
-		var grid_sz := Vector2i(16, 10)
-		if combat_grid:
-			grid_sz = combat_grid.grid_size
-		var footprint: Dictionary = spell.get("aoe",
-			{"type": "circle", "size": 2, "origin": "target"})
-		var tiles: Array = AoEResolver.get_tiles(
-			footprint, caster.grid_position, target_pos, grid_sz)
-		var turns: int = spellpower_bonus if spell.get("duration", 0) == "spellpower" \
-			else int(spell.get("duration", 3))
-		turns = clampi(turns, 2, 12)
+		var tiles: Array = zone_footprint(spell, caster, target_pos)
+		var turns: int = zone_turns(spell, spellpower_bonus)
 		if not place_zone(zone_id, tiles, caster, turns):
 			return {"success": false, "reason": "The ground will not hold it"}
 		zone_left = {"type": "zone", "zone": zone_id, "tiles": tiles.size()}

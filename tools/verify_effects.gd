@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 38
+const EXPECTED_CHECKS: int = 41
 
 var grid: CombatGrid
 
@@ -72,6 +72,9 @@ func _ready() -> void:
 	_check_summon_count()
 	_check_zone_created()
 	_check_resurrect_raises_the_dead()
+	_check_summon_once_for_area_recipients()
+	_check_summon_from_target_pos_only()
+	_check_position_op_without_position_refused()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1020,4 +1023,60 @@ func _check_resurrect_raises_the_dead() -> void:
 	if again[0].applied:
 		_fail("resurrect: a living unit counted as raised")
 	_cleanup([caster, u])
+	_done()
+
+
+## Count units not in `before`, remove them from the fight, and return how many.
+func _new_units_since(before: Array) -> Array:
+	var made: Array = []
+	for unit in CombatManager.all_units:
+		if not unit in before:
+			made.append(unit)
+	for unit in made:
+		CombatManager.turn_order.erase(unit)
+	return made
+
+
+## `to: enemies_in_area` with two enemies must still summon exactly `count`.
+func _check_summon_once_for_area_recipients() -> void:
+	var caster := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var e1 := _make_unit(Vector2i(8, 8), CombatManager.Team.ENEMY)
+	var e2 := _make_unit(Vector2i(9, 8), CombatManager.Team.ENEMY)
+	var ctx := _ctx(caster, e1)
+	ctx.area_units = [e1, e2]
+	var before: Array = CombatManager.all_units.duplicate()
+	var log := EffectResolver.resolve(
+		[{"op": "summon", "as": "Imp", "count": 2, "to": "enemies_in_area"}], ctx)
+	var made := _new_units_since(before)
+	if made.size() != 2 or log.size() != 1:
+		_fail("area summon: %d units, %d log entries (wanted 2 and 1)" % [made.size(), log.size()])
+	if log.size() == 1 and log[0].to != "Imp":
+		_fail("summon log names '%s', wanted the template" % log[0].to)
+	_cleanup(made)
+	_cleanup([caster, e1, e2])
+	_done()
+
+
+## A ground-aimed cast has no target node; target_pos alone must work.
+func _check_summon_from_target_pos_only() -> void:
+	var caster := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var ctx := _ctx(caster, null)
+	ctx.target_pos = Vector2i(9, 5)
+	var before: Array = CombatManager.all_units.duplicate()
+	EffectResolver.resolve([{"op": "summon", "as": "Imp"}], ctx)
+	var made := _new_units_since(before)
+	if made.size() != 1 or made[0].grid_position != Vector2i(9, 5):
+		_fail("target_pos summon: %s" % [made])
+	_cleanup(made)
+	_cleanup([caster])
+	_done()
+
+
+## Neither target nor target_pos: refused with reason "no position".
+func _check_position_op_without_position_refused() -> void:
+	var caster := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var log := EffectResolver.resolve([{"op": "zone", "zone": "poison_cloud"}], _ctx(caster, null))
+	if log.size() != 1 or log[0].applied or log[0].reason != "no position":
+		_fail("no position: %s" % [log])
+	_cleanup([caster])
 	_done()

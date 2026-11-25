@@ -26,6 +26,10 @@ extends RefCounted
 ## already uses, so the old and new paths cannot drift apart.
 
 
+## Ops placed at a ground tile rather than done to a unit.
+const POSITION_OPS: Array[String] = ["summon", "zone"]
+
+
 # ── Public API ───────────────────────────────────────────────────────────────
 
 ## Resolve `effects` in order against the units `ctx` names. Returns the log,
@@ -45,6 +49,11 @@ static func resolve(effects: Array, ctx: EffectContext) -> Array[Dictionary]:
 		if not errs.is_empty():
 			push_error("EffectResolver: refusing an invalid effect: %s" % errs[0])
 			out.append(_entry(op, null, false, "invalid: " + errs[0], 0.0))
+			continue
+		# Position ops (summon, zone) happen once per effect, at a tile, no
+		# matter what `to` says; every other op runs once per recipient.
+		if op in POSITION_OPS:
+			out.append(_resolve_one(effect, ctx, ctx.target))
 			continue
 		for unit in recipients(str(effect.get("to", "target")), ctx):
 			out.append(_resolve_one(effect, ctx, unit))
@@ -135,6 +144,12 @@ static func unit_tags(unit: Node) -> Array[String]:
 static func _resolve_one(effect: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
 	var op: String = str(effect["op"])
 
+	# A position op may have no unit at all (a ground-aimed cast); `if` and
+	# `save` need one.
+	if unit == null and (effect.has("if") or effect.has("save")):
+		push_error("EffectResolver: %s has `if`/`save` but no target unit" % op)
+		return _entry(op, null, false, "no target unit for if/save", 0.0)
+
 	# 2. `if`: every condition must hold.
 	for cond in effect.get("if", []):
 		if not _condition_met(cond, ctx, unit):
@@ -178,7 +193,7 @@ static func _resolve_one(effect: Dictionary, ctx: EffectContext, unit: Node) -> 
 		"summon":
 			return _do_summon(effect, ctx)
 		"zone":
-			return _do_zone(effect, ctx, unit)
+			return _do_zone(effect, ctx)
 		"resurrect":
 			return _do_resurrect(effect, ctx, unit)
 	push_error("EffectResolver: op '%s' is not built yet" % op)
@@ -339,35 +354,46 @@ static func _do_kill(effect: Dictionary, unit: Node) -> Dictionary:
 	return _entry("kill", unit, true, "", 0.0)
 
 
-## Summon `count` of template `as` for the caster, at the target's tile (the
-## spawner finds the nearest free tile when it is taken). Power is ctx.power.
+## A position op's log entry: `to` names what was placed, not a unit.
+static func _placed_entry(op: String, what: String, applied: bool, reason: String,
+		amount: float) -> Dictionary:
+	return {"op": op, "to": what, "applied": applied, "reason": reason, "amount": amount}
+
+
+## Refuse a position op that has no tile, loudly.
+static func _no_position(op: String, what: String) -> Dictionary:
+	push_error("EffectResolver: %s '%s' has no position (set ctx.target_pos or ctx.target)" % [op, what])
+	return _placed_entry(op, what, false, "no position", 0.0)
+
+
+## Summon `count` of template `as` for the caster at the context's position
+## (the spawner finds the nearest free tile when it is taken). Power is ctx.power.
 static func _do_summon(effect: Dictionary, ctx: EffectContext) -> Dictionary:
-	var at: Vector2i = ctx.target.grid_position if ctx.target != null else ctx.caster.grid_position
+	var what: String = str(effect["as"])
+	var at: Vector2i = ctx.position()
+	if at == EffectContext.NO_POS:
+		return _no_position("summon", what)
 	var made: int = 0
 	for i in maxi(1, int(effect.get("count", 1))):
 		var spawned: Dictionary = CombatManager._spawn_summoned_unit(
-			ctx.caster, str(effect["as"]), at, ctx.power)
+			ctx.caster, what, at, ctx.power)
 		if spawned.get("success", false):
 			made += 1
-	return _entry("summon", ctx.caster, made > 0, "" if made > 0 else "no space for summon", float(made))
+	return _placed_entry("summon", what, made > 0, "" if made > 0 else "no space for summon", float(made))
 
 
-## Lay a zone on the ground with CombatManager.place_zone, footprint from the
-## effect's optional `aoe` (default circle, size 2, on the target) and `turns`
-## from `duration` (number or "spellpower", default 3, clamped 2..12) exactly
-## as cast_spell works them out for spell.zone.
-static func _do_zone(effect: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
-	var grid_size := Vector2i(16, 10)
-	if CombatManager.combat_grid:
-		grid_size = CombatManager.combat_grid.grid_size
-	var footprint: Dictionary = effect.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
-	var tiles: Array = AoEResolver.get_tiles(footprint, ctx.caster.grid_position,
-		unit.grid_position, grid_size)
-	var turns: int = ctx.power if str(effect.get("duration", "")) == "spellpower" \
-		else int(effect.get("duration", 3))
-	turns = clampi(turns, 2, 12)
-	var placed: bool = CombatManager.place_zone(str(effect["zone"]), tiles, ctx.caster, turns)
-	return _entry("zone", unit, placed, "" if placed else "the ground will not hold it", float(tiles.size()))
+## Lay a zone on the ground with CombatManager.place_zone. Footprint and turns
+## come from CombatManager.zone_footprint / zone_turns, the same functions
+## cast_spell uses for spell.zone, reading the effect's `aoe` and `duration`.
+static func _do_zone(effect: Dictionary, ctx: EffectContext) -> Dictionary:
+	var what: String = str(effect["zone"])
+	var at: Vector2i = ctx.position()
+	if at == EffectContext.NO_POS:
+		return _no_position("zone", what)
+	var tiles: Array = CombatManager.zone_footprint(effect, ctx.caster, at)
+	var turns: int = CombatManager.zone_turns(effect, ctx.power)
+	var placed: bool = CombatManager.place_zone(what, tiles, ctx.caster, turns)
+	return _placed_entry("zone", what, placed, "" if placed else "the ground will not hold it", float(tiles.size()))
 
 
 ## Raise the dead through CombatManager._apply_resurrection (tier, hp_pct and

@@ -13,6 +13,11 @@ extends RefCounted
 var caster: Node = null
 ## The unit the container was aimed at (the default `to`).
 var target: Node = null
+## A ground tile the container was aimed at, for ops placed at a position
+## (summon, zone) when there is no unit there. NO_POS means "not set"; use
+## position() to read the tile with the fallback to target's tile.
+const NO_POS := Vector2i(-9999, -9999)
+var target_pos: Vector2i = NO_POS
 ## Every unit inside the container's area, for the *_in_area selectors.
 var area_units: Array = []
 
@@ -42,6 +47,16 @@ var save_result: Dictionary = {}
 ## the status ends). When empty those modes are refused, because a hold nobody
 ## owns would never be released.
 var hold_source: String = ""
+
+
+## The tile a position op acts on: target_pos if set, else the target unit's
+## tile, else NO_POS (the caller must refuse that loudly).
+func position() -> Vector2i:
+	if target_pos != NO_POS:
+		return target_pos
+	if target != null and "grid_position" in target:
+		return target.grid_position
+	return NO_POS
 
 
 ## The save roll already made against `unit`, or {} if none has been rolled.
