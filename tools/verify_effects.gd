@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 31
+const EXPECTED_CHECKS: int = 38
 
 var grid: CombatGrid
 
@@ -63,6 +63,15 @@ func _ready() -> void:
 	_check_resolver_refuses_invalid_effect()
 	_check_heal_clearing_held_damage_lifts_it_now()
 	_check_resolver_restore_by_amount()
+
+	# The delegating ops: status, move, kill, summon, zone, resurrect.
+	_check_status_apply_and_remove()
+	_check_move_push_one_tile()
+	_check_kill_refused_on_boss()
+	_check_kill_immune_override()
+	_check_summon_count()
+	_check_zone_created()
+	_check_resurrect_raises_the_dead()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -879,4 +888,136 @@ func _check_resolver_restore_by_amount() -> void:
 	_end_fight()
 	_leave_party(u)
 	_cleanup([caster, u, foe])
+	_done()
+
+
+# ── Delegating ops ───────────────────────────────────────────────────────────
+
+## apply Burning for 3 turns, then remove it by name.
+func _check_status_apply_and_remove() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	var log := EffectResolver.resolve(
+		[{"op": "status", "action": "apply", "status": "Burning", "duration": 3}], _ctx(caster, u))
+	if not u.has_status("Burning"):
+		_fail("status apply: Burning not on the target (%s)" % [log])
+	for entry in u.status_effects:
+		if str(entry.get("status")) == "Burning" and int(entry.get("duration", 0)) != 3:
+			_fail("status apply: duration %s, wanted 3" % entry.get("duration"))
+	EffectResolver.resolve([{"op": "status", "action": "remove",
+		"select": {"names": ["Burning"]}}], _ctx(caster, u))
+	if u.has_status("Burning"):
+		_fail("status remove: Burning is still on the target")
+	_cleanup([caster, u])
+	_done()
+
+
+## Push 1: the target ends one tile further from the caster.
+func _check_move_push_one_tile() -> void:
+	var caster := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(6, 5), CombatManager.Team.ENEMY)
+	EffectResolver.resolve([{"op": "move", "mode": "push", "tiles": 1}], _ctx(caster, u))
+	if u.grid_position != Vector2i(7, 5):
+		_fail("push 1: target at %s, wanted (7, 5)" % u.grid_position)
+	_cleanup([caster, u])
+	_done()
+
+
+## Make `unit` a boss by pointing it at a real boss archetype.
+func _make_boss(unit: CombatUnit) -> void:
+	unit.character_data["archetype_id"] = "hell_yama_lieutenant"
+	if not "boss" in EffectResolver.unit_tags(unit):
+		_fail("fixture: hell_yama_lieutenant is not tagged boss")
+
+
+## kill on a boss is refused: alive, log says immune, message in combat_log.
+## A non-boss dies.
+func _check_kill_refused_on_boss() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var boss := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	var mook := _make_unit(Vector2i(6, 5), CombatManager.Team.ENEMY)
+	_make_boss(boss)
+	var lines: Array[String] = []
+	var grab := func(msg: String) -> void: lines.append(msg)
+	CombatManager.combat_log.connect(grab)
+	var log := EffectResolver.resolve([{"op": "kill"}], _ctx(caster, boss))
+	CombatManager.combat_log.disconnect(grab)
+	if not boss.is_alive() or boss.current_hp <= 0:
+		_fail("kill: boss died")
+	if log.size() != 1 or log[0].applied or log[0].reason != "immune":
+		_fail("kill boss: log %s" % [log])
+	if not "%s cannot be undone outright." % boss.unit_name in lines:
+		_fail("kill boss: no refusal in combat_log (%s)" % [lines])
+	var log2 := EffectResolver.resolve([{"op": "kill"}], _ctx(caster, mook))
+	if mook.is_alive() or not log2[0].applied:
+		_fail("kill non-boss: still alive (%s)" % [log2])
+	_cleanup([caster, boss, mook])
+	_done()
+
+
+## `immune: []` removes the default protection.
+func _check_kill_immune_override() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var boss := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	_make_boss(boss)
+	EffectResolver.resolve([{"op": "kill", "immune": []}], _ctx(caster, boss))
+	if boss.is_alive():
+		_fail("kill immune []: boss survived")
+	_cleanup([caster, boss])
+	_done()
+
+
+## summon Imp x2: two new units on the caster's team.
+func _check_summon_count() -> void:
+	var caster := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var before: Array = CombatManager.all_units.duplicate()
+	EffectResolver.resolve([{"op": "summon", "as": "Imp", "count": 2}], _ctx(caster, caster))
+	var made: Array = []
+	for unit in CombatManager.all_units:
+		if not unit in before:
+			made.append(unit)
+	if made.size() != 2:
+		_fail("summon count 2: %d new units" % made.size())
+	for unit in made:
+		if unit.team != caster.team:
+			_fail("summoned unit is on team %s, caster on %s" % [unit.team, caster.team])
+		CombatManager.turn_order.erase(unit)
+	_cleanup(made)
+	_cleanup([caster])
+	_done()
+
+
+## zone poison_cloud: the combat manager holds a zone with that id.
+func _check_zone_created() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(6, 6), CombatManager.Team.ENEMY)
+	CombatManager.active_zones.clear()
+	EffectResolver.resolve([{"op": "zone", "zone": "poison_cloud"}], _ctx(caster, u))
+	var found := false
+	for zone in CombatManager.active_zones:
+		if zone.id == "poison_cloud" and (zone.tiles as Dictionary).has(Vector2i(6, 6)):
+			found = true
+	if not found:
+		_fail("zone: no poison_cloud over the target (%s)" % [CombatManager.active_zones.size()])
+	CombatManager.active_zones.clear()
+	_cleanup([caster, u])
+	_done()
+
+
+## resurrect revive at 50%: a dead ally stands up with half its HP.
+func _check_resurrect_raises_the_dead() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	u.is_dead = true
+	u.current_hp = 0
+	var log := EffectResolver.resolve(
+		[{"op": "resurrect", "tier": "revive", "hp_pct": 50}], _ctx(caster, u))
+	if u.is_dead or u.current_hp != 50 or not log[0].applied:
+		_fail("resurrect: dead=%s hp=%d log=%s" % [u.is_dead, u.current_hp, log])
+	# A living unit cannot be raised: refused, not applied.
+	var again := EffectResolver.resolve(
+		[{"op": "resurrect", "tier": "revive", "hp_pct": 50}], _ctx(caster, u))
+	if again[0].applied:
+		_fail("resurrect: a living unit counted as raised")
+	_cleanup([caster, u])
 	_done()

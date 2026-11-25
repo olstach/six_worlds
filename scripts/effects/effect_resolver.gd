@@ -21,8 +21,9 @@ extends RefCounted
 ## `reason` says why an entry did not apply ("chance", "save passed" ...), so a
 ## caller or a test can see what happened without re-deriving it.
 ##
-## Ops other than damage / heal / modify are refused with a log entry here;
-## later tasks build them.
+## Every op in EffectVocab.OPS is built. status, move, kill, summon, zone and
+## resurrect only DELEGATE: each calls the CombatManager function that cast_spell
+## already uses, so the old and new paths cannot drift apart.
 
 
 # ── Public API ───────────────────────────────────────────────────────────────
@@ -168,6 +169,18 @@ static func _resolve_one(effect: Dictionary, ctx: EffectContext, unit: Node) -> 
 			return _do_heal(ctx, unit, m)
 		"modify":
 			return _do_modify(effect, ctx, unit, m)
+		"status":
+			return _do_status(effect, ctx, unit)
+		"move":
+			return _do_move(effect, ctx, unit)
+		"kill":
+			return _do_kill(effect, unit)
+		"summon":
+			return _do_summon(effect, ctx)
+		"zone":
+			return _do_zone(effect, ctx, unit)
+		"resurrect":
+			return _do_resurrect(effect, ctx, unit)
 	push_error("EffectResolver: op '%s' is not built yet" % op)
 	return _entry(op, unit, false, "op '%s' not built yet" % op, 0.0)
 
@@ -254,6 +267,126 @@ static func _do_modify(effect: Dictionary, ctx: EffectContext, unit: Node, m: fl
 		return _entry("modify", unit, false, "no hold_source for %s" % mode, 0.0)
 	ValuePaths.add_hold(unit, value, mode, m, ctx.hold_source)
 	return _entry("modify", unit, true, "", m)
+
+
+## Apply a status (through CombatManager._apply_status_effect, which holds every
+## immunity and resistance check) or run a status operation (remove, steal,
+## transfer, convert ... through CombatManager._apply_status_op).
+##   {"op":"status","action":"apply","status":"Burning","duration":3}
+##   {"op":"status","action":"remove","select":{"names":["Burning"]}}
+## `duration` is a number, "combat" or "spellpower" (the last two go through
+## _calculate_status_duration like a spell's). `stacks` repeats the apply.
+static func _do_status(effect: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
+	var action: String = str(effect["action"])
+	if action == "apply":
+		var duration: int
+		if typeof(effect.get("duration", null)) in [TYPE_INT, TYPE_FLOAT]:
+			duration = int(effect["duration"])
+		else:
+			duration = CombatManager._calculate_status_duration(ctx.caster,
+				{"duration": effect.get("duration", "spellpower")}, ctx.power)
+		for i in maxi(1, int(effect.get("stacks", 1))):
+			CombatManager._apply_status_effect(unit, str(effect["status"]), duration, 0, ctx.caster)
+		return _entry("status", unit, true, "", float(duration))
+	# Any other action: today's status_ops shape is {op, select, from, to, on}.
+	# The recipient plays "target", so `on` and `from` default to it.
+	var op_spec: Dictionary = effect.duplicate(true)
+	op_spec["op"] = action
+	for shared in ["action", "to", "if", "chance", "save", "on_save"]:
+		op_spec.erase(shared)
+	var result: Dictionary = {"effects_applied": []}
+	CombatManager._apply_status_op(ctx.caster, unit, op_spec, result)
+	return _entry("status", unit, true, "", float(result.effects_applied.size()))
+
+
+## Forced movement through CombatManager: push and pull via _apply_push (as a
+## spell's `push` block), every other mode via reposition() aimed at the
+## context's target tile. A blocked push slams the unit for its blocked_damage
+## (physical), as cast_spell does.
+static func _do_move(effect: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
+	var spec: Dictionary = effect.duplicate()
+	for shared in ["op", "to", "if", "chance", "save", "on_save"]:
+		spec.erase(shared)
+	var moved: Dictionary
+	if spec["mode"] in ["push", "pull"]:
+		moved = CombatManager._apply_push(ctx.caster, unit, spec)
+		var slam: int = int(moved.get("blocked_damage", 0))
+		if slam > 0 and unit.is_alive():
+			CombatManager.apply_damage(unit, slam, "physical", ctx.caster)
+			CombatManager.combat_log.emit("%s is slammed into an obstacle!" % unit.unit_name)
+	else:
+		var aim: Vector2i = ctx.target.grid_position if ctx.target != null else unit.grid_position
+		moved = CombatManager.reposition(unit, spec, ctx.caster, aim)
+	return _entry("move", unit, bool(moved.get("ok", false)), str(moved.get("reason", "")),
+		float(moved.get("moved", 0)))
+
+
+## Outright death, the same two lines _apply_save_gated uses for instant_kill
+## (lethal true damage: the unit starts bleeding out, then dies, as ever).
+## `immune` (default ["boss"]) lists creature tags that refuse it: a refused
+## kill does nothing at all, says so in the combat log and records "immune".
+static func _do_kill(effect: Dictionary, unit: Node) -> Dictionary:
+	var immune: Array = effect.get("immune", ["boss"])
+	var tags: Array[String] = unit_tags(unit)
+	for tag in immune:
+		if str(tag) in tags:
+			CombatManager.combat_log.emit("%s cannot be undone outright." % unit.unit_name)
+			return _entry("kill", unit, false, "immune", 0.0)
+	if not unit.is_alive():     # dead or already bleeding out
+		return _entry("kill", unit, false, "already dead", 0.0)
+	CombatManager.combat_log.emit("%s is undone." % unit.unit_name)
+	CombatManager.apply_damage(unit, unit.current_hp + unit.max_hp, "true")
+	return _entry("kill", unit, true, "", 0.0)
+
+
+## Summon `count` of template `as` for the caster, at the target's tile (the
+## spawner finds the nearest free tile when it is taken). Power is ctx.power.
+static func _do_summon(effect: Dictionary, ctx: EffectContext) -> Dictionary:
+	var at: Vector2i = ctx.target.grid_position if ctx.target != null else ctx.caster.grid_position
+	var made: int = 0
+	for i in maxi(1, int(effect.get("count", 1))):
+		var spawned: Dictionary = CombatManager._spawn_summoned_unit(
+			ctx.caster, str(effect["as"]), at, ctx.power)
+		if spawned.get("success", false):
+			made += 1
+	return _entry("summon", ctx.caster, made > 0, "" if made > 0 else "no space for summon", float(made))
+
+
+## Lay a zone on the ground with CombatManager.place_zone, footprint from the
+## effect's optional `aoe` (default circle, size 2, on the target) and `turns`
+## from `duration` (number or "spellpower", default 3, clamped 2..12) exactly
+## as cast_spell works them out for spell.zone.
+static func _do_zone(effect: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
+	var grid_size := Vector2i(16, 10)
+	if CombatManager.combat_grid:
+		grid_size = CombatManager.combat_grid.grid_size
+	var footprint: Dictionary = effect.get("aoe", {"type": "circle", "size": 2, "origin": "target"})
+	var tiles: Array = AoEResolver.get_tiles(footprint, ctx.caster.grid_position,
+		unit.grid_position, grid_size)
+	var turns: int = ctx.power if str(effect.get("duration", "")) == "spellpower" \
+		else int(effect.get("duration", 3))
+	turns = clampi(turns, 2, 12)
+	var placed: bool = CombatManager.place_zone(str(effect["zone"]), tiles, ctx.caster, turns)
+	return _entry("zone", unit, placed, "" if placed else "the ground will not hold it", float(tiles.size()))
+
+
+## Raise the dead through CombatManager._apply_resurrection (tier, hp_pct and
+## scope as a spell's `resurrection` block). Applied only if someone rose.
+static func _do_resurrect(effect: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
+	var spec: Dictionary = {"tier": effect["tier"]}
+	for key in ["hp_pct", "scope"]:
+		if effect.has(key):
+			spec[key] = effect[key]
+	var result: Dictionary = {"effects_applied": []}
+	CombatManager._apply_resurrection(ctx.caster, unit, spec, result)
+	var raised: int = 0
+	var why: String = ""
+	for item in result.effects_applied:
+		if item.get("type", "") == "resurrect":
+			raised += 1
+		else:
+			why = str(item.get("reason", ""))
+	return _entry("resurrect", unit, raised > 0, why, float(raised))
 
 
 ## clear_damage on a party unit's character, passing the unit so held entries

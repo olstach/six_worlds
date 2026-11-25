@@ -105,7 +105,7 @@ const OP_FIELDS: Dictionary = {
 	"move": ["mode", "tiles", "blocked_damage", "variance", "direction"],
 	"kill": ["immune"],
 	"summon": ["as", "count"],
-	"zone": ["zone"],
+	"zone": ["zone", "aoe", "duration"],
 	"resurrect": ["tier", "hp_pct", "scope"],
 }
 
