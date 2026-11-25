@@ -58,9 +58,38 @@ const AFFLICTION_CAP: float = 0.95
 ## cross 100.
 static func total(unit: Node, damage_type: String) -> float:
 	var gathered: Dictionary = _gather(unit, damage_type)
+	var result: float
 	if float(gathered.declared) >= DECLARED_IMMUNITY:
-		return minf(float(gathered.declared), ABSORPTION_CAP)
-	return clampf(float(gathered.sum), VULNERABILITY_FLOOR, REDUCTION_CAP)
+		result = minf(float(gathered.declared), ABSORPTION_CAP)
+	else:
+		result = clampf(float(gathered.sum), VULNERABILITY_FLOOR, REDUCTION_CAP)
+	return _apply_holds(unit, damage_type, result)
+
+
+## Pass a finished resistance through the unit's effect holds: first
+## "resist.<type>", then "resist.all_elemental" when the type is an element.
+##
+## Fortify/drain holds may not push a unit past the usual band, which keeps the
+## rule that buffs cannot reach absorption. A `set` hold is a declaration of
+## what the unit IS, so it may reach the absorption cap, like a single
+## declaration in _gather().
+static func _apply_holds(unit: Node, damage_type: String, base: float) -> float:
+	if unit == null or not "effect_holds" in unit or unit.effect_holds.is_empty():
+		return base
+	var path: String = "resist." + damage_type
+	var result: float = ValuePaths.apply_to(unit, path, base)
+	var declared: bool = ValuePaths.has_set(unit, path)
+	# "Elemental" is category `element` in damage_types.json (fire, lightning,
+	# space, ice) - the same category DamageType documents as "the five elements,
+	# plus ice". Not read from a list of ours.
+	if DamageType.category_of(damage_type) == "element":
+		result = ValuePaths.apply_to(unit, "resist.all_elemental", result)
+		declared = declared or ValuePaths.has_set(unit, "resist.all_elemental")
+	if declared:
+		return clampf(result, VULNERABILITY_FLOOR, ABSORPTION_CAP)
+	if base >= DECLARED_IMMUNITY:
+		return clampf(result, VULNERABILITY_FLOOR, ABSORPTION_CAP)
+	return clampf(result, VULNERABILITY_FLOOR, REDUCTION_CAP)
 
 
 ## Does this unit shrug off the ONSET of an affliction — bleeding, poison,
