@@ -209,3 +209,6 @@ The largest remaining gaps, for orientation only:
    `PerkSystem.curve_value` works out the number; there is no level cap.
    Boosts (holds) count everywhere except perks, XP purchase and learning a
    spell in a shop, which use the bought level.
+8. **One character sheet** - party, companions and enemies are the same
+   dictionary shape, derived by `CharacterSystem.update_derived_stats`; a
+   unique feature is a trait, status or effect, never a parallel code path.

@@ -266,7 +266,11 @@ func _check_effective_luck_reaches_the_loot() -> void:
 	c["attributes"]["luck"] = 10
 	var saved_buffs: Array = GameState.active_map_buffs.duplicate(true)
 	GameState.active_map_buffs = [{"stat": "luck", "amount": 6, "combats_remaining": 1}]
+	# A map buff is the party's, so only a party member receives it (enemies
+	# run through update_derived_stats too since 2026-11-26).
+	CharacterSystem.get_party().append(c)
 	CharacterSystem.update_derived_stats(c)
+	CharacterSystem.get_party().erase(c)
 	GameState.active_map_buffs = saved_buffs
 	if int(c["derived"].get("luck", 0)) != 16:
 		_fail("a +6 Luck shrine left derived luck at %s, expected 16"

@@ -243,8 +243,10 @@ func init_as_enemy(enemy_def: Dictionary) -> void:
 	current_stamina = max_stamina
 	max_actions = enemy_def.get("actions", 2)
 
-	# Set resistances from enemy definition
-	var enemy_resists = enemy_def.get("resistances", {})
+	# Resistances come from derived.resistances, the same place a party
+	# member's do (CharacterSystem.update_derived_stats builds it: racial base,
+	# archetype, traits, equipment, perks).
+	var enemy_resists = derived_stats.get("resistances", {})
 	for resist_type in enemy_resists:
 		resistances[resist_type] = enemy_resists[resist_type]
 
@@ -622,11 +624,14 @@ const NON_COMBAT_HELD_TYPES: Array[String] = ["focus", "tool"]
 
 ## Get the equipped main-hand weapon data
 func get_equipped_weapon() -> Dictionary:
-	# For enemies, check if weapon data is in character_data
+	# A unit with no character sheet (a summon, an illusion, a verifier's
+	# probe) may carry its attack as a bare `equipped_weapon` dictionary. A
+	# character — party member or enemy — never does: its weapon is a real
+	# item in its equipment, read below.
 	if character_data.has("equipped_weapon"):
 		return character_data.equipped_weapon
 
-	# For player/party units, get from equipment via ItemSystem
+	# The main-hand item from equipment via ItemSystem
 	if ItemSystem and character_data.has("equipment"):
 		var weapon_id = ItemSystem.get_equipped_item(character_data, "weapon_main")
 		if weapon_id != "":

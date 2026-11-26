@@ -285,7 +285,8 @@ func _check_an_enemy_inherits_its_birth_resistances() -> void:
 		_fail("enemy birth resistance: king rolled birth '%s', not a hungry_ghost one"
 			% enemy.get("birth", ""))
 	else:
-		var res: Dictionary = enemy.get("resistances", {})
+		# Every reader uses derived.resistances, for enemies as for the party.
+		var res: Dictionary = enemy.get("derived", {}).get("resistances", {})
 		var expected: Dictionary = {
 			"physical": 35,   # archetype 20 + birth 15
 			"crushing": 20,   # archetype only
@@ -296,9 +297,14 @@ func _check_an_enemy_inherits_its_birth_resistances() -> void:
 		# Plus whatever the birth's TRAITS grant (an undead birth's Undead
 		# trait resists poison 25) — enemies have received those since
 		# 2026-10-15; the next check tests that on its own.
+		# And, since enemies use the party's sheet (2026-11-26), whatever the
+		# armour it wears and its perks grant, the same as a party member.
 		var from_traits: Dictionary = TraitSystem.get_resistances(enemy)
+		var from_gear: Dictionary = ItemSystem.calculate_equipment_stats(enemy).get("resistances", {})
+		var from_perks: Dictionary = PerkSystem.get_passive_resistances(enemy)
 		for key in expected:
-			expected[key] = int(expected[key]) + int(from_traits.get(key, 0))
+			expected[key] = int(expected[key]) + int(from_traits.get(key, 0)) \
+				+ int(from_gear.get(key, 0)) + int(from_perks.get(key, 0))
 		for key in expected:
 			if int(res.get(key, 0)) != int(expected[key]):
 				_fail("enemy birth resistance: %s is %s, expected %d"
@@ -338,13 +344,18 @@ func _check_an_enemy_inherits_its_birth_traits_resistances() -> void:
 		# Archetype physical 20, plus whatever the traits it ended up with grant
 		# (Incorporeal's 50 at least).
 		var from_traits: int = int(TraitSystem.get_resistances(enemy).get("physical", 0))
-		var physical: int = int(enemy.get("resistances", {}).get("physical", 0))
+		var physical: int = int(enemy.get("derived", {}).get("resistances", {}).get("physical", 0))
+		# Armour and perks add theirs on the one sheet too (2026-11-26).
+		var from_gear_and_perks: int = \
+			int(ItemSystem.calculate_equipment_stats(enemy).get("resistances", {}).get("physical", 0)) \
+			+ int(PerkSystem.get_passive_resistances(enemy).get("physical", 0))
 		if from_traits < 50:
 			_fail("enemy trait resistance: Incorporeal no longer grants physical 50 "
 				+ "— update this check")
-		if physical != 20 + from_traits:
+		if physical != 20 + from_traits + from_gear_and_perks:
 			_fail("enemy trait resistance: an Incorporeal skeleton king has physical "
-				+ "%d, expected archetype 20 + traits %d" % [physical, from_traits])
+				+ "%d, expected archetype 20 + traits %d + gear/perks %d"
+				% [physical, from_traits, from_gear_and_perks])
 	_done()
 
 

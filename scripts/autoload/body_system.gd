@@ -411,7 +411,19 @@ func is_slot_locked(character: Dictionary, slot_id: String) -> bool:
 
 ## Natural weapon from the first available arm. Falls back to head/tail if all arms are gone.
 ## Used as unarmed fallback in combat when no weapon is equipped.
+## A character may give its natural weapon a name of its own with
+## body_plan.natural_weapon_name (a bare-handed enemy's "Tsa-krul-pa's Claws");
+## only the name changes, the numbers stay the body plan's.
 func get_dominant_natural_weapon(character: Dictionary) -> Dictionary:
+	var weapon: Dictionary = _dominant_natural_weapon(character)
+	var own_name: String = str(character.get("body_plan", {}).get("natural_weapon_name", ""))
+	if not weapon.is_empty() and own_name != "":
+		weapon["name"] = own_name
+	return weapon
+
+
+## The body plan's own natural weapon, before any name the character gives it.
+func _dominant_natural_weapon(character: Dictionary) -> Dictionary:
 	var plan := get_body_plan_def(character)
 	var missing: Array = character.get("body_plan", {}).get("missing_parts", [])
 	# Primary: first available arm-category part

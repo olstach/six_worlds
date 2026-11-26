@@ -2391,14 +2391,27 @@ Moving content onto one shared effect language. The design is at
     - **Olaf's review item:** `docs/plans/SKILL_CURVES_2026-11.md` lists the
       before/after numbers for every skill stat at levels 1 to 10. `at_5` and
       `at_10` in `perks.json` are the two knobs to tune per stat.
+    - [x] ~~**Enemy stale bonus names.**~~ *Done 2026-11-26 (stage 2b,
+      task 1), by Olaf's ruling that every character uses one sheet.*
+      `EnemySystem._calculate_derived_stats` read `attack`,
+      `armor_penetration`, `mana_cost`, `stamina`, `strength_weapon_damage`
+      and `initiative_bonus`, which `perks.json` does not use. The function
+      is gone rather than renamed: an enemy is now the same dictionary as a
+      party character (equipment in its slots, `base_resistances`, traits,
+      perks), derived by `CharacterSystem.update_derived_stats`, and every
+      reader uses `derived.resistances`. A bare-handed enemy fights with its
+      body plan's natural weapon.
+      - **Balance note:** enemies now receive the full per-level skill
+        bonuses, elemental affinity, worn talisman and equipment stats;
+        encounter budgets may need retuning. Sample numbers are in
+        `.superpowers/sdd/2026-11-26-effect-normalization-stage2b/task-1-report.md`.
+    - [ ] **Summons (`summon_templates.json`) onto the same sheet.** Summons
+      and illusions are still hand-built dictionaries with no `attributes`,
+      a bare `equipped_weapon` and scaled `derived` numbers.
+      `ValuePaths.refresh_character` leaves a unit with no `attributes` as it
+      is, so an attribute or skill hold on a summon changes nothing on its
+      derived stats until it has a sheet.
     - **Found during 2a, waiting on Olaf:**
-      - Enemies get no skill bonuses for accuracy, armour pierce, mana cost or
-        stamina. `EnemySystem._calculate_derived_stats` reads `attack`,
-        `armor_penetration`, `mana_cost`, `stamina`, `strength_weapon_damage`
-        and `initiative_bonus`, but `perks.json` uses `accuracy`,
-        `armor_pierce`, `mana_cost_reduction`, `max_stamina` and
-        `weapon_damage_from_strength`. Fixing it rebalances every enemy, so it
-        needs your call.
       - Effective values include gear and traits, so some numbers moved even
         with no boost active. For example a Strong trait now adds to attack
         damage and saves, and enemy saves now include their trait modifiers.

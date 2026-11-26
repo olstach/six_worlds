@@ -204,10 +204,12 @@ static func _write_hold_total(unit: Node, bonus_key: String, prefix: String,
 
 ## Recompute `unit`'s derived stats from its character, mid-fight, and carry
 ## the new maxima onto the unit.
-##   - A party member goes through CharacterSystem.update_derived_stats, the
-##     full player formula (per-level skill bonuses, perks, wounds...).
-##   - Anyone else (enemies, summons) goes through
-##     EnemySystem.recalculate_derived, which applies only what the holds change.
+## Every character — party member, companion or enemy — has the same sheet, so
+## every one goes through CharacterSystem.update_derived_stats, the one formula
+## (per-level skill bonuses, affinity, equipment, perks, wounds...).
+## A unit with no sheet at all (no `attributes`: summons and illusions, which
+## are not on the sheet yet, see TODO 17) has nothing to derive from and is
+## left as it is.
 ## The unit's max_hp / max_mana / max_stamina move by the CHANGE in the derived
 ## maxima rather than being overwritten, because auras and statuses also shift
 ## them in place during a fight. Current HP, mana and stamina are never raised
@@ -218,6 +220,8 @@ static func refresh_character(unit: Node) -> void:
 	if unit == null or not "character_data" in unit:
 		return
 	var data: Dictionary = unit.character_data
+	if not data.has("attributes"):
+		return
 	if not data.has("derived"):
 		data["derived"] = {}
 	var derived: Dictionary = data["derived"]
@@ -229,10 +233,7 @@ static func refresh_character(unit: Node) -> void:
 		if derived.has("current_" + term):
 			current_before[term] = derived["current_" + term]
 
-	if _in_party(data):
-		CharacterSystem.update_derived_stats(data)
-	else:
-		EnemySystem.recalculate_derived(data)
+	CharacterSystem.update_derived_stats(data)
 
 	for term in _MAX_TERMS:
 		var max_key: String = "max_" + term
@@ -269,14 +270,6 @@ static func _after_change(unit: Node, values: Array) -> void:
 			changed = true
 	if changed:
 		refresh_character(unit)
-
-
-## True when `data` is one of the party's own character dictionaries.
-static func _in_party(data: Dictionary) -> bool:
-	for member in CharacterSystem.get_party():
-		if is_same(member, data):
-			return true
-	return false
 
 
 # ── Persistent damage ────────────────────────────────────────────────────────

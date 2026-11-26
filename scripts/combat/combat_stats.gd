@@ -211,8 +211,8 @@ static func explain_unknown(stat: String) -> String:
 
 
 ## The derived stats that come purely from attributes. This is the ONE place
-## the formulas live: CharacterSystem.update_derived_stats (player) and
-## EnemySystem._calculate_derived_stats (enemies) both call it, and
+## the formulas live: CharacterSystem.update_derived_stats calls it for every
+## character (party, companions and enemies share one sheet), and
 ## ValuePaths uses it to work out what an `attribute.` hold changes.
 ## `attrs` maps attribute name -> value; a missing attribute counts as 10.
 ## Returns max_hp, max_mana, max_stamina, initiative, movement, dodge,

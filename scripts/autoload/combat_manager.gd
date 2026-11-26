@@ -4112,7 +4112,6 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 			"max_hp": illusion_hp,
 			"max_mana": 0,
 			"actions": 0,  # Illusions can't act
-			"resistances": {},
 			"inventory": [],
 			"skills": {},
 			"known_spells": [],
@@ -4124,7 +4123,8 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 				"max_stamina": 10, "current_stamina": 10,
 				"initiative": 0, "movement": 0,
 				"dodge": 0, "armor": 0, "crit_chance": 0.0,
-				"accuracy": 0, "damage": 0, "damage_type": "none"
+				"accuracy": 0, "damage": 0, "damage_type": "none",
+				"resistances": {},
 			},
 			"equipped_weapon": {"name": "None", "damage": 0, "damage_type": "none", "range": 1}
 		}
@@ -4830,7 +4830,6 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 		"max_hp": scaled_hp,
 		"max_mana": scaled_mana,
 		"actions": template.get("actions", 2),
-		"resistances": template.get("resistances", {}).duplicate(),
 		"inventory": [],
 		"skills": {},
 		"known_spells": [],
@@ -4851,6 +4850,8 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 			"accuracy": scaled_accuracy,
 			"damage": scaled_damage,
 			"damage_type": attack_dtype,
+			# Where CombatUnit.init_as_enemy reads resistances, for every unit.
+			"resistances": template.get("resistances", {}).duplicate(),
 		},
 		"equipped_weapon": {
 			"name": "Natural Attack",
@@ -6189,7 +6190,6 @@ func _spawn_decoy(owner: Node, at: Vector2i, hp: int, duration: int) -> Node:
 		"max_hp": maxi(1, hp),
 		"max_mana": 0,
 		"actions": 0,        # an image cannot act
-		"resistances": {},
 		"inventory": [], "skills": {}, "known_spells": [], "perks": [],
 		"tags": ["illusion", "decoy"],
 		"derived": {
@@ -6200,6 +6200,7 @@ func _spawn_decoy(owner: Node, at: Vector2i, hp: int, duration: int) -> Node:
 			"dodge": 60,     # hard to hit, which is what makes it worth swinging at
 			"armor": 0, "crit_chance": 0, "accuracy": 0,
 			"damage": 0, "damage_type": "none",
+			"resistances": {},
 		},
 		"equipped_weapon": {"name": "None", "damage": 0, "damage_type": "none", "range": 1},
 	}

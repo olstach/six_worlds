@@ -1194,7 +1194,6 @@ func get_effective_attribute(character: Dictionary, attr: String) -> int:
 
 
 ## Sum of every source in character["attribute_bonuses"][attr] (0 if none).
-## EnemySystem.recalculate_derived reads holds through this too.
 func get_attribute_bonus_total(character: Dictionary, attr: String) -> int:
 	var sources: Dictionary = character.get("attribute_bonuses", {}).get(attr, {})
 	var total: int = 0
@@ -1488,9 +1487,15 @@ func update_derived_stats(character: Dictionary) -> void:
 	# member only — see PartyBonuses. These read raw skill levels, never another
 	# character's derived stats, so there is no ordering problem and nothing
 	# waits on anything.
-	derived["healing_pct"] = derived.get("healing_pct", 0.0) \
-		+ PartyBonuses.best("party_healing_pct")
-	var party_resist: float = PartyBonuses.best("party_poison_disease_resistance_pct")
+	# They are the PARTY's, so only a party member receives them: every
+	# character runs through this function (enemies too), and an enemy must not
+	# be healed better by the player's medic.
+	var in_party: bool = is_in_party(character)
+	if in_party:
+		derived["healing_pct"] = derived.get("healing_pct", 0.0) \
+			+ PartyBonuses.best("party_healing_pct")
+	var party_resist: float = PartyBonuses.best("party_poison_disease_resistance_pct") \
+		if in_party else 0.0
 	if party_resist > 0.0:
 		for damage_type in ["poison", "disease"]:
 			new_resists[damage_type] = new_resists.get(damage_type, 0) + int(party_resist)
@@ -1517,7 +1522,9 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Apply active map buffs from simples/shrines.
 	# Attribute-type buffs translate to their most direct derived-stat effects
 	# (we don't modify attributes themselves to avoid HP/mana tracking confusion).
-	if GameState:
+	# A map buff is the party's (it came from the party's shrine or camp), so,
+	# like the party-wide payouts above, only a party member gets it.
+	if GameState and in_party:
 		for buf in GameState.active_map_buffs:
 			var stat: String = buf.get("stat", "")
 			var amount = buf.get("amount", 0)
@@ -1669,6 +1676,17 @@ func get_fallen() -> Array[Dictionary]:
 ## Get all party members
 func get_party() -> Array[Dictionary]:
 	return party
+
+
+## True when `character` is one of the party's own character dictionaries
+## (the same dictionary, not merely an equal one). Used for what belongs to the
+## party as a group — map buffs, party-wide skill payouts — since every
+## character, enemies included, is derived by the same update_derived_stats.
+func is_in_party(character: Dictionary) -> bool:
+	for member in party:
+		if is_same(member, character):
+			return true
+	return false
 
 
 # ============================================

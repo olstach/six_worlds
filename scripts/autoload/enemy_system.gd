@@ -977,10 +977,8 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		archetype.get("skill_priorities", []),
 		0.6, breadth_for_budget(xp_budget))
 
-	var attributes = built["attributes"]
-	var skills = built["skills"]
-	var derived = _calculate_derived_stats(attributes, skills)
-	var equipment = _generate_equipment(archetype.get("equipment_template", {}))
+	var skills: Dictionary = built["skills"]
+	var equipment_plan: Dictionary = _generate_equipment(archetype.get("equipment_template", {}))
 	var spells = _pick_spells(skills, archetype.get("guaranteed_spells", []))
 	var perks = _build_perks(archetype.get("guaranteed_perks", []), skills)
 
@@ -988,39 +986,17 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	var no_equip_chance = archetype.get("no_equipment_chance", 0.0)
 	var bare_handed = randf() < no_equip_chance
 
-	# Build resistances dict: zeroed defaults, then the birth's racial
-	# resistances, then the archetype's own.
-	# Includes "black" as a damage type used by Black magic spells.
-	#
-	# Racial and archetype resistances are ADDED together, the same way
-	# CharacterSystem.update_derived_stats() stacks a player's base_resistances
-	# (racial) with trait, equipment and perk resistances. So a skeleton
-	# archetype with physical 30 rolled as a birth with physical 20 ends up at
-	# 50 — the archetype does not replace what the body already has.
-	# apply_birth_modifiers() above stored the birth's resistances on
-	# built["base_resistances"]; today every race's list is empty, so this
-	# changes nothing until races are given some.
-	# (The zeroed keys were the old air/water/earth until 2026-10-15 — schools,
-	# not damage types, so three of the seven named nothing anyone deals.)
-	var resistances = {
-		"physical": 0, "space": 0, "lightning": 0,
-		"fire": 0, "ice": 0, "poison": 0, "black": 0
-	}
-	var racial_resists: Dictionary = built.get("base_resistances", {})
-	for key in racial_resists:
-		resistances[key] = resistances.get(key, 0) + racial_resists[key]
-	# And the birth's TRAITS. Most racial resistance actually lives on traits
-	# (Undead: poison 25, disease 50; Incorporeal: physical 50), which
-	# apply_birth_modifiers() gave this enemy through `starting_traits`. A player
-	# gets them via TraitSystem.get_resistances() in update_derived_stats(); an
-	# enemy never ran that step, so a skeleton enemy shrugged off poison no
-	# better than a living one until 2026-10-15.
-	var trait_resists: Dictionary = TraitSystem.get_resistances(built)
-	for key in trait_resists:
-		resistances[key] = resistances.get(key, 0) + trait_resists[key]
-	var arch_resists = archetype.get("resistances", {})
+	# Resistances go on the sheet the way a player's do. base_resistances
+	# already holds the birth's racial ones (apply_birth_modifiers put them
+	# there); the archetype's own are ADDED to them — a skeleton archetype with
+	# physical 30 born with physical 20 ends up at 50. Trait, equipment and
+	# perk resistances are not added here: CharacterSystem.update_derived_stats
+	# adds them into derived.resistances, the one place anyone reads.
+	var base_resists: Dictionary = built.get("base_resistances", {})
+	var arch_resists: Dictionary = archetype.get("resistances", {})
 	for key in arch_resists:
-		resistances[key] = resistances.get(key, 0) + arch_resists[key]
+		base_resists[key] = base_resists.get(key, 0) + arch_resists[key]
+	built["base_resistances"] = base_resists
 
 	# Everyday items and archetype-guaranteed items first (consumables are bought
 	# later, from what the kit budget has left)
@@ -1044,19 +1020,20 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	else:
 		item_rarity = "legendary"
 
-	# Build the weapon for CombatUnit — generated items carry real material tiers,
-	# traits, and durability; added to inventory so they drop on death.
-	var equipped_weapon: Dictionary
-	if bare_handed:
-		equipped_weapon = {
-			"name": "Natural Claws",
-			"type": "unarmed",
-			"damage_type": "crushing",
-			"stats": {"damage": 2, "accuracy": 4, "range": 1}
-		}
-	else:
+	# What it wears goes in its equipment slots, exactly like a party member's
+	# (built["equipment"] is the blank character's slot layout). Everything
+	# worn is ALSO in inventory, so it drops when the enemy dies.
+	var equipment: Dictionary = built["equipment"]
+
+	# The weapon or tool it fights with goes in the main hand. A bare-handed
+	# enemy holds nothing and fights with its body's natural weapon (see
+	# BodySystem.get_dominant_natural_weapon), as does one whose weapon could
+	# not be generated.
+	if not bare_handed:
 		# A character better at a trade than at any weapon carries its tool
 		# instead — a doctor with a bag, not a doctor with a borrowed spear.
+		# A tool in the hand is not something you hit with, so it fights with
+		# its fists, the same rule a party member follows.
 		var tool: Dictionary = _tool_for_character(skills)
 		var tool_id: String = ""
 		if not tool.is_empty():
@@ -1067,74 +1044,50 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		# says. A build that came out with ranged 8 carries a bow.
 		var trained: Array[Dictionary] = _weapon_types_for_skills(skills)
 		var weapon_type: String = String(trained[0]["type"]) if not trained.is_empty() \
-			else String(equipment.get("weapon_type", "sword"))
+			else String(equipment_plan.get("weapon_type", "sword"))
 
-		var gen_id: String = ""
-		var carrying_tool := false
+		var main_id: String = ""
 		if tool_id != "" and ItemSystem.get_item(tool_id).size() > 0:
-			equipped_weapon = ItemSystem.get_item(tool_id)
-			inventory.append({"item_id": tool_id, "quantity": 1})
-			kit_budget -= int(equipped_weapon.get("value", 0))
-			carrying_tool = true
+			main_id = tool_id
 		else:
-			gen_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
-
-		if carrying_tool:
-			pass  # already equipped; the branches below must not overwrite it
-		elif gen_id != "":
-			equipped_weapon = ItemSystem.get_item(gen_id)
-			inventory.append({"item_id": gen_id, "quantity": 1})
-			kit_budget -= int(equipped_weapon.get("value", 0))
-
+			main_id = ItemSystem.generate_weapon(weapon_type, item_rarity, "", "", realm)
 			# A second set, when a second weapon skill is genuinely trained and
 			# the character is worth enough to have afforded it. Carried rather
 			# than wielded — it is a spare, and it drops.
-			if trained.size() > 1 and xp_budget >= 600 and int(trained[1]["level"]) >= 3:
+			if main_id != "" and trained.size() > 1 and xp_budget >= 600 \
+					and int(trained[1]["level"]) >= 3:
 				var spare_id = ItemSystem.generate_weapon(
 					String(trained[1]["type"]), item_rarity, "", "", realm)
 				if spare_id != "":
 					inventory.append({"item_id": spare_id, "quantity": 1})
-		else:
-			# Fallback if ItemSystem unavailable
-			equipped_weapon = {
-				"name": "Crude " + weapon_type.capitalize(),
-				"type": weapon_type,
-				"damage_type": _get_weapon_damage_type(weapon_type),
-				"stats": {
-					"damage": equipment.get("weapon_damage", 5),
-					"accuracy": equipment.get("weapon_accuracy", 3),
-					"range": equipment.get("weapon_range", 1)
-				}
-			}
+		if main_id != "":
+			equipment["weapon_set_1"]["main"] = main_id
+			inventory.append({"item_id": main_id, "quantity": 1})
+			kit_budget -= int(ItemSystem.get_item(main_id).get("value", 0))
 
-	# Generate armor items — same material-tiered system as the player.
-	# Each piece's stats contribute to derived (armor, dodge, hp, etc.) and the
-	# item goes into inventory so it can be looted on death.
-	# Armour spends what the weapon left. A character whose budget ran out on a
-	# good blade goes into the fight in fewer pieces, which is how kit works.
-	var armor_category: String = equipment.get("armor_type", "none")
+	# Armour — same material-tiered system as the player. Each piece goes in
+	# its slot; its stats reach derived through ItemSystem.calculate_equipment_stats,
+	# the same as a party member's. Armour spends what the weapon left. A
+	# character whose budget ran out on a good blade goes into the fight in
+	# fewer pieces, which is how kit works.
+	var armor_category: String = equipment_plan.get("armor_type", "none")
 	for slot_entry in ARMOR_LOADOUTS.get(armor_category, []):
 		if kit_budget <= 0:
 			break
 		var armor_gen_id = ItemSystem.generate_armor(slot_entry[1], item_rarity, "", "", realm)
 		if armor_gen_id == "":
 			continue
-		var armor_item = ItemSystem.get_item(armor_gen_id)
-		var piece_value: int = int(armor_item.get("value", 0))
+		var piece_value: int = int(ItemSystem.get_item(armor_gen_id).get("value", 0))
 		if piece_value > kit_budget:
 			continue  # cannot afford this piece; try the next, cheaper slot
 		kit_budget -= piece_value
-		var piece_stats = armor_item.get("stats", {})
-		derived["armor"]       += piece_stats.get("armor", 0)
-		derived["dodge"]       += piece_stats.get("dodge", 0)
-		derived["max_hp"]      += piece_stats.get("max_hp", 0)
-		derived["current_hp"]  += piece_stats.get("max_hp", 0)
-		derived["max_stamina"] += piece_stats.get("max_stamina", 0)
-		derived["current_stamina"] += piece_stats.get("max_stamina", 0)
+		equipment[String(slot_entry[0])] = armor_gen_id
 		inventory.append({"item_id": armor_gen_id, "quantity": 1})
+	# Gauntlets are one item for both hands: the left slot holds the pair and
+	# the right mirrors it, as for a party member (counted once in the stats).
+	ItemSystem.settle_glove_pairs(built)
 
-	# Anything left buys an accessory. Enemies never carried one before, so a
-	# well-funded enemy had nowhere for its surplus to go.
+	# Anything left buys a talisman, worn in the talisman slot.
 	# 30 is the cheapest talisman in the game; anything above that is worth trying.
 	if kit_budget >= 30:
 		var tali_id = ItemSystem.generate_talisman(item_rarity)
@@ -1142,6 +1095,7 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 			var tali = ItemSystem.get_item(tali_id)
 			if int(tali.get("value", 0)) <= kit_budget:
 				kit_budget -= int(tali.get("value", 0))
+				equipment[String(tali.get("slot", "trinket1"))] = tali_id
 				inventory.append({"item_id": tali_id, "quantity": 1})
 
 	# Consumables come last, out of whatever the kit did not spend on gear.
@@ -1170,41 +1124,51 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	else:
 		enemy_name = generate_enemy_name(realm, tags, region, enemy_type)
 
-	# For bare-handed enemies, name the claws after the enemy.
-	# Generated weapons already have proper names (e.g. "Fine Obsidian Sword") — keep them.
+	# The body it fights with. A bare-handed enemy's natural weapon is named
+	# after it ("Tsa-krul-pa's Claws"); BodySystem applies the name to whatever
+	# natural weapon the body reports. Generated weapons keep their own names.
+	var body_plan: Dictionary = {
+		"species": archetype.get("species", "human"),
+		"missing_parts": [],
+		"prosthetics": {}
+	}
 	if bare_handed:
-		equipped_weapon["name"] = enemy_name + "'s Claws"
+		body_plan["natural_weapon_name"] = enemy_name + "'s Claws"
 
-	# Assemble final enemy dict matching CombatUnit.init_as_enemy() expectations
-	var enemy: Dictionary = {
+	# The enemy IS the sheet `built`: the same dictionary shape a party
+	# character has (attributes, skills, equipment, base_resistances, traits,
+	# derived...), plus the few keys only combat AI and loot read.
+	var enemy: Dictionary = built
+	enemy.merge({
 		"name": enemy_name,
 		"archetype_name": archetype.get("name", ""),  # Human-readable archetype, shown as subtitle in combat
 		"archetype_id": archetype_id,
 		"tags": archetype.get("tags", []),
-		"max_hp": derived.max_hp,
-		"max_mana": derived.max_mana,
 		"actions": 2,
-		"attributes": attributes,
-		"derived": derived,
-		"skills": skills,
-		"resistances": resistances,
-		"equipped_weapon": equipped_weapon,
 		"known_spells": spells,
 		"perks": perks,
 		"inventory": inventory,
-		"body_plan": {
-			"species": archetype.get("species", "human"),
-			"missing_parts": [],
-			"prosthetics": {}
-		},
+		"body_plan": body_plan,
 		"wounds": [],
-		"traits": built.get("traits", []),
 		"birth": birth,
 		"background": background,
 		"xp_earned": spent,
 		"is_hero": is_hero,
 		"hero_id": ("hero_%s_%d" % [archetype_id, randi()]) if is_hero else ""
-	}
+	}, true)
+
+	# Derived stats come from the one formula every character uses: attributes,
+	# per-level skill bonuses, elemental affinity, equipment, traits, perks.
+	# EnemySystem has no formula of its own.
+	CharacterSystem.update_derived_stats(enemy)
+	# An enemy enters a fight fresh.
+	var derived: Dictionary = enemy["derived"]
+	derived["current_hp"] = derived["max_hp"]
+	derived["current_mana"] = derived["max_mana"]
+	derived["current_stamina"] = derived["max_stamina"]
+	# CombatUnit.init_as_enemy reads these two from the top level.
+	enemy["max_hp"] = derived["max_hp"]
+	enemy["max_mana"] = derived["max_mana"]
 
 	# Copy duel_stop_hp_pct if the archetype has one — read by combat_manager to end
 	# the fight early when this enemy drops to that percentage of their maximum HP.
@@ -1223,161 +1187,17 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 	enemy["ai"] = resolve_ai(archetype)
 
 	return enemy
-## Key in an enemy's character_data recording what recalculate_derived last
-## added to each derived stat, so the next call can take it back off exactly.
-const HOLD_DELTA_KEY: String = "hold_derived_delta"
 
 
-## Bring an enemy's derived stats in line with its combat holds, and return
-## its `derived` dictionary.
-##
-## An enemy's `derived` is not just the formula: _build_enemy() folds armour,
-## gear and other extras into it after _calculate_derived_stats(). So this does
-## not rebuild it from scratch. It runs the formula twice, once on the
-## attributes and skills as built and once with the holds added
-## (attribute_bonuses and skill_bonuses "effects", the same keys a party member
-## reads), and applies only the DIFFERENCE. The difference it applied is kept
-## under HOLD_DELTA_KEY, so a later call replaces it rather than stacking, and
-## with no holds left every number returns to exactly what it was.
-##
-## current_hp / current_mana / current_stamina are never touched here: the
-## caller (ValuePaths.refresh_character) owns those and only clamps them down.
-## Reads EnemySystem's tables but never writes to them.
-func recalculate_derived(character_data: Dictionary) -> Dictionary:
-	if not character_data.has("derived"):
-		character_data["derived"] = {}
-	var derived: Dictionary = character_data["derived"]
-
-	# Built values, and the same values with the holds on top.
-	var plain_attrs: Dictionary = character_data.get("attributes", {}).duplicate()
-	var held_attrs: Dictionary = {}
-	for attr in plain_attrs:
-		held_attrs[attr] = maxi(1, int(plain_attrs[attr])
-			+ CharacterSystem.get_attribute_bonus_total(character_data, str(attr)))
-	var plain_skills: Dictionary = character_data.get("skills", {}).duplicate()
-	var held_skills: Dictionary = {}
-	# Union of the skills the enemy has and the ones only a hold names, so a
-	# hold on a skill it never had still counts (same as get_effective_skills).
-	var skill_ids: Array = plain_skills.keys()
-	var bonuses: Dictionary = character_data.get("skill_bonuses", {})
-	for skill_id in bonuses:
-		if not skill_id in skill_ids and bonuses[skill_id].has(ValuePaths.SKILL_EFFECTS_KEY):
-			skill_ids.append(skill_id)
-	for skill_id in skill_ids:
-		var hold: int = int(bonuses.get(skill_id, {}).get(ValuePaths.SKILL_EFFECTS_KEY, 0))
-		held_skills[skill_id] = int(plain_skills.get(skill_id, 0)) + hold
-
-	var plain: Dictionary = _calculate_derived_stats(plain_attrs, plain_skills)
-	var held: Dictionary = _calculate_derived_stats(held_attrs, held_skills)
-
-	var now: Dictionary = {}
-	for key in held:
-		if str(key).begins_with("current_"):
-			continue
-		var change = held[key] - plain.get(key, 0)
-		if change != 0:
-			now[key] = change
-
-	# Take off what was added last time, put on what applies now.
-	var applied: Dictionary = character_data.get(HOLD_DELTA_KEY, {})
-	var keys: Array = applied.keys()
-	for key in now:
-		if not key in keys:
-			keys.append(key)
-	for key in keys:
-		derived[key] = derived.get(key, 0) - applied.get(key, 0) + now.get(key, 0)
-
-	if now.is_empty():
-		character_data.erase(HOLD_DELTA_KEY)
-	else:
-		character_data[HOLD_DELTA_KEY] = now
-	return derived
-
-
-## Calculate derived stats using the same formulas as CharacterSystem.
-## This ensures enemies feel consistent with player characters.
-func _calculate_derived_stats(attributes: Dictionary, skills: Dictionary) -> Dictionary:
-	# Attribute-driven stats come from the one shared formula (CombatStats).
-	var terms: Dictionary = CombatStats.attribute_terms(attributes)
-
-	var derived = {
-		"max_hp": terms.max_hp,
-		"current_hp": terms.max_hp,
-		"max_mana": terms.max_mana,
-		"current_mana": terms.max_mana,
-		"max_stamina": terms.max_stamina,
-		"current_stamina": terms.max_stamina,
-		"initiative": terms.initiative,
-		"movement": terms.movement,
-		"dodge": terms.dodge,
-		"spellpower": terms.spellpower,
-		"crit_chance": terms.crit_chance,
-		"damage": 0,
-		"armor": 0,
-		"accuracy": 0,
-		"armor_pierce": 0
-	}
-
-	# Apply PerkSystem base skill bonuses — mirrors CharacterSystem.update_derived_stats()
-	# so enemies benefit from the same per-skill-level stat tables as the player.
-	if PerkSystem:
-		for skill_id in skills:
-			var level: int = skills[skill_id]
-			if level <= 0:
-				continue
-			var bonus = PerkSystem.get_base_skill_bonuses_at_level(skill_id, level)
-			if bonus.is_empty():
-				continue
-			derived["accuracy"] += bonus.get("attack", 0)
-			derived["damage"]   += bonus.get("damage", 0)
-			derived["damage"]   += bonus.get("strength_weapon_damage", 0)
-			derived["crit_chance"] += bonus.get("crit_chance", 0.0)
-			derived["armor"]       += bonus.get("armor", 0)
-			derived["armor_pierce"] += bonus.get("armor_penetration", 0)
-			derived["max_hp"] += int(bonus.get("max_hp", 0))
-			derived["current_hp"] += int(bonus.get("max_hp", 0))
-			if bonus.has("spellpower"):
-				derived["spellpower"] += int(bonus.get("spellpower", 0))
-			derived["mana_cost_reduction"] = derived.get("mana_cost_reduction", 0) + int(bonus.get("mana_cost", 0))
-			derived["dodge"] += int(bonus.get("dodge", 0))
-			var stamina_bonus := int(bonus.get("stamina", 0))
-			derived["max_stamina"]   += stamina_bonus
-			derived["current_stamina"] += stamina_bonus
-			derived["initiative"] += int(bonus.get("initiative", 0))
-			if bonus.has("initiative_bonus"):
-				derived["initiative"] += int(bonus.get("initiative_bonus", 0))
-
-	return derived
-
-
-## Map weapon type to physical damage subtype
-func _get_weapon_damage_type(weapon_type: String) -> String:
-	match weapon_type:
-		"sword", "axe":
-			return "slashing"
-		"dagger", "spear", "bow", "crossbow", "thrown":
-			return "piercing"
-		"mace", "staff":
-			return "crushing"
-		_:
-			return "crushing"
-
-
-## Read the archetype's equipment template: weapon type, armour category, and
-## the stats of the crude weapon used only if ItemSystem cannot generate one.
-## No power scaling here — real weapons come from ItemSystem at a rarity set
-## by the kit budget, and the crude fallback is just the template's numbers.
+## Read the archetype's equipment template: the weapon type it prefers (when
+## its skills do not pick one) and its armour category. The real weapon and
+## armour come from ItemSystem at a rarity set by the kit budget.
+## (The template's base_damage / base_accuracy / range fed a crude weapon used
+## when ItemSystem could not generate one. That weapon is gone: an enemy with
+## nothing in hand fights with its body's natural weapon, like anyone else.)
 func _generate_equipment(template: Dictionary) -> Dictionary:
 	var result: Dictionary = {}
-
-	# Weapon stats
-	var weapon = template.get("weapon", {})
-
-	result.weapon_type = weapon.get("type", "sword")
-	result.weapon_damage = int(weapon.get("base_damage", 5))
-	result.weapon_accuracy = int(weapon.get("base_accuracy", 3))
-	result.weapon_range = weapon.get("range", 1)
-
+	result.weapon_type = template.get("weapon", {}).get("type", "sword")
 	# Pass through armor category for item generation in _build_enemy
 	result.armor_type = template.get("armor_type", "none")
 

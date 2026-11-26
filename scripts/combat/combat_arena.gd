@@ -80,11 +80,12 @@ const TEST_ENEMY_DEF = {
 		"dodge": 8,
 		"damage": 8,
 		"armor": 2,
-		"crit_chance": 5
-	},
-	"resistances": {
-		"physical": 0,
-		"fire": 25
+		"crit_chance": 5,
+		# Resistances live in derived, where CombatUnit.init_as_enemy reads them.
+		"resistances": {
+			"physical": 0,
+			"fire": 25
+		}
 	}
 }
 
@@ -113,11 +114,11 @@ const TEST_RANGED_ENEMY_DEF = {
 		"damage": 6,
 		"armor": 0,
 		"accuracy": 10,
-		"crit_chance": 8
-	},
-	"resistances": {
-		"physical": 0,
-		"fire": 25
+		"crit_chance": 8,
+		"resistances": {
+			"physical": 0,
+			"fire": 25
+		}
 	},
 	# Enemy-specific equipped weapon (bypasses ItemSystem)
 	"equipped_weapon": {
@@ -154,11 +155,11 @@ const TEST_MAGE_ENEMY_DEF = {
 		"damage": 3,
 		"armor": 0,
 		"spellpower": 14,
-		"crit_chance": 5
-	},
-	"resistances": {
-		"physical": 0,
-		"fire": 50
+		"crit_chance": 5,
+		"resistances": {
+			"physical": 0,
+			"fire": 50
+		}
 	},
 	# Spells this enemy knows
 	"known_spells": ["firebolt", "fireball", "poison_sting"]

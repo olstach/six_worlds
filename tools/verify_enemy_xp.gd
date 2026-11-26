@@ -503,7 +503,8 @@ func _check_equipment() -> void:
 			continue
 		var realm: String = EnemySystem.encounters[eid].get("realm", "animal")
 		for e in EnemySystem.generate_encounter(eid, "", realm):
-			var w: Dictionary = e.get("equipped_weapon", {})
+			# The main-hand item, from the equipment slots like a party member's.
+			var w: Dictionary = ItemSystem.get_item(ItemSystem.get_equipped_item(e, "weapon_main"))
 			var wtype: String = String(w.get("type", ""))
 			if wtype == "" or wtype == "unarmed":
 				continue
@@ -552,7 +553,7 @@ func _check_equipment() -> void:
 			continue
 		var realm: String = EnemySystem.encounters[eid].get("realm", "animal")
 		for e in EnemySystem.generate_encounter(eid, "", realm):
-			var w: Dictionary = e.get("equipped_weapon", {})
+			var w: Dictionary = ItemSystem.get_item(ItemSystem.get_equipped_item(e, "weapon_main"))
 			if String(w.get("type", "")) == "tool":
 				tool_holders += 1
 				# the tool must support a skill they are actually best at

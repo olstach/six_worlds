@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 59
+const EXPECTED_CHECKS: int = 62
 
 var grid: CombatGrid
 
@@ -99,6 +99,11 @@ func _ready() -> void:
 	_check_hold_on_unbought_skill_counts_fully()
 	_check_party_size_capped_at_deploy_slots()
 	_check_unknown_attribute_reads_zero()
+
+	# Stage 2b: enemies use the one character sheet.
+	_check_enemy_sheet_matches_party()
+	_check_enemy_skill_accuracy()
+	_check_enemy_kit_variants()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -282,7 +287,20 @@ func _check_attribute_terms_match_both_formulas() -> void:
 		ch.equipment = {}
 		ch.traits = []
 		CharacterSystem.update_derived_stats(ch)
-		var enemy: Dictionary = EnemySystem._calculate_derived_stats(attrs, {})
+		# Enemy: a sheet built by EnemySystem, stripped to the same bare
+		# inputs (no gear, skills, traits or perks), through the same formula.
+		# EnemySystem has no formula of its own any more; this checks that an
+		# enemy's sheet carries nothing that bends the attribute terms.
+		var enemy_sheet: Dictionary = EnemySystem._build_enemy("hell_demon_warrior", 200, "hell")
+		enemy_sheet.attributes = attrs.duplicate()
+		enemy_sheet.equipment = {}
+		enemy_sheet.traits = []
+		enemy_sheet.perks = []
+		enemy_sheet.skills = {}
+		enemy_sheet.skill_bonuses = {}
+		enemy_sheet.racial_affinity_bonuses = {}
+		CharacterSystem.update_derived_stats(enemy_sheet)
+		var enemy: Dictionary = enemy_sheet.derived
 		for key in _TERM_KEYS:
 			if ch.derived.get(key) != terms[key]:
 				_fail("player %s %s: derived %s vs terms %s" % [overrides, key, ch.derived.get(key), terms[key]])
@@ -1271,7 +1289,7 @@ func _check_attribute_hold_no_current_hp_jump() -> void:
 
 
 ## Review Focus 4: an attribute hold on an enemy changes its stats through
-## EnemySystem.recalculate_derived, leaves the archetype tables alone, and
+## CharacterSystem.update_derived_stats, leaves the archetype tables alone, and
 ## release puts every derived number back exactly.
 func _check_enemy_refresh() -> void:
 	var archetypes_before: Dictionary = EnemySystem.archetypes.duplicate(true)
@@ -1315,10 +1333,15 @@ func _check_enemy_refresh() -> void:
 		_fail("EnemySystem.archetypes changed after release")
 
 	# A hold on a skill the enemy never had counts fully. Fire magic +5 raises
-	# spellpower (swords' accuracy would not show: the enemy bonus loop still
-	# reads the stale key names, see TODO 17).
+	# spellpower.
 	ch["skills"].erase("fire_magic")
 	ch.get("skill_bonuses", {}).erase("fire_magic")
+	# Editing the sheet means re-deriving it, now that an enemy's derived is
+	# the full formula (2026-11-26) rather than a hold delta on top of built
+	# numbers: if the build rolled any Fire magic, taking it away moves
+	# spellpower by itself. The baseline is the sheet without it.
+	ValuePaths.refresh_character(u)
+	derived_before = ch.derived.duplicate(true)
 	var sp_before: int = int(ch.derived.get("spellpower", 0))
 	var fire_sp: Dictionary = PerkSystem._base_bonuses["fire_magic"]["stats"]["spellpower"]
 	ValuePaths.add_hold(u, "skill.fire_magic", "fortify", 5, "t3")
@@ -1501,4 +1524,132 @@ func _check_unknown_attribute_reads_zero() -> void:
 	var got: int = CharacterSystem.get_effective_attribute(c, "wisdom")
 	if got != 0:
 		_fail("unknown attribute 'wisdom' read as %d, wanted 0" % got)
+	_done()
+
+
+# ── Stage 2b: enemies use the one character sheet ───────────────────────────
+
+## The derived stats compared between an enemy and a party character.
+const _SHEET_KEYS: Array[String] = ["max_hp", "max_mana", "max_stamina",
+	"initiative", "movement", "dodge", "spellpower", "crit_chance", "damage",
+	"armor", "accuracy", "armor_pierce", "mana_cost_reduction", "resistances"]
+
+
+## An enemy and a party character with the same sheet come out the same.
+## The enemy is built from an archetype; the party character is a blank
+## character handed the enemy's attributes, skills, traits and equipment (and
+## the other sheet inputs, so nothing but the code path differs: perks, body,
+## racial resistances and affinities). The enemy's derived stats AS BUILT must
+## equal what CharacterSystem.update_derived_stats gives the party copy, and
+## running the enemy through update_derived_stats again must change nothing.
+func _check_enemy_sheet_matches_party() -> void:
+	seed(2611)
+	var enemy: Dictionary = EnemySystem._build_enemy("hell_demon_warrior", 900, "hell")
+	var built: Dictionary = enemy.get("derived", {}).duplicate(true)
+	var party: Dictionary = CharacterSystem.create_blank_character()
+	for key in ["attributes", "skills", "traits", "equipment", "perks",
+			"body_plan", "base_resistances", "racial_affinity_bonuses"]:
+		if enemy.has(key):
+			party[key] = enemy[key].duplicate(true)
+	CharacterSystem.update_derived_stats(party)
+	for key in _SHEET_KEYS:
+		if str(built.get(key, "missing")) != str(party.derived.get(key, "missing")):
+			_fail("enemy sheet %s as built: %s, party formula gives %s"
+				% [key, built.get(key, "missing"), party.derived.get(key, "missing")])
+	CharacterSystem.update_derived_stats(enemy)
+	for key in _SHEET_KEYS:
+		if str(enemy.derived.get(key, "missing")) != str(party.derived.get(key, "missing")):
+			_fail("enemy sheet %s re-derived: %s, party formula gives %s"
+				% [key, enemy.derived.get(key, "missing"), party.derived.get(key, "missing")])
+	# What belongs to the party as a group stays with it: a shrine's map buff
+	# must not reach an enemy now that it runs through the party's formula.
+	var acc: float = float(enemy.derived.get("accuracy", 0))
+	var saved_buffs: Array = GameState.active_map_buffs.duplicate(true)
+	GameState.active_map_buffs = [{"stat": "accuracy", "amount": 9, "combats_remaining": 1}]
+	CharacterSystem.update_derived_stats(enemy)
+	GameState.active_map_buffs = saved_buffs
+	if float(enemy.derived.get("accuracy", 0)) != acc:
+		_fail("the party's +9 accuracy map buff reached an enemy: %s -> %s"
+			% [acc, enemy.derived.get("accuracy", 0)])
+	CharacterSystem.update_derived_stats(enemy)
+	_done()
+
+
+## An enemy with Swords 5 gets Swords' per-level accuracy. It used to get none,
+## because EnemySystem's own formula read the stale key `attack`.
+## The tormented shade wears no armour, so nothing on it can lower accuracy.
+func _check_enemy_skill_accuracy() -> void:
+	seed(2612)
+	var enemy: Dictionary = EnemySystem._build_enemy("hell_tormented_shade", 400, "hell")
+	enemy["skills"] = {"swords": 5}
+	var u := CombatUnit.new()
+	add_child(u)
+	u.init_as_enemy(enemy)
+	ValuePaths.refresh_character(u)
+	var acc_spec: Dictionary = PerkSystem._base_bonuses["swords"]["stats"]["accuracy"]
+	var want: float = PerkSystem.curve_value(acc_spec, 5)
+	if float(enemy.derived.get("accuracy", 0)) < want:
+		_fail("enemy swords 5: derived.accuracy %s, wanted at least %s"
+			% [enemy.derived.get("accuracy", 0), want])
+	u.queue_free()
+	_done()
+
+
+## One enemy of each kind of kit: bare-handed, carrying a trade tool, a boss,
+## and one with armour type "none". Each must have a weapon to fight with, a
+## positive max_hp, and its archetype's resistances in derived.resistances.
+func _check_enemy_kit_variants() -> void:
+	var cases: Array[Dictionary] = [
+		{"label": "bare-handed", "id": "hell_flame_imp", "realm": "hell",
+			"override": {"no_equipment_chance": 1.0}},
+		# A medic: Medicine is all it buys, so it carries the medicine bag.
+		{"label": "tool-carrier", "id": "hell_demon_warrior", "realm": "hell",
+			"override": {"skill_priorities": ["medicine"]}},
+		{"label": "boss", "id": "hg_skeleton_king", "realm": "hungry_ghost", "override": {}},
+		{"label": "armour none", "id": "hg_rolang_shambler", "realm": "hungry_ghost", "override": {}},
+	]
+	for case in cases:
+		var archetype: Dictionary = EnemySystem.archetypes[case.id]
+		var saved: Dictionary = archetype.duplicate(true)
+		for key in case.override:
+			archetype[key] = case.override[key]
+		seed(2613)
+		var enemy: Dictionary = EnemySystem._build_enemy(case.id, 1500, case.realm)
+		for key in case.override:
+			archetype.erase(key)
+		archetype.merge(saved, true)
+
+		var u := CombatUnit.new()
+		add_child(u)
+		u.init_as_enemy(enemy)
+		var weapon: Dictionary = u.get_equipped_weapon()
+		if weapon.is_empty():
+			_fail("%s enemy has no weapon at all" % case.label)
+		if int(enemy.get("derived", {}).get("max_hp", 0)) <= 0:
+			_fail("%s enemy max_hp %s" % [case.label, enemy.get("derived", {}).get("max_hp", 0)])
+		if case.label == "bare-handed" and str(weapon.get("name", "")) != str(enemy.name) + "'s Claws":
+			_fail("bare-handed enemy fights with '%s', wanted \"%s's Claws\""
+				% [weapon.get("name", ""), enemy.name])
+		if case.label == "tool-carrier":
+			var held: Dictionary = ItemSystem.get_item(ItemSystem.get_equipped_item(enemy, "weapon_main"))
+			if str(held.get("type", "")) != "tool":
+				_fail("tool-carrier holds '%s', not a tool" % held.get("name", ""))
+		# Archetype resistances: what derived.resistances holds, minus every
+		# other source the party formula adds, is the archetype's own number.
+		var resists: Dictionary = enemy.get("derived", {}).get("resistances", {})
+		if resists.is_empty():
+			_fail("%s enemy has no derived.resistances" % case.label)
+		var birth_res: Dictionary = CharacterSystem.get_birth_data(str(enemy.get("birth", ""))).get("resistances", {})
+		var trait_res: Dictionary = TraitSystem.get_resistances(enemy)
+		var gear_res: Dictionary = ItemSystem.calculate_equipment_stats(enemy).get("resistances", {})
+		var perk_res: Dictionary = PerkSystem.get_passive_resistances(enemy)
+		var arch_res: Dictionary = archetype.get("resistances", {})
+		for key in arch_res:
+			var others: int = int(birth_res.get(key, 0)) + int(trait_res.get(key, 0)) \
+				+ int(gear_res.get(key, 0)) + int(perk_res.get(key, 0))
+			if int(resists.get(key, 0)) - others != int(arch_res[key]):
+				_fail("%s enemy %s resistance: %s, of which archetype %d (wanted %d)"
+					% [case.label, key, resists.get(key, 0),
+					int(resists.get(key, 0)) - others, int(arch_res[key])])
+		u.queue_free()
 	_done()
