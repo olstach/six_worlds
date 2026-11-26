@@ -163,15 +163,24 @@ func _provoke(holder: CombatUnit, mover: CombatUnit, start: Vector2i,
 		_revive(mover)
 		# None Shall Pass slows what it catches, and a slowed probe cannot walk
 		# far enough to provoke the next one.
-		mover.status_effects.clear()
+		_clear_statuses(mover)
 		_place(mover, start)
-		holder.status_effects.clear()
+		_clear_statuses(holder)
 		CombatManager._apply_status_effect(holder, status_name, 1)
 		_walk(mover, to)
 		var hurt: int = mover.max_hp - mover.current_hp
 		if hurt > 0:
 			return hurt
 	return 0
+
+
+## End every status on `unit` through the one exit, so the holds its
+## `while_active` placed go with it (Slowed's halved movement among them).
+## Clearing the list by hand would leave those holds behind.
+func _clear_statuses(unit: CombatUnit) -> void:
+	for entry in unit.status_effects.duplicate():
+		CombatManager._end_status(unit, entry, "removed")
+	unit.status_effects.clear()
 
 
 ## Full HP and upright. A probe that died in an earlier exchange answers
@@ -346,7 +355,7 @@ func _check_a_guard_answers_a_move_against_the_guarded() -> void:
 	# under the guard's nose. (11,11) is adjacent to the guard and two tiles
 	# from the ward, so only a reaction that has stopped asking WHERE the mover
 	# ended would fire.
-	guard.status_effects.clear()
+	_clear_statuses(guard)
 	CombatManager._apply_status_effect(guard, "Guarding_The_Gap", 5)
 	_place(raider, Vector2i(25, 25))           # off the tiles below
 	_place(ward, Vector2i(10, 9))
@@ -357,7 +366,7 @@ func _check_a_guard_answers_a_move_against_the_guarded() -> void:
 
 	# And an ally standing outside the guard's reach is not guarded, however
 	# close the enemy gets to THEM.
-	guard.status_effects.clear()
+	_clear_statuses(guard)
 	CombatManager._apply_status_effect(guard, "Guarding_The_Gap", 5)
 	_place(ward, Vector2i(10, 12))             # two tiles from the guard
 	_place(stroller, Vector2i(26, 26))
@@ -429,7 +438,7 @@ func _check_a_counterflow_turns_the_blow_aside() -> void:
 		_revive(attacker)
 		_place(monk, Vector2i(10, 10))
 		_place(attacker, Vector2i(11, 10))
-		monk.status_effects.clear()
+		_clear_statuses(monk)
 		CombatManager._apply_status_effect(monk, "Heavenly_Counterflow", 1)
 		_take_turn(attacker)
 		CombatManager.attack_unit(attacker, monk)
@@ -461,7 +470,7 @@ func _check_a_stance_spends_only_what_it_may() -> void:
 			% fired + "against four attackers")
 
 	# Set for Charge allows exactly one.
-	holder.status_effects.clear()
+	_clear_statuses(holder)
 	CombatManager._apply_status_effect(holder, "Set_For_Charge", 5)
 	for attacker in [a, b, c]:
 		_revive(attacker)

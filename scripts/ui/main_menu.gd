@@ -1834,7 +1834,7 @@ func _apply_overworld_spell(spell_id: String, spell_data: Dictionary,
 			var gdef: Dictionary = CombatManager.get_status_definition(granted)
 			ow_statuses.append({
 				"status": granted,
-				"duration": int(gdef.get("default_duration", 3)),
+				"duration": int(gdef.get("duration", {}).get("base", 3)),
 			})
 			results.append("%s gains %s" % [target_name, granted.replace("_", " ")])
 

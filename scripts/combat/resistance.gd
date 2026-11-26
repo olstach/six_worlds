@@ -66,30 +66,45 @@ static func total(unit: Node, damage_type: String) -> float:
 	return _apply_holds(unit, damage_type, result)
 
 
-## Pass a finished resistance through the unit's effect holds: first
-## "resist.<type>", then "resist.all_elemental" when the type is an element.
+## Pass a finished resistance through the unit's `set` holds.
 ##
-## Fortify/drain holds may not push a unit past the usual band, which keeps the
-## rule that buffs cannot reach absorption. A `set` hold is a declaration of
-## what the unit IS, so it may reach the absorption cap, like a single
-## declaration in _gather().
+## Fortify and drain holds on `resist.` are NOT applied here: _gather() counts
+## each one as a contribution like any other (step 2 there), so they sum and
+## clamp with everything else, and a single fortify of 100 or more is a
+## declaration of immunity exactly as a race's or a status's always was.
+##
+## A `set` hold is a declaration of what the unit IS: it replaces the result
+## and may reach the absorption cap. Of several sets that reach this type
+## (resist.fire, resist.all_elemental, resist.all ...) the last one added wins.
 static func _apply_holds(unit: Node, damage_type: String, base: float) -> float:
 	if unit == null or not "effect_holds" in unit or unit.effect_holds.is_empty():
 		return base
-	var path: String = "resist." + damage_type
-	var result: float = ValuePaths.apply_to(unit, path, base)
-	var declared: bool = ValuePaths.has_set(unit, path)
-	# "Elemental" is category `element` in damage_types.json (fire, lightning,
-	# space, ice) - the same category DamageType documents as "the five elements,
-	# plus ice". Not read from a list of ours.
-	if DamageType.category_of(damage_type) == "element":
-		result = ValuePaths.apply_to(unit, "resist.all_elemental", result)
-		declared = declared or ValuePaths.has_set(unit, "resist.all_elemental")
-	if declared:
-		return clampf(result, VULNERABILITY_FLOOR, ABSORPTION_CAP)
-	if base >= DECLARED_IMMUNITY:
-		return clampf(result, VULNERABILITY_FLOOR, ABSORPTION_CAP)
-	return clampf(result, VULNERABILITY_FLOOR, REDUCTION_CAP)
+	var has_set: bool = false
+	var set_to: float = 0.0
+	for hold in unit.effect_holds:
+		if str(hold.mode) != "set":
+			continue
+		var value: String = str(hold.value)
+		if value.begins_with("resist.") and hold_covers(value.trim_prefix("resist."), damage_type):
+			has_set = true
+			set_to = float(hold.amount)
+	if not has_set:
+		return base
+	return clampf(set_to, VULNERABILITY_FLOOR, ABSORPTION_CAP)
+
+
+## Does a `resist.<name>` hold reach a hit of `damage_type`? `name` is a damage
+## type, `physical` (which also covers its three subtypes), or one of
+## EffectVocab.RESIST_GROUPS:
+##   all_elemental  types of category `element` in damage_types.json
+##   all            everything
+##   magic          every type marked `magic`
+## DamageType.scope_covers() is the rule for the type, `physical`, `all` and
+## `magic`; `all_elemental` is answered here from the type's category.
+static func hold_covers(name: String, damage_type: String) -> bool:
+	if name == "all_elemental":
+		return DamageType.category_of(damage_type) == "element"
+	return DamageType.scope_covers(name, damage_type)
 
 
 ## Does this unit shrug off the ONSET of an affliction — bleeding, poison,
@@ -254,29 +269,26 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 		if fallback != "" and own.has(fallback):
 			_add(acc, float(own[fallback]), "innate (%s)" % fallback)
 
-	# 2. Statuses. Each key in grants_resistance / grants_vulnerability is a
-	#    type, `physical` (which covers its subtypes), or a scope such as `all`
-	#    — DamageType.scope_covers() decides which hits it reaches. Every key
-	#    that covers this hit is its own declaration.
+	# 2. Effect holds — what statuses (and anything else holding a value)
+	#    add or take away: each fortify / drain on a `resist.<name>` that
+	#    reaches this hit (hold_covers) is its own declaration, labelled with
+	#    the status it came from. `set` holds are applied afterwards, in
+	#    _apply_holds().
 	#
-	#    These were twenty named effect strings ("physical_immunity",
-	#    "fire_resistance_minus_50", ...) translated by a table in this file
-	#    until 2026-10-15. They are data on the statuses now.
-	if "status_effects" in unit:
-		for effect in unit.status_effects:
-			var status_name: String = str(effect.get("status", ""))
-			var def: Dictionary = CombatManager.get_status_definition(status_name)
-			if def.is_empty():
+	#    Statuses said this with `grants_resistance` / `grants_vulnerability`
+	#    until 2026-11-26, and with twenty named effect strings before that.
+	#    They are `while_active` modifies now, held under the status's id.
+	if "effect_holds" in unit:
+		for hold in unit.effect_holds:
+			var value: String = str(hold.value)
+			if not value.begins_with("resist.") \
+					or not hold_covers(value.trim_prefix("resist."), damage_type):
 				continue
-
-			var grants: Dictionary = def.get("grants_resistance", {})
-			for key in grants:
-				if DamageType.scope_covers(str(key), damage_type):
-					_add(acc, float(grants[key]), status_name)
-			var vuln: Dictionary = def.get("grants_vulnerability", {})
-			for key in vuln:
-				if DamageType.scope_covers(str(key), damage_type):
-					_add(acc, -float(vuln[key]), status_name)
+			match str(hold.mode):
+				"fortify":
+					_add(acc, float(hold.amount), _hold_label(unit, str(hold.source_id)))
+				"drain":
+					_add(acc, -float(hold.amount), _hold_label(unit, str(hold.source_id)))
 
 	# 3. Mantras, which cover magic only — not poison, which is no more magic
 	#    than a sword is.
@@ -298,6 +310,16 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 			_add(acc, from_ground, "ground")
 
 	return acc
+
+
+## What to call a hold's source in breakdown(): the status it belongs to when
+## the source is a status entry's id, otherwise the source id itself.
+static func _hold_label(unit: Node, source_id: String) -> String:
+	if "status_effects" in unit:
+		for entry in unit.status_effects:
+			if str(entry.get("id", "")) == source_id:
+				return str(entry.get("status", source_id))
+	return source_id
 
 
 ## One contribution: added to the sum, and remembered as a single declaration.

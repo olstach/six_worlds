@@ -63,8 +63,14 @@ const STATS: Array[String] = [
 	"damage", "armor", "crit_chance", "spellpower",
 ]
 
-## Extra resist names beyond the damage types in damage_types.json.
-const RESIST_GROUPS: Array[String] = ["all_elemental"]
+## Extra resist names beyond the damage types in damage_types.json. Each names
+## a group of types, and Resistance decides which hits it reaches:
+##   all_elemental  the types of category `element` (fire, lightning, space, ice)
+##   all            every damage type (Invulnerable)
+##   magic          every type marked `magic` (the elements, white, black)
+## `resist.physical` also reaches the three physical subtypes; that is
+## DamageType.scope_covers(), not a group here.
+const RESIST_GROUPS: Array[String] = ["all_elemental", "all", "magic"]
 
 ## The `to` field: who an effect hits, relative to its container.
 const SELECTORS: Array[String] = [
@@ -121,7 +127,11 @@ const DURATION_KINDS: Array[String] = [
 ]
 
 ## What `stacking.mode` may be.
-const STACKING_MODES: Array[String] = ["refresh", "stack"]
+##   refresh      one entry; a second application keeps the longer duration
+##   stack        one entry with a `stacks` count; its holds scale with it
+##   independent  every application is its own entry with its own duration
+##                (Burning: two fires burn twice)
+const STACKING_MODES: Array[String] = ["refresh", "stack", "independent"]
 
 ## The `modify` modes that LAST (and so may sit in a status's `while_active`).
 ## restore and absorb are instant, so they belong in `periodic` or a trigger.
@@ -156,12 +166,10 @@ const STATUS_FIELDS: Array[String] = [
 ## ones until the migration finishes; Tasks 4-6 delete entries from this list
 ## as the data stops using them. Nothing new should be added here.
 const LEGACY_STATUS_FIELDS: Array[String] = [
-	"type", "category", "effects", "duration_type", "default_duration",
-	"dispellable", "dispel_methods", "grants_resistance", "grants_vulnerability",
+	"effects", "dispellable", "dispel_methods",
 	"damage_per_turn", "retaliation", "reaction", "affliction", "save_type",
-	"bonus_amount", "heal_per_turn", "special", "penalty_amount", "stackable",
-	"default_duration_range", "summon_on_expire", "damage_increase_per_turn",
-	"aura_value", "damage_increase_pct", "grants_travel_speed_pct",
+	"heal_per_turn", "special", "default_duration_range", "summon_on_expire",
+	"damage_increase_per_turn", "aura_value", "damage_increase_pct", "grants_travel_speed_pct",
 	"grants_concealment", "grants_movement_ability", "_comment", "_note",
 ]
 

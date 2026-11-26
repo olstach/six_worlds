@@ -3,16 +3,30 @@
 		{
 			"name": "Frozen",
 			"icon": "❄",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "drain",
+					"amount": 50
+				}
+			],
 			"effects": [
 				"skip_turn"
 			],
-			"grants_vulnerability": {
-				"physical": 50
-			},
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"fire_damage",
@@ -22,15 +36,23 @@
 		{
 			"name": "Burning",
 			"icon": "🔥",
-			"type": "debuff",
-			"category": "dot",
+			"polarity": "negative",
+			"categories": [
+				"elemental.fire",
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "independent"
+			},
 			"effects": [
 				"fire_damage_per_turn"
 			],
 			"damage_per_turn": 5,
-			"duration_type": "turns",
-			"default_duration": 3,
-			"stackable": true,
 			"spread": {
 				"chance": "low",
 				"range": "melee",
@@ -46,15 +68,24 @@
 		{
 			"name": "Poisoned",
 			"icon": "☠",
+			"polarity": "negative",
+			"categories": [
+				"poison",
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "turns",
+				"base": 5
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"affliction": "poison",
-			"type": "debuff",
-			"category": "dot",
 			"effects": [
 				"poison_damage_per_turn"
 			],
 			"damage_per_turn": 3,
-			"duration_type": "turns",
-			"default_duration": 5,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -64,15 +95,24 @@
 		{
 			"name": "Bleeding",
 			"icon": "🩸",
+			"polarity": "negative",
+			"categories": [
+				"wound",
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"affliction": "bleed",
-			"type": "debuff",
-			"category": "dot",
 			"effects": [
 				"physical_damage_per_turn"
 			],
 			"damage_per_turn": 3,
-			"duration_type": "turns",
-			"default_duration": 3,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -83,12 +123,21 @@
 		{
 			"name": "Rooted",
 			"icon": "🌿",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_move"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -98,12 +147,26 @@
 		{
 			"name": "Slowed",
 			"icon": "🐌",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"movement_reduced_50"
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "multiply",
+					"amount": 0.5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -114,15 +177,27 @@
 		{
 			"name": "Soaked",
 			"icon": "💧⚡",
-			"_comment": "What standing in water does to you: lightning finds you more easily. Applied by wet ground at the start of each turn you begin on it (CombatManager._process_terrain_effects), so it lasts through the round in which an enemy could exploit it and lapses a turn after you step out. Lightning only, not ice: water conducts, and that makes wet ground a set-up an Air caster can cash in, rather than a Water caster's own combo with itself. 25% is a first-pass balance number — modest because the ground already slows you.",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [],
-			"grants_vulnerability": {
-				"lightning": 25
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.lightning",
+					"mode": "drain",
+					"amount": 25
+				}
+			],
+			"_comment": "What standing in water does to you: lightning finds you more easily. Applied by wet ground at the start of each turn you begin on it (CombatManager._process_terrain_effects), so it lasts through the round in which an enemy could exploit it and lapses a turn after you step out. Lightning only, not ice: water conducts, and that makes wet ground a set-up an Air caster can cash in, rather than a Water caster's own combo with itself. 25% is a first-pass balance number — modest because the ground already slows you.",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -131,16 +206,30 @@
 		{
 			"name": "Petrified",
 			"icon": "🗿",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 100
+				}
+			],
 			"effects": [
 				"skip_turn",
 				"cannot_act"
 			],
-			"grants_resistance": {
-				"physical": 100
-			},
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -150,12 +239,21 @@
 		{
 			"name": "Silenced",
 			"icon": "🤐",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_cast"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -164,13 +262,22 @@
 		{
 			"name": "Confused",
 			"icon": "❓",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"random_movement",
 				"random_target"
 			],
-			"duration_type": "spellpower",
 			"default_duration_range": [
 				1,
 				3
@@ -184,13 +291,22 @@
 		{
 			"name": "Feared",
 			"icon": "😨",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"flee_from_source"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -201,25 +317,49 @@
 		{
 			"name": "Prone",
 			"icon": "⬇",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"skip_next_action",
-				"defense_penalty"
+			"polarity": "negative",
+			"categories": [
+				"control"
 			],
-			"duration_type": "instant",
+			"scope": "combat",
+			"duration": {
+				"kind": "instant"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
+			"effects": [
+				"skip_next_action"
+			],
 			"dispellable": false
 		},
 		{
 			"name": "Held",
 			"icon": "✋",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "until_save"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_move",
 				"cannot_act"
 			],
-			"duration_type": "until_save",
 			"save_type": "Strength",
 			"dispellable": true,
 			"dispel_methods": [
@@ -230,13 +370,22 @@
 		{
 			"name": "Drowning",
 			"icon": "🌊",
-			"type": "debuff",
-			"category": "dot_cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"physical_damage_per_turn",
 				"immobilized"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -246,14 +395,22 @@
 		{
 			"name": "Infected",
 			"icon": "🦠",
-			"type": "debuff",
-			"category": "delayed",
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"damage_on_expire",
 				"bleed_on_expire"
 			],
-			"duration_type": "fixed",
-			"default_duration": 3,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -263,14 +420,23 @@
 		{
 			"name": "Swarmed",
 			"icon": "🐝",
-			"type": "debuff",
-			"category": "dot_disruption",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"physical_damage_per_turn",
 				"focus_save_on_damage"
 			],
 			"damage_per_turn": 1,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -279,12 +445,20 @@
 		{
 			"name": "Doomed",
 			"icon": "⏳",
-			"type": "debuff",
-			"category": "delayed",
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"death_on_expire"
 			],
-			"duration_type": "fixed",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -293,13 +467,25 @@
 		{
 			"name": "Fire_Vulnerable",
 			"icon": "🔥↓",
-			"type": "debuff",
-			"category": "vulnerability",
-			"effects": [],
-			"grants_vulnerability": {
-				"fire": 50
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.fire",
+					"mode": "drain",
+					"amount": 50
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -308,13 +494,31 @@
 		{
 			"name": "Blessed",
 			"icon": "✨",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"attack_bonus",
-				"defense_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "fortify",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "fortify",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -324,13 +528,31 @@
 		{
 			"name": "Hasted",
 			"icon": "⏩",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"speed_bonus",
-				"initiative_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "fortify",
+					"amount": 2
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -340,13 +562,21 @@
 		{
 			"name": "Regenerating",
 			"icon": "💚",
-			"type": "buff",
-			"category": "hot",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"heal_per_turn"
 			],
 			"heal_per_turn": 10,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -355,13 +585,22 @@
 		{
 			"name": "Invisible",
 			"icon": "👻",
-			"type": "buff",
-			"category": "stealth",
+			"polarity": "positive",
+			"categories": [
+				"stealth",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_be_targeted",
 				"attack_breaks_invisibility"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -371,27 +610,44 @@
 		{
 			"name": "Death_Immunity",
 			"icon": "♾",
-			"type": "buff",
-			"category": "divine",
+			"polarity": "positive",
+			"categories": [
+				"blessing"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_die",
 				"hp_cannot_drop_below_1"
 			],
-			"duration_type": "fixed",
-			"default_duration": 3,
 			"dispellable": false
 		},
 		{
 			"name": "Sanctuary",
 			"icon": "🕊",
-			"type": "buff",
-			"category": "protection",
+			"polarity": "positive",
+			"categories": [
+				"shield",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_be_targeted",
 				"cannot_target_enemies",
 				"breaks_on_offensive_action"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -400,15 +656,24 @@
 		{
 			"name": "Forgetful",
 			"icon": "💭",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"can_move",
 				"cannot_attack",
 				"cannot_cast"
 			],
-			"duration_type": "fixed",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -418,13 +683,22 @@
 		{
 			"name": "Charmed",
 			"icon": "💕",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"treats_caster_as_ally",
 				"will_not_attack_caster"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -435,13 +709,22 @@
 		{
 			"name": "Berserk",
 			"icon": "😡",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"attacks_closest_creature",
 				"ignores_allegiance"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -451,12 +734,25 @@
 		{
 			"name": "Bloodlust",
 			"icon": "🩸↑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"melee_damage_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -465,14 +761,30 @@
 		{
 			"name": "Blinded",
 			"icon": "🙈",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 40
+				}
+			],
 			"effects": [
 				"cannot_use_ranged",
-				"cannot_target_spells",
-				"melee_hit_chance_halved"
+				"cannot_target_spells"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -482,10 +794,17 @@
 		{
 			"name": "Fireshield",
 			"icon": "🛡🔥",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"duration_type": "spellpower",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -499,13 +818,22 @@
 		{
 			"name": "Boiling_Blood",
 			"icon": "♨",
-			"type": "debuff",
-			"category": "dot",
+			"polarity": "negative",
+			"categories": [
+				"elemental.fire",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"fire_damage_per_turn_internal"
 			],
 			"damage_per_turn": 15,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -514,24 +842,40 @@
 		{
 			"name": "Dominated",
 			"icon": "🎭",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "permanent"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"controlled_by_caster",
 				"joins_party_permanently"
 			],
-			"duration_type": "permanent",
 			"dispellable": false
 		},
 		{
 			"name": "Fan_the_Flames",
 			"icon": "🔥↑",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"increase_burning_damage_dealt"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -540,16 +884,35 @@
 		{
 			"name": "Smoke_Form",
 			"icon": "💨",
-			"type": "buff",
-			"category": "transformation",
+			"polarity": "positive",
+			"categories": [
+				"transformation",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 25
+				},
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "drain",
+					"amount": 25
+				}
+			],
 			"effects": [
-				"evasion_bonus",
 				"can_move_through_enemies"
 			],
-			"grants_vulnerability": {
-				"ice": 25
-			},
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -559,13 +922,25 @@
 		{
 			"name": "Water_Vulnerable_25",
 			"icon": "💧↓",
-			"type": "debuff",
-			"category": "vulnerability",
-			"effects": [],
-			"grants_vulnerability": {
-				"ice": 25
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "drain",
+					"amount": 25
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -574,15 +949,24 @@
 		{
 			"name": "Stunned",
 			"icon": "⚡",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"skip_turn",
 				"cannot_act",
 				"save_at_end_of_turn"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
 			"save_type": "Constitution",
 			"dispellable": true,
 			"dispel_methods": [
@@ -592,12 +976,21 @@
 		{
 			"name": "Magnetizing_Aura",
 			"icon": "🧲",
-			"type": "buff",
-			"category": "aura",
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"charm_chance_on_enemy_melee_approach"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -606,13 +999,21 @@
 		{
 			"name": "Electrified_Weapon",
 			"icon": "⚡⚔",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"adds_air_damage_to_attacks",
 				"stun_chance_on_hit"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -621,13 +1022,21 @@
 		{
 			"name": "Levitating",
 			"icon": "🎈",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"immune_to_ground_effects",
 				"immune_to_terrain_hazards"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -637,14 +1046,31 @@
 		{
 			"name": "Precision",
 			"icon": "🎯",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"range_bonus",
-				"accuracy_bonus",
-				"critical_bonus_ranged"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "fortify",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "stat.crit_chance",
+					"mode": "fortify",
+					"amount": 8
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -653,12 +1079,20 @@
 		{
 			"name": "Air_Shield",
 			"icon": "🌀",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"ranged_damage_reduction"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -667,10 +1101,18 @@
 		{
 			"name": "Favorable_Wind",
 			"icon": "🍃",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
-			"duration_type": "spellpower",
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -680,11 +1122,19 @@
 		{
 			"name": "Shield_Wall",
 			"icon": "🛡",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
-			"duration_type": "turns",
-			"default_duration": 1,
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -697,14 +1147,22 @@
 		{
 			"name": "Flying",
 			"icon": "🪽",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"grants_flight",
 				"immune_to_ground_effects",
 				"immune_to_melee_unless_flyer"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -717,13 +1175,22 @@
 		{
 			"name": "Storm_Lord",
 			"icon": "⛈",
-			"type": "buff",
-			"category": "transformation",
+			"polarity": "positive",
+			"categories": [
+				"transformation",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"grants_flight",
 				"immune_to_ranged"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -737,15 +1204,35 @@
 		{
 			"name": "Blessed_Shot",
 			"icon": "🏹",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"next_ranged_guaranteed_hit",
-				"damage_boost",
-				"critical_boost"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 15
+				},
+				{
+					"op": "modify",
+					"value": "stat.crit_chance",
+					"mode": "fortify",
+					"amount": 10
+				}
+			],
+			"effects": [
+				"next_ranged_guaranteed_hit"
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -754,19 +1241,41 @@
 		{
 			"name": "Lightning_Form",
 			"icon": "🌩",
-			"type": "buff",
-			"category": "transformation",
+			"polarity": "positive",
+			"categories": [
+				"transformation",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.lightning",
+					"mode": "fortify",
+					"amount": 100
+				},
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 50
+				},
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "drain",
+					"amount": 50
+				}
+			],
 			"effects": [
 				"grants_flight"
 			],
-			"grants_resistance": {
-				"lightning": 100,
-				"physical": 50
-			},
-			"grants_vulnerability": {
-				"ice": 50
-			},
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -783,16 +1292,35 @@
 		{
 			"name": "Thin_Air",
 			"icon": "〰",
-			"type": "buff",
-			"category": "transformation",
-			"effects": [
-				"cannot_deal_physical",
-				"major_speed_boost"
+			"polarity": "positive",
+			"categories": [
+				"transformation",
+				"magical"
 			],
-			"grants_resistance": {
-				"physical": 100
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "fortify",
+					"amount": 4
+				},
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 100
+				}
+			],
+			"effects": [
+				"cannot_deal_physical"
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -801,14 +1329,23 @@
 		{
 			"name": "Suffocating",
 			"icon": "😶",
-			"type": "debuff",
-			"category": "dot_cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"physical_damage_per_turn",
 				"silenced"
 			],
 			"damage_per_turn": 30,
-			"duration_type": "spellpower",
 			"save_type": "Constitution",
 			"dispellable": true,
 			"dispel_methods": [
@@ -818,13 +1355,26 @@
 		{
 			"name": "Physical_Resist_50",
 			"icon": "🛡",
-			"type": "buff",
-			"category": "resistance",
-			"effects": [],
-			"grants_resistance": {
-				"physical": 50
+			"polarity": "positive",
+			"categories": [
+				"blessing",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 50
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -833,13 +1383,25 @@
 		{
 			"name": "Water_Vulnerable_50",
 			"icon": "💧↓",
-			"type": "debuff",
-			"category": "vulnerability",
-			"effects": [],
-			"grants_vulnerability": {
-				"ice": 50
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "drain",
+					"amount": 50
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -848,13 +1410,26 @@
 		{
 			"name": "Air_Immune",
 			"icon": "🌀✓",
-			"type": "buff",
-			"category": "immunity",
-			"effects": [],
-			"grants_resistance": {
-				"lightning": 100
+			"polarity": "positive",
+			"categories": [
+				"blessing",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.lightning",
+					"mode": "fortify",
+					"amount": 100
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -863,10 +1438,17 @@
 		{
 			"name": "Poison_Skin",
 			"icon": "🐸",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"duration_type": "spellpower",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -880,16 +1462,25 @@
 		{
 			"name": "Festering",
 			"icon": "🦠",
+			"polarity": "negative",
+			"categories": [
+				"poison",
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"affliction": "poison",
-			"type": "debuff",
-			"category": "dot",
 			"effects": [
 				"poison_damage_per_turn",
 				"damage_increases_each_turn"
 			],
 			"damage_per_turn": 5,
 			"damage_increase_per_turn": 5,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -899,9 +1490,19 @@
 		{
 			"name": "Diseased",
 			"icon": "🤢",
+			"polarity": "negative",
+			"categories": [
+				"disease",
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"affliction": "disease",
-			"type": "debuff",
-			"category": "dot_debuff",
 			"effects": [
 				"poison_damage_per_turn",
 				"stat_penalties"
@@ -911,7 +1512,6 @@
 				"range": "melee"
 			},
 			"damage_per_turn": 10,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -922,12 +1522,20 @@
 		{
 			"name": "Chameleon",
 			"icon": "🦎",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"stealth_bonus"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -936,13 +1544,28 @@
 		{
 			"name": "Blurred",
 			"icon": "〰",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 15
+				}
+			],
 			"effects": [
-				"dodge_bonus",
 				"attacks_have_miss_chance"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -951,13 +1574,21 @@
 		{
 			"name": "Mirror_Images",
 			"icon": "👥",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"illusory_copies",
 				"copies_absorb_attacks"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -966,12 +1597,20 @@
 		{
 			"name": "Magic_Shield",
 			"icon": "🔮",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"spell_damage_reduction"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -980,12 +1619,20 @@
 		{
 			"name": "Magic_Mirror",
 			"icon": "🪞",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"spell_reflect_chance"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -994,27 +1641,52 @@
 		{
 			"name": "Mantric_Armor",
 			"icon": "🕉",
-			"type": "buff",
-			"category": "shield",
+			"polarity": "positive",
+			"categories": [
+				"shield"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "until_destroyed"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.magic",
+					"mode": "fortify",
+					"amount": 25
+				}
+			],
 			"effects": [
 				"hp_shield"
 			],
-			"grants_resistance": {
-				"magic": 25
-			},
-			"duration_type": "until_destroyed",
 			"dispellable": false
 		},
 		{
 			"name": "Phasing",
 			"icon": "👻",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"grants_resistance": {
-				"physical": 50
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 50
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1023,13 +1695,22 @@
 		{
 			"name": "Shadow_Pinned",
 			"icon": "📌",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"rooted",
 				"damage_on_move_attempt"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1039,15 +1720,25 @@
 		{
 			"name": "Wrathfully_Bound",
 			"icon": "⛓",
-			"type": "debuff",
-			"category": "cc_dot",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"elemental.space",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"space_damage_per_turn",
 				"cannot_teleport",
 				"cannot_flee"
 			],
 			"damage_per_turn": 25,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1056,12 +1747,25 @@
 		{
 			"name": "Shimmering",
 			"icon": "✧",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"minor_dodge_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1070,14 +1774,23 @@
 		{
 			"name": "Chaotic",
 			"icon": "🌀",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"random_movement",
 				"random_attacks",
 				"random_spellcasting"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1087,13 +1800,22 @@
 		{
 			"name": "Paralyzed",
 			"icon": "⚡",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_move",
 				"cannot_act"
 			],
-			"duration_type": "spellpower",
 			"save_type": "Focus",
 			"dispellable": true,
 			"dispel_methods": [
@@ -1104,25 +1826,50 @@
 		{
 			"name": "Invulnerable",
 			"icon": "💎",
-			"type": "buff",
-			"category": "immunity",
-			"effects": [],
-			"grants_resistance": {
-				"all": 100
+			"polarity": "positive",
+			"categories": [
+				"blessing"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 3
 			},
-			"duration_type": "turns",
-			"default_duration": 3,
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.all",
+					"mode": "fortify",
+					"amount": 100
+				}
+			],
 			"dispellable": false
 		},
 		{
 			"name": "Encouraged",
 			"icon": "👍",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"initiative_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1131,12 +1878,20 @@
 		{
 			"name": "Friendly",
 			"icon": "🙂",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"relationship_bonus"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1145,11 +1900,19 @@
 		{
 			"name": "Soothing_Presence",
 			"icon": "🕊",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"heal_per_turn": 5,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1160,13 +1923,22 @@
 		{
 			"name": "Pacified",
 			"icon": "☮",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"disengaged_from_combat",
 				"will_not_attack"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1176,14 +1948,37 @@
 		{
 			"name": "Mirthful",
 			"icon": "😄",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"initiative_bonus",
-				"speed_bonus",
-				"damage_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "fortify",
+					"amount": 2
+				},
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1192,15 +1987,31 @@
 		{
 			"name": "Praying",
 			"icon": "🙏",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"defense_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"grants_resistance": {
-				"magic": 15
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "fortify",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "resist.magic",
+					"mode": "fortify",
+					"amount": 15
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1209,12 +2020,31 @@
 		{
 			"name": "Divinely_Inspired",
 			"icon": "🌟",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"buffs_two_highest_stats"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "fortify",
+					"amount": 8
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1223,10 +2053,18 @@
 		{
 			"name": "Aura_of_Blessing",
 			"icon": "☀",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
-			"duration_type": "spellpower",
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1236,12 +2074,61 @@
 		{
 			"name": "Divine_Champion",
 			"icon": "👑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"buffs_all_stats_considerably"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "fortify",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "fortify",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.crit_chance",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "fortify",
+					"amount": 8
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1250,12 +2137,20 @@
 		{
 			"name": "Lifelink",
 			"icon": "❤",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"heal_50_percent_of_damage_dealt"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1264,10 +2159,17 @@
 		{
 			"name": "Pain_Mirror",
 			"icon": "🪞",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"duration_type": "spellpower",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1281,13 +2183,25 @@
 		{
 			"name": "Ancestral_Guidance",
 			"icon": "👣",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"awareness_bonus",
-				"focus_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "fortify",
+					"amount": 3
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1296,12 +2210,20 @@
 		{
 			"name": "Ancestral_Vengeance",
 			"icon": "⚔",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"attack_damage_buff_when_ally_dies"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1310,13 +2232,21 @@
 		{
 			"name": "Karmic_Bond",
 			"icon": "🔗",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"linked_to_ally",
 				"share_healing_75_percent"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1325,25 +2255,82 @@
 		{
 			"name": "Eternal_Vow",
 			"icon": "♾",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"return_on_death_next_turn",
 				"return_with_20_percent_hp"
 			],
-			"duration_type": "spellpower",
 			"dispellable": false
 		},
 		{
 			"name": "Ancestors_Blessing",
 			"icon": "🙏",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 3
+				},
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 3
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.crit_chance",
+					"mode": "fortify",
+					"amount": 3
+				},
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "fortify",
+					"amount": 3
+				}
+			],
 			"effects": [
-				"minor_all_stats_bonus",
 				"death_resistance"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1352,13 +2339,31 @@
 		{
 			"name": "Gloomy",
 			"icon": "🌧",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"defense_penalty",
-				"speed_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "drain",
+					"amount": 1
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1367,12 +2372,20 @@
 		{
 			"name": "Blood_Hunger",
 			"icon": "🧛",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"lifesteal_on_attacks"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1381,13 +2394,31 @@
 		{
 			"name": "Cursed",
 			"icon": "💀",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"attack_penalty",
-				"defense_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1396,14 +2427,37 @@
 		{
 			"name": "Suffering",
 			"icon": "😣",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"initiative_penalty",
-				"speed_penalty",
-				"defense_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "drain",
+					"amount": 1
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1412,13 +2466,28 @@
 		{
 			"name": "Shadow_Cloaked",
 			"icon": "🌑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"stealth_bonus",
-				"dodge_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 15
+				}
+			],
+			"effects": [
+				"stealth_bonus"
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1427,14 +2496,59 @@
 		{
 			"name": "Rotting",
 			"icon": "🦴",
-			"type": "debuff",
-			"category": "debuff_dot",
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "drain",
+					"amount": 3
+				},
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "drain",
+					"amount": 5
+				}
+			],
 			"effects": [
-				"all_stats_penalty",
 				"black_damage_per_turn"
 			],
 			"damage_per_turn": 50,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1443,13 +2557,25 @@
 		{
 			"name": "Armored_Minor",
 			"icon": "🛡",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"grants_resistance": {
-				"physical": 25
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 25
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1458,13 +2584,25 @@
 		{
 			"name": "Armored_Major",
 			"icon": "🛡",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"grants_resistance": {
-				"physical": 50
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 50
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1473,13 +2611,25 @@
 		{
 			"name": "Armored_Supreme",
 			"icon": "🛡",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"grants_resistance": {
-				"physical": 75
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 75
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1488,12 +2638,25 @@
 		{
 			"name": "Armor_Debuff_50",
 			"icon": "🛡↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"armor_reduced_50"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 20
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1502,12 +2665,25 @@
 		{
 			"name": "Armor_Reduced",
 			"icon": "🛡↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"armor_reduced"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1516,12 +2692,25 @@
 		{
 			"name": "Awareness_Buff",
 			"icon": "👁↑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"awareness_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "fortify",
+					"amount": 3
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1530,12 +2719,20 @@
 		{
 			"name": "Burning_Weapon",
 			"icon": "🔥⚔",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"adds_fire_damage_to_attacks"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1544,13 +2741,22 @@
 		{
 			"name": "Caged",
 			"icon": "⛓",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_move",
 				"cannot_be_targeted"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1560,12 +2766,25 @@
 		{
 			"name": "Constitution_Buff",
 			"icon": "❤↑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"constitution_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "attribute.constitution",
+					"mode": "fortify",
+					"amount": 2
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1574,12 +2793,25 @@
 		{
 			"name": "Damage_Debuff",
 			"icon": "⚔↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"damage_reduction"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "drain",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1588,10 +2820,18 @@
 		{
 			"name": "Dampening_Aura",
 			"icon": "🔇",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
-			"duration_type": "spellpower",
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1601,12 +2841,25 @@
 		{
 			"name": "Dodge_Debuff",
 			"icon": "💨↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"dodge_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "drain",
+					"amount": 15
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1615,13 +2868,29 @@
 		{
 			"name": "Entangled",
 			"icon": "🌿",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"cannot_move",
-				"dodge_penalty"
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "drain",
+					"amount": 15
+				}
+			],
+			"effects": [
+				"cannot_move"
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1632,25 +2901,44 @@
 		{
 			"name": "Extra_Action",
 			"icon": "➕",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [],
+			"scope": "world",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"grants_extra_action"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": false
 		},
 		{
 			"name": "Fire_Immune",
 			"icon": "🔥✓",
-			"type": "buff",
-			"category": "immunity",
-			"effects": [],
-			"grants_resistance": {
-				"fire": 100
+			"polarity": "positive",
+			"categories": [
+				"blessing",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.fire",
+					"mode": "fortify",
+					"amount": 100
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1659,13 +2947,26 @@
 		{
 			"name": "Fire_Resistance_25",
 			"icon": "🔥🛡",
-			"type": "buff",
-			"category": "resistance",
-			"effects": [],
-			"grants_resistance": {
-				"fire": 25
+			"polarity": "positive",
+			"categories": [
+				"blessing",
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.fire",
+					"mode": "fortify",
+					"amount": 25
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1674,12 +2975,25 @@
 		{
 			"name": "Focus_Buff_Major",
 			"icon": "🧠↑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"focus_bonus_major"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "fortify",
+					"amount": 8
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1688,15 +3002,31 @@
 		{
 			"name": "Fortified",
 			"icon": "🏰",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"defense_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"grants_resistance": {
-				"physical": 25
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "fortify",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 25
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1705,15 +3035,28 @@
 		{
 			"name": "Golden_Defense",
 			"icon": "🔰",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 50
+				}
+			],
 			"effects": [
 				"spell_damage_reduction"
 			],
-			"grants_resistance": {
-				"physical": 50
-			},
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1722,13 +3065,22 @@
 		{
 			"name": "Grounded",
 			"icon": "⬇",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_fly",
 				"loses_flight"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1737,13 +3089,22 @@
 		{
 			"name": "Immobilized",
 			"icon": "⛓",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_move",
 				"cannot_act"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1753,12 +3114,25 @@
 		{
 			"name": "Initiative_Buff",
 			"icon": "⏩",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"initiative_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1767,13 +3141,31 @@
 		{
 			"name": "Keen_Weapon",
 			"icon": "🗡",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"critical_boost",
-				"accuracy_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "fortify",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "stat.crit_chance",
+					"mode": "fortify",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1782,13 +3174,25 @@
 		{
 			"name": "Lucky",
 			"icon": "🍀",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"luck_bonus",
-				"critical_boost"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.crit_chance",
+					"mode": "fortify",
+					"amount": 15
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1797,13 +3201,22 @@
 		{
 			"name": "Lured",
 			"icon": "🪝",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"forced_movement_toward_target"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1813,12 +3226,25 @@
 		{
 			"name": "Major_Dodge",
 			"icon": "💨",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"major_dodge_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 30
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1827,12 +3253,25 @@
 		{
 			"name": "Melee_Attack_Debuff_50",
 			"icon": "⚔↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"melee_hit_chance_halved"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 40
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1841,12 +3280,25 @@
 		{
 			"name": "Movement_Debuff",
 			"icon": "🐌",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"movement_reduced_50"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "multiply",
+					"amount": 0.5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1855,13 +3307,28 @@
 		{
 			"name": "Phase_Wind",
 			"icon": "🌬",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"can_move_through_enemies",
-				"dodge_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 15
+				}
+			],
+			"effects": [
+				"can_move_through_enemies"
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1870,13 +3337,26 @@
 		{
 			"name": "Physical_Immune",
 			"icon": "🛡✓",
-			"type": "buff",
-			"category": "immunity",
-			"effects": [],
-			"grants_resistance": {
-				"physical": 100
+			"polarity": "positive",
+			"categories": [
+				"blessing",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 100
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1885,23 +3365,36 @@
 		{
 			"name": "Pushed",
 			"icon": "↗",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "instant"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"knockback"
 			],
-			"duration_type": "instant",
 			"dispellable": false
 		},
 		{
 			"name": "Range_Debuff",
 			"icon": "🏹↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"range_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1910,12 +3403,25 @@
 		{
 			"name": "Ranged_Attack_Debuff_50",
 			"icon": "🏹↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"ranged_hit_chance_halved"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 40
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1924,12 +3430,25 @@
 		{
 			"name": "Ranged_Damage_Debuff_50",
 			"icon": "🏹↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"ranged_damage_halved"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -1938,12 +3457,20 @@
 		{
 			"name": "Slippery_Terrain",
 			"icon": "🧊",
-			"type": "debuff",
-			"category": "terrain",
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"prone_chance_on_movement"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"fire_damage"
@@ -1952,13 +3479,27 @@
 		{
 			"name": "Slowed_After_Escape",
 			"icon": "🐌",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"movement_reduced_50"
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "multiply",
+					"amount": 0.5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -1968,18 +3509,35 @@
 		{
 			"name": "Solar_Form",
 			"icon": "☀",
-			"type": "buff",
-			"category": "transformation",
+			"polarity": "positive",
+			"categories": [
+				"transformation",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.fire",
+					"mode": "fortify",
+					"amount": 100
+				},
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "drain",
+					"amount": 50
+				}
+			],
 			"effects": [
 				"adds_fire_damage_to_attacks"
 			],
-			"grants_resistance": {
-				"fire": 100
-			},
-			"grants_vulnerability": {
-				"ice": 50
-			},
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -1990,13 +3548,21 @@
 		{
 			"name": "Soul_Burning",
 			"icon": "🕯",
-			"type": "debuff",
-			"category": "dot",
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"black_damage_per_turn"
 			],
 			"damage_per_turn": 20,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2005,12 +3571,25 @@
 		{
 			"name": "Strength_Buff",
 			"icon": "💪",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"strength_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 3
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2019,12 +3598,20 @@
 		{
 			"name": "Tongues_of_Fire",
 			"icon": "🔥",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"adds_fire_damage_to_attacks"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2038,13 +3625,29 @@
 		{
 			"name": "Trapped",
 			"icon": "🪤",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"cannot_move",
-				"defense_penalty"
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
+			"effects": [
+				"cannot_move"
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -2054,13 +3657,26 @@
 		{
 			"name": "Water_Immune",
 			"icon": "💧✓",
-			"type": "buff",
-			"category": "immunity",
-			"effects": [],
-			"grants_resistance": {
-				"ice": 100
+			"polarity": "positive",
+			"categories": [
+				"blessing",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "fortify",
+					"amount": 100
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2069,13 +3685,25 @@
 		{
 			"name": "Water_Vulnerable",
 			"icon": "💧↓",
-			"type": "debuff",
-			"category": "vulnerability",
-			"effects": [],
-			"grants_vulnerability": {
-				"ice": 50
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "drain",
+					"amount": 50
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2084,13 +3712,21 @@
 		{
 			"name": "Water_Walking",
 			"icon": "🌊",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"can_walk_on_water",
 				"immune_to_water_terrain"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2100,13 +3736,25 @@
 		{
 			"name": "Yaksha_Strength",
 			"icon": "👹",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"strength_bonus_major",
-				"melee_damage_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 13
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2115,14 +3763,30 @@
 		{
 			"name": "Grappled",
 			"icon": "🤼",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"cannot_move",
-				"dodge_penalty"
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 99,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 99
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "drain",
+					"amount": 15
+				}
+			],
+			"effects": [
+				"cannot_move"
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"strength_check",
@@ -2133,26 +3797,41 @@
 		{
 			"name": "Force_Miss",
 			"icon": "✗",
-			"type": "debuff",
-			"category": "debuff",
+			"polarity": "negative",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"next_attack_misses"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": false,
 			"description": "The next attack made by this unit automatically misses."
 		},
 		{
 			"name": "Taunt",
 			"icon": "📢",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"must_attack_taunter"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2162,14 +3841,32 @@
 		{
 			"name": "Demoralized",
 			"icon": "😞",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"attack_penalty",
-				"defense_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 3,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2179,13 +3876,22 @@
 		{
 			"name": "Disarmed",
 			"icon": "🚫",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_make_weapon_attacks"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2195,13 +3901,31 @@
 		{
 			"name": "Mindmucked",
 			"icon": "🧠↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"awareness_penalty_major",
-				"focus_penalty_major"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "drain",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "drain",
+					"amount": 13
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -2212,12 +3936,26 @@
 		{
 			"name": "Glass_Globe",
 			"icon": "🔮",
-			"type": "buff",
-			"category": "shield",
-			"effects": [
-				"armor_bonus_minor"
+			"polarity": "positive",
+			"categories": [
+				"shield",
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "fortify",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2239,13 +3977,31 @@
 		{
 			"name": "Crystal_Diadem",
 			"icon": "💠",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"focus_bonus_major",
-				"awareness_bonus_major"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 8
+				},
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "fortify",
+					"amount": 13
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2258,13 +4014,25 @@
 		{
 			"name": "Strength_Plus_2",
 			"icon": "💪",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"strength_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"bonus_amount": 2,
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "attribute.strength",
+					"mode": "fortify",
+					"amount": 2
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2274,13 +4042,25 @@
 		{
 			"name": "Finesse_Plus_2",
 			"icon": "🤸",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"finesse_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"bonus_amount": 2,
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "attribute.finesse",
+					"mode": "fortify",
+					"amount": 2
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2290,13 +4070,25 @@
 		{
 			"name": "Focus_Plus_3",
 			"icon": "🧠↑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"focus_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"bonus_amount": 3,
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "attribute.focus",
+					"mode": "fortify",
+					"amount": 3
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2306,13 +4098,25 @@
 		{
 			"name": "Awareness_Plus_3",
 			"icon": "👁↑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"awareness_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"bonus_amount": 3,
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "attribute.awareness",
+					"mode": "fortify",
+					"amount": 3
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2322,13 +4126,25 @@
 		{
 			"name": "Constitution_Minus_2",
 			"icon": "❤↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"constitution_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"penalty_amount": 2,
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "attribute.constitution",
+					"mode": "drain",
+					"amount": 2
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -2339,13 +4155,25 @@
 		{
 			"name": "Focus_Minus_2",
 			"icon": "🧠↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"focus_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"penalty_amount": 2,
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "attribute.focus",
+					"mode": "drain",
+					"amount": 2
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -2356,12 +4184,25 @@
 		{
 			"name": "Initiative_Debuff",
 			"icon": "⏪",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"initiative_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "spellpower",
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "drain",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -2372,14 +4213,20 @@
 		{
 			"name": "Cleansed",
 			"icon": "💧✨",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"remove_all_debuffs",
 				"debuff_immunity"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": false,
 			"dispel_methods": [],
 			"description": "All debuffs removed. Immune to new debuffs for 1 turn."
@@ -2387,14 +4234,22 @@
 		{
 			"name": "Mental_Immunity",
 			"icon": "🧠✓",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"immune_to_charm",
 				"immune_to_fear",
 				"immune_to_confusion"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2404,13 +4259,25 @@
 		{
 			"name": "Fire_Vulnerable_50",
 			"icon": "🔥↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [],
-			"grants_vulnerability": {
-				"fire": 50
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.fire",
+					"mode": "drain",
+					"amount": 50
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -2421,14 +4288,22 @@
 		{
 			"name": "Marked_for_Death",
 			"icon": "🎯",
-			"type": "debuff",
-			"category": "debuff",
+			"polarity": "negative",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"damage_taken_increase",
 				"crit_vulnerability"
 			],
 			"damage_increase_pct": 25,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel",
@@ -2439,15 +4314,31 @@
 		{
 			"name": "Rainbow_Cloak",
 			"icon": "🌈",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"dodge_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"grants_resistance": {
-				"magic": 15
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
-			"duration_type": "spellpower",
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 15
+				},
+				{
+					"op": "modify",
+					"value": "resist.magic",
+					"mode": "fortify",
+					"amount": 15
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2457,13 +4348,22 @@
 		{
 			"name": "Pinned",
 			"icon": "📌",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_move"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -2474,14 +4374,23 @@
 		{
 			"name": "Subjugated",
 			"icon": "⛓",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"cannot_move",
 				"cannot_attack"
 			],
-			"duration_type": "turns",
-			"default_duration": 3,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -2492,14 +4401,32 @@
 		{
 			"name": "Weakened",
 			"icon": "⚔↓",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"damage_reduction",
-				"attack_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 10
+				},
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "drain",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
@@ -2509,13 +4436,26 @@
 		{
 			"name": "Strengthened",
 			"icon": "💪",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"damage_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2524,14 +4464,32 @@
 		{
 			"name": "Hastened",
 			"icon": "⏩",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"speed_bonus",
-				"initiative_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.movement",
+					"mode": "fortify",
+					"amount": 2
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2540,13 +4498,26 @@
 		{
 			"name": "Shielded",
 			"icon": "🛡",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"defense_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "fortify",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2555,13 +4526,26 @@
 		{
 			"name": "Inspired",
 			"icon": "🌟",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"accuracy_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "fortify",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2570,13 +4554,26 @@
 		{
 			"name": "Dodge_Buff",
 			"icon": "💨",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"dodge_bonus"
+			"polarity": "positive",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "fortify",
+					"amount": 15
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2585,14 +4582,33 @@
 		{
 			"name": "Dazed",
 			"icon": "💫",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"attack_penalty",
-				"initiative_penalty"
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2601,92 +4617,155 @@
 		{
 			"name": "Knocked_Down",
 			"icon": "⬇",
-			"type": "debuff",
-			"category": "cc",
-			"effects": [
-				"skip_next_action",
-				"defense_penalty"
+			"polarity": "negative",
+			"categories": [
+				"control"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
+			],
+			"effects": [
+				"skip_next_action"
+			],
 			"dispellable": false
 		},
 		{
 			"name": "Rage",
 			"icon": "😡",
-			"type": "buff",
-			"category": "buff",
-			"effects": [
-				"damage_bonus",
-				"defense_penalty"
+			"polarity": "positive",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 2
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "fortify",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 10
+				}
 			],
-			"duration_type": "turns",
-			"default_duration": 2,
 			"dispellable": false
 		},
 		{
 			"name": "Invincible",
 			"icon": "💎",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"hp_cannot_drop_below_1"
 			],
-			"duration_type": "turns",
-			"default_duration": 3,
 			"dispellable": false
 		},
 		{
 			"name": "Resolute",
 			"icon": "🧠✓",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"immune_to_charm",
 				"immune_to_fear",
 				"immune_to_confusion"
 			],
-			"duration_type": "turns",
-			"default_duration": 3,
 			"dispellable": false
 		},
 		{
 			"name": "Riposte_Ready",
 			"icon": "🤺",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"riposte_next_sword_attack"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": false,
 			"_comment": "Marker from the Riposte perk — damage/stamina consumption not yet wired in attack_unit"
 		},
 		{
 			"name": "Reflect",
 			"icon": "🪞",
-			"type": "buff",
-			"category": "buff",
+			"polarity": "positive",
+			"categories": [],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 3
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"attack_reflect_chance"
 			],
-			"duration_type": "turns",
-			"default_duration": 3,
 			"dispellable": false,
 			"_comment": "Marker from Lady of the Turquoise Mirror mantra — reflect resolution not yet wired"
 		},
 		{
 			"name": "Radiance",
 			"icon": "☀",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"aura": [
 				"radiance",
 				"radiance_glare"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2696,13 +4775,21 @@
 		{
 			"name": "Radiant_Visage",
 			"icon": "🌞",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"aura": [
 				"radiant_visage"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2712,12 +4799,21 @@
 		{
 			"name": "Anchored",
 			"icon": "⚓",
-			"type": "debuff",
-			"category": "control",
+			"polarity": "negative",
+			"categories": [
+				"control",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"prevents_teleportation"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2727,19 +4823,36 @@
 		{
 			"name": "Inner_Flame",
 			"icon": "🔥",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
-			"grants_resistance": {
-				"fire": 25,
-				"ice": 25
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
 			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.fire",
+					"mode": "fortify",
+					"amount": 25
+				},
+				{
+					"op": "modify",
+					"value": "resist.ice",
+					"mode": "fortify",
+					"amount": 25
+				}
+			],
 			"retaliation": {
 				"range": "melee",
 				"status": "Burning",
 				"status_duration": 3
 			},
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2749,11 +4862,19 @@
 		{
 			"name": "Shining_Mirage",
 			"icon": "🌫",
-			"type": "buff",
-			"category": "aura",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"aura",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"aura": "shining_mirage",
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2763,14 +4884,22 @@
 		{
 			"name": "Time_Stopped",
 			"icon": "⌛",
-			"type": "debuff",
-			"category": "cc",
+			"polarity": "negative",
+			"categories": [
+				"control"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"effects": [
 				"skip_turn",
 				"cannot_act"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": false,
 			"dispel_methods": [],
 			"description": "Held outside the moment. Not stunned, not held — simply not yet. Nothing shakes this off, because there is no time in which to do so."
@@ -2778,13 +4907,56 @@
 		{
 			"name": "Disoriented",
 			"icon": "💫",
-			"type": "debuff",
-			"category": "debuff",
-			"effects": [
-				"all_stats_penalty"
+			"polarity": "negative",
+			"categories": [
+				"magical"
 			],
-			"duration_type": "turns",
-			"default_duration": 1,
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "stat.initiative",
+					"mode": "drain",
+					"amount": 3
+				},
+				{
+					"op": "modify",
+					"value": "stat.accuracy",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.dodge",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.damage",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.armor",
+					"mode": "drain",
+					"amount": 5
+				},
+				{
+					"op": "modify",
+					"value": "stat.spellpower",
+					"mode": "drain",
+					"amount": 5
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2794,11 +4966,18 @@
 		{
 			"name": "Lava_Walking",
 			"icon": "🌋",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"grants_movement_ability": "lava_immunity",
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2808,14 +4987,21 @@
 		{
 			"name": "Marshtread",
 			"icon": "🐸",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"grants_movement_ability": [
 				"surefoot_swamp",
 				"surefoot_snow"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2825,14 +5011,21 @@
 		{
 			"name": "Camels_Blessing",
 			"icon": "🐪",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"grants_movement_ability": [
 				"surefoot_desert",
 				"surefoot_sand"
 			],
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2842,11 +5035,18 @@
 		{
 			"name": "Following_Wind",
 			"icon": "🍃",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"grants_travel_speed_pct": 40.0,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2856,11 +5056,18 @@
 		{
 			"name": "Rahulas_Cloak",
 			"icon": "🌑",
-			"type": "buff",
-			"category": "buff",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"magical"
+			],
+			"scope": "world",
+			"duration": {
+				"kind": "spellpower"
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"grants_concealment": true,
-			"duration_type": "spellpower",
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
@@ -2870,9 +5077,19 @@
 		{
 			"name": "Counterstance",
 			"icon": "🤺",
-			"type": "buff",
-			"category": "stance",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"stance",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"reaction": {
 				"trigger": "attacked_in_melee",
 				"responses": [
@@ -2881,8 +5098,6 @@
 				"once_per_attacker": true,
 				"max_per_round": 3
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2892,9 +5107,19 @@
 		{
 			"name": "Guarding_The_Gap",
 			"icon": "🚧",
-			"type": "buff",
-			"category": "stance",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"stance",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"reaction": {
 				"trigger": "ally_threatened",
 				"reach": 1,
@@ -2903,8 +5128,6 @@
 				],
 				"max_per_round": 3
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2914,9 +5137,19 @@
 		{
 			"name": "Set_For_Charge",
 			"icon": "🔱",
-			"type": "buff",
-			"category": "stance",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"stance",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"reaction": {
 				"trigger": "enemy_enters_reach",
 				"reach": 2,
@@ -2926,8 +5159,6 @@
 				"damage_mult": 2.0,
 				"max_per_round": 1
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2937,9 +5168,19 @@
 		{
 			"name": "Kill_Zone",
 			"icon": "🎯",
-			"type": "buff",
-			"category": "stance",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"stance",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"reaction": {
 				"trigger": "enemy_enters_reach",
 				"reach": "weapon",
@@ -2948,8 +5189,6 @@
 				],
 				"max_per_round": 3
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2959,9 +5198,19 @@
 		{
 			"name": "Heavenly_Counterflow",
 			"icon": "☯",
-			"type": "buff",
-			"category": "stance",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"stance",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"reaction": {
 				"trigger": "attacked_in_melee",
 				"responses": [
@@ -2974,8 +5223,6 @@
 				"reposition_tiles": 2,
 				"max_per_round": 1
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2985,9 +5232,19 @@
 		{
 			"name": "None_Shall_Pass",
 			"icon": "🚧",
-			"type": "buff",
-			"category": "stance",
-			"effects": [],
+			"polarity": "positive",
+			"categories": [
+				"stance",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
+			},
+			"stacking": {
+				"mode": "refresh"
+			},
 			"reaction": {
 				"trigger": "enemy_enters_reach",
 				"reach": 2,
@@ -2999,8 +5256,6 @@
 				"status_duration": 1,
 				"max_per_round": 3
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -3010,14 +5265,27 @@
 		{
 			"name": "Guarding",
 			"icon": "🛡",
-			"type": "buff",
-			"category": "stance",
-			"effects": [],
-			"grants_resistance": {
-				"physical": 25
+			"polarity": "positive",
+			"categories": [
+				"stance",
+				"magical"
+			],
+			"scope": "combat",
+			"duration": {
+				"kind": "turns",
+				"base": 1
 			},
-			"duration_type": "turns",
-			"default_duration": 1,
+			"stacking": {
+				"mode": "refresh"
+			},
+			"while_active": [
+				{
+					"op": "modify",
+					"value": "resist.physical",
+					"mode": "fortify",
+					"amount": 25
+				}
+			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"

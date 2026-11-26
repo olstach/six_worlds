@@ -1315,7 +1315,7 @@ func _tick_durations_only(unit: Node) -> void:
 			var effect: Dictionary = unit.status_effects[i]
 			var status_name: String = str(effect.get("status", ""))
 			var effect_def: Dictionary = _status_effects.get(status_name, {})
-			if effect_def.get("duration_type", "") == "until_save":
+			if str(effect_def.get("duration", {}).get("kind", "")) == "until_save":
 				continue   # only a save removes these, and the downed make none
 			effect["duration"] = int(effect.get("duration", 1)) - 1
 			effect["turns_active"] = int(effect.get("turns_active", 0)) + 1
@@ -1390,10 +1390,6 @@ func _start_current_turn() -> void:
 	# owner's turn and is gone when it reaches 0. Duration 1 lasts until the
 	# owner's next turn begins; duration 2 lasts through that next turn too.
 	_process_stat_modifiers(unit)
-
-	# Constitution buff/penalty statuses may have been applied or removed since
-	# last turn — reconcile the unit's max HP.
-	_reconcile_constitution_hp(unit)
 
 	# Process terrain effects (standing in fire, poison, etc.)
 	_process_terrain_effects(unit)
@@ -3069,30 +3065,6 @@ func _start_bleed_out(unit: Node) -> void:
 	unit.current_hp = 0
 	AudioManager.play("debuff_apply")
 	unit_bleeding_out.emit(unit, BLEED_OUT_TURNS)
-
-
-## Reconcile max-HP adjustments from constitution_bonus/penalty statuses
-## (Constitution_Buff / Constitution_Minus_2: ±10 HP per Constitution point).
-## Called on status apply and each turn start, so any removal path (expiry,
-## dispel, cleanse) is caught within a turn.
-func _reconcile_constitution_hp(unit: Node) -> void:
-	var expected := 0
-	for eff in unit.status_effects:
-		var def = _status_effects.get(eff.get("status", ""), {})
-		if "constitution_bonus" in def.get("effects", []):
-			expected += int(def.get("bonus_amount", 2)) * 10
-		if "constitution_penalty" in def.get("effects", []):
-			expected -= int(def.get("penalty_amount", 2)) * 10
-	var applied: int = unit.get_meta("con_hp_delta", 0)
-	var diff := expected - applied
-	if diff == 0:
-		return
-	unit.max_hp = maxi(10, unit.max_hp + diff)
-	if diff > 0:
-		unit.current_hp += diff
-	else:
-		unit.current_hp = clampi(unit.current_hp, 0, unit.max_hp)
-	unit.set_meta("con_hp_delta", expected)
 
 
 ## Consume one Mirror_Images copy from the unit; the status expires when no copies remain.
@@ -5355,8 +5327,9 @@ func _check_talisman_status_immunity(unit: Node, status: String) -> bool:
 
 
 ## Apply a status effect.
-## Non-stackable statuses refresh duration instead of stacking.
-## Stackable statuses (e.g. Burning) add additional instances.
+## How a second application behaves is the status's `stacking.mode`: refresh
+## (the longer duration wins), stack (one entry counts up) or independent (a
+## new entry beside the old one, e.g. Burning).
 func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0, source: Node = null) -> void:
 	if not "status_effects" in unit:
 		unit.set("status_effects", [])
@@ -5404,7 +5377,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		return
 
 	# --- Status-based debuff immunity (Cleansed: blocks all incoming debuffs) ---
-	if def.get("type", "") == "debuff" and _unit_has_effect(unit, "debuff_immunity"):
+	if def.get("polarity", "") == "negative" and _unit_has_effect(unit, "debuff_immunity"):
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
 		return
@@ -5436,7 +5409,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 
 	# Lingering Touch (Enchantment 1): buff statuses last extra turns, scaling with
 	# Enchantment skill (1 extra turn per 3 levels, minimum 1).
-	if def.get("type", "") == "buff" and source != null and "character_data" in source:
+	if def.get("polarity", "") == "positive" and source != null and "character_data" in source:
 		if PerkSystem.has_perk(source.character_data, "lingering_touch"):
 			var enc_lv: int = CharacterSystem.get_effective_skill_level(source.character_data, "enchantment")
 			duration += maxi(1, int(enc_lv / 3))
@@ -5447,8 +5420,9 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	#   refresh  one entry; keep the longer duration; its holds are untouched
 	#   stack    one entry with a `stacks` count (up to `max`); its holds are
 	#            re-resolved at the new count, so +15 dodge at 3 stacks is +45
-	# One in the old shape says it with `stackable`: true adds another
-	# independent entry, false refreshes.
+	#   independent  every application is a new entry of its own, with its own
+	#            duration and id (Burning: two fires burn twice)
+	# A definition with no `stacking` refreshes.
 	var stacking_mode: String = str(def.get("stacking", {}).get("mode", ""))
 	if unit.has_status(status) and stacking_mode == "stack":
 		var stacked: Dictionary = _status_entry_named(unit, status)
@@ -5465,8 +5439,8 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			unit._update_visuals()
 		return
 	if unit.has_status(status):
-		if stacking_mode == "refresh" or not def.get("stackable", false):
-			# Non-stackable: refresh to the longer duration
+		if stacking_mode != "independent":
+			# refresh: keep the longer duration
 			for existing in unit.status_effects:
 				if existing.get("status", "").to_lower() == status.to_lower():
 					existing.duration = maxi(existing.duration, duration)
@@ -5498,9 +5472,6 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	# What the status holds while it is on (stat, resistance, attribute and
 	# skill holds, under the entry's id). _end_status releases them.
 	_resolve_status_effects(unit, effect_entry, def.get("while_active", []), true)
-
-	# Constitution buffs/penalties change max HP immediately
-	_reconcile_constitution_hp(unit)
 
 	# Hard CC breaks concentration on the affected unit
 	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",
@@ -5893,7 +5864,7 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 		var status_name = unit.status_effects[i].get("status", "")
 		var def = _status_effects.get(status_name, {})
 		# Only cleanse debuffs that are marked as dispellable
-		if def.get("type", "") == "debuff" and def.get("dispellable", false):
+		if def.get("polarity", "") == "negative" and def.get("dispellable", false):
 			to_remove.append(i)
 			removed += 1
 
@@ -6033,7 +6004,7 @@ func _process_status_effects(unit: Node) -> bool:
 					unit.show_resisted_text()
 
 		# --- Duration: "until_save" statuses only expire on save ---
-		if effect_def.get("duration_type", "") == "until_save":
+		if str(effect_def.get("duration", {}).get("kind", "")) == "until_save":
 			if not saved:
 				# Don't decrement — only saves can remove this
 				pass
@@ -6081,20 +6052,10 @@ func _process_status_effects(unit: Node) -> bool:
 
 ## Handle special effects that trigger when a status expires.
 ## E.g. Doomed kills the unit, Infected spawns a fungal creature and applies Bleeding.
-func _on_status_expired(unit: Node, status_name: String, def: Dictionary, effect_instance: Dictionary = {}) -> void:
+func _on_status_expired(unit: Node, status_name: String, def: Dictionary, _effect_instance: Dictionary = {}) -> void:
 	var effects = def.get("effects", [])
 	if effects.is_empty():
 		return
-
-	# Reverse constitution max_hp changes using the stored delta from application time
-	if "constitution_bonus" in effects and "max_hp" in unit:
-		var hp_delta: int = effect_instance.get("hp_delta", def.get("bonus_amount", 2) * 10)
-		unit.max_hp = maxi(1, unit.max_hp - hp_delta)
-		unit.current_hp = mini(unit.current_hp, unit.max_hp)
-	if "constitution_penalty" in effects and "max_hp" in unit:
-		var hp_delta: int = effect_instance.get("hp_delta", def.get("penalty_amount", 2) * 10)
-		unit.max_hp += hp_delta
-		# Don't restore current_hp — penalty may have caused damage that persists
 
 	if "death_on_expire" in effects:
 		# Doomed — instant kill
@@ -6716,7 +6677,7 @@ func _resolve_recruit_or_pacify(user: Node, combat_data: Dictionary,
 		if "status_effects" in mark:
 			for entry in mark.status_effects.duplicate():
 				var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
-				if def.get("type", "") == "debuff":
+				if def.get("polarity", "") == "negative":
 					_remove_status_by_name(mark, str(entry.get("status", "")))
 		combat_log.emit("%s talks %s round — they change sides."
 			% [user.unit_name, mark.unit_name])
@@ -6990,7 +6951,7 @@ func _process_status_spread(unit: Node) -> void:
 			if adj.is_dead or adj.is_bleeding_out:
 				continue
 			if not adj.has_status(status_name):
-				var spread_duration = def.get("default_duration", 2)
+				var spread_duration = int(def.get("duration", {}).get("base", 2))
 				_apply_status_effect(adj, status_name, spread_duration)
 				break  # Spread to one unit per tick
 
@@ -8586,7 +8547,7 @@ func _enter_stealth(unit: Node) -> void:
 		for i in range(unit.status_effects.size() - 1, -1, -1):
 			var se = unit.status_effects[i]
 			var sdef = get_status_definition(se.get("status", ""))
-			if sdef.get("type", "") == "debuff" and se.get("duration", 0) <= 1:
+			if sdef.get("polarity", "") == "negative" and se.get("duration", 0) <= 1:
 				var sname = se.get("status", "")
 				_end_status(unit, se, "removed")
 				status_effect_expired.emit(unit, sname)
@@ -9492,7 +9453,7 @@ func _resolve_cleanse_and_buff(user: Node, combat_data: Dictionary) -> Dictionar
 				to_remove.append(i)
 			elif "mental" in cleanse_list:
 				var def = _status_effects.get(se_name, {})
-				if def.get("category", "") == "mental":
+				if "mental" in StatusRules.categories_of(def):
 					to_remove.append(i)
 		to_remove.reverse()
 		var cleansed: Array = []
@@ -9737,7 +9698,7 @@ func _resolve_dispel_and_invert(user: Node, combat_data: Dictionary, target_pos:
 	for i in range(target.status_effects.size()):
 		var se_name = target.status_effects[i].get("status", "")
 		var def = _status_effects.get(se_name, {})
-		if def.get("type", "") == "buff":
+		if def.get("polarity", "") == "positive":
 			to_remove.append(i)
 	to_remove.reverse()
 	var dispelled: Array = []
@@ -9788,7 +9749,7 @@ func _resolve_share_buffs(user: Node, combat_data: Dictionary) -> Dictionary:
 	var user_buff_statuses: Array = []
 	for se in user.status_effects:
 		var def = _status_effects.get(se.get("status", ""), {})
-		if def.get("type", "") == "buff":
+		if def.get("polarity", "") == "positive":
 			user_buff_statuses.append(se)
 
 	for ally in get_team_units(user.team if "team" in user else 0):
@@ -10522,13 +10483,13 @@ func _is_parry(defender: Node, attacker: Node, attack_was_ranged: bool) -> bool:
 	return true
 
 
-## True when `unit` carries any status whose definition is typed "debuff" —
+## True when `unit` carries any status whose definition is negative (polarity) —
 ## the same test _apply_status_effect uses for debuff immunity.
 func unit_has_debuff(unit: Node) -> bool:
 	if unit == null or not "status_effects" in unit:
 		return false
 	for effect in unit.status_effects:
-		if _status_effects.get(effect.get("status", ""), {}).get("type", "") == "debuff":
+		if _status_effects.get(effect.get("status", ""), {}).get("polarity", "") == "negative":
 			return true
 	return false
 
@@ -10724,7 +10685,7 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 			for i in range(defender.status_effects.size()):
 				var effect = defender.status_effects[i]
 				var sdef = get_status_definition(effect.get("status", ""))
-				if sdef.get("type", "debuff") == "buff":
+				if sdef.get("polarity", "negative") == "positive":
 					buff_indices.append(i)
 			if buff_indices.size() > 0:
 				_end_status(defender, defender.status_effects[buff_indices[randi() % buff_indices.size()]],
@@ -12065,7 +12026,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 				for i in range(a.status_effects.size() - 1, -1, -1):
 					var sname = a.status_effects[i].get("status", "")
 					var sdef = get_status_definition(sname)
-					if sdef.get("type", "") == "debuff":
+					if sdef.get("polarity", "") == "negative":
 						_end_status(a, a.status_effects[i], "cleansed")
 						status_effect_expired.emit(a, sname)
 						break
@@ -12084,7 +12045,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 				for i in range(a.status_effects.size() - 1, -1, -1):
 					var sname = a.status_effects[i].get("status", "")
 					var sdef = get_status_definition(sname)
-					if sdef.get("type", "") == "debuff":
+					if sdef.get("polarity", "") == "negative":
 						_end_status(a, a.status_effects[i], "cleansed")
 						status_effect_expired.emit(a, sname)
 

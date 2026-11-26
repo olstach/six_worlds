@@ -510,11 +510,11 @@ static func _scale_count(per: String, ctx: EffectContext, unit: Node) -> float:
 				return 0.0
 			return float(ctx.status_entry.get("turns_active", 0))
 		"debuff_on_target", "buff_on_target":
-			var kind: String = "debuff" if per == "debuff_on_target" else "buff"
+			var polarity: String = "negative" if per == "debuff_on_target" else "positive"
 			var defs: Dictionary = CombatManager.get_all_status_definitions()
 			var n: int = 0
 			for entry in unit.status_effects:
-				if defs.get(str(entry.get("status", "")), {}).get("type", "") == kind:
+				if defs.get(str(entry.get("status", "")), {}).get("polarity", "") == polarity:
 					n += 1
 			return float(n)
 		"ally_in_area":

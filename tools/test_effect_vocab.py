@@ -103,6 +103,27 @@ class EffectVocabTests(unittest.TestCase):
         self.assertEqual(check_effect({"op": "damage", "amount": 5, "type": "fire",
             "scale": {"per": "turn_active", "amount": 2}}, "t"), [])
 
+    # ── Statuses migrated: numbers (Stage 2b, Task 4) ───────────────────────
+    def test_status_stacking_independent(self):
+        d = dict(STATUS_MINIMAL, stacking={"mode": "independent"})
+        self.assertEqual(check_status(d, "t"), [])
+        d = dict(STATUS_MINIMAL, stacking={"mode": "pile"})
+        self.assertNotEqual(check_status(d, "t"), [])
+
+    def test_resist_groups_all_and_magic(self):
+        for name in ["all", "magic", "all_elemental", "physical"]:
+            self.assertEqual(check_effect({"op": "modify", "value": "resist." + name,
+                "mode": "fortify", "amount": 25}, "t"), [], name)
+        self.assertNotEqual(check_effect({"op": "modify", "value": "resist.everything",
+            "mode": "fortify", "amount": 25}, "t"), [])
+
+    def test_retired_legacy_status_keys_rejected(self):
+        for key in ["type", "category", "duration_type", "default_duration",
+                    "stackable", "grants_resistance", "grants_vulnerability",
+                    "bonus_amount", "penalty_amount"]:
+            d = dict(STATUS_MINIMAL, **{key: 1})
+            self.assertNotEqual(check_status(d, "t"), [], key)
+
 
 STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",
                   "categories": ["control"], "scope": "combat",

@@ -384,7 +384,7 @@ func _update_visuals() -> void:
 			for effect in status_effects:
 				var sname = effect.get("status", "")
 				var def = CombatManager.get_status_definition(sname)
-				if def.get("type", "debuff") == "buff":
+				if def.get("polarity", "negative") == "positive":
 					has_positive = true
 				else:
 					has_negative = true
@@ -415,156 +415,6 @@ func _build_status_tooltip() -> String:
 # ============================================
 # STAT GETTERS
 # ============================================
-
-## Get the total bonus/penalty to a stat from active status effects.
-## Checks status definitions loaded in CombatManager for stat_modifiers.
-func _get_status_stat_bonus(stat: String) -> int:
-	var total := 0
-	for effect in status_effects:
-		var status_name = effect.get("status", "")
-		var def = CombatManager.get_status_definition(status_name)
-		var effects = def.get("effects", [])
-		# Map effect strings to stat bonuses
-		match stat:
-			"accuracy":
-				if "buffs_all_stats_considerably" in effects:
-					total += 8  # Divine_Champion / Divinely_Inspired
-				if "attack_bonus" in effects:
-					total += 10
-				if "attack_penalty" in effects:
-					total -= 10
-				if "melee_hit_chance_halved" in effects:
-					total -= 40  # Large accuracy penalty from Blinded
-				if "accuracy_bonus" in effects:
-					total += 10
-				if "ranged_hit_chance_halved" in effects:
-					total -= 40  # Ranged accuracy penalty (Rot Wood)
-				if "minor_all_stats_bonus" in effects:
-					total += 5  # Ancestors_Blessing: all stats up
-				if "all_stats_penalty" in effects:
-					total -= 5  # Rotting: all stats down
-			"armor":
-				if "buffs_all_stats_considerably" in effects:
-					total += 8  # Divine_Champion / Divinely_Inspired
-				if "defense_bonus" in effects:
-					total += 10
-				if "defense_penalty" in effects:
-					total -= 10
-				if "armor_reduced_50" in effects:
-					total -= 20  # Significant armor reduction (Rust Metal)
-				if "armor_reduced" in effects:
-					total -= 10  # Moderate armor reduction (Melt Armor)
-				if "armor_bonus_minor" in effects:
-					total += 5  # Glass_Globe passive armor
-				if "minor_all_stats_bonus" in effects:
-					total += 5
-				if "all_stats_penalty" in effects:
-					total -= 5
-			"dodge":
-				if "buffs_all_stats_considerably" in effects:
-					total += 8  # Divine_Champion / Divinely_Inspired
-				if "dodge_bonus" in effects:
-					total += 15
-				if "minor_dodge_bonus" in effects:
-					total += 5
-				if "evasion_bonus" in effects:
-					total += 25
-				if "dodge_penalty" in effects:
-					total -= 15  # Dodge penalty (Bone Chill, Entangled)
-				if "major_dodge_bonus" in effects:
-					total += 30  # Major evasion (Be Like Water)
-				if "finesse_bonus" in effects:
-					total += 5  # Finesse_Plus_2
-				if "minor_all_stats_bonus" in effects:
-					total += 5
-				if "all_stats_penalty" in effects:
-					total -= 5
-			"movement":
-				if "speed_bonus" in effects:
-					total += 2
-				if "speed_penalty" in effects:
-					total -= 1
-				if "movement_reduced_50" in effects:
-					# Use base movement (not get_movement() to avoid recursion)
-					var base_move = character_data.get("derived", {}).get("movement", 3)
-					total -= base_move / 2
-				if "major_speed_boost" in effects:
-					total += 4
-			"initiative":
-				if "buffs_all_stats_considerably" in effects:
-					total += 8  # Divine_Champion / Divinely_Inspired
-				if "initiative_bonus" in effects:
-					total += 5
-				if "initiative_penalty" in effects:
-					total -= 5
-				if "finesse_bonus" in effects:
-					total += 3  # Finesse_Plus_2
-				if "awareness_penalty_major" in effects:
-					total -= 8  # Mindmucked
-				if "awareness_bonus_major" in effects:
-					total += 8  # Crystal_Diadem
-				if "minor_all_stats_bonus" in effects:
-					total += 3
-				if "all_stats_penalty" in effects:
-					total -= 3
-			"damage":
-				if "buffs_all_stats_considerably" in effects or "buffs_two_highest_stats" in effects:
-					total += 8  # Divine_Champion / Divinely_Inspired
-				if "melee_damage_bonus" in effects:
-					total += 5
-				if "damage_bonus" in effects:
-					total += 5
-				if "damage_reduction" in effects:
-					total -= 5  # Damage debuff (Bone Chill)
-				if "strength_bonus" in effects:
-					total += 3  # Strength adds to physical damage
-				if "strength_bonus_major" in effects:
-					total += 8  # Major strength buff (Yaksha Strength)
-				if "ranged_damage_halved" in effects:
-					total -= 10  # Ranged damage penalty (Rot Wood)
-				if "damage_boost" in effects:
-					total += 15  # Blessed_Shot
-				if "minor_all_stats_bonus" in effects:
-					total += 3
-				if "all_stats_penalty" in effects:
-					total -= 5
-			"crit_chance":
-				if "buffs_all_stats_considerably" in effects:
-					total += 5  # Divine_Champion / Divinely_Inspired
-				if "critical_boost" in effects:
-					total += 10
-				if "critical_bonus_ranged" in effects:
-					total += 8
-				if "luck_bonus" in effects:
-					total += 5  # Lucky (Golden Ring)
-				if "minor_all_stats_bonus" in effects:
-					total += 3
-			"spellpower":
-				if "buffs_all_stats_considerably" in effects or "buffs_two_highest_stats" in effects:
-					total += 8  # Divine_Champion / Divinely_Inspired
-				if "awareness_bonus" in effects or "focus_bonus" in effects:
-					total += 3
-				if "focus_bonus_major" in effects:
-					total += 8  # Major focus buff (Inner Fire / Crystal_Diadem)
-				if "focus_penalty" in effects:
-					total -= 3  # Focus_Minus_2
-				if "focus_penalty_major" in effects:
-					total -= 8  # Mindmucked
-				if "awareness_penalty_major" in effects:
-					total -= 5  # Mindmucked
-				if "awareness_bonus_major" in effects:
-					total += 5  # Crystal_Diadem
-				if "minor_all_stats_bonus" in effects:
-					total += 3
-				if "all_stats_penalty" in effects:
-					total -= 5
-			"range":
-				if "range_penalty" in effects:
-					total -= 2  # Range reduction (Rain)
-				if "range_bonus" in effects:
-					total += 2  # Precision
-	return total
-
 
 ## Sum all active skill stat modifiers for a given stat.
 ## These are applied by active skills (buff_self, buff_ally, etc.) and expire each turn start.
@@ -601,14 +451,14 @@ func is_targetable() -> bool:
 func get_initiative() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_init = get_equipped_weapon().get("stats", {}).get("initiative", 0)
-	var total: int = derived.get("initiative", 10) + weapon_init + _get_status_stat_bonus("initiative") + CombatManager.get_continuous_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative") + _get_conditional_perk_bonus("initiative")
+	var total: int = derived.get("initiative", 10) + weapon_init + CombatManager.get_continuous_stat_bonus(self, "initiative") + mantra_stat_bonuses.get("initiative", 0) + _get_stat_modifier_bonus("initiative") + _get_conditional_perk_bonus("initiative")
 	return int(round(ValuePaths.apply_to(self, "stat.initiative", total)))
 
 
 ## Get movement range (includes status effect and perk bonuses)
 func get_movement() -> int:
 	var derived = character_data.get("derived", {})
-	var total: int = derived.get("movement", 3) + _get_status_stat_bonus("movement") + CombatManager.get_continuous_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0) + _get_stat_modifier_bonus("movement") + _get_conditional_perk_bonus("movement")
+	var total: int = derived.get("movement", 3) + CombatManager.get_continuous_stat_bonus(self, "movement") + mantra_stat_bonuses.get("movement", 0) + _get_stat_modifier_bonus("movement") + _get_conditional_perk_bonus("movement")
 	return maxi(0, int(round(ValuePaths.apply_to(self, "stat.movement", total))))
 
 
@@ -765,7 +615,7 @@ func get_accuracy() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_acc = get_equipped_weapon().get("stats", {}).get("accuracy", 0)
 	var ammo_acc = get_selected_ammo().get("accuracy_bonus", 0) if is_ranged_weapon() else 0
-	var total: int = derived.get("accuracy", 0) + weapon_acc + ammo_acc + _get_status_stat_bonus("accuracy") + CombatManager.get_continuous_stat_bonus(self, "accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy") + get_pack_bonus() + _get_conditional_perk_bonus("accuracy")
+	var total: int = derived.get("accuracy", 0) + weapon_acc + ammo_acc + CombatManager.get_continuous_stat_bonus(self, "accuracy") + mantra_stat_bonuses.get("accuracy", 0) + _get_stat_modifier_bonus("accuracy") + get_pack_bonus() + _get_conditional_perk_bonus("accuracy")
 	return int(round(ValuePaths.apply_to(self, "stat.accuracy", total)))
 
 
@@ -796,7 +646,7 @@ func get_selected_ammo() -> Dictionary:
 func get_dodge() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_dodge = mantra_stat_bonuses.get("dodge", 0)
-	var total: int = derived.get("dodge", 10) + _get_status_stat_bonus("dodge") + CombatManager.get_continuous_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + get_pack_bonus() + _get_conditional_perk_bonus("dodge")
+	var total: int = derived.get("dodge", 10) + CombatManager.get_continuous_stat_bonus(self, "dodge") + maxi(0, mantra_dodge) + _get_stat_modifier_bonus("dodge") + get_pack_bonus() + _get_conditional_perk_bonus("dodge")
 	return int(round(ValuePaths.apply_to(self, "stat.dodge", total)))
 
 
@@ -849,8 +699,10 @@ func get_attack_damage() -> int:
 	# Add skill-based damage bonus from derived stats (set by update_derived_stats)
 	base_damage += derived.get("damage", 0)
 
-	# Add status effect damage bonuses (Bloodlust, etc.)
-	base_damage += _get_status_stat_bonus("damage")
+	# Flat stat.damage holds (fortify/drain: Bloodlust, Weakened, ...) join the
+	# total here, BEFORE the damage_pct below, so a fire-affinity percentage
+	# scales them like every other flat bonus. Their multiply/set come last.
+	base_damage += int(round(ValuePaths.flat_sum(self, "stat.damage")))
 
 	# Add passive perk damage bonuses
 	base_damage += CombatManager.get_continuous_stat_bonus(self, "damage")
@@ -874,7 +726,7 @@ func get_attack_damage() -> int:
 	if damage_pct != 0.0:
 		base_damage = int(base_damage * (1.0 + damage_pct / 100.0))
 
-	return int(round(ValuePaths.apply_to(self, "stat.damage", base_damage)))
+	return int(round(ValuePaths.apply_scaling(self, "stat.damage", base_damage)))
 
 
 ## Map weapon type to skill name
@@ -914,7 +766,7 @@ func _get_weapon_skill_name(weapon_type: String) -> String:
 func get_armor() -> int:
 	var derived = character_data.get("derived", {})
 	var mantra_armor = mantra_stat_bonuses.get("armor", 0)
-	var total: int = derived.get("armor", 0) + _get_status_stat_bonus("armor") + CombatManager.get_continuous_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor") + _get_conditional_perk_bonus("armor") + unbroken_armor_bonus
+	var total: int = derived.get("armor", 0) + CombatManager.get_continuous_stat_bonus(self, "armor") + maxi(0, mantra_armor) + _get_stat_modifier_bonus("armor") + _get_conditional_perk_bonus("armor") + unbroken_armor_bonus
 	return int(round(ValuePaths.apply_to(self, "stat.armor", total)))
 
 
@@ -1111,7 +963,7 @@ func get_crit_chance() -> float:
 	var weapon_crit = float(equipped.get("stats", {}).get("crit_chance", 0))
 	# Natural weapons can carry a crit_bonus field (e.g. mantis blades +10%)
 	var natural_crit = float(equipped.get("crit_bonus", 0))
-	var total: float = float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(_get_status_stat_bonus("crit_chance")) + float(CombatManager.get_continuous_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance")) + float(_get_conditional_perk_bonus("crit_chance"))
+	var total: float = float(derived.get("crit_chance", 5)) + weapon_crit + natural_crit + float(CombatManager.get_continuous_stat_bonus(self, "crit_chance")) + maxf(0.0, mantra_crit) + float(_get_stat_modifier_bonus("crit_chance")) + float(_get_conditional_perk_bonus("crit_chance"))
 	return ValuePaths.apply_to(self, "stat.crit_chance", total)
 
 
@@ -1187,7 +1039,7 @@ func tick_mantras() -> void:
 func get_spellpower() -> int:
 	var derived = character_data.get("derived", {})
 	var weapon_sp = get_equipped_weapon().get("stats", {}).get("spellpower", 0)
-	var total: int = derived.get("spellpower", 0) + weapon_sp + _get_status_stat_bonus("spellpower") + CombatManager.get_continuous_stat_bonus(self, "spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower") + chod_spellpower_bonus + _get_conditional_perk_bonus("spellpower")
+	var total: int = derived.get("spellpower", 0) + weapon_sp + CombatManager.get_continuous_stat_bonus(self, "spellpower") + mantra_stat_bonuses.get("spellpower", 0) + _get_stat_modifier_bonus("spellpower") + chod_spellpower_bonus + _get_conditional_perk_bonus("spellpower")
 	return int(round(ValuePaths.apply_to(self, "stat.spellpower", total)))
 
 
@@ -1516,24 +1368,18 @@ const STATUS_ELEMENT_COLORS: Dictionary = {
 	"physical": Color(0.9, 0.85, 0.8),  # Off-white
 }
 
-## Status category → color mapping for statuses without a clear element
+## Status category → color mapping for statuses without a clear element.
+## The keys are `categories` words (EffectVocab.STATUS_CATEGORIES); "buff"
+## and "debuff" are the fallback by polarity.
 const STATUS_TYPE_COLORS: Dictionary = {
-	"cc": Color(0.9, 0.7, 0.2),         # Gold (crowd control)
-	"dot": Color(1.0, 0.4, 0.1),        # Orange (damage over time)
-	"hot": Color(0.3, 1.0, 0.5),        # Green (heal over time)
-	"buff": Color(0.3, 0.85, 1.0),      # Cyan (buffs)
-	"debuff": Color(0.9, 0.3, 0.3),     # Red (debuffs)
-	"vulnerability": Color(0.9, 0.5, 0.2),  # Dark orange
-	"immunity": Color(1.0, 0.95, 0.5),  # Bright yellow
-	"protection": Color(0.5, 0.7, 1.0), # Light blue
+	"control": Color(0.9, 0.7, 0.2),    # Gold (crowd control)
+	"buff": Color(0.3, 0.85, 1.0),      # Cyan (positive)
+	"debuff": Color(0.9, 0.3, 0.3),     # Red (negative)
+	"blessing": Color(1.0, 0.95, 0.5),  # Bright yellow
 	"aura": Color(0.8, 0.7, 1.0),       # Lavender
 	"shield": Color(0.6, 0.8, 1.0),     # Steel blue
 	"transformation": Color(0.9, 0.6, 1.0),  # Pink-purple
-	"resistance": Color(0.6, 0.8, 0.4), # Olive green
-	"divine": Color(1.0, 0.9, 0.4),     # Gold
 	"stealth": Color(0.5, 0.5, 0.6),    # Grey
-	"disruption": Color(0.8, 0.4, 0.2), # Rust
-	"delayed": Color(0.7, 0.3, 0.5),    # Maroon
 }
 
 ## Color used for "Resisted!" text — same shade as "Miss!" (grey)
@@ -1577,14 +1423,13 @@ func _get_status_color(status_name: String) -> Color:
 		if "physical" in fx:
 			return STATUS_ELEMENT_COLORS["physical"]
 
-	# Fall back to category color
-	var category = def.get("category", "")
-	if STATUS_TYPE_COLORS.has(category):
-		return STATUS_TYPE_COLORS[category]
+	# Fall back to the first category that has a color
+	for category in StatusRules.categories_of(def):
+		if STATUS_TYPE_COLORS.has(category):
+			return STATUS_TYPE_COLORS[category]
 
-	# Fall back to type (buff/debuff)
-	var stype = def.get("type", "debuff")
-	if stype == "buff":
+	# Fall back to polarity
+	if def.get("polarity", "negative") == "positive":
 		return STATUS_TYPE_COLORS["buff"]
 	return STATUS_TYPE_COLORS["debuff"]
 

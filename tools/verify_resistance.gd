@@ -370,7 +370,7 @@ func _check_poison_and_acid_ground_deal_poison() -> void:
 	for effect in [CombatGrid.TerrainEffect.POISON, CombatGrid.TerrainEffect.ACID]:
 		var label: String = grid.get_effect_name(effect)
 		for unit in [immune, bare]:
-			unit.status_effects.clear()
+			_clear_statuses(unit)
 			unit.current_hp = unit.max_hp
 			grid.add_terrain_effect(unit.grid_position, effect, 3)
 			CombatManager._process_terrain_effects(unit)
@@ -406,7 +406,7 @@ func _check_retaliation_names_a_real_damage_type() -> void:
 
 ## Wet ground promised a vulnerability in two comments and only slowed. It
 ## Soaks you now: +25% lightning taken, through the status's
-## grants_vulnerability, and nothing else.
+## `drain resist.lightning` hold, and nothing else.
 func _check_wet_ground_soaks_you() -> void:
 	var unit := _make_unit(Vector2i(14, 14))
 	if CombatManager.get_status_definition("Soaked").is_empty():
@@ -451,7 +451,7 @@ func _check_bombs_auras_and_brands_name_their_source() -> void:
 		_fail("a bomb's Burning does not name the thrower as its source")
 	if not victim.has_status("Blinded"):
 		_fail("a bomb listing a bare status name did not apply it")
-	victim.status_effects.clear()
+	_clear_statuses(victim)
 
 	# 2. An aura's grant_status, from a unit that owns the aura.
 	var aura: Dictionary = {"id": "_probe", "name": "Probe Aura",
@@ -460,7 +460,7 @@ func _check_bombs_auras_and_brands_name_their_source() -> void:
 		{"kind": "grant_status", "status": "Poisoned", "duration": 2}, 1.0)
 	if _source_of(victim, "Poisoned") != thrower:
 		_fail("an aura's granted Poisoned does not name the aura's owner as source")
-	victim.status_effects.clear()
+	_clear_statuses(victim)
 
 	# 3. The poison talisman brand: 15% a hit, so swing until it lands.
 	ItemSystem._runtime_items["_probe_venom_charm"] = {
@@ -489,6 +489,20 @@ func _source_of(unit: CombatUnit, status: String) -> Variant:
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
+
+## End every status on `unit` through the one exit, so the holds its
+## `while_active` placed (resistances among them) go with it. Clearing the
+## list by hand would leave those holds behind.
+func _clear_statuses(unit: CombatUnit) -> void:
+	for entry in unit.status_effects.duplicate():
+		CombatManager._end_status(unit, entry, "removed")
+	unit.status_effects.clear()
+
+
+## A `while_active` effect that adds `amount` to the resistance to `type`.
+func _resist_hold(type: String, amount: float) -> Dictionary:
+	return {"op": "modify", "value": "resist." + type, "mode": "fortify", "amount": amount}
+
 
 func _make_unit(at: Vector2i = Vector2i(5, 5), team: int = 0) -> CombatUnit:
 	var unit := CombatUnit.new()
@@ -555,9 +569,9 @@ func _check_a_status_can_grant_and_take_away() -> void:
 	CombatManager._apply_status_effect(unit, "Inner_Flame", 5)
 	if Resistance.total(unit, "fire") <= 0.0:
 		_fail("Inner_Flame granted no fire resistance")
-	unit.status_effects.clear()
+	_clear_statuses(unit)
 
-	# And the other direction: grants_vulnerability subtracts.
+	# And the other direction: a drain on resist. subtracts.
 	CombatManager._apply_status_effect(unit, "Smoke_Form", 5)
 	var vulnerable := false
 	for element in ["fire", "ice", "lightning", "space", "physical", "black", "white"]:
@@ -565,14 +579,15 @@ func _check_a_status_can_grant_and_take_away() -> void:
 			vulnerable = true
 	if not vulnerable:
 		_fail("Smoke_Form left the unit vulnerable to nothing, though it "
-			+ "declares grants_vulnerability")
+			+ "drains a resistance")
 	_cleanup([unit])
 	_done()
 
 
 ## Twenty hand-written effect strings became a table, and then the table
 ## became data: every status that resists or fears something says so in
-## `grants_resistance` / `grants_vulnerability`. These are statuses that
+## `while_active` modifies of `resist.<type>` (they were
+## `grants_resistance` / `grants_vulnerability` until 2026-11-26). These are statuses that
 ## carried the strings, with the numbers the strings meant.
 func _check_statuses_declare_their_resistances() -> void:
 	var unit := _make_unit()
@@ -599,8 +614,8 @@ func _check_statuses_declare_their_resistances() -> void:
 		if CombatManager.get_status_definition(status).is_empty():
 			_fail("status '%s' is gone — update this table" % status)
 			continue
-		unit.status_effects.clear()
-		unit.status_effects.append({"status": status, "duration": 5})
+		_clear_statuses(unit)
+		CombatManager._apply_status_effect(unit, status, 5)
 		var value: float = Resistance.total(unit, str(entry[1]))
 		if not is_equal_approx(value, float(entry[2])):
 			_fail("%s gave %.0f%% against %s, expected %.0f"
@@ -608,10 +623,10 @@ func _check_statuses_declare_their_resistances() -> void:
 
 	# A key of "physical" covers its subtypes, which is what makes Petrified
 	# stop a sword and a mace alike.
-	unit.status_effects.clear()
-	unit.status_effects.append({"status": "_probe_phys", "duration": 5})
+	_clear_statuses(unit)
 	CombatManager._status_effects["_probe_phys"] = {
-		"name": "_probe_phys", "grants_resistance": {"physical": 50}}
+		"name": "_probe_phys", "while_active": [_resist_hold("physical", 50)]}
+	CombatManager._apply_status_effect(unit, "_probe_phys", 5)
 	for subtype in ["slashing", "crushing", "piercing", "physical"]:
 		if Resistance.total(unit, subtype) != 50.0:
 			_fail("a physical 50 status gave %.0f%% against %s"
@@ -619,7 +634,7 @@ func _check_statuses_declare_their_resistances() -> void:
 	if Resistance.total(unit, "fire") != 0.0:
 		_fail("a physical key reached fire damage")
 	CombatManager._status_effects.erase("_probe_phys")
-	unit.status_effects.clear()
+	_clear_statuses(unit)
 
 	# The strings themselves are gone, and must stay gone: a status carrying
 	# one now resists nothing, because nothing translates it any more.
@@ -628,7 +643,7 @@ func _check_statuses_declare_their_resistances() -> void:
 			if str(name) in RETIRED_RESISTANCE_STRINGS:
 				_fail("status '%s' declares '%s', a retired resistance string — "
 					% [status_name, str(name)] + "nothing reads it; write "
-					+ "grants_resistance / grants_vulnerability instead")
+					+ "a while_active modify of resist.<type> instead")
 	_cleanup([unit])
 	_done()
 
@@ -729,12 +744,12 @@ func _seeded_attack(attacker: CombatUnit, defender: CombatUnit, rng_seed: int) -
 func _check_you_cannot_buff_your_way_into_absorption() -> void:
 	var unit := _make_unit()
 	unit.resistances = {"fire": 60}
-	unit.status_effects.append({"status": "_probe_a", "duration": 5})
-	unit.status_effects.append({"status": "_probe_b", "duration": 5})
 	CombatManager._status_effects["_probe_a"] = {
-		"name": "_probe_a", "grants_resistance": {"fire": 60}}
+		"name": "_probe_a", "while_active": [_resist_hold("fire", 60)]}
 	CombatManager._status_effects["_probe_b"] = {
-		"name": "_probe_b", "grants_resistance": {"fire": 60}}
+		"name": "_probe_b", "while_active": [_resist_hold("fire", 60)]}
+	CombatManager._apply_status_effect(unit, "_probe_a", 5)
+	CombatManager._apply_status_effect(unit, "_probe_b", 5)
 
 	var total: float = Resistance.total(unit, "fire")
 	# Exactly the cap: 180 summed, clamped. Anything else means either the cap
@@ -767,9 +782,9 @@ func _check_a_single_declaration_grants_immunity() -> void:
 
 	# And a status may declare it too — Solar Form's fire immunity.
 	var burned := _make_unit(Vector2i(7, 5))
-	burned.status_effects.append({"status": "_probe_immune", "duration": 5})
 	CombatManager._status_effects["_probe_immune"] = {
-		"name": "_probe_immune", "grants_resistance": {"fire": 100}}
+		"name": "_probe_immune", "while_active": [_resist_hold("fire", 100)]}
+	CombatManager._apply_status_effect(burned, "_probe_immune", 5)
 	if _taken(burned, 200, "fire") != 0:
 		_fail("a fire-immune status let %d damage through"
 			% _taken(burned, 200, "fire"))
@@ -831,7 +846,7 @@ func _check_every_damage_source_respects_resistance() -> void:
 	# 1. A damage-over-time tick.
 	for unit in [immune, bare]:
 		unit.current_hp = unit.max_hp
-		unit.status_effects.clear()
+		_clear_statuses(unit)
 		CombatManager._apply_status_effect(unit, "Burning", 5)
 		CombatManager._process_status_effects(unit)
 	if immune.current_hp < immune.max_hp:
@@ -840,8 +855,8 @@ func _check_every_damage_source_respects_resistance() -> void:
 	if bare.current_hp >= bare.max_hp:
 		_fail("Burning did nothing to a unit with no fire resistance, so the "
 			+ "check above proves nothing")
-	immune.status_effects.clear()
-	bare.status_effects.clear()
+	_clear_statuses(immune)
+	_clear_statuses(bare)
 
 	# 2. A burning tile.
 	grid.add_terrain_effect(immune.grid_position, CombatGrid.TerrainEffect.FIRE, 3)
@@ -855,8 +870,8 @@ func _check_every_damage_source_respects_resistance() -> void:
 			% (immune.max_hp - immune.current_hp) + "burned for months")
 	if bare.current_hp >= bare.max_hp:
 		_fail("a fire tile did nothing to a bare unit")
-	immune.status_effects.clear()
-	bare.status_effects.clear()
+	_clear_statuses(immune)
+	_clear_statuses(bare)
 
 	# 3. A zone payload.
 	CombatManager.active_zones.clear()
@@ -967,8 +982,8 @@ func _check_an_affliction_can_be_shrugged_off() -> void:
 	var tough_bled := 0
 	var bare_bled := 0
 	for _i in 60:
-		tough.status_effects.clear()
-		bare.status_effects.clear()
+		_clear_statuses(tough)
+		_clear_statuses(bare)
 		CombatManager._apply_status_effect(tough, "Bleeding", 3)
 		CombatManager._apply_status_effect(bare, "Bleeding", 3)
 		if tough.has_status("Bleeding"):
@@ -1150,9 +1165,9 @@ func _check_disease_spreads_to_whoever_is_close() -> void:
 
 	var caught := 0
 	for _i in 60:
-		beside.status_effects.clear()
-		away.status_effects.clear()
-		carrier.status_effects.clear()
+		_clear_statuses(beside)
+		_clear_statuses(away)
+		_clear_statuses(carrier)
 		CombatManager._apply_status_effect(carrier, "Diseased", 5)
 		CombatManager._process_status_spread(carrier)
 		if beside.has_status("Diseased"):
@@ -1175,14 +1190,14 @@ func _check_spread_honours_the_reach_it_declares() -> void:
 	var carrier := _make_unit(Vector2i(10, 10), 0)
 	var two_away := _make_unit(Vector2i(12, 10), 1)
 	CombatManager._status_effects["_probe_plague"] = {
-		"name": "_probe_plague", "type": "debuff", "default_duration": 3,
+		"name": "_probe_plague", "polarity": "negative", "duration": {"kind": "turns", "base": 3},
 		"spread": {"chance": "high", "range": 3},
 	}
 
 	var caught := false
 	for _i in 40:
-		two_away.status_effects.clear()
-		carrier.status_effects.clear()
+		_clear_statuses(two_away)
+		_clear_statuses(carrier)
 		CombatManager._apply_status_effect(carrier, "_probe_plague", 5)
 		CombatManager._process_status_spread(carrier)
 		if two_away.has_status("_probe_plague"):
@@ -1193,12 +1208,12 @@ func _check_spread_honours_the_reach_it_declares() -> void:
 
 	# And a melee one does not.
 	CombatManager._status_effects["_probe_touch"] = {
-		"name": "_probe_touch", "type": "debuff", "default_duration": 3,
+		"name": "_probe_touch", "polarity": "negative", "duration": {"kind": "turns", "base": 3},
 		"spread": {"chance": "high", "range": "melee"},
 	}
 	for _i in 40:
-		two_away.status_effects.clear()
-		carrier.status_effects.clear()
+		_clear_statuses(two_away)
+		_clear_statuses(carrier)
 		CombatManager._apply_status_effect(carrier, "_probe_touch", 5)
 		CombatManager._process_status_spread(carrier)
 		if two_away.has_status("_probe_touch"):

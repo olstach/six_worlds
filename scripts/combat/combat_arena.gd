@@ -2323,7 +2323,7 @@ func _show_unit_info(unit: CombatUnit) -> void:
 			var duration = effect.get("duration", 0)
 			var def = CombatManager.get_status_definition(status_name)
 			var display_name = status_name.replace("_", " ")
-			var stype = def.get("type", "debuff")
+			var stype = "buff" if def.get("polarity", "negative") == "positive" else "debuff"
 
 			var status_row = HBoxContainer.new()
 			status_row.add_theme_constant_override("separation", 4)
@@ -2345,7 +2345,7 @@ func _show_unit_info(unit: CombatUnit) -> void:
 
 			# Duration label
 			var dur_lbl = Label.new()
-			var dur_type = def.get("duration_type", "turns")
+			var dur_type = str(def.get("duration", {}).get("kind", "turns"))
 			if dur_type == "permanent":
 				dur_lbl.text = "(permanent)"
 			elif dur_type == "until_save":
@@ -4951,8 +4951,8 @@ func _gather_all_statuses(unit: CombatUnit) -> Array[Dictionary]:
 		var status_name = effect.get("status", "")
 		var duration = effect.get("duration", 0)
 		var def = CombatManager.get_status_definition(status_name)
-		var stype = def.get("type", "debuff")
-		var dur_type = def.get("duration_type", "turns")
+		var stype = "buff" if def.get("polarity", "negative") == "positive" else "debuff"
+		var dur_type = str(def.get("duration", {}).get("kind", "turns"))
 
 		var dur_text = ""
 		if dur_type == "permanent":

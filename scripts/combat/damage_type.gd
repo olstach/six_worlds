@@ -32,9 +32,12 @@ const CATEGORIES: Array[String] = [
 	"special",   # true, sacrifice: resistance and armour do not apply
 ]
 
-## Keys a STATUS may use in `grants_resistance` / `grants_vulnerability` that
-## name a group of types rather than one. Only statuses take these — a unit's
-## own `resistances` block and aura payloads name one type each.
+## Names a `resist.<name>` effect hold may use (a status's `while_active`
+## modify, once `grants_resistance` / `grants_vulnerability`) that name a group
+## of types rather than one. Only effects take these — a unit's own
+## `resistances` block and aura payloads name one type each. EffectVocab's
+## RESIST_GROUPS lists them for the validator; Resistance.hold_covers() asks
+## scope_covers() below.
 ##
 ##   all           every damage type (Invulnerable)
 ##   magic         every type marked `magic` in damage_types.json: the
@@ -105,7 +108,7 @@ static func subtype_of(name: String) -> String:
 
 ## Does a resistance declared against `key` cover a hit of `damage_type`?
 ##
-## `key` is what a status wrote in grants_resistance: a type, a scope from
+## `key` is what a `resist.<key>` hold names: a type, a scope from
 ## RESISTANCE_SCOPES, or `physical`. A key of `physical` covers all three
 ## subtypes as well, which is what makes Stone Skin stop a sword and a mace
 ## alike — and unlike a unit's own resistances, it ADDS to a subtype key on

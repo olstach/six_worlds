@@ -8,9 +8,11 @@ extends RefCounted
 ## adds a hold when it begins and releases it when it ends.
 ##
 ## Holds live in `unit.effect_holds` (an Array[Dictionary] on CombatUnit). The
-## stat getters and Resistance.total() pass their finished number through
-## apply_to(), which is where holds take effect. With no holds, apply_to()
-## returns its input unchanged.
+## stat getters pass their finished number through apply_to(), which is where
+## holds take effect (get_attack_damage splits it into flat_sum() and
+## apply_scaling() around its damage_pct). With no holds, apply_to() returns
+## its input unchanged. Resistance reads `resist.` holds itself: a fortify or
+## drain is one contribution in Resistance._gather(), a set is applied last.
 ##
 ## ORDER OF APPLICATION in apply_to():
 ##   1. base + (sum of fortify) - (sum of drain)
@@ -106,24 +108,45 @@ static func release_all_combat(unit: Node) -> void:
 static func apply_to(unit: Node, value: String, base: float) -> float:
 	if unit == null or not "effect_holds" in unit or unit.effect_holds.is_empty():
 		return base
+	return apply_scaling(unit, value, base + flat_sum(unit, value))
+
+
+## Step 1 alone: the sum of the fortify holds on `value` minus the drains.
+## For a getter that must add the flat part BEFORE a multiplier of its own —
+## get_attack_damage() adds it before the fire-affinity damage_pct, as the
+## status damage bonuses always were — and then calls apply_scaling().
+static func flat_sum(unit: Node, value: String) -> float:
+	if unit == null or not "effect_holds" in unit:
+		return 0.0
 	var sum: float = 0.0
+	for hold in unit.effect_holds:
+		if hold.value != value:
+			continue
+		match str(hold.mode):
+			"fortify": sum += float(hold.amount)
+			"drain": sum -= float(hold.amount)
+	return sum
+
+
+## Steps 2 and 3 alone: `base` times every multiply on `value`, then the
+## last-added `set` if there is one. Fortify and drain are NOT applied here.
+static func apply_scaling(unit: Node, value: String, base: float) -> float:
+	if unit == null or not "effect_holds" in unit or unit.effect_holds.is_empty():
+		return base
 	var factor: float = 1.0
 	var has_set: bool = false
 	var set_to: float = 0.0
 	for hold in unit.effect_holds:
 		if hold.value != value:
 			continue
-		var amount: float = float(hold.amount)
 		match str(hold.mode):
-			"fortify": sum += amount
-			"drain": sum -= amount
-			"multiply": factor *= amount
+			"multiply": factor *= float(hold.amount)
 			"set":
 				has_set = true
-				set_to = amount   # later holds overwrite: last-added wins
+				set_to = float(hold.amount)   # later holds overwrite: last-added wins
 	if has_set:
 		return set_to
-	return (base + sum) * factor
+	return base * factor
 
 
 ## True when `unit` has a `set` hold on `value`. Resistance uses this to know a

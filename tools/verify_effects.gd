@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 75
+const EXPECTED_CHECKS: int = 77
 
 var grid: CombatGrid
 
@@ -119,6 +119,10 @@ func _ready() -> void:
 	_check_expire_trigger_fires_on_expiry_only()
 	_check_immune_flag_blocks()
 	_check_old_save_entries_get_ids()
+
+	# Stage 2b, Task 4: statuses migrated — their numbers are effects now.
+	_check_status_numbers_match_baseline()
+	_check_status_tags_select_same()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -258,8 +262,8 @@ func _check_cleanse_clears_damage() -> void:
 			or ValuePaths.clear_damage(ch, "rest", {"tier": 3}) != 0:
 		_fail("cleanse of another category (or a rest) cleared the curse")
 	# Cleanse the status off the unit the way a dispel does.
-	CombatManager._status_effects["VerifyCurse"] = {"type": "debuff", "dispellable": true,
-		"categories": ["curse"]}
+	CombatManager._status_effects["VerifyCurse"] = {"polarity": "negative", "dispellable": true,
+		"categories": ["curse", "magical"]}
 	u.status_effects.append({"status": "VerifyCurse", "duration": 3})
 	CombatManager._cleanse_status_effects(u, 1)
 	CombatManager._status_effects.erase("VerifyCurse")
@@ -1820,8 +1824,10 @@ func _everything_status() -> Dictionary:
 	held.append({"op": "modify", "value": "resist.fire", "mode": "fortify", "amount": 20})
 	held.append({"op": "modify", "value": "resist.slashing", "mode": "drain", "amount": 10})
 	held.append({"op": "modify", "value": "attribute.constitution", "mode": "fortify", "amount": 2})
-	# Legacy fields so the real cleanse / dispel / steal selectors pick it.
-	return {"polarity": "positive", "type": "debuff", "dispellable": true,
+	# Negative, magical and dispellable, so the real cleanse / dispel / steal
+	# selectors pick it (they read polarity and categories since Task 4; the
+	# cleanse still asks `dispellable`).
+	return {"polarity": "negative", "categories": ["magical"], "dispellable": true,
 		"while_active": held}
 
 
@@ -2110,4 +2116,141 @@ func _check_old_save_entries_get_ids() -> void:
 	KarmaSystem.load_save_data(snap_karma)
 	MapManager.load_save_data(snap_map)
 	SaveManager.current_slot = old_slot
+	_done()
+
+
+# ── Stage 2b, Task 4: the statuses' numbers, migrated ───────────────────────
+
+const StatusMeasure = preload("res://tools/status_measure.gd")
+const STATUS_BASELINE_PATH: String = "res://tools/fixtures/status_baseline.json"
+const STATUS_TAGS_PATH: String = "res://tools/fixtures/status_tags.json"
+
+## The statuses whose numbers changed ON PURPOSE in the migration, with what
+## they change now, on the two reference units (tools/status_measure.gd).
+## Every other status must change exactly what the baseline says it did.
+##
+## Spec section 7, statuses named for a number do what the name says: a hold
+## on that attribute, and the derived stats follow it (CombatStats.attribute_terms:
+## dodge = Finesse, initiative = Finesse + Awareness, movement = Finesse / 3,
+## spellpower = Focus, crit = 5 + (Awareness + Finesse + Luck) / 6; melee
+## damage adds Strength). The old table gave +5 dodge / +3 initiative for
+## Finesse_Plus_2 and +3 or -3 spellpower or damage for the rest.
+## Where a row differs between the two units it is a step in a divided term:
+## the party unit (all 10s) gains a movement point from Finesse 12 (12 / 3),
+## while the reference enemy's Awareness + Finesse + Luck crosses a multiple
+## of 6 and gains a crit point.
+##
+## movement_reduced_50 (Slowed, Movement_Debuff, Slowed_After_Escape) halves
+## the movement TOTAL now instead of subtracting half the base. On a unit with
+## no other movement bonus that is the same number, so these rows equal the
+## baseline; they are listed so the rule they follow is stated here.
+const STATUS_CHANGED_NUMBERS: Dictionary = {
+	"Strength_Plus_2": {"party": {"damage": 2.0}, "enemy": {"damage": 2.0}},
+	"Finesse_Plus_2": {"party": {"dodge": 2.0, "initiative": 2.0, "movement": 1.0},
+		"enemy": {"dodge": 2.0, "initiative": 2.0, "crit_chance": 1.0}},
+	"Focus_Plus_3": {"party": {"spellpower": 3.0}, "enemy": {"spellpower": 3.0}},
+	"Focus_Minus_2": {"party": {"spellpower": -2.0}, "enemy": {"spellpower": -2.0}},
+	"Awareness_Plus_3": {"party": {"initiative": 3.0},
+		"enemy": {"initiative": 3.0, "crit_chance": 1.0}},
+	"Constitution_Minus_2": {"party": {}, "enemy": {}},
+	"Slowed": {"party": {"movement": -1.0}, "enemy": {"movement": -3.0}},
+	"Movement_Debuff": {"party": {"movement": -1.0}, "enemy": {"movement": -3.0}},
+	"Slowed_After_Escape": {"party": {"movement": -1.0}, "enemy": {"movement": -3.0}},
+}
+
+## The words CombatUnit._get_status_stat_bonus turned into numbers. That table
+## is gone, so a status still carrying one of these would do nothing; each
+## must have become a `while_active` modify. (range_bonus / range_penalty were
+## in the table too but no getter ever read them; they are left alone.)
+const RETIRED_STAT_WORDS: Array[String] = [
+	"accuracy_bonus", "all_stats_penalty", "armor_bonus_minor", "armor_reduced",
+	"armor_reduced_50", "attack_bonus", "attack_penalty", "awareness_bonus",
+	"awareness_bonus_major", "awareness_penalty_major", "buffs_all_stats_considerably",
+	"buffs_two_highest_stats", "critical_bonus_ranged", "critical_boost",
+	"damage_bonus", "damage_boost", "damage_reduction", "defense_bonus",
+	"defense_penalty", "dodge_bonus", "dodge_penalty", "evasion_bonus",
+	"finesse_bonus", "focus_bonus", "focus_bonus_major", "focus_penalty",
+	"focus_penalty_major", "initiative_bonus", "initiative_penalty", "luck_bonus",
+	"major_dodge_bonus", "major_speed_boost", "melee_damage_bonus",
+	"melee_hit_chance_halved", "minor_all_stats_bonus", "minor_dodge_bonus",
+	"movement_reduced_50", "ranged_damage_halved", "ranged_hit_chance_halved",
+	"speed_bonus", "speed_penalty", "strength_bonus", "strength_bonus_major",
+	"constitution_bonus", "constitution_penalty",
+]
+
+
+func _read_fixture(path: String) -> Dictionary:
+	var f := FileAccess.open(path, FileAccess.READ)
+	if f == null:
+		_fail("cannot open %s" % path)
+		return {}
+	var parsed = JSON.parse_string(f.get_as_text())
+	return parsed if parsed is Dictionary else {}
+
+
+## "a +2, b -1" for a failure message.
+func _changes_text(d: Dictionary) -> String:
+	var keys: Array = d.keys()
+	keys.sort()
+	var parts: Array[String] = []
+	for k in keys:
+		parts.append("%s %s%s" % [k, "+" if float(d[k]) > 0 else "", str(float(d[k]))])
+	return "{" + ", ".join(parts) + "}" if not parts.is_empty() else "{}"
+
+
+func _same_changes(a: Dictionary, b: Dictionary) -> bool:
+	for k in a:
+		if not is_equal_approx(float(a[k]), float(b.get(k, 0.0))):
+			return false
+	for k in b:
+		if not a.has(k) and not is_zero_approx(float(b[k])):
+			return false
+	return true
+
+
+## Every status changes the eight getters and every resistance exactly as it
+## did before the migration (tools/fixtures/status_baseline.json), apart from
+## the listed deliberate changes. Real data, real _apply_status_effect.
+func _check_status_numbers_match_baseline() -> void:
+	var baseline: Dictionary = _read_fixture(STATUS_BASELINE_PATH).get("statuses", {})
+	var defs: Dictionary = CombatManager.get_all_status_definitions()
+	var shown: int = 0
+	for name in defs:
+		if not str(name).begins_with("_") and not baseline.has(name):
+			_fail("status %s is not in the baseline (added after it was captured?)" % name)
+	for name in baseline:
+		if not defs.has(name):
+			_fail("baseline status %s is gone from statuses.json" % name)
+			continue
+		for word in defs[name].get("effects", []):
+			if str(word) in RETIRED_STAT_WORDS:
+				_fail("%s still carries the stat word '%s', which nothing reads now"
+					% [name, word])
+		for kind in StatusMeasure.KINDS:
+			var want: Dictionary = baseline[name].get(kind, {})
+			if STATUS_CHANGED_NUMBERS.has(name):
+				want = STATUS_CHANGED_NUMBERS[name][kind]
+			var got: Dictionary = StatusMeasure.measure_one(self, grid, name, kind)
+			if not _same_changes(got, want):
+				shown += 1
+				if shown <= 25:
+					_fail("%s on the %s unit changes %s, wanted %s"
+						% [name, kind, _changes_text(got), _changes_text(want)])
+	if shown > 25:
+		_fail("... and %d more status numbers differ" % (shown - 25))
+	_done()
+
+
+## Each StatusOps.TAGS selector picks exactly the statuses it picked before
+## the migration, now reading polarity and categories instead of type.
+func _check_status_tags_select_same() -> void:
+	var before: Dictionary = _read_fixture(STATUS_TAGS_PATH).get("tags", {})
+	var now: Dictionary = StatusMeasure.tag_selections(CombatManager.get_all_status_definitions())
+	for tag in StatusOps.TAGS:
+		var a: Array = before.get(tag, [])
+		var b: Array = now.get(tag, [])
+		if a != b:
+			var lost: Array = a.filter(func(n): return not n in b)
+			var gained: Array = b.filter(func(n): return not n in a)
+			_fail("tag %s: lost %s, gained %s" % [tag, lost, gained])
 	_done()

@@ -33,15 +33,15 @@ const OPS: Array[String] = [
 
 ## Named groups a selector may ask for, alongside or instead of literal names.
 const TAGS: Array[String] = [
-	"all_negative",     # every dispellable debuff
+	"all_negative",     # every magical (dispellable) negative status
 	"negative",         # the same thing; both spellings appear in the data
-	"positive",         # every buff
-	"mental_negative",  # the mind-affecting debuffs
-	"magical",          # buffs and debuffs alike, which is what a true dispel is
+	"positive",         # every magical positive status
+	"mental_negative",  # the mind-affecting negative ones
+	"magical",          # positive and negative alike, which is what a true dispel is
 ]
 
-## The mind-affecting debuffs. There is no "mental" category in statuses.json —
-## they all sit under `cc` — so the group has to be named somewhere, and naming
+## The mind-affecting debuffs. No status carries the `mental` category yet —
+## they are all `control` — so the group has to be named somewhere, and naming
 ## it here beats spelling it out in each of the spells that wants it.
 const MENTAL_STATUSES: Array[String] = [
 	"Confused", "Feared", "Charmed", "Berserk", "Forgetful", "Dominated",
@@ -69,8 +69,9 @@ static func explain_unknown_tag(tag: String) -> String:
 
 ## Does one status entry match this selector?
 ##
-## `defs` is CombatManager's status definition table, which carries the type and
-## the dispellable flag. A selector with neither `names` nor `tag` matches
+## `defs` is CombatManager's status definition table, which carries each
+## status's `polarity` (positive / negative) and `categories`. A dispel takes
+## what is `magical`. A selector with neither `names` nor `tag` matches
 ## nothing, deliberately — an empty selector that matched everything would make
 ## a typo catastrophic rather than inert.
 static func matches(entry: Dictionary, selector: Dictionary, defs: Dictionary) -> bool:
@@ -78,8 +79,8 @@ static func matches(entry: Dictionary, selector: Dictionary, defs: Dictionary) -
 	if name == "":
 		return false
 	var def: Dictionary = defs.get(name, {})
-	var kind: String = def.get("type", "")
-	var dispellable: bool = bool(def.get("dispellable", false))
+	var polarity: String = str(def.get("polarity", ""))
+	var magical: bool = "magical" in def.get("categories", [])
 
 	for wanted in selector.get("names", []):
 		if name.to_lower() == str(wanted).to_lower():
@@ -88,14 +89,14 @@ static func matches(entry: Dictionary, selector: Dictionary, defs: Dictionary) -
 	var tag: String = selector.get("tag", "")
 	match tag:
 		"all_negative", "negative":
-			return kind == "debuff" and dispellable
+			return polarity == "negative" and magical
 		"positive":
-			return kind == "buff" and dispellable
+			return polarity == "positive" and magical
 		"mental_negative":
-			return kind == "debuff" and dispellable and name in MENTAL_STATUSES
+			return polarity == "negative" and magical and name in MENTAL_STATUSES
 		"magical":
 			# A dispel does not care whose side an effect is on.
-			return dispellable
+			return magical
 	return false
 
 
@@ -203,9 +204,9 @@ static func tick_overworld(party: Array, defs: Dictionary) -> Array[String]:
 
 ## Does this status hurt you a little each step?
 ##
-## A buff never does, whatever else it carries, and a debuff only does if it
-## actually names a per-tick figure somewhere.
+## A positive status never does, whatever else it carries, and a negative one
+## only does if it actually names a per-tick figure somewhere.
 static func is_damage_over_time(entry: Dictionary, def: Dictionary) -> bool:
-	if def.get("type", "debuff") != "debuff":
+	if def.get("polarity", "negative") != "negative":
 		return false
 	return entry.has("damage_per_step") or def.has("damage_per_turn")

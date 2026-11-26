@@ -2366,6 +2366,25 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
     > Maintains the standing stones nobody else remembers the purpose of. She does not know either. She maintains them anyway, on the grounds that somebody clearly meant it.
   - skills: armor, maces, earth_magic
   - traits: devout, stubborn
+- **Maryadaka** `maryadaka` — cost 850 · background caravan_guard · zone meadow
+  - flavor:
+    > Treats the trade road as a boundary, since for the length of the contract it is one. Has never lost a cargo, never been told what was in one, and would like to keep it that way.
+  - skills: spears, armor, persuasion
+  - traits: suspicious, incurious
+- **Palaka** `palaka` — cost 800 · background still_hunter · zone meadow
+  - flavor:
+    > Has stood at the same gap in the thorn wall for nine days. Whatever is coming will come through here. So far she has been right every time, which is the trouble with arguing with her.
+  - skills: daggers, guile, air_magic
+  - traits: patient, sharp_eyed
+- **Kshetraka** `kshetraka` — cost 950 · background pollen_rishi · zone meadow
+  - flavor:
+    > Knows which field was sown and which merely happened, and holds the difference to be the beginning of philosophy. Will explain, at length, from downwind, as etiquette requires.
+  - skills: learning, space_magic, yoga
+  - traits: curious, storyteller
+- **Dharanaka** `dharanaka` — cost 1000 · background ancestor_priest · zone meadow
+  - flavor: Keeper of an old contract signed by four parties, three of them dead. Reads it aloud to them every full moon, so that none can later claim they were not told.
+  - skills: ritual, white_magic, black_magic
+  - traits: mourner, sharp_memory
 
 ### Shyena `shyena`
 
@@ -2380,6 +2399,25 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - flavor: Digs. Braces. Digs again. Has opinions about load-bearing timber that she will share whether or not you have expressed interest in load-bearing timber.
   - skills: might, maces, enchantment
   - traits: stubborn, iron_stomach
+- **Staraka** `staraka` — cost 800 · background tunnel_merchant · zone meadow
+  - flavor:
+    > Runs four beetles and a ledger down roads no surface trader knows are there, and quotes her prices by depth. Anything you can buy above ground she can get you cheaper from below. Eventually.
+  - skills: trade, logistics, earth_magic
+  - traits: scrimper, content
+- **Mulaka** `mulaka` — cost 900 · background root_shaper · zone meadow
+  - flavor:
+    > Spent forty years persuading a single root to turn left. It turned. He considers it the most forceful thing he has ever done, and still feels a little bad about it.
+  - skills: enchantment, earth_magic, medicine
+  - traits: steady_practice, warm_hearted
+- **Khataka** `khataka` — cost 900 · background shell_wright · zone meadow
+  - flavor: Works in shed carapace, his own old ones included. Has measured you for armour by the time you finish saying hello, and is quietly offended by what he found.
+  - skills: smithing, armor, maces
+  - traits: collector, strong
+- **Nilara** `nilara` — cost 800 · background caravan_guard · zone meadow
+  - flavor:
+    > Twenty years on the Migration Road, heavy and slow, and nothing has touched the cargo. Still sleeps sitting up with her back against it, even on nights when there is no cargo.
+  - skills: spears, armor, might
+  - traits: long_marched, light_sleeper
 
 ### Uluka `uluka`
 
@@ -2399,6 +2437,19 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
     > Will not eat anything that had a face and will not walk where she cannot see the ground, in case of insects. Weighs two thousand pounds. Has never harmed anything.
   - skills: yoga, white_magic, persuasion
   - traits: devout, patient
+- **Dhritaka** `dhritaka` — cost 900 · background still_hunter · zone meadow
+  - flavor: Held still on a grass stalk all afternoon while your party walked past arguing about whether anything was there. Something was. She has decided you will do.
+  - skills: martial_arts, daggers, guile
+  - traits: hunter, present
+- **Vajraka** `vajraka` — cost 850 · background caravan_guard · zone meadow
+  - flavor:
+    > Hired to guard a bhramara caravan, and ate one of the clients in the second week. Has been scrupulously correct ever since and would be grateful if nobody brought it up.
+  - skills: spears, martial_arts, armor
+  - traits: blood_handed, oath_keeper
+- **Sthirava** `sthirava` — cost 950 · background dancer · zone meadow
+  - flavor: Sways on the stalk the way the grass sways, until you notice the rhythm is wrong a moment too late. Performs it now for coin, and only rarely for keeps.
+  - skills: grace, martial_arts, performance
+  - traits: vain, flirt
 
 ### Bhramara `bhramara`
 
@@ -2406,6 +2457,25 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - flavor: One voice in a hive of four thousand, seconded to the surface for reasons the hive has not explained to them either. Sings in three parts by themselves.
   - skills: performance, summoning, comedy
   - traits: curious, night_owl
+- **Kosaka** `kosaka` — cost 800 · background hive_architect · zone meadow
+  - flavor:
+    > Built eleven hundred cells of the Flower Mountain comb and can name each one by touch in the dark. Inspects your tent on arrival, and is too polite to say anything, audibly.
+  - skills: smithing, earth_magic, logistics
+  - traits: fastidious, clear_eyed
+- **Gunaka** `gunaka` — cost 950 · background network_node · zone meadow
+  - flavor:
+    > Six seasons a relay in the hive's mind, and still hears the hum, faint, from very far off. Finishes your sentences, usually correctly, and cannot see why that would bother anyone.
+  - skills: ritual, water_magic, yoga
+  - traits: homesick, dreamer
+- **Rasika** `rasika` — cost 850 · background honey_alchemist · zone meadow
+  - flavor: Carries three jars of honey and will not say which is which. Two of them will save your life. The third is between her and whoever asks too many questions.
+  - skills: alchemy, medicine, black_magic
+  - traits: secret_bearer, generous
+- **Bhramari** `bhramari` — cost 750 · background far_scout · zone meadow
+  - flavor:
+    > Mapped the meadow out to the Dry Crossing and back, and danced the whole of it in eleven minutes to a hive that wept. Has not stood still since and sees no reason to start.
+  - skills: air_magic, logistics, ranged
+  - traits: quick, early_riser
 
 ### Patanga `patanga`
 
@@ -2414,6 +2484,24 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
     > Stands facing the sun with his wings spread until sundown, every day, for eleven years. Wants the fire. Does not enter it. That is the whole practice and there is nothing else.
   - skills: yoga, fire_magic, ritual
   - traits: devout, addiction
+- **Ulkika** `ulkika` — cost 750 · background far_scout · zone meadow
+  - flavor:
+    > Navigates by the stars and arrives by the lamps — always, and always through whichever window was left open. Her maps are excellent. Her antennae have grown back twice.
+  - skills: air_magic, logistics, guile
+  - traits: superstitious, scarred
+- **Prakasha** `prakasha` — cost 950 · background pollen_rishi · zone meadow
+  - flavor:
+    > Not the light, he says, but what the light does. Gathers dust and doctrine among the night-flowering nodes, and can no longer tell you which of the two he is carrying.
+  - skills: learning, space_magic, alchemy
+  - traits: ascetic, poet
+- **Jvalita** `jvalita` — cost 1000 · background witch · zone meadow
+  - flavor: Her silks are the colour of poison, and so, she would like you to know, is she. Came to the meadow to be worshipped and has settled, for now, for being feared.
+  - skills: sorcery, black_magic, alchemy
+  - traits: hot_tempered, attractive
+- **Havanaka** `havanaka` — cost 900 · background penitent · zone meadow
+  - flavor: Went to the Offering Ground to burn, and at the last wingbeat did not. Nobody there blamed him. He has not yet decided whether he does.
+  - skills: yoga, medicine, white_magic
+  - traits: renunciate, melancholic
 
 # Skills
 
@@ -6947,451 +7035,421 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 # Statuses
 
-## Crowd control `cc`
+## Control `control`
 
-- **Frozen** `Frozen` — debuff · turns 1 · skip_turn
+- **Frozen** `Frozen` — negative · turns 1 · skip_turn
   - desc: (empty)
-- **Rooted** `Rooted` — debuff · spellpower · cannot_move
+- **Rooted** `Rooted` — negative · spellpower · cannot_move
   - desc: (empty)
-- **Slowed** `Slowed` — debuff · spellpower · movement_reduced_50
+- **Slowed** `Slowed` — negative · spellpower
   - desc: (empty)
-- **Petrified** `Petrified` — debuff · spellpower · skip_turn, cannot_act
+- **Petrified** `Petrified` — negative · spellpower · skip_turn, cannot_act
   - desc: (empty)
-- **Silenced** `Silenced` — debuff · spellpower · cannot_cast
+- **Silenced** `Silenced` — negative · spellpower · cannot_cast
   - desc: (empty)
-- **Confused** `Confused` — debuff · spellpower · random_movement, random_target
+- **Confused** `Confused` — negative · spellpower · random_movement, random_target
   - desc: (empty)
-- **Feared** `Feared` — debuff · turns 2 · flee_from_source
+- **Feared** `Feared` — negative · turns 2 · flee_from_source
   - desc: (empty)
-- **Prone** `Prone` — debuff · instant · skip_next_action, defense_penalty
+- **Prone** `Prone` — negative · instant · skip_next_action
   - desc: (empty)
-- **Held** `Held` — debuff · until_save · cannot_move, cannot_act
+- **Held** `Held` — negative · until_save · cannot_move, cannot_act
   - desc: (empty)
-- **Forgetful** `Forgetful` — debuff · fixed 1 · can_move, cannot_attack, cannot_cast
+- **Drowning** `Drowning` — negative · spellpower · physical_damage_per_turn, immobilized
   - desc: (empty)
-- **Charmed** `Charmed` — debuff · spellpower · treats_caster_as_ally, will_not_attack_caster
+- **Swarmed** `Swarmed` — negative · spellpower · physical_damage_per_turn, focus_save_on_damage
   - desc: (empty)
-- **Berserk** `Berserk` — debuff · spellpower · attacks_closest_creature, ignores_allegiance
+- **Forgetful** `Forgetful` — negative · turns 1 · can_move, cannot_attack, cannot_cast
   - desc: (empty)
-- **Blinded** `Blinded` — debuff · spellpower · cannot_use_ranged, cannot_target_spells, melee_hit_chance_halved
+- **Charmed** `Charmed` — negative · spellpower · treats_caster_as_ally, will_not_attack_caster
   - desc: (empty)
-- **Dominated** `Dominated` — debuff · permanent · controlled_by_caster, joins_party_permanently
+- **Berserk** `Berserk` — negative · spellpower · attacks_closest_creature, ignores_allegiance
   - desc: (empty)
-- **Stunned** `Stunned` — debuff · turns 1 · skip_turn, cannot_act, save_at_end_of_turn
+- **Blinded** `Blinded` — negative · spellpower · cannot_use_ranged, cannot_target_spells
   - desc: (empty)
-- **Shadow_Pinned** `Shadow_Pinned` — debuff · spellpower · rooted, damage_on_move_attempt
+- **Dominated** `Dominated` — negative · permanent · controlled_by_caster, joins_party_permanently
   - desc: (empty)
-- **Chaotic** `Chaotic` — debuff · spellpower · random_movement, random_attacks, random_spellcasting
+- **Stunned** `Stunned` — negative · turns 1 · skip_turn, cannot_act, save_at_end_of_turn
   - desc: (empty)
-- **Paralyzed** `Paralyzed` — debuff · spellpower · cannot_move, cannot_act
+- **Suffocating** `Suffocating` — negative · spellpower · physical_damage_per_turn, silenced
   - desc: (empty)
-- **Pacified** `Pacified` — debuff · spellpower · disengaged_from_combat, will_not_attack
+- **Shadow_Pinned** `Shadow_Pinned` — negative · spellpower · rooted, damage_on_move_attempt
   - desc: (empty)
-- **Caged** `Caged` — debuff · spellpower · cannot_move, cannot_be_targeted
+- **Wrathfully_Bound** `Wrathfully_Bound` — negative · spellpower · space_damage_per_turn, cannot_teleport, cannot_flee
   - desc: (empty)
-- **Entangled** `Entangled` — debuff · spellpower · cannot_move, dodge_penalty
+- **Chaotic** `Chaotic` — negative · spellpower · random_movement, random_attacks, random_spellcasting
   - desc: (empty)
-- **Grounded** `Grounded` — debuff · spellpower · cannot_fly, loses_flight
+- **Paralyzed** `Paralyzed` — negative · spellpower · cannot_move, cannot_act
   - desc: (empty)
-- **Immobilized** `Immobilized` — debuff · spellpower · cannot_move, cannot_act
+- **Pacified** `Pacified` — negative · spellpower · disengaged_from_combat, will_not_attack
   - desc: (empty)
-- **Lured** `Lured` — debuff · turns 2 · forced_movement_toward_target
+- **Caged** `Caged` — negative · spellpower · cannot_move, cannot_be_targeted
   - desc: (empty)
-- **Pushed** `Pushed` — debuff · instant · knockback
+- **Entangled** `Entangled` — negative · spellpower · cannot_move
   - desc: (empty)
-- **Slowed_After_Escape** `Slowed_After_Escape` — debuff · turns 2 · movement_reduced_50
+- **Grounded** `Grounded` — negative · spellpower · cannot_fly, loses_flight
   - desc: (empty)
-- **Trapped** `Trapped` — debuff · spellpower · cannot_move, defense_penalty
+- **Immobilized** `Immobilized` — negative · spellpower · cannot_move, cannot_act
   - desc: (empty)
-- **Grappled** `Grappled` — debuff · turns 99 · cannot_move, dodge_penalty
+- **Lured** `Lured` — negative · turns 2 · forced_movement_toward_target
+  - desc: (empty)
+- **Pushed** `Pushed` — negative · instant · knockback
+  - desc: (empty)
+- **Slowed_After_Escape** `Slowed_After_Escape` — negative · turns 2
+  - desc: (empty)
+- **Trapped** `Trapped` — negative · spellpower · cannot_move
+  - desc: (empty)
+- **Grappled** `Grappled` — negative · turns 99 · cannot_move
   - desc: Held in a grapple — cannot move; attackers get +30% accuracy.
-- **Taunt** `Taunt` — debuff · turns 2 · must_attack_taunter
+- **Taunt** `Taunt` — negative · turns 2 · must_attack_taunter
   - desc: Compelled to target the unit that applied this taunt.
-- **Disarmed** `Disarmed` — debuff · turns 2 · cannot_make_weapon_attacks
+- **Disarmed** `Disarmed` — negative · turns 2 · cannot_make_weapon_attacks
   - desc: Weapon torn from grasp — cannot make weapon attacks. Can still cast spells and move.
-- **Pinned** `Pinned` — debuff · turns 1 · cannot_move
+- **Pinned** `Pinned` — negative · turns 1 · cannot_move
   - desc: (empty)
-- **Subjugated** `Subjugated` — debuff · turns 3 · cannot_move, cannot_attack
+- **Subjugated** `Subjugated` — negative · turns 3 · cannot_move, cannot_attack
   - desc: (empty)
-- **Dazed** `Dazed` — debuff · turns 1 · attack_penalty, initiative_penalty
+- **Dazed** `Dazed` — negative · turns 1
   - desc: (empty)
-- **Knocked_Down** `Knocked_Down` — debuff · turns 1 · skip_next_action, defense_penalty
+- **Knocked_Down** `Knocked_Down` — negative · turns 1 · skip_next_action
   - desc: (empty)
-- **Time_Stopped** `Time_Stopped` — debuff · turns 1 · skip_turn, cannot_act
+- **Anchored** `Anchored` — negative · spellpower · prevents_teleportation
+  - desc: Pinned to this plane. Cannot blink, teleport, swap or be scattered — though a shove still works, because being nailed to the world does not make you heavy.
+- **Time_Stopped** `Time_Stopped` — negative · turns 1 · skip_turn, cannot_act
   - desc: Held outside the moment. Not stunned, not held — simply not yet. Nothing shakes this off, because there is no time in which to do so.
 
-## Damage over time `dot`
+## Elemental fire `elemental.fire`
 
-- **Burning** `Burning` — debuff · turns 3 · fire_damage_per_turn
+- **Burning** `Burning` — negative · turns 3 · fire_damage_per_turn
   - desc: (empty)
-- **Poisoned** `Poisoned` — debuff · turns 5 · poison_damage_per_turn
-  - desc: (empty)
-- **Bleeding** `Bleeding` — debuff · turns 3 · physical_damage_per_turn
-  - desc: (empty)
-- **Boiling_Blood** `Boiling_Blood` — debuff · spellpower · fire_damage_per_turn_internal
-  - desc: (empty)
-- **Festering** `Festering` — debuff · spellpower · poison_damage_per_turn, damage_increases_each_turn
-  - desc: (empty)
-- **Soul_Burning** `Soul_Burning` — debuff · spellpower · black_damage_per_turn
+- **Boiling_Blood** `Boiling_Blood` — negative · spellpower · fire_damage_per_turn_internal
   - desc: (empty)
 
-## Debuff `debuff`
+## Poison `poison`
 
-- **Soaked** `Soaked` — debuff · turns 1
+- **Poisoned** `Poisoned` — negative · turns 5 · poison_damage_per_turn
   - desc: (empty)
-- **Gloomy** `Gloomy` — debuff · spellpower · defense_penalty, speed_penalty
+- **Festering** `Festering` — negative · spellpower · poison_damage_per_turn, damage_increases_each_turn
   - desc: (empty)
-- **Cursed** `Cursed` — debuff · spellpower · attack_penalty, defense_penalty
+
+## Wound `wound`
+
+- **Bleeding** `Bleeding` — negative · turns 3 · physical_damage_per_turn
   - desc: (empty)
-- **Suffering** `Suffering` — debuff · spellpower · initiative_penalty, speed_penalty, defense_penalty
+
+## Negative `negative`
+
+- **Soaked** `Soaked` — negative · turns 1
   - desc: (empty)
-- **Armor_Debuff_50** `Armor_Debuff_50` — debuff · spellpower · armor_reduced_50
+- **Infected** `Infected` — negative · turns 3 · damage_on_expire, bleed_on_expire
   - desc: (empty)
-- **Armor_Reduced** `Armor_Reduced` — debuff · spellpower · armor_reduced
+- **Doomed** `Doomed` — negative · turns · death_on_expire
   - desc: (empty)
-- **Damage_Debuff** `Damage_Debuff` — debuff · spellpower · damage_reduction
+- **Fire_Vulnerable** `Fire_Vulnerable` — negative · spellpower
   - desc: (empty)
-- **Dodge_Debuff** `Dodge_Debuff` — debuff · spellpower · dodge_penalty
+- **Water_Vulnerable_25** `Water_Vulnerable_25` — negative · spellpower
   - desc: (empty)
-- **Melee_Attack_Debuff_50** `Melee_Attack_Debuff_50` — debuff · spellpower · melee_hit_chance_halved
+- **Water_Vulnerable_50** `Water_Vulnerable_50` — negative · spellpower
   - desc: (empty)
-- **Movement_Debuff** `Movement_Debuff` — debuff · spellpower · movement_reduced_50
+- **Gloomy** `Gloomy` — negative · spellpower
   - desc: (empty)
-- **Range_Debuff** `Range_Debuff` — debuff · spellpower · range_penalty
+- **Cursed** `Cursed` — negative · spellpower
   - desc: (empty)
-- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — debuff · spellpower · ranged_hit_chance_halved
+- **Suffering** `Suffering` — negative · spellpower
   - desc: (empty)
-- **Ranged_Damage_Debuff_50** `Ranged_Damage_Debuff_50` — debuff · spellpower · ranged_damage_halved
+- **Rotting** `Rotting` — negative · spellpower · black_damage_per_turn
   - desc: (empty)
-- **Force_Miss** `Force_Miss` — debuff · turns 1 · next_attack_misses
+- **Armor_Debuff_50** `Armor_Debuff_50` — negative · spellpower
+  - desc: (empty)
+- **Armor_Reduced** `Armor_Reduced` — negative · spellpower
+  - desc: (empty)
+- **Damage_Debuff** `Damage_Debuff` — negative · spellpower
+  - desc: (empty)
+- **Dodge_Debuff** `Dodge_Debuff` — negative · spellpower
+  - desc: (empty)
+- **Melee_Attack_Debuff_50** `Melee_Attack_Debuff_50` — negative · spellpower
+  - desc: (empty)
+- **Movement_Debuff** `Movement_Debuff` — negative · spellpower
+  - desc: (empty)
+- **Range_Debuff** `Range_Debuff` — negative · spellpower
+  - desc: (empty)
+- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — negative · spellpower
+  - desc: (empty)
+- **Ranged_Damage_Debuff_50** `Ranged_Damage_Debuff_50` — negative · spellpower
+  - desc: (empty)
+- **Slippery_Terrain** `Slippery_Terrain` — negative · spellpower · prone_chance_on_movement
+  - desc: (empty)
+- **Soul_Burning** `Soul_Burning` — negative · spellpower · black_damage_per_turn
+  - desc: (empty)
+- **Water_Vulnerable** `Water_Vulnerable` — negative · spellpower
+  - desc: (empty)
+- **Force_Miss** `Force_Miss` — negative · turns 1 · next_attack_misses
   - desc: The next attack made by this unit automatically misses.
-- **Demoralized** `Demoralized` — debuff · turns 3 · attack_penalty, defense_penalty
+- **Demoralized** `Demoralized` — negative · turns 3
   - desc: Spirit broken — -10 accuracy and -10 armor.
-- **Mindmucked** `Mindmucked` — debuff · spellpower · awareness_penalty_major, focus_penalty_major
+- **Mindmucked** `Mindmucked` — negative · spellpower
   - desc: Mind clouded with filth — major penalty to Awareness and Focus.
-- **Constitution_Minus_2** `Constitution_Minus_2` — debuff · spellpower · constitution_penalty
+- **Constitution_Minus_2** `Constitution_Minus_2` — negative · spellpower
   - desc: -2 Constitution.
-- **Focus_Minus_2** `Focus_Minus_2` — debuff · spellpower · focus_penalty
+- **Focus_Minus_2** `Focus_Minus_2` — negative · spellpower
   - desc: -2 Focus.
-- **Initiative_Debuff** `Initiative_Debuff` — debuff · spellpower · initiative_penalty
+- **Initiative_Debuff** `Initiative_Debuff` — negative · spellpower
   - desc: Reduced initiative, acts later in turn order.
-- **Fire_Vulnerable_50** `Fire_Vulnerable_50` — debuff · spellpower
+- **Fire_Vulnerable_50** `Fire_Vulnerable_50` — negative · spellpower
   - desc: 50% extra damage from fire attacks.
-- **Marked_for_Death** `Marked_for_Death` — debuff · spellpower · damage_taken_increase, crit_vulnerability
+- **Marked_for_Death** `Marked_for_Death` — negative · spellpower · damage_taken_increase, crit_vulnerability
   - desc: Marked target takes 25% more damage and is more vulnerable to critical hits.
-- **Weakened** `Weakened` — debuff · turns 2 · damage_reduction, attack_penalty
+- **Weakened** `Weakened` — negative · turns 2
   - desc: (empty)
-- **Disoriented** `Disoriented` — debuff · turns 1 · all_stats_penalty
+- **Disoriented** `Disoriented` — negative · turns 1
   - desc: Ears ringing, footing uncertain. Everything is a little harder for a moment.
 
-## Damage over time and crowd control `dot_cc`
+## Positive `positive`
 
-- **Drowning** `Drowning` — debuff · spellpower · physical_damage_per_turn, immobilized
+- **Blessed** `Blessed` — positive · spellpower
   - desc: (empty)
-- **Suffocating** `Suffocating` — debuff · spellpower · physical_damage_per_turn, silenced
+- **Hasted** `Hasted` — positive · spellpower
   - desc: (empty)
-
-## Delayed `delayed`
-
-- **Infected** `Infected` — debuff · fixed 3 · damage_on_expire, bleed_on_expire
+- **Regenerating** `Regenerating` — positive · spellpower · heal_per_turn
   - desc: (empty)
-- **Doomed** `Doomed` — debuff · fixed · death_on_expire
+- **Bloodlust** `Bloodlust` — positive · spellpower
   - desc: (empty)
-
-## Damage over time and disruption `dot_disruption`
-
-- **Swarmed** `Swarmed` — debuff · spellpower · physical_damage_per_turn, focus_save_on_damage
+- **Fireshield** `Fireshield` — positive · spellpower
   - desc: (empty)
-
-## Vulnerability `vulnerability`
-
-- **Fire_Vulnerable** `Fire_Vulnerable` — debuff · spellpower
+- **Fan_the_Flames** `Fan_the_Flames` — positive · spellpower · increase_burning_damage_dealt
   - desc: (empty)
-- **Water_Vulnerable_25** `Water_Vulnerable_25` — debuff · spellpower
+- **Electrified_Weapon** `Electrified_Weapon` — positive · spellpower · adds_air_damage_to_attacks, stun_chance_on_hit
   - desc: (empty)
-- **Water_Vulnerable_50** `Water_Vulnerable_50` — debuff · spellpower
+- **Levitating** `Levitating` — positive · spellpower · immune_to_ground_effects, immune_to_terrain_hazards
   - desc: (empty)
-- **Water_Vulnerable** `Water_Vulnerable` — debuff · spellpower
+- **Precision** `Precision` — positive · spellpower
   - desc: (empty)
-
-## Buff `buff`
-
-- **Blessed** `Blessed` — buff · spellpower · attack_bonus, defense_bonus
+- **Air_Shield** `Air_Shield` — positive · spellpower · ranged_damage_reduction
   - desc: (empty)
-- **Hasted** `Hasted` — buff · spellpower · speed_bonus, initiative_bonus
+- **Flying** `Flying` — positive · spellpower · grants_flight, immune_to_ground_effects, immune_to_melee_unless_flyer
   - desc: (empty)
-- **Bloodlust** `Bloodlust` — buff · spellpower · melee_damage_bonus
+- **Blessed_Shot** `Blessed_Shot` — positive · turns 1 · next_ranged_guaranteed_hit
   - desc: (empty)
-- **Fireshield** `Fireshield` — buff · spellpower
+- **Poison_Skin** `Poison_Skin` — positive · spellpower
   - desc: (empty)
-- **Fan_the_Flames** `Fan_the_Flames` — buff · spellpower · increase_burning_damage_dealt
+- **Chameleon** `Chameleon` — positive · spellpower · stealth_bonus
   - desc: (empty)
-- **Electrified_Weapon** `Electrified_Weapon` — buff · spellpower · adds_air_damage_to_attacks, stun_chance_on_hit
+- **Blurred** `Blurred` — positive · spellpower · attacks_have_miss_chance
   - desc: (empty)
-- **Levitating** `Levitating` — buff · spellpower · immune_to_ground_effects, immune_to_terrain_hazards
+- **Mirror_Images** `Mirror_Images` — positive · spellpower · illusory_copies, copies_absorb_attacks
   - desc: (empty)
-- **Precision** `Precision` — buff · spellpower · range_bonus, accuracy_bonus, critical_bonus_ranged
+- **Magic_Shield** `Magic_Shield` — positive · spellpower · spell_damage_reduction
   - desc: (empty)
-- **Air_Shield** `Air_Shield` — buff · spellpower · ranged_damage_reduction
+- **Magic_Mirror** `Magic_Mirror` — positive · spellpower · spell_reflect_chance
   - desc: (empty)
-- **Flying** `Flying` — buff · spellpower · grants_flight, immune_to_ground_effects, immune_to_melee_unless_flyer
+- **Phasing** `Phasing` — positive · spellpower
   - desc: (empty)
-- **Blessed_Shot** `Blessed_Shot` — buff · turns 1 · next_ranged_guaranteed_hit, damage_boost, critical_boost
+- **Shimmering** `Shimmering` — positive · spellpower
   - desc: (empty)
-- **Poison_Skin** `Poison_Skin` — buff · spellpower
+- **Encouraged** `Encouraged` — positive · spellpower
   - desc: (empty)
-- **Chameleon** `Chameleon` — buff · spellpower · stealth_bonus
+- **Friendly** `Friendly` — positive · spellpower · relationship_bonus
   - desc: (empty)
-- **Blurred** `Blurred` — buff · spellpower · dodge_bonus, attacks_have_miss_chance
+- **Mirthful** `Mirthful` — positive · spellpower
   - desc: (empty)
-- **Mirror_Images** `Mirror_Images` — buff · spellpower · illusory_copies, copies_absorb_attacks
+- **Praying** `Praying` — positive · spellpower
   - desc: (empty)
-- **Magic_Shield** `Magic_Shield` — buff · spellpower · spell_damage_reduction
+- **Divinely_Inspired** `Divinely_Inspired` — positive · spellpower
   - desc: (empty)
-- **Magic_Mirror** `Magic_Mirror` — buff · spellpower · spell_reflect_chance
+- **Divine_Champion** `Divine_Champion` — positive · spellpower
   - desc: (empty)
-- **Phasing** `Phasing` — buff · spellpower
+- **Lifelink** `Lifelink` — positive · spellpower · heal_50_percent_of_damage_dealt
   - desc: (empty)
-- **Shimmering** `Shimmering` — buff · spellpower · minor_dodge_bonus
+- **Pain_Mirror** `Pain_Mirror` — positive · spellpower
   - desc: (empty)
-- **Encouraged** `Encouraged` — buff · spellpower · initiative_bonus
+- **Ancestral_Guidance** `Ancestral_Guidance` — positive · spellpower
   - desc: (empty)
-- **Friendly** `Friendly` — buff · spellpower · relationship_bonus
+- **Ancestral_Vengeance** `Ancestral_Vengeance` — positive · spellpower · attack_damage_buff_when_ally_dies
   - desc: (empty)
-- **Mirthful** `Mirthful` — buff · spellpower · initiative_bonus, speed_bonus, damage_bonus
+- **Karmic_Bond** `Karmic_Bond` — positive · spellpower · linked_to_ally, share_healing_75_percent
   - desc: (empty)
-- **Praying** `Praying` — buff · spellpower · defense_bonus
+- **Eternal_Vow** `Eternal_Vow` — positive · spellpower · return_on_death_next_turn, return_with_20_percent_hp
   - desc: (empty)
-- **Divinely_Inspired** `Divinely_Inspired` — buff · spellpower · buffs_two_highest_stats
+- **Ancestors_Blessing** `Ancestors_Blessing` — positive · spellpower · death_resistance
   - desc: (empty)
-- **Divine_Champion** `Divine_Champion` — buff · spellpower · buffs_all_stats_considerably
+- **Blood_Hunger** `Blood_Hunger` — positive · spellpower · lifesteal_on_attacks
   - desc: (empty)
-- **Lifelink** `Lifelink` — buff · spellpower · heal_50_percent_of_damage_dealt
+- **Shadow_Cloaked** `Shadow_Cloaked` — positive · spellpower · stealth_bonus
   - desc: (empty)
-- **Pain_Mirror** `Pain_Mirror` — buff · spellpower
+- **Armored_Minor** `Armored_Minor` — positive · spellpower
   - desc: (empty)
-- **Ancestral_Guidance** `Ancestral_Guidance` — buff · spellpower · awareness_bonus, focus_bonus
+- **Armored_Major** `Armored_Major` — positive · spellpower
   - desc: (empty)
-- **Ancestral_Vengeance** `Ancestral_Vengeance` — buff · spellpower · attack_damage_buff_when_ally_dies
+- **Armored_Supreme** `Armored_Supreme` — positive · spellpower
   - desc: (empty)
-- **Karmic_Bond** `Karmic_Bond` — buff · spellpower · linked_to_ally, share_healing_75_percent
+- **Awareness_Buff** `Awareness_Buff` — positive · spellpower
   - desc: (empty)
-- **Eternal_Vow** `Eternal_Vow` — buff · spellpower · return_on_death_next_turn, return_with_20_percent_hp
+- **Burning_Weapon** `Burning_Weapon` — positive · spellpower · adds_fire_damage_to_attacks
   - desc: (empty)
-- **Ancestors_Blessing** `Ancestors_Blessing` — buff · spellpower · minor_all_stats_bonus, death_resistance
+- **Constitution_Buff** `Constitution_Buff` — positive · spellpower
   - desc: (empty)
-- **Blood_Hunger** `Blood_Hunger` — buff · spellpower · lifesteal_on_attacks
+- **Extra_Action** `Extra_Action` — positive · turns 1 · grants_extra_action
   - desc: (empty)
-- **Shadow_Cloaked** `Shadow_Cloaked` — buff · spellpower · stealth_bonus, dodge_bonus
+- **Focus_Buff_Major** `Focus_Buff_Major` — positive · spellpower
   - desc: (empty)
-- **Armored_Minor** `Armored_Minor` — buff · spellpower
+- **Fortified** `Fortified` — positive · spellpower
   - desc: (empty)
-- **Armored_Major** `Armored_Major` — buff · spellpower
+- **Golden_Defense** `Golden_Defense` — positive · spellpower · spell_damage_reduction
   - desc: (empty)
-- **Armored_Supreme** `Armored_Supreme` — buff · spellpower
+- **Initiative_Buff** `Initiative_Buff` — positive · spellpower
   - desc: (empty)
-- **Awareness_Buff** `Awareness_Buff` — buff · spellpower · awareness_bonus
+- **Keen_Weapon** `Keen_Weapon` — positive · spellpower
   - desc: (empty)
-- **Burning_Weapon** `Burning_Weapon` — buff · spellpower · adds_fire_damage_to_attacks
+- **Lucky** `Lucky` — positive · spellpower
   - desc: (empty)
-- **Constitution_Buff** `Constitution_Buff` — buff · spellpower · constitution_bonus
+- **Major_Dodge** `Major_Dodge` — positive · spellpower
   - desc: (empty)
-- **Extra_Action** `Extra_Action` — buff · turns 1 · grants_extra_action
+- **Phase_Wind** `Phase_Wind` — positive · spellpower · can_move_through_enemies
   - desc: (empty)
-- **Focus_Buff_Major** `Focus_Buff_Major` — buff · spellpower · focus_bonus_major
+- **Strength_Buff** `Strength_Buff` — positive · spellpower
   - desc: (empty)
-- **Fortified** `Fortified` — buff · spellpower · defense_bonus
+- **Tongues_of_Fire** `Tongues_of_Fire` — positive · spellpower · adds_fire_damage_to_attacks
   - desc: (empty)
-- **Golden_Defense** `Golden_Defense` — buff · spellpower · spell_damage_reduction
+- **Water_Walking** `Water_Walking` — positive · spellpower · can_walk_on_water, immune_to_water_terrain
   - desc: (empty)
-- **Initiative_Buff** `Initiative_Buff` — buff · spellpower · initiative_bonus
+- **Yaksha_Strength** `Yaksha_Strength` — positive · spellpower
   - desc: (empty)
-- **Keen_Weapon** `Keen_Weapon` — buff · spellpower · critical_boost, accuracy_bonus
-  - desc: (empty)
-- **Lucky** `Lucky` — buff · spellpower · luck_bonus, critical_boost
-  - desc: (empty)
-- **Major_Dodge** `Major_Dodge` — buff · spellpower · major_dodge_bonus
-  - desc: (empty)
-- **Phase_Wind** `Phase_Wind` — buff · spellpower · can_move_through_enemies, dodge_bonus
-  - desc: (empty)
-- **Strength_Buff** `Strength_Buff` — buff · spellpower · strength_bonus
-  - desc: (empty)
-- **Tongues_of_Fire** `Tongues_of_Fire` — buff · spellpower · adds_fire_damage_to_attacks
-  - desc: (empty)
-- **Water_Walking** `Water_Walking` — buff · spellpower · can_walk_on_water, immune_to_water_terrain
-  - desc: (empty)
-- **Yaksha_Strength** `Yaksha_Strength` — buff · spellpower · strength_bonus_major, melee_damage_bonus
-  - desc: (empty)
-- **Crystal_Diadem** `Crystal_Diadem` — buff · spellpower · focus_bonus_major, awareness_bonus_major
+- **Crystal_Diadem** `Crystal_Diadem` — positive · spellpower
   - desc: Crown of living crystal: major Focus and Awareness bonus. 50% chance to shatter and be lost whenever the wearer takes damage.
-- **Strength_Plus_2** `Strength_Plus_2` — buff · spellpower · strength_bonus
+- **Strength_Plus_2** `Strength_Plus_2` — positive · spellpower
   - desc: +2 Strength.
-- **Finesse_Plus_2** `Finesse_Plus_2` — buff · spellpower · finesse_bonus
+- **Finesse_Plus_2** `Finesse_Plus_2` — positive · spellpower
   - desc: +2 Finesse.
-- **Focus_Plus_3** `Focus_Plus_3` — buff · spellpower · focus_bonus
+- **Focus_Plus_3** `Focus_Plus_3` — positive · spellpower
   - desc: +3 Focus.
-- **Awareness_Plus_3** `Awareness_Plus_3` — buff · spellpower · awareness_bonus
+- **Awareness_Plus_3** `Awareness_Plus_3` — positive · spellpower
   - desc: +3 Awareness.
-- **Cleansed** `Cleansed` — buff · turns 1 · remove_all_debuffs, debuff_immunity
+- **Cleansed** `Cleansed` — positive · turns 1 · remove_all_debuffs, debuff_immunity
   - desc: All debuffs removed. Immune to new debuffs for 1 turn.
-- **Mental_Immunity** `Mental_Immunity` — buff · spellpower · immune_to_charm, immune_to_fear, immune_to_confusion
+- **Mental_Immunity** `Mental_Immunity` — positive · spellpower · immune_to_charm, immune_to_fear, immune_to_confusion
   - desc: Immune to charm, fear, and confusion effects.
-- **Rainbow_Cloak** `Rainbow_Cloak` — buff · spellpower · dodge_bonus
+- **Rainbow_Cloak** `Rainbow_Cloak` — positive · spellpower
   - desc: Shimmering cloak of prismatic light grants resistance to all elements and a dodge bonus.
-- **Strengthened** `Strengthened` — buff · turns 2 · damage_bonus
+- **Strengthened** `Strengthened` — positive · turns 2
   - desc: (empty)
-- **Hastened** `Hastened` — buff · turns 2 · speed_bonus, initiative_bonus
+- **Hastened** `Hastened` — positive · turns 2
   - desc: (empty)
-- **Shielded** `Shielded` — buff · turns 2 · defense_bonus
+- **Shielded** `Shielded` — positive · turns 2
   - desc: (empty)
-- **Inspired** `Inspired` — buff · turns 2 · accuracy_bonus
+- **Inspired** `Inspired` — positive · turns 2
   - desc: (empty)
-- **Dodge_Buff** `Dodge_Buff` — buff · turns 1 · dodge_bonus
+- **Dodge_Buff** `Dodge_Buff` — positive · turns 1
   - desc: (empty)
-- **Rage** `Rage` — buff · turns 2 · damage_bonus, defense_penalty
+- **Rage** `Rage` — positive · turns 2
   - desc: (empty)
-- **Invincible** `Invincible` — buff · turns 3 · hp_cannot_drop_below_1
+- **Invincible** `Invincible` — positive · turns 3 · hp_cannot_drop_below_1
   - desc: (empty)
-- **Resolute** `Resolute` — buff · turns 3 · immune_to_charm, immune_to_fear, immune_to_confusion
+- **Resolute** `Resolute` — positive · turns 3 · immune_to_charm, immune_to_fear, immune_to_confusion
   - desc: (empty)
-- **Riposte_Ready** `Riposte_Ready` — buff · turns 1 · riposte_next_sword_attack
+- **Riposte_Ready** `Riposte_Ready` — positive · turns 1 · riposte_next_sword_attack
   - desc: (empty)
-- **Reflect** `Reflect` — buff · turns 3 · attack_reflect_chance
+- **Reflect** `Reflect` — positive · turns 3 · attack_reflect_chance
   - desc: (empty)
-- **Inner_Flame** `Inner_Flame` — buff · spellpower
+- **Inner_Flame** `Inner_Flame` — positive · spellpower
   - desc: Inner heat. Fire and water both find less purchase, and whoever strikes you in close catches light.
-- **Lava_Walking** `Lava_Walking` — buff · spellpower
+- **Lava_Walking** `Lava_Walking` — positive · spellpower
   - desc: The ground runs molten and does not care. Fire has no mobility magic of its own; this is the whole of it.
-- **Marshtread** `Marshtread` — buff · spellpower
+- **Marshtread** `Marshtread` — positive · spellpower
   - desc: Ground that gives way holds you up. Bog and deep snow are the same problem.
-- **Camels_Blessing** `Camels_Blessing` — buff · spellpower
+- **Camels_Blessing** `Camels_Blessing` — positive · spellpower
   - desc: Loose burning ground carries you as a road would.
-- **Following_Wind** `Following_Wind` — buff · spellpower
+- **Following_Wind** `Following_Wind` — positive · spellpower
   - desc: The air moves with the party rather than against it. Ground goes by faster.
-- **Rahulas_Cloak** `Rahulas_Cloak` — buff · spellpower
+- **Rahulas_Cloak** `Rahulas_Cloak` — positive · spellpower
   - desc: Nothing on the road notices the party pass. Rāhu swallows the sun and is not observed doing it.
-
-## Healing over time `hot`
-
-- **Regenerating** `Regenerating` — buff · spellpower · heal_per_turn
-  - desc: (empty)
 
 ## Stealth `stealth`
 
-- **Invisible** `Invisible` — buff · spellpower · cannot_be_targeted, attack_breaks_invisibility
+- **Invisible** `Invisible` — positive · spellpower · cannot_be_targeted, attack_breaks_invisibility
   - desc: (empty)
 
-## Divine `divine`
+## Blessing `blessing`
 
-- **Death_Immunity** `Death_Immunity` — buff · fixed 3 · cannot_die, hp_cannot_drop_below_1
+- **Death_Immunity** `Death_Immunity` — positive · turns 3 · cannot_die, hp_cannot_drop_below_1
   - desc: (empty)
-
-## Protection `protection`
-
-- **Sanctuary** `Sanctuary` — buff · spellpower · cannot_be_targeted, cannot_target_enemies, breaks_on_offensive_action
+- **Physical_Resist_50** `Physical_Resist_50` — positive · spellpower
   - desc: (empty)
-
-## Transformation `transformation`
-
-- **Smoke_Form** `Smoke_Form` — buff · spellpower · evasion_bonus, can_move_through_enemies
+- **Air_Immune** `Air_Immune` — positive · spellpower
   - desc: (empty)
-- **Storm_Lord** `Storm_Lord` — buff · spellpower · grants_flight, immune_to_ranged
+- **Invulnerable** `Invulnerable` — positive · turns 3
   - desc: (empty)
-- **Lightning_Form** `Lightning_Form` — buff · spellpower · grants_flight
+- **Fire_Immune** `Fire_Immune` — positive · spellpower
   - desc: (empty)
-- **Thin_Air** `Thin_Air` — buff · spellpower · cannot_deal_physical, major_speed_boost
+- **Fire_Resistance_25** `Fire_Resistance_25` — positive · spellpower
   - desc: (empty)
-- **Solar_Form** `Solar_Form` — buff · spellpower · adds_fire_damage_to_attacks
+- **Physical_Immune** `Physical_Immune` — positive · spellpower
   - desc: (empty)
-
-## Aura `aura`
-
-- **Magnetizing_Aura** `Magnetizing_Aura` — buff · spellpower · charm_chance_on_enemy_melee_approach
-  - desc: (empty)
-- **Favorable_Wind** `Favorable_Wind` — buff · spellpower
-  - desc: (empty)
-- **Shield_Wall** `Shield_Wall` — buff · turns 1
-  - desc: (empty)
-- **Soothing_Presence** `Soothing_Presence` — buff · spellpower
-  - desc: (empty)
-- **Aura_of_Blessing** `Aura_of_Blessing` — buff · spellpower
-  - desc: (empty)
-- **Dampening_Aura** `Dampening_Aura` — buff · spellpower
-  - desc: (empty)
-- **Radiance** `Radiance` — buff · spellpower
-  - desc: A standing light that mends companions and dazzles whoever comes close.
-- **Radiant_Visage** `Radiant_Visage` — buff · spellpower
-  - desc: The caster's face shines; those near it are hard to frighten or deceive.
-- **Shining_Mirage** `Shining_Mirage` — buff · spellpower
-  - desc: The caster's outline swims and doubles. Those who look at it lose track of themselves — until they learn to look past it.
-
-## Resistance `resistance`
-
-- **Physical_Resist_50** `Physical_Resist_50` — buff · spellpower
-  - desc: (empty)
-- **Fire_Resistance_25** `Fire_Resistance_25` — buff · spellpower
-  - desc: (empty)
-
-## Immunity `immunity`
-
-- **Air_Immune** `Air_Immune` — buff · spellpower
-  - desc: (empty)
-- **Invulnerable** `Invulnerable` — buff · turns 3
-  - desc: (empty)
-- **Fire_Immune** `Fire_Immune` — buff · spellpower
-  - desc: (empty)
-- **Physical_Immune** `Physical_Immune` — buff · spellpower
-  - desc: (empty)
-- **Water_Immune** `Water_Immune` — buff · spellpower
-  - desc: (empty)
-
-## Damage over time and debuff `dot_debuff`
-
-- **Diseased** `Diseased` — debuff · spellpower · poison_damage_per_turn, stat_penalties
+- **Water_Immune** `Water_Immune` — positive · spellpower
   - desc: (empty)
 
 ## Shield `shield`
 
-- **Mantric_Armor** `Mantric_Armor` — buff · until_destroyed · hp_shield
+- **Sanctuary** `Sanctuary` — positive · spellpower · cannot_be_targeted, cannot_target_enemies, breaks_on_offensive_action
   - desc: (empty)
-- **Glass_Globe** `Glass_Globe` — buff · spellpower · armor_bonus_minor
+- **Mantric_Armor** `Mantric_Armor` — positive · until_destroyed · hp_shield
+  - desc: (empty)
+- **Glass_Globe** `Glass_Globe` — positive · spellpower
   - desc: Encased in a globe of conjured glass. Shatters on any damage received, dealing slashing AoE + guaranteed bleed to all within 2 tiles.
 
-## Crowd control and damage over time `cc_dot`
+## Transformation `transformation`
 
-- **Wrathfully_Bound** `Wrathfully_Bound` — debuff · spellpower · space_damage_per_turn, cannot_teleport, cannot_flee
+- **Smoke_Form** `Smoke_Form` — positive · spellpower · can_move_through_enemies
+  - desc: (empty)
+- **Storm_Lord** `Storm_Lord` — positive · spellpower · grants_flight, immune_to_ranged
+  - desc: (empty)
+- **Lightning_Form** `Lightning_Form` — positive · spellpower · grants_flight
+  - desc: (empty)
+- **Thin_Air** `Thin_Air` — positive · spellpower · cannot_deal_physical
+  - desc: (empty)
+- **Solar_Form** `Solar_Form` — positive · spellpower · adds_fire_damage_to_attacks
   - desc: (empty)
 
-## Debuff and damage over time `debuff_dot`
+## Aura `aura`
 
-- **Rotting** `Rotting` — debuff · spellpower · all_stats_penalty, black_damage_per_turn
+- **Magnetizing_Aura** `Magnetizing_Aura` — positive · spellpower · charm_chance_on_enemy_melee_approach
   - desc: (empty)
-
-## Terrain `terrain`
-
-- **Slippery_Terrain** `Slippery_Terrain` — debuff · spellpower · prone_chance_on_movement
+- **Favorable_Wind** `Favorable_Wind` — positive · spellpower
   - desc: (empty)
+- **Shield_Wall** `Shield_Wall` — positive · turns 1
+  - desc: (empty)
+- **Soothing_Presence** `Soothing_Presence` — positive · spellpower
+  - desc: (empty)
+- **Aura_of_Blessing** `Aura_of_Blessing` — positive · spellpower
+  - desc: (empty)
+- **Dampening_Aura** `Dampening_Aura` — positive · spellpower
+  - desc: (empty)
+- **Radiance** `Radiance` — positive · spellpower
+  - desc: A standing light that mends companions and dazzles whoever comes close.
+- **Radiant_Visage** `Radiant_Visage` — positive · spellpower
+  - desc: The caster's face shines; those near it are hard to frighten or deceive.
+- **Shining_Mirage** `Shining_Mirage` — positive · spellpower
+  - desc: The caster's outline swims and doubles. Those who look at it lose track of themselves — until they learn to look past it.
 
-## Control `control`
+## Disease `disease`
 
-- **Anchored** `Anchored` — debuff · spellpower · prevents_teleportation
-  - desc: Pinned to this plane. Cannot blink, teleport, swap or be scattered — though a shove still works, because being nailed to the world does not make you heavy.
+- **Diseased** `Diseased` — negative · spellpower · poison_damage_per_turn, stat_penalties
+  - desc: (empty)
 
 ## Stance `stance`
 
-- **Counterstance** `Counterstance` — buff · turns 1
+- **Counterstance** `Counterstance` — positive · turns 1
   - desc: Blade held ready. The first blow each attacker throws is answered.
-- **Guarding_The_Gap** `Guarding_The_Gap` — buff · turns 1
+- **Guarding_The_Gap** `Guarding_The_Gap` — positive · turns 1
   - desc: Standing over someone. Whoever comes for them comes past you first.
-- **Set_For_Charge** `Set_For_Charge` — buff · turns 1
+- **Set_For_Charge** `Set_For_Charge` — positive · turns 1
   - desc: Butt of the spear in the dirt. Whatever runs onto it runs onto it hard.
-- **Kill_Zone** `Kill_Zone` — buff · turns 1
+- **Kill_Zone** `Kill_Zone` — positive · turns 1
   - desc: Ground you have already decided about. Three shots, and then you are reloading.
-- **Heavenly_Counterflow** `Heavenly_Counterflow` — buff · turns 1
+- **Heavenly_Counterflow** `Heavenly_Counterflow` — positive · turns 1
   - desc: The blow arrives and finds nobody there. You are already elsewhere, and already answering.
-- **None_Shall_Pass** `None_Shall_Pass` — buff · turns 1
+- **None_Shall_Pass** `None_Shall_Pass` — positive · turns 1
   - desc: The reach of a spear, declared as a rule rather than a threat.
-- **Guarding** `Guarding` — buff · turns 1
+- **Guarding** `Guarding` — positive · turns 1
   - desc: Standing in front of somebody. Harder to put down for it.
 
 # Traits

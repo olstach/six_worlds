@@ -17,11 +17,12 @@ class_name TooltipText
 # STATUS EFFECTS
 # ============================================
 
-## Readable wording for the effect tokens in statuses.json `effects` lists.
-## The numbers here are the ones CombatUnit._get_status_stat_bonus() really
-## applies (attack_bonus is +10 accuracy there, and so on). Tokens that are
-## not listed fall back to the token itself with underscores turned to spaces,
-## so a new status still says *something* true rather than nothing.
+## Readable wording for the effect tokens still in statuses.json `effects`
+## lists. A status's NUMBERS are not tokens any more: they are `while_active`
+## modifies, worded by _modify_bullet() from the effect itself, so the
+## tooltip can only say what the game does. Tokens that are not listed fall
+## back to the token itself with underscores turned to spaces, so a new status
+## still says *something* true rather than nothing.
 const EFFECT_LABELS: Dictionary = {
 	"fire_damage_per_turn": "fire damage each turn",
 	"poison_damage_per_turn": "poison damage each turn",
@@ -42,17 +43,6 @@ const EFFECT_LABELS: Dictionary = {
 	"random_movement": "Moves randomly",
 	"random_target": "Attacks random targets",
 	"flee_from_source": "Flees from whoever caused it",
-	"attack_bonus": "+10 accuracy",
-	"defense_bonus": "+10 armor",
-	"defense_penalty": "-10 armor",
-	"attack_penalty": "-10 accuracy",
-	"speed_bonus": "+2 movement",
-	"initiative_bonus": "+10 initiative",
-	"movement_reduced_50": "Movement halved",
-	"melee_hit_chance_halved": "Melee accuracy halved",
-	"ranged_hit_chance_halved": "Ranged accuracy halved",
-	"armor_reduced_50": "Armor reduced by 50%",
-	"armor_reduced": "Armor reduced",
 	"attack_breaks_invisibility": "Breaks on attacking",
 	"breaks_on_offensive_action": "Breaks on any offensive action",
 	"treats_caster_as_ally": "Treats the caster as an ally",
@@ -64,6 +54,9 @@ const EFFECT_LABELS: Dictionary = {
 	"focus_save_on_damage": "Focus save on each hit, or lose actions",
 	"immune_to_ground_effects": "Immune to ground effects",
 }
+
+## The word the header shows for each polarity.
+const POLARITY_WORDS: Dictionary = {"positive": "buff", "negative": "debuff"}
 
 ## Tokens that the tooltip states in its own line instead of as a bullet.
 const _EFFECTS_SHOWN_ELSEWHERE: Array[String] = ["save_at_end_of_turn"]
@@ -81,9 +74,10 @@ static func status(status_name: String, entry: Dictionary = {}, def: Dictionary 
 		def = CombatManager.get_status_definition(status_name)
 	var lines: Array[String] = []
 
-	# Header: the name, then whether it helps or hurts ("buff" / "debuff").
+	# Header: the name, then whether it helps or hurts ("buff" / "debuff"),
+	# from the status's polarity.
 	var header: String = status_name.replace("_", " ")
-	var kind: String = str(def.get("type", ""))
+	var kind: String = str(POLARITY_WORDS.get(str(def.get("polarity", "")), ""))
 	if kind != "":
 		header += " (%s)" % kind
 	lines.append(header)
@@ -142,9 +136,9 @@ static func status_list(entries: Array) -> String:
 
 
 ## "3 turns remaining", "Permanent", or "" when nothing useful can be said.
-## duration_type comes from statuses.json; the remaining count from the entry.
+## The kind comes from the status's `duration`; the remaining count from the entry.
 static func _status_duration_line(entry: Dictionary, def: Dictionary) -> String:
-	var duration_type: String = str(def.get("duration_type", "turns"))
+	var duration_type: String = str(def.get("duration", {}).get("kind", "turns"))
 	match duration_type:
 		"permanent":
 			return "Permanent"
@@ -158,7 +152,7 @@ static func _status_duration_line(entry: Dictionary, def: Dictionary) -> String:
 	if remaining > 0:
 		return "%d turn%s remaining" % [remaining, "" if remaining == 1 else "s"]
 	# Describing the status with no live entry: fall back to its default.
-	var default_turns: int = int(def.get("default_duration", 0))
+	var default_turns: int = int(def.get("duration", {}).get("base", 0))
 	if entry.is_empty() and default_turns > 0:
 		return "Usually lasts %d turn%s" % [default_turns, "" if default_turns == 1 else "s"]
 	return ""
@@ -189,14 +183,57 @@ static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[
 				label = "%d %s" % [amount, label]
 		if not label in bullets:
 			bullets.append(label)
-	# Resistances the status grants or takes away. These were effect strings
-	# with a label each ("Immune to physical"); they are structured data on
-	# the status now, so one line per key covers them all.
-	for key in def.get("grants_resistance", {}):
-		bullets.append(_resistance_bullet(str(key), float(def["grants_resistance"][key])))
-	for key in def.get("grants_vulnerability", {}):
-		bullets.append(_resistance_bullet(str(key), -float(def["grants_vulnerability"][key])))
+	# What it holds while it is on: stats, attributes and resistances, one
+	# line per `while_active` modify, worded from the effect itself.
+	for effect in def.get("while_active", []):
+		if typeof(effect) == TYPE_DICTIONARY and str(effect.get("op", "")) == "modify":
+			var text: String = _modify_bullet(effect)
+			if text != "" and not text in bullets:
+				bullets.append(text)
 	return bullets
+
+
+## Readable names for the `stat.` values a status may hold.
+const STAT_WORDS: Dictionary = {
+	"initiative": "initiative", "movement": "movement", "accuracy": "accuracy",
+	"dodge": "dodge", "damage": "damage", "armor": "armor",
+	"crit_chance": "crit chance", "spellpower": "spellpower",
+}
+
+
+## One line for one lasting modify: "+10 accuracy", "-2 Focus",
+## "Movement halved", "+25% fire resistance", "Immune to all damage".
+static func _modify_bullet(effect: Dictionary) -> String:
+	var value: String = str(effect.get("value", ""))
+	var mode: String = str(effect.get("mode", ""))
+	var amount_raw = effect.get("amount", 0)
+	if not (amount_raw is int or amount_raw is float):
+		return ""   # a formula amount: worded in Task 7
+	var amount: float = float(amount_raw)
+	var signed: float = -amount if mode == "drain" else amount
+	var ns: String = value.get_slice(".", 0)
+	var name: String = value.get_slice(".", 1)
+	match ns:
+		"resist":
+			if mode == "fortify" or mode == "drain":
+				return _resistance_bullet(name, signed)
+			if mode == "set":
+				return "%s resistance set to %d%%" % [DamageType.display_name(name), int(amount)]
+		"stat":
+			var word: String = str(STAT_WORDS.get(name, name.replace("_", " ")))
+			match mode:
+				"fortify", "drain":
+					return "%+d %s" % [int(signed), word]
+				"multiply":
+					if is_equal_approx(amount, 0.5):
+						return "%s halved" % word.capitalize()
+					return "%s x%s" % [word.capitalize(), str(amount)]
+				"set":
+					return "%s set to %d" % [word.capitalize(), int(amount)]
+		"attribute", "skill":
+			if mode == "fortify" or mode == "drain":
+				return "%+d %s" % [int(signed), name.replace("_", " ").capitalize()]
+	return ""
 
 
 ## "Hits back at melee attackers: 10 air damage, 30% chance of Stunned (1 turn)".

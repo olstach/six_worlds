@@ -96,8 +96,16 @@ class RulesRoundTrip(unittest.TestCase):
                          "Debuff and damage over time")
         self.assertEqual(statuses.category_title("buff"), "Buff")
         ds = jsonio.DataSet.load(ROOT)
+        self.assertEqual(statuses.category_title("elemental.fire"), "Elemental fire")
         heads = {g.ident: g.title for g in statuses.build(ds).groups}
-        self.assertEqual(heads["cc"], "Crowd control")     # the id stays the ident
+        self.assertEqual(heads["control"], "Control")      # the id stays the ident
+        self.assertEqual(heads["positive"], "Positive")    # no category: polarity
+
+    def test_status_group_skips_magical(self):
+        self.assertEqual(statuses.group_of({"categories": ["magical", "control"]}), "control")
+        self.assertEqual(statuses.group_of({"categories": ["magical"],
+                                            "polarity": "negative"}), "negative")
+        self.assertEqual(statuses.group_of({"polarity": "positive"}), "positive")
 
     def test_statuses_cover_every_status(self):
         ds = jsonio.DataSet.load(ROOT)

@@ -192,8 +192,10 @@ NAMED_ATTRIBUTE_WORDS = {
 CONSTITUTION_DEFAULT_POINTS = 2
 
 # range_bonus / range_penalty were in the table under "range", but no getter
-# ever asked for "range", so they changed nothing. They stay as words; there is
-# no stat.range path for them to become (TODO: Task 5/6 or a ruling).
+# ever asked for "range", so they changed nothing (Precision's range, all of
+# Range_Debuff). There is no stat.range path for them to become, and
+# validate_data reports a word nothing reads, so they are dropped. Their old
+# presence is kept in tools/fixtures/status_words.json.
 UNREAD_STAT_WORDS = {"range_bonus", "range_penalty"}
 
 STAT_ORDER = ["initiative", "movement", "accuracy", "dodge",
@@ -304,6 +306,7 @@ def _numbers(s, effects):
             multiply_mods.append({"op": "modify", "value": "stat." + stat,
                                   "mode": "multiply", "amount": factor})
             used.add(word)
+    used |= words & UNREAD_STAT_WORDS
     return stat_mods + multiply_mods + attr_mods, used
 
 
