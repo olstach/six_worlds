@@ -53,6 +53,12 @@ var save_result: Dictionary = {}
 ## owns would never be released.
 var hold_source: String = ""
 
+## The status entry (in unit.status_effects) whose effects these are, when a
+## status is resolving its `while_active`, `periodic` or `triggers`; empty
+## otherwise. Magnitudes read it: `stacks` multiplies them, and a scale per
+## `turn_active` reads its `turns_active`.
+var status_entry: Dictionary = {}
+
 
 ## The tile a position op acts on: target_pos if set, else the target unit's
 ## tile, else NO_POS (the caller must refuse that loudly).

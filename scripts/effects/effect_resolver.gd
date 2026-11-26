@@ -213,6 +213,10 @@ static func _scaled_magnitude(effect: Dictionary, ctx: EffectContext, unit: Node
 		for tag in effect["bonus_vs"]:
 			if str(tag) in tags:
 				m *= float(effect["bonus_vs"][tag])
+	# A stacking status (stacking.mode "stack") keeps one entry with a
+	# `stacks` count; its magnitudes multiply by that count (spec §4.4).
+	if ctx.status_entry.has("stacks"):
+		m *= float(ctx.status_entry["stacks"])
 	return m
 
 
@@ -491,11 +495,20 @@ static func _scale_count(per: String, ctx: EffectContext, unit: Node) -> float:
 		var stacks: int = 0
 		for entry in unit.status_effects:
 			if str(entry.get("status", "")).to_lower() == wanted:
-				stacks += 1
+				# One entry per stack (the old `stackable`), or one entry
+				# carrying a `stacks` count (stacking.mode "stack").
+				stacks += int(entry.get("stacks", 1))
 		return float(stacks)
 	match per:
 		"spellpower":
 			return float(ctx.power)
+		"turn_active":
+			# Turns the status running this effect has been on: 0 on its
+			# first tick. Only a status's own effects have an entry to read.
+			if ctx.status_entry.is_empty():
+				push_error("EffectResolver: scale per 'turn_active' outside a status")
+				return 0.0
+			return float(ctx.status_entry.get("turns_active", 0))
 		"debuff_on_target", "buff_on_target":
 			var kind: String = "debuff" if per == "debuff_on_target" else "buff"
 			var defs: Dictionary = CombatManager.get_all_status_definitions()

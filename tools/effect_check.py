@@ -104,6 +104,7 @@ LASTING_MODES = _gd_list(_vocab_src, "LASTING_MODES")
 FLAGS = _gd_list(_vocab_src, "FLAGS")
 IMMUNE_FLAG_PREFIX = _gd_string(_vocab_src, "IMMUNE_FLAG_PREFIX")
 STATUS_TRIGGERS = _gd_list(_vocab_src, "STATUS_TRIGGERS")
+PERIODIC_WHEN = _gd_list(_vocab_src, "PERIODIC_WHEN")
 STATUS_FIELDS = _gd_list(_vocab_src, "STATUS_FIELDS")
 LEGACY_STATUS_FIELDS = _gd_list(_vocab_src, "LEGACY_STATUS_FIELDS")
 OP_FIELDS = _gd_dict_of_lists(_vocab_src, "OP_FIELDS")
@@ -284,6 +285,8 @@ def check_status(d, where):
         if not isinstance(per, dict) or not isinstance(per.get("effects"), list):
             errs.append(f"{where}: 'periodic' must be an object with an 'effects' list")
         else:
+            if "when" in per and per["when"] not in PERIODIC_WHEN:
+                errs.append(f"{where}: periodic when '{per['when']}' unknown ({_j(PERIODIC_WHEN)})")
             errs.extend(check_effects(per["effects"], where + ".periodic.effects"))
     if "triggers" in d:
         if not isinstance(d["triggers"], list):

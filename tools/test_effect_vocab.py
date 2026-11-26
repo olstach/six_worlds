@@ -84,6 +84,25 @@ class EffectVocabTests(unittest.TestCase):
         d = dict(STATUS_MINIMAL, categories=["elemental.fire"], flags=["immune:poison"])
         self.assertEqual(check_status(d, "t"), [])
 
+    # ── The status container (Stage 2b, Task 3) ─────────────────────────────
+    def test_status_accepts_task3_triggers(self):
+        for on in ["expire", "turn_start", "turn_end"]:
+            d = dict(STATUS_MINIMAL, triggers=[{"on": on, "effects": [
+                {"op": "damage", "amount": 5, "type": "fire"}]}])
+            self.assertEqual(check_status(d, "t"), [], on)
+
+    def test_status_periodic_when(self):
+        for when in ["turn_start", "turn_end"]:
+            d = dict(STATUS_MINIMAL, periodic={"when": when, "effects": [
+                {"op": "damage", "amount": 5, "type": "fire"}]})
+            self.assertEqual(check_status(d, "t"), [], when)
+        d = dict(STATUS_MINIMAL, periodic={"when": "tuesday", "effects": []})
+        self.assertNotEqual(check_status(d, "t"), [])
+
+    def test_scale_per_turn_active(self):
+        self.assertEqual(check_effect({"op": "damage", "amount": 5, "type": "fire",
+            "scale": {"per": "turn_active", "amount": 2}}, "t"), [])
+
 
 STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",
                   "categories": ["control"], "scope": "combat",

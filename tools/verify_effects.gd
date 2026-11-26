@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 66
+const EXPECTED_CHECKS: int = 75
 
 var grid: CombatGrid
 
@@ -109,6 +109,17 @@ func _ready() -> void:
 	_check_enemy_kit_variants()
 	_check_map_buff_reaches_off_roster_companion()
 
+	# Stage 2b: the status container (holds, single exit, periodic, immunity).
+	_check_status_hold_applies_and_releases()
+	_check_status_attribute_hold_refreshes()
+	_check_every_exit_releases()
+	_check_refresh_does_not_double()
+	_check_stack_scales_holds()
+	_check_periodic_damage_ticks()
+	_check_expire_trigger_fires_on_expiry_only()
+	_check_immune_flag_blocks()
+	_check_old_save_entries_get_ids()
+
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
 			% [checks_run, EXPECTED_CHECKS] + "so its assertions never ran")
@@ -124,6 +135,25 @@ func _ready() -> void:
 
 func _done() -> void:
 	checks_run += 1
+	# Test-only status definitions live for one check.
+	for name in _test_statuses:
+		CombatManager._status_effects.erase(name)
+	_test_statuses.clear()
+
+
+## Names registered by _with_test_status(), erased again by _done().
+var _test_statuses: Array[String] = []
+
+
+## Register `def` as a status definition for the current check only, under a
+## fresh name beginning `__test_`, and return that name. Real statuses.json
+## data gets the new fields in a later task, so the container is tested on
+## definitions made here. _done() removes them after the check.
+func _with_test_status(def: Dictionary) -> String:
+	var name: String = "__test_%d" % (checks_run * 100 + _test_statuses.size())
+	CombatManager._status_effects[name] = def
+	_test_statuses.append(name)
+	return name
 
 
 func _fail(message: String) -> void:
@@ -1750,4 +1780,334 @@ func _check_map_buff_reaches_off_roster_companion() -> void:
 		var got: float = float(who[1].derived.get("accuracy", 0))
 		if got != acc + 9:
 			_fail("a +9 accuracy map buff left the %s at %s, wanted %s" % [who[0], got, acc + 9])
+	_done()
+
+
+# ── Stage 2b: the status container ───────────────────────────────────────────
+
+## The status entry for `status_name` on `unit`, or {} if it has none.
+func _entry_of(unit: CombatUnit, status_name: String) -> Dictionary:
+	for entry in unit.status_effects:
+		if str(entry.get("status", "")) == status_name:
+			return entry
+	return {}
+
+
+## The eight stat getters a `stat.` hold reaches, plus two resistances, so one
+## comparison says "this unit is exactly as it was".
+## get_attack_damage() rolls the weapon's damage range, so the roll is seeded
+## the same each time to make two snapshots comparable.
+func _stat_snapshot(u: CombatUnit) -> Dictionary:
+	seed(4242)
+	var snap := {
+		"initiative": u.get_initiative(), "movement": u.get_movement(),
+		"accuracy": u.get_accuracy(), "dodge": u.get_dodge(),
+		"damage": u.get_attack_damage(), "armor": u.get_armor(),
+		"crit_chance": u.get_crit_chance(), "spellpower": u.get_spellpower(),
+		"resist.fire": Resistance.total(u, "fire"),
+		"resist.slashing": Resistance.total(u, "slashing"),
+		"max_hp": u.max_hp,
+	}
+	randomize()
+	return snap
+
+
+## A status that holds every stat, two resistances and an attribute.
+func _everything_status() -> Dictionary:
+	var held: Array = []
+	for stat in EffectVocab.STATS:
+		held.append({"op": "modify", "value": "stat." + stat, "mode": "fortify", "amount": 3})
+	held.append({"op": "modify", "value": "resist.fire", "mode": "fortify", "amount": 20})
+	held.append({"op": "modify", "value": "resist.slashing", "mode": "drain", "amount": 10})
+	held.append({"op": "modify", "value": "attribute.constitution", "mode": "fortify", "amount": 2})
+	# Legacy fields so the real cleanse / dispel / steal selectors pick it.
+	return {"polarity": "positive", "type": "debuff", "dispellable": true,
+		"while_active": held}
+
+
+func _check_status_hold_applies_and_releases() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var name := _with_test_status({"polarity": "positive", "while_active": [
+		{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 15}]})
+	var base: int = u.get_dodge()
+	CombatManager._apply_status_effect(u, name, 3)
+	var entry := _entry_of(u, name)
+	if not str(entry.get("id", "")).begins_with("status:"):
+		_fail("status entry has no status:<n> id: %s" % [entry])
+	if u.get_dodge() != base + 15:
+		_fail("while_active fortify dodge 15: got %d, wanted %d" % [u.get_dodge(), base + 15])
+	CombatManager._end_status(u, entry, "removed")
+	if u.get_dodge() != base:
+		_fail("dodge after _end_status: got %d, wanted %d" % [u.get_dodge(), base])
+	if u.has_status(name) or not u.effect_holds.is_empty():
+		_fail("_end_status left the entry or holds: %s / %s" % [u.status_effects, u.effect_holds])
+	_cleanup([u])
+	_done()
+
+
+func _check_status_attribute_hold_refreshes() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var name := _with_test_status({"polarity": "positive", "while_active": [
+		{"op": "modify", "value": "attribute.constitution", "mode": "fortify", "amount": 4}]})
+	var base: int = u.max_hp
+	CombatManager._apply_status_effect(u, name, 3)
+	if u.max_hp != base + 40:
+		_fail("constitution +4 status: max_hp %d, wanted %d" % [u.max_hp, base + 40])
+	CombatManager._end_status(u, _entry_of(u, name), "expired")
+	if u.max_hp != base:
+		_fail("max_hp after the status ended: %d, wanted %d" % [u.max_hp, base])
+	_cleanup([u])
+	_done()
+
+
+## Every reason a status can end for puts the unit back exactly as it was. Each
+## reason is ended directly through _end_status; the real paths that use the
+## reasons (expiry at turn start, the duration-only tick, cleanse, removal by
+## name, steal, end of combat) are walked as well.
+func _check_every_exit_releases() -> void:
+	var name := _with_test_status(_everything_status())
+	for reason in ["expired", "dispelled", "cleansed", "removed", "stolen", "consumed",
+			"death", "combat_end", "upkeep"]:
+		var u := _make_unit(Vector2i(5, 5))
+		var before := _stat_snapshot(u)
+		CombatManager._apply_status_effect(u, name, 3)
+		if _stat_snapshot(u) == before:
+			_fail("%s: setup — the status changed nothing" % reason)
+		CombatManager._end_status(u, _entry_of(u, name), reason)
+		var after := _stat_snapshot(u)
+		if after != before:
+			_fail("%s: unit not restored: %s vs %s" % [reason, after, before])
+		if u.has_status(name) or not u.effect_holds.is_empty():
+			_fail("%s: entry or holds left behind" % reason)
+		_cleanup([u])
+
+	var paths: Dictionary = {
+		"turn-start expiry": func(u: CombatUnit) -> void:
+			_entry_of(u, name)["duration"] = 1
+			CombatManager._process_status_effects(u),
+		"duration-only tick": func(u: CombatUnit) -> void:
+			_entry_of(u, name)["duration"] = 1
+			CombatManager._tick_durations_only(u),
+		"cleanse": func(u: CombatUnit) -> void:
+			CombatManager._cleanse_status_effects(u, 1),
+		"remove by name": func(u: CombatUnit) -> void:
+			CombatManager._remove_status_by_name(u, name),
+		"remove op": func(u: CombatUnit) -> void:
+			CombatManager._remove_selected_statuses(u, {"names": [name]}),
+		"end of combat": func(_u: CombatUnit) -> void:
+			_end_fight(),
+	}
+	for label in paths:
+		var u := _make_unit(Vector2i(5, 5))
+		var before := _stat_snapshot(u)
+		CombatManager._apply_status_effect(u, name, 3)
+		paths[label].call(u)
+		if _stat_snapshot(u) != before or u.has_status(name) or not u.effect_holds.is_empty():
+			_fail("%s: unit not restored (%s vs %s, statuses %s)"
+				% [label, _stat_snapshot(u), before, u.status_effects])
+		_cleanup([u])
+
+	# Steal: the victim is restored, the thief gains it under a NEW id.
+	var thief := _make_unit(Vector2i(2, 2))
+	var victim := _make_unit(Vector2i(5, 5))
+	var victim_before := _stat_snapshot(victim)
+	var thief_before := _stat_snapshot(thief)
+	CombatManager._apply_status_effect(victim, name, 3)
+	var old_id: String = str(_entry_of(victim, name).get("id", ""))
+	CombatManager._apply_status_op(thief, victim, {"op": "steal",
+		"select": {"names": [name]}, "from": "target", "to": "caster"}, {"effects_applied": []})
+	if _stat_snapshot(victim) != victim_before or not victim.effect_holds.is_empty():
+		_fail("steal: victim not restored")
+	var stolen := _entry_of(thief, name)
+	if stolen.is_empty() or str(stolen.get("id", "")) == old_id:
+		_fail("steal: the thief's entry should be new, got %s (old id %s)" % [stolen, old_id])
+	if thief.get_dodge() != thief_before.dodge + 3:
+		_fail("steal: the thief does not hold the stolen dodge")
+	CombatManager._end_status(thief, stolen, "removed")
+	if _stat_snapshot(thief) != thief_before:
+		_fail("steal: the thief not restored after its copy ended")
+	_cleanup([thief, victim])
+	_done()
+
+
+func _check_refresh_does_not_double() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var name := _with_test_status({"polarity": "positive", "stacking": {"mode": "refresh"},
+		"while_active": [{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 15}]})
+	var base: int = u.get_dodge()
+	CombatManager._apply_status_effect(u, name, 2)
+	CombatManager._apply_status_effect(u, name, 4)
+	if u.get_dodge() != base + 15:
+		_fail("refresh twice: dodge %d, wanted %d" % [u.get_dodge(), base + 15])
+	if u.status_effects.size() != 1 or int(_entry_of(u, name).get("duration", 0)) != 4:
+		_fail("refresh should keep one entry with the longer duration: %s" % [u.status_effects])
+	_cleanup([u])
+	_done()
+
+
+func _check_stack_scales_holds() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var name := _with_test_status({"polarity": "positive", "stacking": {"mode": "stack", "max": 5},
+		"while_active": [{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 15}]})
+	var base: int = u.get_dodge()
+	for _i in 3:
+		CombatManager._apply_status_effect(u, name, 3)
+	var entry := _entry_of(u, name)
+	if u.status_effects.size() != 1 or int(entry.get("stacks", 0)) != 3:
+		_fail("three stacking applications: %s" % [u.status_effects])
+	if u.get_dodge() != base + 45:
+		_fail("3 stacks: dodge %d, wanted %d" % [u.get_dodge(), base + 45])
+	CombatManager._remove_stacks(u, entry, 1, "consumed")
+	if u.get_dodge() != base + 30:
+		_fail("2 stacks after consuming one: dodge %d, wanted %d" % [u.get_dodge(), base + 30])
+	# The cap holds.
+	for _i in 6:
+		CombatManager._apply_status_effect(u, name, 3)
+	if int(entry.get("stacks", 0)) != 5 or u.get_dodge() != base + 75:
+		_fail("max 5 stacks: %s stacks, dodge %d" % [entry.get("stacks"), u.get_dodge()])
+	CombatManager._remove_stacks(u, entry, 5, "consumed")
+	if u.has_status(name) or u.get_dodge() != base:
+		_fail("consuming every stack should end the status")
+	_cleanup([u])
+	_done()
+
+
+func _check_periodic_damage_ticks() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var name := _with_test_status({"polarity": "negative",
+		"periodic": {"when": "turn_start", "effects": [{"op": "damage", "amount": 5, "type": "fire"}]}})
+	var later := _with_test_status({"polarity": "negative",
+		"periodic": {"when": "turn_end", "effects": [{"op": "damage", "amount": 4, "type": "fire"}]}})
+	var resist: float = Resistance.total(u, "fire")
+	CombatManager._apply_status_effect(u, name, 3)
+	for tick in 2:
+		var hp: int = u.current_hp
+		CombatManager._process_status_effects(u)
+		if hp - u.current_hp != 5:
+			_fail("periodic turn_start tick %d: lost %d HP, wanted 5 (fire resist %s)"
+				% [tick, hp - u.current_hp, resist])
+	if int(_entry_of(u, name).get("turns_active", -1)) != 2:
+		_fail("turns_active after two turn starts: %s" % [_entry_of(u, name)])
+	CombatManager._end_status(u, _entry_of(u, name), "removed")
+	CombatManager._apply_status_effect(u, later, 3)
+	var hp2: int = u.current_hp
+	CombatManager._process_status_effects(u)
+	if u.current_hp != hp2:
+		_fail("a turn_end periodic ticked at turn start")
+	CombatManager._process_status_turn_end(u)
+	if hp2 - u.current_hp != 4:
+		_fail("periodic turn_end: lost %d HP, wanted 4" % (hp2 - u.current_hp))
+	_cleanup([u])
+	_done()
+
+
+## An `expire` trigger runs when the status runs out, not when it is removed.
+func _check_expire_trigger_fires_on_expiry_only() -> void:
+	var name := _with_test_status({"polarity": "negative", "triggers": [
+		{"on": "expire", "effects": [{"op": "damage", "amount": 7, "type": "fire"}]}]})
+	var u := _make_unit(Vector2i(5, 5))
+	CombatManager._apply_status_effect(u, name, 1)
+	var hp: int = u.current_hp
+	CombatManager._process_status_effects(u)
+	if hp - u.current_hp != 7 or u.has_status(name):
+		_fail("expire trigger on expiry: lost %d HP, wanted 7" % (hp - u.current_hp))
+	CombatManager._apply_status_effect(u, name, 3)
+	hp = u.current_hp
+	CombatManager._remove_status_by_name(u, name)
+	if u.current_hp != hp:
+		_fail("expire trigger fired on removal")
+	_cleanup([u])
+	_done()
+
+
+func _check_immune_flag_blocks() -> void:
+	var ward := _with_test_status({"polarity": "positive", "flags": ["immune:control"]})
+	var shield := _with_test_status({"polarity": "positive", "flags": ["immune:negative"]})
+	var hold := _with_test_status({"polarity": "negative", "categories": ["control"]})
+	var hex := _with_test_status({"polarity": "negative", "categories": ["curse"]})
+	var boon := _with_test_status({"polarity": "positive", "categories": ["blessing"]})
+	var u := _make_unit(Vector2i(5, 5))
+	CombatManager._apply_status_effect(u, ward, 3)
+	if not StatusRules.has_flag(u, "immune:control"):
+		_fail("has_flag does not see immune:control")
+	CombatManager._apply_status_effect(u, hold, 3)
+	if u.has_status(hold):
+		_fail("immune:control let a control status on")
+	CombatManager._apply_status_effect(u, hex, 3)
+	if not u.has_status(hex):
+		_fail("immune:control blocked a curse")
+	var v := _make_unit(Vector2i(6, 6))
+	CombatManager._apply_status_effect(v, shield, 3)
+	CombatManager._apply_status_effect(v, hex, 3)
+	CombatManager._apply_status_effect(v, boon, 3)
+	if v.has_status(hex):
+		_fail("immune:negative let a negative status on")
+	if not v.has_status(boon):
+		_fail("immune:negative blocked a positive status")
+	_cleanup([u, v])
+	_done()
+
+
+## A save written before status entries had ids still loads, gets ids, and its
+## statuses end cleanly. Uses the scratch save folder only.
+func _check_old_save_entries_get_ids() -> void:
+	var real_dir: String = SaveManager.SAVE_DIR
+	var scratch: String = "user://verify_scratch_saves/"
+	DirAccess.make_dir_recursive_absolute(scratch)
+	SaveManager.SAVE_DIR = scratch
+	var old_slot: int = SaveManager.current_slot
+	var snap_game: Dictionary = GameState.get_save_data().duplicate(true)
+	var snap_chars: Dictionary = CharacterSystem.get_save_data().duplicate(true)
+	var snap_items: Dictionary = ItemSystem.get_save_data().duplicate(true)
+	var snap_karma: Dictionary = KarmaSystem.get_save_data().duplicate(true)
+	var snap_map: Dictionary = MapManager.get_save_data().duplicate(true)
+
+	var ch: Dictionary = CharacterSystem.create_blank_character()
+	ch["name"] = "Old Save Probe"
+	ch["overworld_statuses"] = [
+		{"status": "Poisoned", "duration": 3, "damage_per_step": 3},
+		{"status": "Bleeding", "duration": 2, "damage_per_step": 2}]
+	CharacterSystem.get_party().append(ch)
+	var saved: bool = SaveManager.save_game(3)
+	CharacterSystem.get_party().erase(ch)
+	var loaded: bool = SaveManager.load_game(3)
+	if not saved or not loaded:
+		_fail("save/load of slot 3 failed (saved %s, loaded %s)" % [saved, loaded])
+	else:
+		var back: Dictionary = {}
+		for member in CharacterSystem.get_party():
+			if str(member.get("name", "")) == "Old Save Probe":
+				back = member
+		var entries: Array = back.get("overworld_statuses", [])
+		var ids: Array[String] = []
+		for entry in entries:
+			var id: String = str(entry.get("id", ""))
+			if not id.begins_with("status:") or id in ids:
+				_fail("loaded legacy entry without a unique id: %s" % [entry])
+			ids.append(id)
+		if entries.size() != 2:
+			_fail("legacy entries came back as %s" % [entries])
+		# End them cleanly on a unit, the single exit, as a fight would.
+		var u := _make_unit(Vector2i(5, 5))
+		var before := _stat_snapshot(u)
+		for entry in entries:
+			u.status_effects.append(entry.duplicate())
+		u.status_effects.append({"status": "Bleeding", "duration": 2})   # no id at all
+		for entry in u.status_effects.duplicate():
+			CombatManager._end_status(u, entry, "removed")
+		if not u.status_effects.is_empty() or _stat_snapshot(u) != before:
+			_fail("legacy entries did not end cleanly: %s" % [u.status_effects])
+		_cleanup([u])
+
+	SaveManager.SAVE_DIR = real_dir
+	for fname in ["slot_3.json", "meta.json"]:
+		if FileAccess.file_exists(scratch + fname):
+			DirAccess.remove_absolute(scratch + fname)
+	DirAccess.remove_absolute(scratch)
+	GameState.load_save_data(snap_game)
+	CharacterSystem.load_save_data(snap_chars)
+	ItemSystem.load_save_data(snap_items)
+	KarmaSystem.load_save_data(snap_karma)
+	MapManager.load_save_data(snap_map)
+	SaveManager.current_slot = old_slot
 	_done()

@@ -468,6 +468,14 @@ func end_combat(victory: bool) -> void:
 	# Sync player unit state back to character_data before clearing units
 	_sync_combat_state_to_characters()
 
+	# Every combat status ends with the fight, through the one exit. Done after
+	# the sync, which reads the damage-over-time statuses that carry on to the
+	# map; their holds went with release_all_combat above.
+	for unit in all_units:
+		if "status_effects" in unit:
+			for entry in unit.status_effects.duplicate():
+				_end_status(unit, entry, "combat_end")
+
 	# Persistent `damage` entries now count through update_derived_stats (the
 	# fight's own holds are gone), so recompute those characters once.
 	for unit in all_units:
@@ -1310,14 +1318,13 @@ func _tick_durations_only(unit: Node) -> void:
 			if effect_def.get("duration_type", "") == "until_save":
 				continue   # only a save removes these, and the downed make none
 			effect["duration"] = int(effect.get("duration", 1)) - 1
+			effect["turns_active"] = int(effect.get("turns_active", 0)) + 1
 			if effect["duration"] > 0:
 				continue
 			_on_status_expired(unit, status_name, effect_def, effect)
-			# The expiry callback can change the list (Doomed kills); find the
-			# entry again rather than trusting the index.
-			var idx: int = unit.status_effects.find(effect)
-			if idx != -1:
-				unit.status_effects.remove_at(idx)
+			# The expiry callback can change the list (Doomed kills);
+			# _end_status finds the entry again rather than trusting the index.
+			_end_status(unit, effect, "expired")
 			if unit.has_method("show_status_expired"):
 				unit.show_status_expired(status_name)
 			status_effect_expired.emit(unit, status_name)
@@ -1397,8 +1404,10 @@ func _start_current_turn() -> void:
 		_advance_turn()
 		return
 
-	# Skip turn if incapacitated (frozen, stunned, knocked down)
+	# Skip turn if incapacitated (frozen, stunned, knocked down). The turn
+	# still ends, so turn_end statuses tick.
 	if skip_turn:
+		_process_status_turn_end(unit)
 		_advance_turn()
 		return
 
@@ -1486,6 +1495,7 @@ func _start_current_turn() -> void:
 func end_turn() -> void:
 	var unit = get_current_unit()
 	if unit:
+		_process_status_turn_end(unit)
 		turn_ended.emit(unit)
 
 	_advance_turn()
@@ -2174,8 +2184,11 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 					if src == attacker:
 						charm_to_remove.append(ci)
 			charm_to_remove.reverse()
+			var charms: Array = []
 			for cidx in charm_to_remove:
-				defender.status_effects.remove_at(cidx)
+				charms.append(defender.status_effects[cidx])
+			for charm in charms:
+				_end_status(defender, charm, "removed")
 				if defender.has_method("show_status_expired"):
 					defender.show_status_expired("Charmed")
 				status_effect_expired.emit(defender, "Charmed")
@@ -2982,9 +2995,12 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 			if "taking_damage" in sdef.get("dispel_methods", []):
 				to_remove.append(i)
 		to_remove.reverse()
+		var broken: Array = []
 		for idx in to_remove:
-			var sname = unit.status_effects[idx].get("status", "")
-			unit.status_effects.remove_at(idx)
+			broken.append(unit.status_effects[idx])
+		for entry in broken:
+			var sname = entry.get("status", "")
+			_end_status(unit, entry, "removed")
 			if unit.has_method("show_status_expired"):
 				unit.show_status_expired(sname)
 			status_effect_expired.emit(unit, sname)
@@ -2999,7 +3015,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 		# Remove the status first so the shatter itself can't re-trigger
 		for i in range(unit.status_effects.size() - 1, -1, -1):
 			if unit.status_effects[i].get("status", "") == "Glass_Globe":
-				unit.status_effects.remove_at(i)
+				_end_status(unit, unit.status_effects[i], "consumed")
 				if unit.has_method("show_status_expired"):
 					unit.show_status_expired("Glass_Globe")
 				status_effect_expired.emit(unit, "Glass_Globe")
@@ -3016,7 +3032,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 		if randi() % 100 < lose_chance:
 			for i in range(unit.status_effects.size() - 1, -1, -1):
 				if unit.status_effects[i].get("status", "") == "Crystal_Diadem":
-					unit.status_effects.remove_at(i)
+					_end_status(unit, unit.status_effects[i], "consumed")
 					if unit.has_method("show_status_expired"):
 						unit.show_status_expired("Crystal_Diadem")
 					status_effect_expired.emit(unit, "Crystal_Diadem")
@@ -3598,7 +3614,8 @@ func _apply_resurrection(caster: Node, target: Node, spec: Dictionary,
 		unit.bleed_out_turns = 0
 		unit.current_hp = hp
 		if spec.get("cleanse", false):
-			unit.status_effects.clear()
+			for entry in unit.status_effects.duplicate():
+				_end_status(unit, entry, "cleansed")
 		if unit.has_method("_update_visuals"):
 			unit._update_visuals()
 		unit_healed.emit(unit, hp)
@@ -4902,8 +4919,12 @@ func _spawn_summoned_unit(caster: Node, summon_id: String, target_pos: Vector2i,
 
 	# Apply flying status if template specifies it
 	if template.get("movement_mode", "") == "flying":
+		# Written directly rather than through _apply_status_effect: the summon
+		# is not in the scene yet (no floating text) and is born flying, so no
+		# immunity check applies. It still gets an id like every entry.
 		summon_unit.status_effects.append({
-			"status": "Flying", "duration": 999, "value": 0,
+			"id": StatusRules.new_instance_id(),
+			"status": "Flying", "duration": 999, "value": 0, "turns_active": 0,
 			"source": caster.unit_name
 		})
 
@@ -5402,6 +5423,12 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			unit.show_resisted_text()
 		return
 
+	# --- An `immune:<name | category | polarity>` flag on something it carries ---
+	if StatusRules.immune_to(unit, status, def):
+		if unit.has_method("show_resisted_text"):
+			unit.show_resisted_text()
+		return
+
 	# Kindled (Fire 1): Burning effects applied by the caster last 1 extra turn
 	if status == "Burning" and source != null and "character_data" in source:
 		if PerkSystem.has_perk(source.character_data, "kindled"):
@@ -5414,9 +5441,31 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			var enc_lv: int = CharacterSystem.get_effective_skill_level(source.character_data, "enchantment")
 			duration += maxi(1, int(enc_lv / 3))
 
-	# Check if already present and handle stacking
+	# Check if already present and handle stacking.
+	#
+	# A definition in the new shape says how with `stacking.mode`:
+	#   refresh  one entry; keep the longer duration; its holds are untouched
+	#   stack    one entry with a `stacks` count (up to `max`); its holds are
+	#            re-resolved at the new count, so +15 dodge at 3 stacks is +45
+	# One in the old shape says it with `stackable`: true adds another
+	# independent entry, false refreshes.
+	var stacking_mode: String = str(def.get("stacking", {}).get("mode", ""))
+	if unit.has_status(status) and stacking_mode == "stack":
+		var stacked: Dictionary = _status_entry_named(unit, status)
+		stacked["duration"] = maxi(int(stacked.get("duration", 0)), duration)
+		if source != null:
+			stacked["source"] = source
+		var cap: int = int(def.get("stacking", {}).get("max", 0))
+		var was: int = int(stacked.get("stacks", 1))
+		var now: int = was + 1 if cap <= 0 else mini(was + 1, cap)
+		if now != was:
+			stacked["stacks"] = now
+			_refresh_status_holds(unit, stacked)
+		if unit.has_method("_update_visuals"):
+			unit._update_visuals()
+		return
 	if unit.has_status(status):
-		if not def.get("stackable", false):
+		if stacking_mode == "refresh" or not def.get("stackable", false):
 			# Non-stackable: refresh to the longer duration
 			for existing in unit.status_effects:
 				if existing.get("status", "").to_lower() == status.to_lower():
@@ -5431,14 +5480,24 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 						_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 					return
 
+	# The new entry. `id` names it wherever it leaves a mark (the holds its
+	# while_active places), `turns_active` counts the turns it has been on.
 	var effect_entry = {
+		"id": StatusRules.new_instance_id(),
 		"status": status,
 		"duration": duration,
-		"value": value
+		"value": value,
+		"turns_active": 0,
 	}
+	if stacking_mode == "stack":
+		effect_entry["stacks"] = 1
 	if source != null:
 		effect_entry["source"] = source
 	unit.get("status_effects").append(effect_entry)
+
+	# What the status holds while it is on (stat, resistance, attribute and
+	# skill holds, under the entry's id). _end_status releases them.
+	_resolve_status_effects(unit, effect_entry, def.get("while_active", []), true)
 
 	# Constitution buffs/penalties change max HP immediately
 	_reconcile_constitution_hp(unit)
@@ -5468,6 +5527,190 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		unit._update_visuals()
 
 
+# ── The status container: one way in, one way out ───────────────────────────
+#
+# _apply_status_effect() above is the ONE way a status goes onto a unit and
+# _end_status() below the ONE way it comes off. Between them a status may:
+#   hold values    `while_active` effects, resolved once on entry with the
+#                  entry's id as the hold source, so ending it releases them
+#   tick           `periodic` effects at the start or end of the carrier's turn
+#   react          `triggers` on expire, turn_start and turn_end (Task 6 adds
+#                  the rest)
+# Every one of these goes through EffectResolver with an EffectContext whose
+# status_entry is the entry, so a magnitude can read its stacks and turns.
+
+## Why a status ended, as _end_status() is told it:
+##   expired     its duration ran out            (fires `expire` triggers)
+##   upkeep      its upkeep could not be paid    (fires `expire` triggers)
+##   dispelled   a dispel took it                (clears damage it caused)
+##   cleansed    a cleanse took it               (clears damage it caused)
+##   removed     something else took it off (a rule, a broken condition)
+##   stolen      it moved to another unit, which gets a new entry
+##   consumed    it was used up (a shield emptied, a charge spent)
+##   death       its carrier died
+##   combat_end  the fight is over
+const STATUS_END_REASONS: Array[String] = [
+	"expired", "dispelled", "cleansed", "removed", "stolen", "consumed",
+	"death", "combat_end", "upkeep",
+]
+
+
+## The first status entry on `unit` named `status_name` (any letter case,
+## as CombatUnit.has_status reads it), or {} if there is none.
+func _status_entry_named(unit: Node, status_name: String) -> Dictionary:
+	for entry in unit.status_effects:
+		if str(entry.get("status", "")).to_lower() == status_name.to_lower():
+			return entry
+	return {}
+
+
+## The index of `entry` in unit.status_effects, by identity rather than by
+## content, so two look-alike entries are never confused. -1 if it is gone.
+func _status_entry_index(unit: Node, entry: Dictionary) -> int:
+	for i in unit.status_effects.size():
+		if is_same(unit.status_effects[i], entry):
+			return i
+	return -1
+
+
+## The EffectContext a status's own effects resolve in: whoever applied it is
+## the caster, the carrier is the target, and the entry rides along.
+func _status_context(unit: Node, entry: Dictionary) -> EffectContext:
+	var status_name: String = str(entry.get("status", ""))
+	var ctx := EffectContext.new()
+	var source = entry.get("source", null)
+	# The source is normally the unit that applied it; an old entry may hold a
+	# name instead, and a source may have left the fight since.
+	if typeof(source) == TYPE_OBJECT and is_instance_valid(source):
+		ctx.caster = source
+	ctx.target = unit
+	ctx.container_kind = "status"
+	ctx.container_id = status_name
+	ctx.status_entry = entry
+	ctx.source_categories = Array(StatusRules.categories_of(_status_effects.get(status_name, {})))
+	return ctx
+
+
+## Resolve `effects` belonging to the status `entry` on `unit`. With `holds`,
+## lasting modifies register under the entry's id (that is `while_active`);
+## without, a lasting modify is refused, as it would never be released.
+func _resolve_status_effects(unit: Node, entry: Dictionary, effects: Array, holds: bool) -> void:
+	if effects.is_empty():
+		return
+	var ctx := _status_context(unit, entry)
+	if holds:
+		ctx.hold_source = str(entry.get("id", ""))
+	EffectResolver.resolve(effects, ctx)
+
+
+## The stack count of `entry` changed: put its holds back at the new count.
+## Only the HOLDS are redone. Anything else in `while_active` (a persistent
+## `damage` modify, an instant op) happened once when the status arrived and
+## is not repeated for every stack.
+func _refresh_status_holds(unit: Node, entry: Dictionary) -> void:
+	var id: String = str(entry.get("id", ""))
+	if id == "":
+		return
+	ValuePaths.release(unit, id)
+	var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
+	var held: Array = []
+	for effect in def.get("while_active", []):
+		if typeof(effect) == TYPE_DICTIONARY and effect.get("op", "") == "modify" \
+				and effect.get("mode", "") in ["fortify", "drain", "set", "multiply"]:
+			held.append(effect)
+	_resolve_status_effects(unit, entry, held, true)
+
+
+## Fire every trigger of the status `entry` whose `on` is `event`. A trigger
+## may carry `chance` (percent) and `if` (conditions, as on an effect).
+func _fire_status_triggers(unit: Node, entry: Dictionary, event: String) -> void:
+	var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
+	for trigger in def.get("triggers", []):
+		if typeof(trigger) != TYPE_DICTIONARY or str(trigger.get("on", "")) != event:
+			continue
+		var ctx := _status_context(unit, entry)
+		var met: bool = true
+		for cond in trigger.get("if", []):
+			if not EffectResolver._condition_met(cond, ctx, unit):
+				met = false
+				break
+		if not met:
+			continue
+		if trigger.has("chance") and not randf() * 100.0 < float(trigger["chance"]):
+			continue
+		EffectResolver.resolve(trigger.get("effects", []), ctx)
+
+
+## Run the `periodic` effects (and `when`-matching triggers) of every status on
+## `unit` that ticks at `when` ("turn_start" or "turn_end"). A list copy is
+## walked, so an effect that removes a status cannot upset the loop; an entry
+## that has gone by the time its turn comes is skipped.
+func _tick_status_effects_at(unit: Node, when: String) -> void:
+	for entry in unit.status_effects.duplicate():
+		if _status_entry_index(unit, entry) == -1:
+			continue
+		var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
+		var periodic: Dictionary = def.get("periodic", {})
+		if not periodic.is_empty() and str(periodic.get("when", "turn_start")) == when:
+			_resolve_status_effects(unit, entry, periodic.get("effects", []), false)
+		_fire_status_triggers(unit, entry, when)
+
+
+## The end of `unit`'s turn: the turn_end half of _process_status_effects.
+## Called from end_turn() and when a turn is skipped by a status.
+func _process_status_turn_end(unit: Node) -> void:
+	if unit == null or not "status_effects" in unit or unit.status_effects.is_empty():
+		return
+	_tick_status_effects_at(unit, "turn_end")
+
+
+## THE way a status comes off a unit. `reason` is one of STATUS_END_REASONS.
+##   1. the entry leaves unit.status_effects (found by identity)
+##   2. every hold it placed is released (ValuePaths, by the entry's id)
+##   3. if it ran out (expired / upkeep), its `expire` triggers fire
+##   4. if it was cleansed or dispelled, and no other entry of the same
+##      status is left, persistent damage it caused is cleared
+## The entry is taken off FIRST, so an expire trigger that applies the same
+## status again starts a fresh one instead of refreshing the dying one.
+##
+## Floating text and the status_effect_expired signal stay with the callers,
+## which have always decided those for themselves. So do the old-shape expiry
+## words (_on_status_expired: Doomed, bleed_on_expire ...), which Task 6 moves
+## into `expire` triggers.
+func _end_status(unit: Node, entry: Dictionary, reason: String) -> void:
+	if not reason in STATUS_END_REASONS:
+		push_error("CombatManager._end_status: unknown reason '%s' (%s)"
+			% [reason, ", ".join(STATUS_END_REASONS)])
+	if unit == null or not "status_effects" in unit:
+		return
+	var status_name: String = str(entry.get("status", ""))
+	var id: String = str(entry.get("id", ""))
+	var idx: int = _status_entry_index(unit, entry)
+	if idx != -1:
+		unit.status_effects.remove_at(idx)
+	# An entry from before ids existed placed no holds.
+	if id != "":
+		ValuePaths.release(unit, id)
+	if idx == -1:
+		return   # already ended: nothing more to fire or clear
+	if reason in ["expired", "upkeep"]:
+		_fire_status_triggers(unit, entry, "expire")
+	if reason in ["cleansed", "dispelled"] and not unit.has_status(status_name):
+		_clear_damage_for_removed(unit, status_name)
+
+
+## Take `count` stacks off a stacking status. Its holds drop to the new count;
+## at zero the status ends, for `reason`. An entry without a `stacks` count is
+## one stack.
+func _remove_stacks(unit: Node, entry: Dictionary, count: int, reason: String) -> void:
+	var left: int = int(entry.get("stacks", 1)) - count
+	if left <= 0:
+		_end_status(unit, entry, reason)
+		return
+	entry["stacks"] = left
+	_refresh_status_holds(unit, entry)
+
+
 ## A cleanse or dispel just took `status_name` off `unit`: undo any persistent
 ## `damage` the unit carries whose entry is {"cleanse": {"category": c}} for a
 ## category of that status. A status with no `categories` (all of today's data
@@ -5482,14 +5725,16 @@ func _clear_damage_for_removed(unit: Node, status_name: String) -> void:
 
 
 ## Remove a specific status effect by name from a unit. Returns true if found and removed.
-func _remove_status_by_name(unit: Node, status_name: String) -> bool:
+## The newest entry of that name goes. `reason` is passed to _end_status.
+func _remove_status_by_name(unit: Node, status_name: String, reason: String = "removed") -> bool:
 	if not "status_effects" in unit:
 		return false
 	for i in range(unit.status_effects.size() - 1, -1, -1):
 		if unit.status_effects[i].get("status", "") == status_name:
 			var def = _status_effects.get(status_name, {})
-			_on_status_expired(unit, status_name, def, unit.status_effects[i])
-			unit.status_effects.remove_at(i)
+			var entry: Dictionary = unit.status_effects[i]
+			_on_status_expired(unit, status_name, def, entry)
+			_end_status(unit, entry, reason)
 			status_effect_expired.emit(unit, status_name)
 			if unit.has_method("show_status_expired"):
 				unit.show_status_expired(status_name)
@@ -5500,12 +5745,14 @@ func _remove_status_by_name(unit: Node, status_name: String) -> bool:
 ## Remove negative status effects using the dispellable flag from status definitions.
 ## Only removes debuffs that are marked dispellable. Returns the count removed.
 ## Remove every status on `unit` that `selector` picks. Returns how many went.
-func _remove_selected_statuses(unit: Node, selector: Dictionary) -> int:
+## `reason` is passed to _end_status: a remove op is a cleanse (which clears
+## the damage a cleansed status caused); convert spends them ("consumed").
+func _remove_selected_statuses(unit: Node, selector: Dictionary,
+		reason: String = "cleansed") -> int:
 	var picked: Array = StatusOps.select(unit, selector, _status_effects)
 	var removed := 0
 	for entry in picked:
-		if _remove_status_by_name(unit, entry.get("status", "")):
-			_clear_damage_for_removed(unit, entry.get("status", ""))
+		if _remove_status_by_name(unit, entry.get("status", ""), reason):
 			removed += 1
 	return removed
 
@@ -5573,7 +5820,7 @@ func _apply_status_op(caster: Node, target: Node, op_spec: Dictionary,
 					var name: String = entry.get("status", "")
 					var left: int = int(entry.get("duration", 1))
 					var value: int = int(entry.get("value", 0))
-					if _remove_status_by_name(victim, name):
+					if _remove_status_by_name(victim, name, "stolen"):
 						_apply_status_effect(thief, name, left, value, caster)
 						taken += 1
 			if taken > 0:
@@ -5596,7 +5843,7 @@ func _apply_status_op(caster: Node, target: Node, op_spec: Dictionary,
 				for entry in StatusOps.select(source, selector, _status_effects):
 					var name: String = entry.get("status", "")
 					var left: int = int(entry.get("duration", 1))
-					if _remove_status_by_name(source, name):
+					if _remove_status_by_name(source, name, "stolen"):
 						carried.append({"status": name, "duration": left})
 			# Even distribution, front to back, so a remainder does not vanish.
 			for i in range(carried.size()):
@@ -5611,7 +5858,7 @@ func _apply_status_op(caster: Node, target: Node, op_spec: Dictionary,
 			# Spend the statuses for something else. Each one removed becomes a
 			# bolt, so a heavily-debuffed caster detonates harder.
 			var on_unit: Node = _units_for_role(op_spec.get("on", "caster"), caster, target)[0]
-			var spent: int = _remove_selected_statuses(on_unit, selector)
+			var spent: int = _remove_selected_statuses(on_unit, selector, "consumed")
 			if spent <= 0:
 				result.effects_applied.append({"type": "convert", "count": 0})
 				return
@@ -5652,11 +5899,12 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 
 	# Remove in reverse order to maintain indices
 	to_remove.reverse()
+	var entries: Array = []
 	for idx in to_remove:
-		var expired = unit.status_effects[idx]
+		entries.append(unit.status_effects[idx])
+	for expired in entries:
 		var sname = expired.get("status", "")
-		unit.status_effects.remove_at(idx)
-		_clear_damage_for_removed(unit, sname)
+		_end_status(unit, expired, "cleansed")
 		# Show expired visual
 		if unit.has_method("show_status_expired"):
 			unit.show_status_expired(sname)
@@ -5692,10 +5940,19 @@ func _process_status_effects(unit: Node) -> bool:
 		return false
 
 	var skip_turn = false
-	var effects_to_remove: Array[int] = []
+	var effects_to_remove: Array = []
 
-	for i in range(unit.status_effects.size()):
-		var effect = unit.status_effects[i]
+	# New-shape statuses first: `periodic` effects with when turn_start, and
+	# turn_start triggers. A periodic reads `turns_active` before this turn
+	# counts, so its first tick sees 0.
+	_tick_status_effects_at(unit, "turn_start")
+
+	# A copy of the list is walked: a tick above or below (a DoT that kills,
+	# a trigger that removes) may change the real one. An entry that has gone
+	# meanwhile is skipped.
+	for effect in unit.status_effects.duplicate():
+		if _status_entry_index(unit, effect) == -1:
+			continue
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
 
@@ -5785,19 +6042,21 @@ func _process_status_effects(unit: Node) -> bool:
 			# Normal duration decrement
 			effect.duration -= 1
 
+		# One more turn on.
+		effect["turns_active"] = int(effect.get("turns_active", 0)) + 1
+
 		# Mark for removal if expired
 		if effect.duration <= 0:
-			effects_to_remove.append(i)
+			effects_to_remove.append(effect)
 
-	# Remove expired effects (in reverse order to maintain indices)
+	# Remove expired effects, newest first as before.
 	effects_to_remove.reverse()
-	for idx in effects_to_remove:
-		var expired_effect = unit.status_effects[idx]
+	for expired_effect in effects_to_remove:
 		var status_name = expired_effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
 		# Process expiry callbacks before removing
 		_on_status_expired(unit, status_name, effect_def, expired_effect)
-		unit.status_effects.remove_at(idx)
+		_end_status(unit, expired_effect, "expired")
 		# Show expired visual (grey strikethrough)
 		if unit.has_method("show_status_expired"):
 			unit.show_status_expired(status_name)
@@ -7527,7 +7786,7 @@ func _apply_potion_effect(user: Node, item: Dictionary, recipient: Node = null) 
 				var se = user.status_effects[i]
 				if se.get("status", "") in statuses_to_remove:
 					var removed_name = se.get("status", "")
-					user.status_effects.remove_at(i)
+					_end_status(user, se, "cleansed")
 					status_effect_expired.emit(user, removed_name)
 					removed_count += 1
 			result.effects_applied.append({"type": "cleanse", "removed": removed_count})
@@ -8329,7 +8588,7 @@ func _enter_stealth(unit: Node) -> void:
 			var sdef = get_status_definition(se.get("status", ""))
 			if sdef.get("type", "") == "debuff" and se.get("duration", 0) <= 1:
 				var sname = se.get("status", "")
-				unit.status_effects.remove_at(i)
+				_end_status(unit, se, "removed")
 				status_effect_expired.emit(unit, sname)
 		# Break enemy targeting: clear marks and taunt locks aimed at this unit
 		if "is_marked" in unit:
@@ -9059,7 +9318,8 @@ func _resolve_revive_ally(user: Node, combat_data: Dictionary, target_pos: Vecto
 	target.current_hp = mini(heal_amount, target.max_hp)
 
 	if combat_data.get("cleanse_all_debuffs", false):
-		target.status_effects.clear()
+		for entry in target.status_effects.duplicate():
+			_end_status(target, entry, "cleansed")
 
 	unit_healed.emit(target, heal_amount)
 	if target.has_method("_update_visuals"):
@@ -9235,9 +9495,12 @@ func _resolve_cleanse_and_buff(user: Node, combat_data: Dictionary) -> Dictionar
 				if def.get("category", "") == "mental":
 					to_remove.append(i)
 		to_remove.reverse()
+		var cleansed: Array = []
 		for idx in to_remove:
-			var removed = ally.status_effects[idx].get("status", "")
-			ally.status_effects.remove_at(idx)
+			cleansed.append(ally.status_effects[idx])
+		for entry in cleansed:
+			var removed = entry.get("status", "")
+			_end_status(ally, entry, "cleansed")
 			effects.append({"type": "cleanse", "target": ally, "status": removed})
 
 		# Apply buffs
@@ -9477,9 +9740,12 @@ func _resolve_dispel_and_invert(user: Node, combat_data: Dictionary, target_pos:
 		if def.get("type", "") == "buff":
 			to_remove.append(i)
 	to_remove.reverse()
+	var dispelled: Array = []
 	for idx in to_remove:
-		var removed = target.status_effects[idx].get("status", "")
-		target.status_effects.remove_at(idx)
+		dispelled.append(target.status_effects[idx])
+	for entry in dispelled:
+		var removed = entry.get("status", "")
+		_end_status(target, entry, "dispelled")
 		effects.append({"type": "dispelled", "status": removed})
 
 	# Invert positive stat_modifiers into negatives
@@ -10461,7 +10727,8 @@ func _process_weapon_on_hit_procs(attacker: Node, defender: Node, result: Dictio
 				if sdef.get("type", "debuff") == "buff":
 					buff_indices.append(i)
 			if buff_indices.size() > 0:
-				defender.status_effects.remove_at(buff_indices[randi() % buff_indices.size()])
+				_end_status(defender, defender.status_effects[buff_indices[randi() % buff_indices.size()]],
+					"dispelled")
 
 	# Lifesteal
 	if "lifesteal" in passive:
@@ -11799,7 +12066,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 					var sname = a.status_effects[i].get("status", "")
 					var sdef = get_status_definition(sname)
 					if sdef.get("type", "") == "debuff":
-						a.status_effects.remove_at(i)
+						_end_status(a, a.status_effects[i], "cleansed")
 						status_effect_expired.emit(a, sname)
 						break
 				a.mantra_stat_bonuses["armor"] = a.mantra_stat_bonuses.get("armor", 0) + 20
@@ -11818,7 +12085,7 @@ func _trigger_deity_yoga(unit: Node, perk_id: String, spellpower: int) -> void:
 					var sname = a.status_effects[i].get("status", "")
 					var sdef = get_status_definition(sname)
 					if sdef.get("type", "") == "debuff":
-						a.status_effects.remove_at(i)
+						_end_status(a, a.status_effects[i], "cleansed")
 						status_effect_expired.emit(a, sname)
 
 		"mantra_of_the_unshakeable_one":

@@ -138,6 +138,14 @@ func load_game(slot: int) -> bool:
 	# every pair starts from its trait baseline with no accumulated drift.
 	RelationshipSystem.load_save_data(save_data.get("relationships", {}))
 
+	# Every status entry has an `id` now ("status:<n>"). A save from before
+	# that has entries without one; give them one so the status code can treat
+	# every entry the same. Only the map's statuses are saved: combat statuses
+	# end with the fight, so there are no saved holds to restore.
+	for group in [CharacterSystem.get_party(), CharacterSystem.get_fallen()]:
+		for character in group:
+			StatusRules.ensure_ids(character.get("overworld_statuses", []))
+
 	current_slot = slot
 	print("SaveManager: Game loaded from slot %d" % slot)
 	return true

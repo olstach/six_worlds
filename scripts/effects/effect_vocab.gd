@@ -77,8 +77,10 @@ const SHARED_FIELDS: Array[String] = [
 ]
 
 ## What a `scale` may grow with. `status_stack:<name>` is accepted by prefix.
+## `turn_active` is the number of turns the status running the effect has been
+## on (read from its entry, so it only means something inside a status).
 const SCALE_PER: Array[String] = [
-	"spellpower", "debuff_on_target", "buff_on_target", "ally_in_area",
+	"spellpower", "debuff_on_target", "buff_on_target", "ally_in_area", "turn_active",
 ]
 const SCALE_STATUS_STACK_PREFIX: String = "status_stack:"
 
@@ -132,11 +134,16 @@ const FLAGS: Array[String] = [
 ]
 const IMMUNE_FLAG_PREFIX: String = "immune:"
 
-## When a status's `triggers` may fire. Task 3 adds expire, turn_start and
-## turn_end; Task 6 the rest.
+## When a status's `triggers` may fire. `expire`: the status ran out (its
+## duration, or its upkeep), not when it was cleansed or removed. `turn_start`
+## and `turn_end`: the carrier's own turn. Task 6 adds the rest.
 const STATUS_TRIGGERS: Array[String] = [
-	# (filled by Tasks 3 and 6)
+	"expire", "turn_start", "turn_end",
 ]
+
+## When a status's `periodic` effects run: the start or the end of the
+## carrier's turn. Left out, `when` means turn_start.
+const PERIODIC_WHEN: Array[String] = ["turn_start", "turn_end"]
 
 ## Top-level fields of a status definition, in the new shape.
 const STATUS_FIELDS: Array[String] = [
@@ -290,6 +297,9 @@ static func validate_status(def: Dictionary, where: String) -> Array[String]:
 		if typeof(per) != TYPE_DICTIONARY or typeof(per.get("effects", null)) != TYPE_ARRAY:
 			errs.append("%s: 'periodic' must be an object with an 'effects' list" % where)
 		else:
+			if per.has("when") and not per["when"] in PERIODIC_WHEN:
+				errs.append("%s: periodic when '%s' unknown (%s)"
+					% [where, per["when"], ", ".join(PERIODIC_WHEN)])
 			errs.append_array(validate_list(per["effects"], where + ".periodic.effects"))
 
 	if def.has("triggers"):
