@@ -2412,6 +2412,15 @@ Moving content onto one shared effect language. The design is at
       is, so an attribute or skill hold on a summon changes nothing on its
       derived stats until it has a sheet.
     - **Found during 2a, waiting on Olaf:**
+      - **The main-hand weapon's damage and accuracy count twice** (found in
+        2b task 1). `ItemSystem.calculate_equipment_stats` adds the weapon's
+        `stats.damage` and `stats.accuracy` into `derived.damage` and
+        `derived.accuracy`, and then `CombatUnit.get_attack_damage` and
+        `get_accuracy` add `weapon.stats` again. This was already true for
+        the party. Enemies now share the sheet, so it applies to them too
+        (a Fine Iron Spear with accuracy 6 gives its wielder +12). Count it
+        in one place or the other; which one is your call, since it moves
+        every armed character's numbers.
       - Effective values include gear and traits, so some numbers moved even
         with no boost active. For example a Strong trait now adds to attack
         damage and saves, and enemy saves now include their trait modifiers.

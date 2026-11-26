@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 62
+const EXPECTED_CHECKS: int = 63
 
 var grid: CombatGrid
 
@@ -104,6 +104,7 @@ func _ready() -> void:
 	_check_enemy_sheet_matches_party()
 	_check_enemy_skill_accuracy()
 	_check_enemy_kit_variants()
+	_check_map_buff_reaches_off_roster_companion()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -1652,4 +1653,27 @@ func _check_enemy_kit_variants() -> void:
 					% [case.label, key, resists.get(key, 0),
 					int(resists.get(key, 0)) - others, int(arch_res[key])])
 		u.queue_free()
+	_done()
+
+
+## The interim party-effects guard (CharacterSystem.receives_party_effects)
+## must leave every character the player owns exactly as before: a companion
+## who is not on the active roster, and one among the fallen, still receive an
+## active map buff. (_check_enemy_sheet_matches_party checks an enemy does not.)
+func _check_map_buff_reaches_off_roster_companion() -> void:
+	var benched: Dictionary = CharacterSystem.create_blank_character()
+	var fallen: Dictionary = CharacterSystem.create_blank_character()
+	CharacterSystem.update_derived_stats(benched)
+	var acc: float = float(benched.derived.get("accuracy", 0))
+	CharacterSystem.get_fallen().append(fallen)
+	var saved_buffs: Array = GameState.active_map_buffs.duplicate(true)
+	GameState.active_map_buffs = [{"stat": "accuracy", "amount": 9, "combats_remaining": 1}]
+	CharacterSystem.update_derived_stats(benched)
+	CharacterSystem.update_derived_stats(fallen)
+	GameState.active_map_buffs = saved_buffs
+	CharacterSystem.get_fallen().erase(fallen)
+	for who in [["off-roster companion", benched], ["fallen companion", fallen]]:
+		var got: float = float(who[1].derived.get("accuracy", 0))
+		if got != acc + 9:
+			_fail("a +9 accuracy map buff left the %s at %s, wanted %s" % [who[0], got, acc + 9])
 	_done()

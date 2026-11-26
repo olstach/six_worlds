@@ -1487,10 +1487,18 @@ func update_derived_stats(character: Dictionary) -> void:
 	# member only — see PartyBonuses. These read raw skill levels, never another
 	# character's derived stats, so there is no ordering problem and nothing
 	# waits on anything.
-	# They are the PARTY's, so only a party member receives them: every
-	# character runs through this function (enemies too), and an enemy must not
-	# be healed better by the player's medic.
-	var in_party: bool = is_in_party(character)
+	#
+	# INTERIM GUARD, until stage 5 of effect normalization moves map buffs onto
+	# persistent statuses carried by the characters themselves (which removes
+	# this branch). Map buffs and these payouts are party-sourced effects held
+	# in global state, not on any sheet, while every character now runs
+	# through this one function, enemies included. So the formula asks whose
+	# side a sheet is on: every character the player owns (party, companions
+	# off the roster, the fallen, a character still being created or loaded)
+	# reads as the player's and gets them exactly as before; an enemy sheet
+	# says `allegiance: "enemy"` and does not, so the player's shrine buff and
+	# medic do not strengthen the people they are fighting.
+	var in_party: bool = receives_party_effects(character)
 	if in_party:
 		derived["healing_pct"] = derived.get("healing_pct", 0.0) \
 			+ PartyBonuses.best("party_healing_pct")
@@ -1523,7 +1531,8 @@ func update_derived_stats(character: Dictionary) -> void:
 	# Attribute-type buffs translate to their most direct derived-stat effects
 	# (we don't modify attributes themselves to avoid HP/mana tracking confusion).
 	# A map buff is the party's (it came from the party's shrine or camp), so,
-	# like the party-wide payouts above, only a party member gets it.
+	# like the party-wide payouts above, only the player's side gets it.
+	# Interim until stage 5, see the guard above.
 	if GameState and in_party:
 		for buf in GameState.active_map_buffs:
 			var stat: String = buf.get("stat", "")
@@ -1678,15 +1687,18 @@ func get_party() -> Array[Dictionary]:
 	return party
 
 
-## True when `character` is one of the party's own character dictionaries
-## (the same dictionary, not merely an equal one). Used for what belongs to the
-## party as a group — map buffs, party-wide skill payouts — since every
-## character, enemies included, is derived by the same update_derived_stats.
-func is_in_party(character: Dictionary) -> bool:
-	for member in party:
-		if is_same(member, character):
-			return true
-	return false
+## The sheet's side when it names none: every character the player owns.
+const PLAYER_ALLEGIANCE: String = "player"
+
+
+## True when `character` is on the player's side, so the party-sourced effects
+## in update_derived_stats (map buffs, party-wide skill payouts) reach it.
+## A sheet with no `allegiance` key is the player's — party members,
+## companions off the roster, the fallen, and old saves all read that way.
+## EnemySystem marks the sheets it builds `allegiance: "enemy"`.
+## Interim until stage 5 moves map buffs onto persistent statuses.
+func receives_party_effects(character: Dictionary) -> bool:
+	return str(character.get("allegiance", PLAYER_ALLEGIANCE)) == PLAYER_ALLEGIANCE
 
 
 # ============================================

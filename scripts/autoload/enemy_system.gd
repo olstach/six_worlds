@@ -1143,6 +1143,9 @@ func _build_enemy(archetype_id: String, xp_budget: int, realm: String = "hell",
 		"name": enemy_name,
 		"archetype_name": archetype.get("name", ""),  # Human-readable archetype, shown as subtitle in combat
 		"archetype_id": archetype_id,
+		# Whose side the sheet is on. Keeps the party's map buffs and
+		# party-wide payouts off it (CharacterSystem.receives_party_effects).
+		"allegiance": "enemy",
 		"tags": archetype.get("tags", []),
 		"actions": 2,
 		"known_spells": spells,
