@@ -1,0 +1,1447 @@
+{
+	"_about": "What each status changed BEFORE the stage-2b migration, at duration 3, value 0, one application. Keys are the change (after minus before); a key that did not move is left out. Written by tools/capture_status_baseline.gd; read by verify_effects.gd status_numbers_match_baseline.",
+	"reference": {
+		"enemy": {
+			"accuracy": 80.0,
+			"armor": 80.0,
+			"crit_chance": 28.0,
+			"damage": 212.0,
+			"damage_pct": 3.0,
+			"dodge": 27.0,
+			"initiative": 37.0,
+			"movement": 7.0,
+			"resist.black": 0.0,
+			"resist.crushing": 0.0,
+			"resist.fire": 15.0,
+			"resist.fire_black": 0.0,
+			"resist.ice": 0.0,
+			"resist.lightning": 0.0,
+			"resist.none": 0.0,
+			"resist.physical": 0.0,
+			"resist.physical_fire": 0.0,
+			"resist.piercing": 10.0,
+			"resist.poison": 15.0,
+			"resist.prismatic": 0.0,
+			"resist.random_elemental": 0.0,
+			"resist.sacrifice": 0.0,
+			"resist.slashing": 10.0,
+			"resist.solar": 0.0,
+			"resist.space": 0.0,
+			"resist.true": 0.0,
+			"resist.white": 0.0,
+			"resist.white_fire": 0.0,
+			"spellpower": 51.0
+		},
+		"party": {
+			"accuracy": 0.0,
+			"armor": 0.0,
+			"crit_chance": 10.0,
+			"damage": 11.0,
+			"damage_pct": 0.0,
+			"dodge": 10.0,
+			"initiative": 20.0,
+			"movement": 3.0,
+			"resist.black": 0.0,
+			"resist.crushing": 0.0,
+			"resist.fire": 0.0,
+			"resist.fire_black": 0.0,
+			"resist.ice": 0.0,
+			"resist.lightning": 0.0,
+			"resist.none": 0.0,
+			"resist.physical": 0.0,
+			"resist.physical_fire": 0.0,
+			"resist.piercing": 0.0,
+			"resist.poison": 0.0,
+			"resist.prismatic": 0.0,
+			"resist.random_elemental": 0.0,
+			"resist.sacrifice": 0.0,
+			"resist.slashing": 0.0,
+			"resist.solar": 0.0,
+			"resist.space": 0.0,
+			"resist.true": 0.0,
+			"resist.white": 0.0,
+			"resist.white_fire": 0.0,
+			"spellpower": 10.0
+		}
+	},
+	"statuses": {
+		"Air_Immune": {
+			"enemy": {
+				"resist.lightning": 100.0
+			},
+			"party": {
+				"resist.lightning": 100.0
+			}
+		},
+		"Air_Shield": {
+			"enemy": {},
+			"party": {}
+		},
+		"Ancestors_Blessing": {
+			"enemy": {
+				"accuracy": 5.0,
+				"armor": 5.0,
+				"crit_chance": 3.0,
+				"damage": 3.0,
+				"dodge": 5.0,
+				"initiative": 3.0,
+				"spellpower": 3.0
+			},
+			"party": {
+				"accuracy": 5.0,
+				"armor": 5.0,
+				"crit_chance": 3.0,
+				"damage": 3.0,
+				"dodge": 5.0,
+				"initiative": 3.0,
+				"spellpower": 3.0
+			}
+		},
+		"Ancestral_Guidance": {
+			"enemy": {
+				"spellpower": 3.0
+			},
+			"party": {
+				"spellpower": 3.0
+			}
+		},
+		"Ancestral_Vengeance": {
+			"enemy": {},
+			"party": {}
+		},
+		"Anchored": {
+			"enemy": {},
+			"party": {}
+		},
+		"Armor_Debuff_50": {
+			"enemy": {
+				"armor": -20.0
+			},
+			"party": {
+				"armor": -20.0
+			}
+		},
+		"Armor_Reduced": {
+			"enemy": {
+				"armor": -10.0
+			},
+			"party": {
+				"armor": -10.0
+			}
+		},
+		"Armored_Major": {
+			"enemy": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			},
+			"party": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			}
+		},
+		"Armored_Minor": {
+			"enemy": {
+				"resist.crushing": 25.0,
+				"resist.physical": 25.0,
+				"resist.piercing": 25.0,
+				"resist.slashing": 25.0
+			},
+			"party": {
+				"resist.crushing": 25.0,
+				"resist.physical": 25.0,
+				"resist.piercing": 25.0,
+				"resist.slashing": 25.0
+			}
+		},
+		"Armored_Supreme": {
+			"enemy": {
+				"resist.crushing": 75.0,
+				"resist.physical": 75.0,
+				"resist.piercing": 75.0,
+				"resist.slashing": 75.0
+			},
+			"party": {
+				"resist.crushing": 75.0,
+				"resist.physical": 75.0,
+				"resist.piercing": 75.0,
+				"resist.slashing": 75.0
+			}
+		},
+		"Aura_of_Blessing": {
+			"enemy": {},
+			"party": {}
+		},
+		"Awareness_Buff": {
+			"enemy": {
+				"spellpower": 3.0
+			},
+			"party": {
+				"spellpower": 3.0
+			}
+		},
+		"Awareness_Plus_3": {
+			"enemy": {
+				"spellpower": 3.0
+			},
+			"party": {
+				"spellpower": 3.0
+			}
+		},
+		"Berserk": {
+			"enemy": {},
+			"party": {}
+		},
+		"Bleeding": {
+			"enemy": {},
+			"party": {}
+		},
+		"Blessed": {
+			"enemy": {
+				"accuracy": 10.0,
+				"armor": 10.0
+			},
+			"party": {
+				"accuracy": 10.0,
+				"armor": 10.0
+			}
+		},
+		"Blessed_Shot": {
+			"enemy": {
+				"crit_chance": 10.0,
+				"damage": 15.0
+			},
+			"party": {
+				"crit_chance": 10.0,
+				"damage": 15.0
+			}
+		},
+		"Blinded": {
+			"enemy": {
+				"accuracy": -40.0
+			},
+			"party": {
+				"accuracy": -40.0
+			}
+		},
+		"Blood_Hunger": {
+			"enemy": {},
+			"party": {}
+		},
+		"Bloodlust": {
+			"enemy": {
+				"damage": 5.0
+			},
+			"party": {
+				"damage": 5.0
+			}
+		},
+		"Blurred": {
+			"enemy": {
+				"dodge": 15.0
+			},
+			"party": {
+				"dodge": 15.0
+			}
+		},
+		"Boiling_Blood": {
+			"enemy": {},
+			"party": {}
+		},
+		"Burning": {
+			"enemy": {},
+			"party": {}
+		},
+		"Burning_Weapon": {
+			"enemy": {},
+			"party": {}
+		},
+		"Caged": {
+			"enemy": {},
+			"party": {}
+		},
+		"Camels_Blessing": {
+			"enemy": {},
+			"party": {}
+		},
+		"Chameleon": {
+			"enemy": {},
+			"party": {}
+		},
+		"Chaotic": {
+			"enemy": {},
+			"party": {}
+		},
+		"Charmed": {
+			"enemy": {},
+			"party": {}
+		},
+		"Cleansed": {
+			"enemy": {},
+			"party": {}
+		},
+		"Confused": {
+			"enemy": {},
+			"party": {}
+		},
+		"Constitution_Buff": {
+			"enemy": {},
+			"party": {}
+		},
+		"Constitution_Minus_2": {
+			"enemy": {},
+			"party": {}
+		},
+		"Counterstance": {
+			"enemy": {},
+			"party": {}
+		},
+		"Crystal_Diadem": {
+			"enemy": {
+				"initiative": 8.0,
+				"spellpower": 13.0
+			},
+			"party": {
+				"initiative": 8.0,
+				"spellpower": 13.0
+			}
+		},
+		"Cursed": {
+			"enemy": {
+				"accuracy": -10.0,
+				"armor": -10.0
+			},
+			"party": {
+				"accuracy": -10.0,
+				"armor": -10.0
+			}
+		},
+		"Damage_Debuff": {
+			"enemy": {
+				"damage": -5.0
+			},
+			"party": {
+				"damage": -5.0
+			}
+		},
+		"Dampening_Aura": {
+			"enemy": {},
+			"party": {}
+		},
+		"Dazed": {
+			"enemy": {
+				"accuracy": -10.0,
+				"initiative": -5.0
+			},
+			"party": {
+				"accuracy": -10.0,
+				"initiative": -5.0
+			}
+		},
+		"Death_Immunity": {
+			"enemy": {},
+			"party": {}
+		},
+		"Demoralized": {
+			"enemy": {
+				"accuracy": -10.0,
+				"armor": -10.0
+			},
+			"party": {
+				"accuracy": -10.0,
+				"armor": -10.0
+			}
+		},
+		"Disarmed": {
+			"enemy": {},
+			"party": {}
+		},
+		"Diseased": {
+			"enemy": {},
+			"party": {}
+		},
+		"Disoriented": {
+			"enemy": {
+				"accuracy": -5.0,
+				"armor": -5.0,
+				"damage": -5.0,
+				"dodge": -5.0,
+				"initiative": -3.0,
+				"spellpower": -5.0
+			},
+			"party": {
+				"accuracy": -5.0,
+				"armor": -5.0,
+				"damage": -5.0,
+				"dodge": -5.0,
+				"initiative": -3.0,
+				"spellpower": -5.0
+			}
+		},
+		"Divine_Champion": {
+			"enemy": {
+				"accuracy": 8.0,
+				"armor": 8.0,
+				"crit_chance": 5.0,
+				"damage": 8.0,
+				"dodge": 8.0,
+				"initiative": 8.0,
+				"spellpower": 8.0
+			},
+			"party": {
+				"accuracy": 8.0,
+				"armor": 8.0,
+				"crit_chance": 5.0,
+				"damage": 8.0,
+				"dodge": 8.0,
+				"initiative": 8.0,
+				"spellpower": 8.0
+			}
+		},
+		"Divinely_Inspired": {
+			"enemy": {
+				"damage": 8.0,
+				"spellpower": 8.0
+			},
+			"party": {
+				"damage": 8.0,
+				"spellpower": 8.0
+			}
+		},
+		"Dodge_Buff": {
+			"enemy": {
+				"dodge": 15.0
+			},
+			"party": {
+				"dodge": 15.0
+			}
+		},
+		"Dodge_Debuff": {
+			"enemy": {
+				"dodge": -15.0
+			},
+			"party": {
+				"dodge": -15.0
+			}
+		},
+		"Dominated": {
+			"enemy": {},
+			"party": {}
+		},
+		"Doomed": {
+			"enemy": {},
+			"party": {}
+		},
+		"Drowning": {
+			"enemy": {},
+			"party": {}
+		},
+		"Electrified_Weapon": {
+			"enemy": {},
+			"party": {}
+		},
+		"Encouraged": {
+			"enemy": {
+				"initiative": 5.0
+			},
+			"party": {
+				"initiative": 5.0
+			}
+		},
+		"Entangled": {
+			"enemy": {
+				"dodge": -15.0
+			},
+			"party": {
+				"dodge": -15.0
+			}
+		},
+		"Eternal_Vow": {
+			"enemy": {},
+			"party": {}
+		},
+		"Extra_Action": {
+			"enemy": {},
+			"party": {}
+		},
+		"Fan_the_Flames": {
+			"enemy": {},
+			"party": {}
+		},
+		"Favorable_Wind": {
+			"enemy": {},
+			"party": {}
+		},
+		"Feared": {
+			"enemy": {},
+			"party": {}
+		},
+		"Festering": {
+			"enemy": {},
+			"party": {}
+		},
+		"Finesse_Plus_2": {
+			"enemy": {
+				"dodge": 5.0,
+				"initiative": 3.0
+			},
+			"party": {
+				"dodge": 5.0,
+				"initiative": 3.0
+			}
+		},
+		"Fire_Immune": {
+			"enemy": {
+				"resist.fire": 85.0
+			},
+			"party": {
+				"resist.fire": 100.0
+			}
+		},
+		"Fire_Resistance_25": {
+			"enemy": {
+				"resist.fire": 25.0
+			},
+			"party": {
+				"resist.fire": 25.0
+			}
+		},
+		"Fire_Vulnerable": {
+			"enemy": {
+				"resist.fire": -50.0
+			},
+			"party": {
+				"resist.fire": -50.0
+			}
+		},
+		"Fire_Vulnerable_50": {
+			"enemy": {
+				"resist.fire": -50.0
+			},
+			"party": {
+				"resist.fire": -50.0
+			}
+		},
+		"Fireshield": {
+			"enemy": {},
+			"party": {}
+		},
+		"Flying": {
+			"enemy": {},
+			"party": {}
+		},
+		"Focus_Buff_Major": {
+			"enemy": {
+				"spellpower": 8.0
+			},
+			"party": {
+				"spellpower": 8.0
+			}
+		},
+		"Focus_Minus_2": {
+			"enemy": {
+				"spellpower": -3.0
+			},
+			"party": {
+				"spellpower": -3.0
+			}
+		},
+		"Focus_Plus_3": {
+			"enemy": {
+				"spellpower": 3.0
+			},
+			"party": {
+				"spellpower": 3.0
+			}
+		},
+		"Following_Wind": {
+			"enemy": {},
+			"party": {}
+		},
+		"Force_Miss": {
+			"enemy": {},
+			"party": {}
+		},
+		"Forgetful": {
+			"enemy": {},
+			"party": {}
+		},
+		"Fortified": {
+			"enemy": {
+				"armor": 10.0,
+				"resist.crushing": 25.0,
+				"resist.physical": 25.0,
+				"resist.piercing": 25.0,
+				"resist.slashing": 25.0
+			},
+			"party": {
+				"armor": 10.0,
+				"resist.crushing": 25.0,
+				"resist.physical": 25.0,
+				"resist.piercing": 25.0,
+				"resist.slashing": 25.0
+			}
+		},
+		"Friendly": {
+			"enemy": {},
+			"party": {}
+		},
+		"Frozen": {
+			"enemy": {
+				"resist.crushing": -50.0,
+				"resist.physical": -50.0,
+				"resist.piercing": -50.0,
+				"resist.slashing": -50.0
+			},
+			"party": {
+				"resist.crushing": -50.0,
+				"resist.physical": -50.0,
+				"resist.piercing": -50.0,
+				"resist.slashing": -50.0
+			}
+		},
+		"Glass_Globe": {
+			"enemy": {
+				"armor": 5.0
+			},
+			"party": {
+				"armor": 5.0
+			}
+		},
+		"Gloomy": {
+			"enemy": {
+				"armor": -10.0,
+				"movement": -1.0
+			},
+			"party": {
+				"armor": -10.0,
+				"movement": -1.0
+			}
+		},
+		"Golden_Defense": {
+			"enemy": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			},
+			"party": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			}
+		},
+		"Grappled": {
+			"enemy": {
+				"dodge": -15.0
+			},
+			"party": {
+				"dodge": -15.0
+			}
+		},
+		"Grounded": {
+			"enemy": {},
+			"party": {}
+		},
+		"Guarding": {
+			"enemy": {
+				"resist.crushing": 25.0,
+				"resist.physical": 25.0,
+				"resist.piercing": 25.0,
+				"resist.slashing": 25.0
+			},
+			"party": {
+				"resist.crushing": 25.0,
+				"resist.physical": 25.0,
+				"resist.piercing": 25.0,
+				"resist.slashing": 25.0
+			}
+		},
+		"Guarding_The_Gap": {
+			"enemy": {},
+			"party": {}
+		},
+		"Hasted": {
+			"enemy": {
+				"initiative": 5.0,
+				"movement": 2.0
+			},
+			"party": {
+				"initiative": 5.0,
+				"movement": 2.0
+			}
+		},
+		"Hastened": {
+			"enemy": {
+				"initiative": 5.0,
+				"movement": 2.0
+			},
+			"party": {
+				"initiative": 5.0,
+				"movement": 2.0
+			}
+		},
+		"Heavenly_Counterflow": {
+			"enemy": {},
+			"party": {}
+		},
+		"Held": {
+			"enemy": {},
+			"party": {}
+		},
+		"Immobilized": {
+			"enemy": {},
+			"party": {}
+		},
+		"Infected": {
+			"enemy": {},
+			"party": {}
+		},
+		"Initiative_Buff": {
+			"enemy": {
+				"initiative": 5.0
+			},
+			"party": {
+				"initiative": 5.0
+			}
+		},
+		"Initiative_Debuff": {
+			"enemy": {
+				"initiative": -5.0
+			},
+			"party": {
+				"initiative": -5.0
+			}
+		},
+		"Inner_Flame": {
+			"enemy": {
+				"resist.fire": 25.0,
+				"resist.ice": 25.0
+			},
+			"party": {
+				"resist.fire": 25.0,
+				"resist.ice": 25.0
+			}
+		},
+		"Inspired": {
+			"enemy": {
+				"accuracy": 10.0
+			},
+			"party": {
+				"accuracy": 10.0
+			}
+		},
+		"Invincible": {
+			"enemy": {},
+			"party": {}
+		},
+		"Invisible": {
+			"enemy": {},
+			"party": {}
+		},
+		"Invulnerable": {
+			"enemy": {
+				"resist.black": 100.0,
+				"resist.crushing": 100.0,
+				"resist.fire": 85.0,
+				"resist.fire_black": 100.0,
+				"resist.ice": 100.0,
+				"resist.lightning": 100.0,
+				"resist.none": 100.0,
+				"resist.physical": 100.0,
+				"resist.physical_fire": 100.0,
+				"resist.piercing": 90.0,
+				"resist.poison": 85.0,
+				"resist.prismatic": 100.0,
+				"resist.random_elemental": 100.0,
+				"resist.sacrifice": 100.0,
+				"resist.slashing": 90.0,
+				"resist.solar": 100.0,
+				"resist.space": 100.0,
+				"resist.true": 100.0,
+				"resist.white": 100.0,
+				"resist.white_fire": 100.0
+			},
+			"party": {
+				"resist.black": 100.0,
+				"resist.crushing": 100.0,
+				"resist.fire": 100.0,
+				"resist.fire_black": 100.0,
+				"resist.ice": 100.0,
+				"resist.lightning": 100.0,
+				"resist.none": 100.0,
+				"resist.physical": 100.0,
+				"resist.physical_fire": 100.0,
+				"resist.piercing": 100.0,
+				"resist.poison": 100.0,
+				"resist.prismatic": 100.0,
+				"resist.random_elemental": 100.0,
+				"resist.sacrifice": 100.0,
+				"resist.slashing": 100.0,
+				"resist.solar": 100.0,
+				"resist.space": 100.0,
+				"resist.true": 100.0,
+				"resist.white": 100.0,
+				"resist.white_fire": 100.0
+			}
+		},
+		"Karmic_Bond": {
+			"enemy": {},
+			"party": {}
+		},
+		"Keen_Weapon": {
+			"enemy": {
+				"accuracy": 10.0,
+				"crit_chance": 10.0
+			},
+			"party": {
+				"accuracy": 10.0,
+				"crit_chance": 10.0
+			}
+		},
+		"Kill_Zone": {
+			"enemy": {},
+			"party": {}
+		},
+		"Knocked_Down": {
+			"enemy": {
+				"armor": -10.0
+			},
+			"party": {
+				"armor": -10.0
+			}
+		},
+		"Lava_Walking": {
+			"enemy": {},
+			"party": {}
+		},
+		"Levitating": {
+			"enemy": {},
+			"party": {}
+		},
+		"Lifelink": {
+			"enemy": {},
+			"party": {}
+		},
+		"Lightning_Form": {
+			"enemy": {
+				"resist.crushing": 50.0,
+				"resist.ice": -50.0,
+				"resist.lightning": 100.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			},
+			"party": {
+				"resist.crushing": 50.0,
+				"resist.ice": -50.0,
+				"resist.lightning": 100.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			}
+		},
+		"Lucky": {
+			"enemy": {
+				"crit_chance": 15.0
+			},
+			"party": {
+				"crit_chance": 15.0
+			}
+		},
+		"Lured": {
+			"enemy": {},
+			"party": {}
+		},
+		"Magic_Mirror": {
+			"enemy": {},
+			"party": {}
+		},
+		"Magic_Shield": {
+			"enemy": {},
+			"party": {}
+		},
+		"Magnetizing_Aura": {
+			"enemy": {},
+			"party": {}
+		},
+		"Major_Dodge": {
+			"enemy": {
+				"dodge": 30.0
+			},
+			"party": {
+				"dodge": 30.0
+			}
+		},
+		"Mantric_Armor": {
+			"enemy": {
+				"resist.black": 25.0,
+				"resist.fire": 25.0,
+				"resist.ice": 25.0,
+				"resist.lightning": 25.0,
+				"resist.space": 25.0,
+				"resist.white": 25.0
+			},
+			"party": {
+				"resist.black": 25.0,
+				"resist.fire": 25.0,
+				"resist.ice": 25.0,
+				"resist.lightning": 25.0,
+				"resist.space": 25.0,
+				"resist.white": 25.0
+			}
+		},
+		"Marked_for_Death": {
+			"enemy": {},
+			"party": {}
+		},
+		"Marshtread": {
+			"enemy": {},
+			"party": {}
+		},
+		"Melee_Attack_Debuff_50": {
+			"enemy": {
+				"accuracy": -40.0
+			},
+			"party": {
+				"accuracy": -40.0
+			}
+		},
+		"Mental_Immunity": {
+			"enemy": {},
+			"party": {}
+		},
+		"Mindmucked": {
+			"enemy": {
+				"initiative": -8.0,
+				"spellpower": -13.0
+			},
+			"party": {
+				"initiative": -8.0,
+				"spellpower": -13.0
+			}
+		},
+		"Mirror_Images": {
+			"enemy": {},
+			"party": {}
+		},
+		"Mirthful": {
+			"enemy": {
+				"damage": 5.0,
+				"initiative": 5.0,
+				"movement": 2.0
+			},
+			"party": {
+				"damage": 5.0,
+				"initiative": 5.0,
+				"movement": 2.0
+			}
+		},
+		"Movement_Debuff": {
+			"enemy": {
+				"movement": -3.0
+			},
+			"party": {
+				"movement": -1.0
+			}
+		},
+		"None_Shall_Pass": {
+			"enemy": {},
+			"party": {}
+		},
+		"Pacified": {
+			"enemy": {},
+			"party": {}
+		},
+		"Pain_Mirror": {
+			"enemy": {},
+			"party": {}
+		},
+		"Paralyzed": {
+			"enemy": {},
+			"party": {}
+		},
+		"Petrified": {
+			"enemy": {
+				"resist.crushing": 100.0,
+				"resist.physical": 100.0,
+				"resist.piercing": 90.0,
+				"resist.slashing": 90.0
+			},
+			"party": {
+				"resist.crushing": 100.0,
+				"resist.physical": 100.0,
+				"resist.piercing": 100.0,
+				"resist.slashing": 100.0
+			}
+		},
+		"Phase_Wind": {
+			"enemy": {
+				"dodge": 15.0
+			},
+			"party": {
+				"dodge": 15.0
+			}
+		},
+		"Phasing": {
+			"enemy": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			},
+			"party": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			}
+		},
+		"Physical_Immune": {
+			"enemy": {
+				"resist.crushing": 100.0,
+				"resist.physical": 100.0,
+				"resist.piercing": 90.0,
+				"resist.slashing": 90.0
+			},
+			"party": {
+				"resist.crushing": 100.0,
+				"resist.physical": 100.0,
+				"resist.piercing": 100.0,
+				"resist.slashing": 100.0
+			}
+		},
+		"Physical_Resist_50": {
+			"enemy": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			},
+			"party": {
+				"resist.crushing": 50.0,
+				"resist.physical": 50.0,
+				"resist.piercing": 50.0,
+				"resist.slashing": 50.0
+			}
+		},
+		"Pinned": {
+			"enemy": {},
+			"party": {}
+		},
+		"Poison_Skin": {
+			"enemy": {},
+			"party": {}
+		},
+		"Poisoned": {
+			"enemy": {},
+			"party": {}
+		},
+		"Praying": {
+			"enemy": {
+				"armor": 10.0,
+				"resist.black": 15.0,
+				"resist.fire": 15.0,
+				"resist.ice": 15.0,
+				"resist.lightning": 15.0,
+				"resist.space": 15.0,
+				"resist.white": 15.0
+			},
+			"party": {
+				"armor": 10.0,
+				"resist.black": 15.0,
+				"resist.fire": 15.0,
+				"resist.ice": 15.0,
+				"resist.lightning": 15.0,
+				"resist.space": 15.0,
+				"resist.white": 15.0
+			}
+		},
+		"Precision": {
+			"enemy": {
+				"accuracy": 10.0,
+				"crit_chance": 8.0
+			},
+			"party": {
+				"accuracy": 10.0,
+				"crit_chance": 8.0
+			}
+		},
+		"Prone": {
+			"enemy": {
+				"armor": -10.0
+			},
+			"party": {
+				"armor": -10.0
+			}
+		},
+		"Pushed": {
+			"enemy": {},
+			"party": {}
+		},
+		"Radiance": {
+			"enemy": {},
+			"party": {}
+		},
+		"Radiant_Visage": {
+			"enemy": {
+				"initiative": 2.0
+			},
+			"party": {
+				"initiative": 2.0
+			}
+		},
+		"Rage": {
+			"enemy": {
+				"armor": -10.0,
+				"damage": 5.0
+			},
+			"party": {
+				"armor": -10.0,
+				"damage": 5.0
+			}
+		},
+		"Rahulas_Cloak": {
+			"enemy": {},
+			"party": {}
+		},
+		"Rainbow_Cloak": {
+			"enemy": {
+				"dodge": 15.0,
+				"resist.black": 15.0,
+				"resist.fire": 15.0,
+				"resist.ice": 15.0,
+				"resist.lightning": 15.0,
+				"resist.space": 15.0,
+				"resist.white": 15.0
+			},
+			"party": {
+				"dodge": 15.0,
+				"resist.black": 15.0,
+				"resist.fire": 15.0,
+				"resist.ice": 15.0,
+				"resist.lightning": 15.0,
+				"resist.space": 15.0,
+				"resist.white": 15.0
+			}
+		},
+		"Range_Debuff": {
+			"enemy": {},
+			"party": {}
+		},
+		"Ranged_Attack_Debuff_50": {
+			"enemy": {
+				"accuracy": -40.0
+			},
+			"party": {
+				"accuracy": -40.0
+			}
+		},
+		"Ranged_Damage_Debuff_50": {
+			"enemy": {
+				"damage": -11.0
+			},
+			"party": {
+				"damage": -10.0
+			}
+		},
+		"Reflect": {
+			"enemy": {},
+			"party": {}
+		},
+		"Regenerating": {
+			"enemy": {},
+			"party": {}
+		},
+		"Resolute": {
+			"enemy": {},
+			"party": {}
+		},
+		"Riposte_Ready": {
+			"enemy": {},
+			"party": {}
+		},
+		"Rooted": {
+			"enemy": {},
+			"party": {}
+		},
+		"Rotting": {
+			"enemy": {
+				"accuracy": -5.0,
+				"armor": -5.0,
+				"damage": -5.0,
+				"dodge": -5.0,
+				"initiative": -3.0,
+				"spellpower": -5.0
+			},
+			"party": {
+				"accuracy": -5.0,
+				"armor": -5.0,
+				"damage": -5.0,
+				"dodge": -5.0,
+				"initiative": -3.0,
+				"spellpower": -5.0
+			}
+		},
+		"Sanctuary": {
+			"enemy": {},
+			"party": {}
+		},
+		"Set_For_Charge": {
+			"enemy": {},
+			"party": {}
+		},
+		"Shadow_Cloaked": {
+			"enemy": {
+				"dodge": 15.0
+			},
+			"party": {
+				"dodge": 15.0
+			}
+		},
+		"Shadow_Pinned": {
+			"enemy": {},
+			"party": {}
+		},
+		"Shield_Wall": {
+			"enemy": {
+				"armor": 20.0
+			},
+			"party": {}
+		},
+		"Shielded": {
+			"enemy": {
+				"armor": 10.0
+			},
+			"party": {
+				"armor": 10.0
+			}
+		},
+		"Shimmering": {
+			"enemy": {
+				"dodge": 5.0
+			},
+			"party": {
+				"dodge": 5.0
+			}
+		},
+		"Shining_Mirage": {
+			"enemy": {},
+			"party": {}
+		},
+		"Silenced": {
+			"enemy": {},
+			"party": {}
+		},
+		"Slippery_Terrain": {
+			"enemy": {},
+			"party": {}
+		},
+		"Slowed": {
+			"enemy": {
+				"movement": -3.0
+			},
+			"party": {
+				"movement": -1.0
+			}
+		},
+		"Slowed_After_Escape": {
+			"enemy": {
+				"movement": -3.0
+			},
+			"party": {
+				"movement": -1.0
+			}
+		},
+		"Smoke_Form": {
+			"enemy": {
+				"dodge": 25.0,
+				"resist.ice": -25.0
+			},
+			"party": {
+				"dodge": 25.0,
+				"resist.ice": -25.0
+			}
+		},
+		"Soaked": {
+			"enemy": {
+				"resist.lightning": -25.0
+			},
+			"party": {
+				"resist.lightning": -25.0
+			}
+		},
+		"Solar_Form": {
+			"enemy": {
+				"resist.fire": 85.0,
+				"resist.ice": -50.0
+			},
+			"party": {
+				"resist.fire": 100.0,
+				"resist.ice": -50.0
+			}
+		},
+		"Soothing_Presence": {
+			"enemy": {},
+			"party": {}
+		},
+		"Soul_Burning": {
+			"enemy": {},
+			"party": {}
+		},
+		"Storm_Lord": {
+			"enemy": {},
+			"party": {}
+		},
+		"Strength_Buff": {
+			"enemy": {
+				"damage": 3.0
+			},
+			"party": {
+				"damage": 3.0
+			}
+		},
+		"Strength_Plus_2": {
+			"enemy": {
+				"damage": 3.0
+			},
+			"party": {
+				"damage": 3.0
+			}
+		},
+		"Strengthened": {
+			"enemy": {
+				"damage": 5.0
+			},
+			"party": {
+				"damage": 5.0
+			}
+		},
+		"Stunned": {
+			"enemy": {},
+			"party": {}
+		},
+		"Subjugated": {
+			"enemy": {},
+			"party": {}
+		},
+		"Suffering": {
+			"enemy": {
+				"armor": -10.0,
+				"initiative": -5.0,
+				"movement": -1.0
+			},
+			"party": {
+				"armor": -10.0,
+				"initiative": -5.0,
+				"movement": -1.0
+			}
+		},
+		"Suffocating": {
+			"enemy": {},
+			"party": {}
+		},
+		"Swarmed": {
+			"enemy": {},
+			"party": {}
+		},
+		"Taunt": {
+			"enemy": {},
+			"party": {}
+		},
+		"Thin_Air": {
+			"enemy": {
+				"movement": 4.0,
+				"resist.crushing": 100.0,
+				"resist.physical": 100.0,
+				"resist.piercing": 90.0,
+				"resist.slashing": 90.0
+			},
+			"party": {
+				"movement": 4.0,
+				"resist.crushing": 100.0,
+				"resist.physical": 100.0,
+				"resist.piercing": 100.0,
+				"resist.slashing": 100.0
+			}
+		},
+		"Time_Stopped": {
+			"enemy": {},
+			"party": {}
+		},
+		"Tongues_of_Fire": {
+			"enemy": {},
+			"party": {}
+		},
+		"Trapped": {
+			"enemy": {
+				"armor": -10.0
+			},
+			"party": {
+				"armor": -10.0
+			}
+		},
+		"Water_Immune": {
+			"enemy": {
+				"resist.ice": 100.0
+			},
+			"party": {
+				"resist.ice": 100.0
+			}
+		},
+		"Water_Vulnerable": {
+			"enemy": {
+				"resist.ice": -50.0
+			},
+			"party": {
+				"resist.ice": -50.0
+			}
+		},
+		"Water_Vulnerable_25": {
+			"enemy": {
+				"resist.ice": -25.0
+			},
+			"party": {
+				"resist.ice": -25.0
+			}
+		},
+		"Water_Vulnerable_50": {
+			"enemy": {
+				"resist.ice": -50.0
+			},
+			"party": {
+				"resist.ice": -50.0
+			}
+		},
+		"Water_Walking": {
+			"enemy": {},
+			"party": {}
+		},
+		"Weakened": {
+			"enemy": {
+				"accuracy": -10.0,
+				"damage": -5.0
+			},
+			"party": {
+				"accuracy": -10.0,
+				"damage": -5.0
+			}
+		},
+		"Wrathfully_Bound": {
+			"enemy": {},
+			"party": {}
+		},
+		"Yaksha_Strength": {
+			"enemy": {
+				"damage": 13.0
+			},
+			"party": {
+				"damage": 13.0
+			}
+		}
+	}
+}
