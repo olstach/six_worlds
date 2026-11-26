@@ -88,9 +88,75 @@ const SCALE_STATUS_STACK_PREFIX: String = "status_stack:"
 const CONDITIONS: Array[String] = CombatStats.PERK_CONDITIONS
 const CONDITION_KEYS: Array[String] = ["target_has", "target_is"]
 
-## What may clear a `damage`-mode modify. `cleanse` comes in stage 2;
-## `service` and `time` in stage 5.
-const CLEARED_BY: Array[String] = ["rest", "heal", "restore"]
+## What may clear a `damage`-mode modify. `cleanse` clears when a status of the
+## named category is removed ({"cleanse": {"category": "curse"}}); `service`
+## and `time` come in stage 5.
+const CLEARED_BY: Array[String] = ["rest", "heal", "restore", "cleanse"]
+
+# ── The status shape (stage 2b) ──────────────────────────────────────────────
+# A status is a container of effects, like a spell. validate_status() checks
+# one definition against these lists. They are literals so the Python mirror
+# (tools/effect_check.py) can read them.
+
+## Is the status good or bad for whoever carries it.
+const POLARITIES: Array[String] = ["positive", "negative", "neutral"]
+
+## What a status IS, for cleansing and immunity. `elemental.<element>` is also
+## accepted, by prefix, for each of ELEMENTS.
+const STATUS_CATEGORIES: Array[String] = [
+	"magical", "physical", "mental", "disease", "poison", "curse", "blessing",
+	"control", "stance", "transformation", "stealth", "shield", "aura", "wound", "quest",
+]
+const ELEMENTAL_CATEGORY_PREFIX: String = "elemental."
+const ELEMENTS: Array[String] = ["space", "air", "fire", "water", "earth"]
+
+## Where a status lives: one fight, the overworld clock, or until removed.
+const SCOPES: Array[String] = ["combat", "world", "persistent"]
+
+## What `duration.kind` may be.
+const DURATION_KINDS: Array[String] = [
+	"turns", "spellpower", "until_save", "until_destroyed", "permanent", "instant",
+]
+
+## What `stacking.mode` may be.
+const STACKING_MODES: Array[String] = ["refresh", "stack"]
+
+## The `modify` modes that LAST (and so may sit in a status's `while_active`).
+## restore and absorb are instant, so they belong in `periodic` or a trigger.
+const LASTING_MODES: Array[String] = ["fortify", "drain", "set", "multiply", "damage"]
+
+## Rule flags a status may carry. Empty until Task 5 builds them. The form
+## `immune:<status name | category | polarity>` is always accepted.
+const FLAGS: Array[String] = [
+	# (filled by Task 5)
+]
+const IMMUNE_FLAG_PREFIX: String = "immune:"
+
+## When a status's `triggers` may fire. Task 3 adds expire, turn_start and
+## turn_end; Task 6 the rest.
+const STATUS_TRIGGERS: Array[String] = [
+	# (filled by Tasks 3 and 6)
+]
+
+## Top-level fields of a status definition, in the new shape.
+const STATUS_FIELDS: Array[String] = [
+	"name", "icon", "polarity", "categories", "scope", "duration", "stacking",
+	"flags", "while_active", "periodic", "triggers", "save", "aura", "spread",
+	"cleared_by", "upkeep", "link", "description", "notes",
+]
+
+## The OLD status fields statuses.json still uses. Accepted alongside the new
+## ones until the migration finishes; Tasks 4-6 delete entries from this list
+## as the data stops using them. Nothing new should be added here.
+const LEGACY_STATUS_FIELDS: Array[String] = [
+	"type", "category", "effects", "duration_type", "default_duration",
+	"dispellable", "dispel_methods", "grants_resistance", "grants_vulnerability",
+	"damage_per_turn", "retaliation", "reaction", "affliction", "save_type",
+	"bonus_amount", "heal_per_turn", "special", "penalty_amount", "stackable",
+	"default_duration_range", "summon_on_expire", "damage_increase_per_turn",
+	"aura_value", "damage_increase_pct", "grants_travel_speed_pct",
+	"grants_concealment", "grants_movement_ability", "_comment", "_note",
+]
 
 ## Values of {"rest": ...}.
 const REST_KINDS: Array[String] = ["quick", "camp", "full"]
@@ -141,6 +207,135 @@ static func validate(effect: Dictionary, where: String) -> Array[String]:
 	_validate_shared(effect, where, errs)
 	_validate_op(String(op), effect, where, errs)
 	return errs
+
+
+## Validate one status definition (new shape). Returns human-readable errors;
+## empty means valid. Legacy fields (LEGACY_STATUS_FIELDS) are tolerated.
+static func validate_status(def: Dictionary, where: String) -> Array[String]:
+	var errs: Array[String] = []
+	for key in def:
+		if not key in STATUS_FIELDS and not key in LEGACY_STATUS_FIELDS:
+			errs.append("%s: unknown status field '%s'" % [where, key])
+
+	if def.has("polarity") and not def["polarity"] in POLARITIES:
+		errs.append("%s: polarity '%s' unknown (%s)" % [where, def["polarity"], ", ".join(POLARITIES)])
+	if def.has("scope") and not def["scope"] in SCOPES:
+		errs.append("%s: scope '%s' unknown (%s)" % [where, def["scope"], ", ".join(SCOPES)])
+
+	if def.has("categories"):
+		if typeof(def["categories"]) != TYPE_ARRAY:
+			errs.append("%s: 'categories' must be a list" % where)
+		else:
+			for c in def["categories"]:
+				if not is_status_category(c):
+					errs.append("%s: unknown category '%s' (approved: %s, or elemental.<element>)"
+						% [where, c, ", ".join(STATUS_CATEGORIES)])
+
+	if def.has("duration"):
+		var d = def["duration"]
+		if typeof(d) != TYPE_DICTIONARY:
+			errs.append("%s: 'duration' must be {kind, base?}" % where)
+		else:
+			for k in d:
+				if not k in ["kind", "base"]:
+					errs.append("%s: duration has unknown key '%s'" % [where, k])
+			if not d.get("kind", null) in DURATION_KINDS:
+				errs.append("%s: duration kind '%s' unknown (%s)"
+					% [where, d.get("kind", null), ", ".join(DURATION_KINDS)])
+			if d.has("base") and not _is_number(d["base"]):
+				errs.append("%s: duration base must be a number" % where)
+
+	if def.has("stacking"):
+		var st = def["stacking"]
+		if typeof(st) != TYPE_DICTIONARY:
+			errs.append("%s: 'stacking' must be {mode, max?}" % where)
+		else:
+			for k in st:
+				if not k in ["mode", "max"]:
+					errs.append("%s: stacking has unknown key '%s'" % [where, k])
+			if not st.get("mode", null) in STACKING_MODES:
+				errs.append("%s: stacking mode '%s' unknown (%s)"
+					% [where, st.get("mode", null), ", ".join(STACKING_MODES)])
+			if st.has("max") and not _is_number(st["max"]):
+				errs.append("%s: stacking max must be a number" % where)
+
+	if def.has("flags"):
+		if typeof(def["flags"]) != TYPE_ARRAY:
+			errs.append("%s: 'flags' must be a list" % where)
+		else:
+			for f in def["flags"]:
+				if typeof(f) != TYPE_STRING:
+					errs.append("%s: a flag must be a string" % where)
+				elif f.begins_with(IMMUNE_FLAG_PREFIX):
+					if f.length() == IMMUNE_FLAG_PREFIX.length():
+						errs.append("%s: flag 'immune:' names nothing" % where)
+				elif not f in FLAGS:
+					errs.append("%s: unknown flag '%s' (approved: %s, or immune:<...>)"
+						% [where, f, ", ".join(FLAGS)])
+
+	if def.has("while_active"):
+		if typeof(def["while_active"]) != TYPE_ARRAY:
+			errs.append("%s: 'while_active' must be a list of effects" % where)
+		else:
+			errs.append_array(validate_list(def["while_active"], where + ".while_active"))
+			for i in def["while_active"].size():
+				var e = def["while_active"][i]
+				if typeof(e) == TYPE_DICTIONARY and e.get("op", "") == "modify" \
+						and not e.get("mode", "") in LASTING_MODES:
+					errs.append("%s.while_active[%d]: mode '%s' is instant, not lasting (%s)"
+						% [where, i, e.get("mode", ""), ", ".join(LASTING_MODES)])
+
+	if def.has("periodic"):
+		var per = def["periodic"]
+		if typeof(per) != TYPE_DICTIONARY or typeof(per.get("effects", null)) != TYPE_ARRAY:
+			errs.append("%s: 'periodic' must be an object with an 'effects' list" % where)
+		else:
+			errs.append_array(validate_list(per["effects"], where + ".periodic.effects"))
+
+	if def.has("triggers"):
+		if typeof(def["triggers"]) != TYPE_ARRAY:
+			errs.append("%s: 'triggers' must be a list" % where)
+		else:
+			for i in def["triggers"].size():
+				var t = def["triggers"][i]
+				var label := "%s.triggers[%d]" % [where, i]
+				if typeof(t) != TYPE_DICTIONARY:
+					errs.append("%s: a trigger must be an object" % label)
+					continue
+				if not t.get("on", null) in STATUS_TRIGGERS:
+					errs.append("%s: unknown trigger '%s' (approved: %s)"
+						% [label, t.get("on", null), ", ".join(STATUS_TRIGGERS)])
+				if t.has("effects"):
+					if typeof(t["effects"]) != TYPE_ARRAY:
+						errs.append("%s: 'effects' must be a list" % label)
+					else:
+						errs.append_array(validate_list(t["effects"], label + ".effects"))
+
+	if def.has("save"):
+		var sv = def["save"]
+		if typeof(sv) != TYPE_DICTIONARY:
+			errs.append("%s: 'save' must be {stat, tier}" % where)
+		else:
+			if not String(sv.get("stat", "")).to_lower() in SaveSystem.ATTRIBUTES:
+				errs.append("%s: save stat '%s' is not an attribute" % [where, sv.get("stat", "")])
+			if not SaveSystem.TIERS.has(sv.get("tier", "")):
+				errs.append("%s: save tier '%s' unknown" % [where, sv.get("tier", "")])
+
+	if def.has("cleared_by"):
+		_validate_cleared_by(def["cleared_by"], where, errs)
+
+	return errs
+
+
+## True when `c` is a status category: a STATUS_CATEGORIES name, or
+## "elemental.<element>".
+static func is_status_category(c) -> bool:
+	if typeof(c) != TYPE_STRING:
+		return false
+	if c in STATUS_CATEGORIES:
+		return true
+	return c.begins_with(ELEMENTAL_CATEGORY_PREFIX) \
+		and c.trim_prefix(ELEMENTAL_CATEGORY_PREFIX) in ELEMENTS
 
 
 ## Validate a list of effects, labelling each by index.
@@ -285,6 +480,11 @@ static func _validate_cleared_by(list, where: String, errs: Array[String]) -> vo
 					var msg := _value_path_error(arg)
 					if not msg.is_empty():
 						errs.append("%s: cleared_by restore: %s" % [where, msg])
+			"cleanse":
+				if typeof(arg) != TYPE_DICTIONARY or arg.size() != 1 or not arg.has("category"):
+					errs.append("%s: cleared_by cleanse takes {\"category\": <status category>}" % where)
+				elif not is_status_category(arg["category"]):
+					errs.append("%s: cleared_by cleanse category '%s' unknown" % [where, arg["category"]])
 			_:
 				errs.append("%s: unknown cleared_by kind '%s' (approved: %s)"
 					% [where, kind, ", ".join(CLEARED_BY)])

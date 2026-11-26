@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 63
+const EXPECTED_CHECKS: int = 66
 
 var grid: CombatGrid
 
@@ -24,6 +24,9 @@ func _ready() -> void:
 
 	_check_vocab_accepts_valid_effects()
 	_check_vocab_rejects_invalid_effects()
+	_check_status_valid_minimal()
+	_check_status_rejects()
+	_check_cleanse_clears_damage()
 
 	# ValuePaths: stat. and resist. holds, read through the real getters.
 	_check_fortify_and_release_dodge()
@@ -164,6 +167,77 @@ func _check_vocab_rejects_invalid_effects() -> void:
 	for label in cases:
 		if EffectVocab.validate(cases[label], "test").is_empty():
 			_fail("invalid effect accepted (%s): %s" % [label, cases[label]])
+	_done()
+
+
+# ── Status shape (stage 2b) ──────────────────────────────────────────────────
+
+func _minimal_status() -> Dictionary:
+	return {"name": "Held", "icon": "x", "polarity": "negative", "categories": ["control"],
+		"scope": "combat", "duration": {"kind": "turns", "base": 1}, "stacking": {"mode": "refresh"}}
+
+
+func _check_status_valid_minimal() -> void:
+	var errs := EffectVocab.validate_status(_minimal_status(), "test")
+	if not errs.is_empty():
+		_fail("minimal status rejected: %s" % [errs])
+	var fire := _minimal_status()
+	fire["categories"] = ["elemental.fire"]
+	fire["flags"] = ["immune:poison"]
+	errs = EffectVocab.validate_status(fire, "test")
+	if not errs.is_empty():
+		_fail("elemental category / immune flag rejected: %s" % [errs])
+	_done()
+
+
+func _check_status_rejects() -> void:
+	var cases := {
+		"unknown field": {"flavour": "x"},
+		"unknown category": {"categories": ["spooky"]},
+		"elemental.plasma": {"categories": ["elemental.plasma"]},
+		"while_active restore": {"while_active": [{"op": "modify",
+			"value": "attribute.focus", "mode": "restore", "amount": 1}]},
+		"unknown flag": {"flags": ["flying"]},
+		"unknown trigger": {"triggers": [{"on": "tuesday", "effects": []}]},
+		"stacking strongest": {"stacking": {"mode": "strongest"}},
+	}
+	for label in cases:
+		var d := _minimal_status()
+		d.merge(cases[label], true)
+		if EffectVocab.validate_status(d, "test").is_empty():
+			_fail("invalid status accepted (%s)" % label)
+	_done()
+
+
+## A curse recorded with source_categories is undone when a status of that
+## category is cleansed off the unit, through the real CombatManager path.
+func _check_cleanse_clears_damage() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var ch: Dictionary = u.character_data
+	var ctx := _ctx(caster, u, "black", 1)
+	ctx.source_categories = ["curse"]
+	EffectResolver.resolve([{"op": "modify", "value": "attribute.focus", "mode": "damage",
+		"amount": 2, "cleared_by": [{"cleanse": {"category": "curse"}}]}], ctx)
+	if ch.get("damaged_values", []).size() != 1 \
+			or ch.damaged_values[0].get("source_categories", []) != ["curse"]:
+		_fail("damage entry did not record source_categories: %s" % [ch.get("damaged_values", [])])
+	# A different category does not clear it; a rest does not either.
+	if ValuePaths.clear_damage(ch, "cleanse", {"category": "poison"}) != 0 \
+			or ValuePaths.clear_damage(ch, "rest", {"tier": 3}) != 0:
+		_fail("cleanse of another category (or a rest) cleared the curse")
+	# Cleanse the status off the unit the way a dispel does.
+	CombatManager._status_effects["VerifyCurse"] = {"type": "debuff", "dispellable": true,
+		"categories": ["curse"]}
+	u.status_effects.append({"status": "VerifyCurse", "duration": 3})
+	CombatManager._cleanse_status_effects(u, 1)
+	CombatManager._status_effects.erase("VerifyCurse")
+	if not ch.get("damaged_values", []).is_empty():
+		_fail("cleansing a curse-category status left %s" % [ch.damaged_values])
+	_end_fight()
+	_leave_party(u)
+	_cleanup([caster, u])
 	_done()
 
 

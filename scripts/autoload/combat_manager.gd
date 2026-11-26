@@ -5468,6 +5468,19 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		unit._update_visuals()
 
 
+## A cleanse or dispel just took `status_name` off `unit`: undo any persistent
+## `damage` the unit carries whose entry is {"cleanse": {"category": c}} for a
+## category of that status. A status with no `categories` (all of today's data
+## until stage 2b Task 4) clears nothing.
+func _clear_damage_for_removed(unit: Node, status_name: String) -> void:
+	var cats: Array = _status_effects.get(status_name, {}).get("categories", [])
+	if cats.is_empty() or not ValuePaths.is_party_unit(unit):
+		return
+	for c in cats:
+		ValuePaths.clear_damage(unit.character_data, "cleanse", {"category": c}, unit)
+	CharacterSystem.update_derived_stats(unit.character_data)
+
+
 ## Remove a specific status effect by name from a unit. Returns true if found and removed.
 func _remove_status_by_name(unit: Node, status_name: String) -> bool:
 	if not "status_effects" in unit:
@@ -5492,6 +5505,7 @@ func _remove_selected_statuses(unit: Node, selector: Dictionary) -> int:
 	var removed := 0
 	for entry in picked:
 		if _remove_status_by_name(unit, entry.get("status", "")):
+			_clear_damage_for_removed(unit, entry.get("status", ""))
 			removed += 1
 	return removed
 
@@ -5642,6 +5656,7 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 		var expired = unit.status_effects[idx]
 		var sname = expired.get("status", "")
 		unit.status_effects.remove_at(idx)
+		_clear_damage_for_removed(unit, sname)
 		# Show expired visual
 		if unit.has_method("show_status_expired"):
 			unit.show_status_expired(sname)

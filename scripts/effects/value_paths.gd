@@ -300,7 +300,7 @@ const _REST_TIER: Dictionary = {"quick": 1, "camp": 2, "full": 3}
 ## is refreshed so its per-level skill bonuses drop now.
 ## Anyone else: only the drain hold, which ends with the fight.
 static func apply_damage_mode(unit: Node, value: String, amount: float,
-		cleared_by: Array, source: String) -> void:
+		cleared_by: Array, source: String, source_categories: Array = []) -> void:
 	var namespace_name: String = value.get_slice(".", 0)
 	if not EffectVocab.is_value_path(value) or not namespace_name in ["attribute", "skill"]:
 		push_error("ValuePaths.apply_damage_mode: '%s' is not an attribute. or skill. path" % value)
@@ -316,6 +316,9 @@ static func apply_damage_mode(unit: Node, value: String, amount: float,
 		data["damaged_values"] = []
 	var entry: Dictionary = {"value": value, "amount": amount,
 		"cleared_by": cleared_by.duplicate(true), "source": source}
+	# What kind of thing caused this harm, so a cleanse of that kind can undo it.
+	if not source_categories.is_empty():
+		entry["source_categories"] = source_categories.duplicate()
 	# An attribute entry is "held" while its combat hold is live: the hold
 	# carries the loss, so damaged_total() skips it and update_derived_stats()
 	# (which can run mid-fight, e.g. after a wound) does not count it twice.
@@ -464,6 +467,14 @@ static func _entry_cleared_by(entry: Dictionary, kind: String, detail: Dictionar
 					return true
 			"restore":
 				if str(want) == str(detail.get("value", "")):
+					return true
+			"cleanse":
+				# detail.category is the category of a status just removed;
+				# the entry remembers its cause's categories when it was made.
+				var rule: Dictionary = want if want is Dictionary else {}
+				var cats: Array = entry.get("source_categories", [])
+				if str(detail.get("category", "")) in cats \
+						and str(rule.get("category", "")) == str(detail.get("category", "")):
 					return true
 	return false
 

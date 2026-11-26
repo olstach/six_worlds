@@ -2,9 +2,9 @@
 # The Python mirror of scripts/effects/effect_vocab.gd. The nine valid and nine
 # invalid effects are the same ones tools/verify_effects.gd checks in GDScript,
 # so the two validators are held to one standard.
-import os, sys, unittest
+import json, os, sys, unittest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from effect_check import check_effect, check_effects, OPS_PY, MODES_PY
+from effect_check import check_effect, check_effects, check_status, OPS_PY, MODES_PY
 
 VALID = [
     {"op": "damage", "amount": 20, "type": "fire"},
@@ -53,6 +53,41 @@ class EffectVocabTests(unittest.TestCase):
         self.assertTrue(errs[0].startswith("spell[1]:"))
         self.assertTrue(errs[1].startswith("spell[2]:"))
 
+    # ── Status shape (Stage 2b, Task 2) ─────────────────────────────────────
+    def test_status_valid_minimal(self):
+        self.assertEqual(check_status(STATUS_MINIMAL, "t"), [])
+
+    def test_status_cleanse_clear(self):
+        self.assertEqual(check_effect({"op": "modify", "value": "attribute.focus",
+            "mode": "damage", "amount": 1,
+            "cleared_by": [{"cleanse": {"category": "curse"}}]}, "t"), [])
+
+    def test_status_rejects(self):
+        def bad(**over):
+            d = json.loads(json.dumps(STATUS_MINIMAL))
+            d.update(over)
+            return d
+        cases = {
+            "unknown field": bad(flavour="x"),
+            "unknown category": bad(categories=["spooky"]),
+            "elemental.plasma": bad(categories=["elemental.plasma"]),
+            "while_active restore": bad(while_active=[{"op": "modify",
+                "value": "attribute.focus", "mode": "restore", "amount": 1}]),
+            "unknown flag": bad(flags=["flying"]),
+            "unknown trigger": bad(triggers=[{"on": "tuesday", "effects": []}]),
+            "stacking strongest": bad(stacking={"mode": "strongest"}),
+        }
+        for label, d in cases.items():
+            self.assertNotEqual(check_status(d, "t"), [], label)
+
+    def test_status_accepts_elemental_and_immune_flag(self):
+        d = dict(STATUS_MINIMAL, categories=["elemental.fire"], flags=["immune:poison"])
+        self.assertEqual(check_status(d, "t"), [])
+
+
+STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",
+                  "categories": ["control"], "scope": "combat",
+                  "duration": {"kind": "turns", "base": 1}, "stacking": {"mode": "refresh"}}
 
 if __name__ == "__main__":
     unittest.main()

@@ -93,6 +93,19 @@ SCALE_STATUS_STACK_PREFIX = _gd_string(_vocab_src, "SCALE_STATUS_STACK_PREFIX")
 CONDITION_KEYS = _gd_list(_vocab_src, "CONDITION_KEYS")
 CLEARED_BY = _gd_list(_vocab_src, "CLEARED_BY")
 REST_KINDS = _gd_list(_vocab_src, "REST_KINDS")
+POLARITIES = _gd_list(_vocab_src, "POLARITIES")
+STATUS_CATEGORIES = _gd_list(_vocab_src, "STATUS_CATEGORIES")
+ELEMENTAL_CATEGORY_PREFIX = _gd_string(_vocab_src, "ELEMENTAL_CATEGORY_PREFIX")
+ELEMENTS = _gd_list(_vocab_src, "ELEMENTS")
+SCOPES = _gd_list(_vocab_src, "SCOPES")
+DURATION_KINDS = _gd_list(_vocab_src, "DURATION_KINDS")
+STACKING_MODES = _gd_list(_vocab_src, "STACKING_MODES")
+LASTING_MODES = _gd_list(_vocab_src, "LASTING_MODES")
+FLAGS = _gd_list(_vocab_src, "FLAGS")
+IMMUNE_FLAG_PREFIX = _gd_string(_vocab_src, "IMMUNE_FLAG_PREFIX")
+STATUS_TRIGGERS = _gd_list(_vocab_src, "STATUS_TRIGGERS")
+STATUS_FIELDS = _gd_list(_vocab_src, "STATUS_FIELDS")
+LEGACY_STATUS_FIELDS = _gd_list(_vocab_src, "LEGACY_STATUS_FIELDS")
 OP_FIELDS = _gd_dict_of_lists(_vocab_src, "OP_FIELDS")
 BUILT_IN_CREATURE_TAGS = _gd_list(_vocab_src, "BUILT_IN_CREATURE_TAGS")
 
@@ -188,6 +201,117 @@ def check_effect(effect, where):
 
     _validate_shared(effect, where, errs)
     _validate_op(op, effect, where, errs)
+    return errs
+
+
+def is_status_category(c):
+    """A STATUS_CATEGORIES name, or elemental.<element>."""
+    if not isinstance(c, str):
+        return False
+    if c in STATUS_CATEGORIES:
+        return True
+    return c.startswith(ELEMENTAL_CATEGORY_PREFIX) and \
+        c[len(ELEMENTAL_CATEGORY_PREFIX):] in ELEMENTS
+
+
+def check_status(d, where):
+    """Validate one status definition (new shape); legacy fields tolerated."""
+    errs = []
+    for key in d:
+        if key not in STATUS_FIELDS and key not in LEGACY_STATUS_FIELDS:
+            errs.append(f"{where}: unknown status field '{key}'")
+    if "polarity" in d and d["polarity"] not in POLARITIES:
+        errs.append(f"{where}: polarity '{d['polarity']}' unknown ({_j(POLARITIES)})")
+    if "scope" in d and d["scope"] not in SCOPES:
+        errs.append(f"{where}: scope '{d['scope']}' unknown ({_j(SCOPES)})")
+    if "categories" in d:
+        if not isinstance(d["categories"], list):
+            errs.append(f"{where}: 'categories' must be a list")
+        else:
+            for c in d["categories"]:
+                if not is_status_category(c):
+                    errs.append(f"{where}: unknown category '{c}' (approved: "
+                                f"{_j(STATUS_CATEGORIES)}, or elemental.<element>)")
+    if "duration" in d:
+        du = d["duration"]
+        if not isinstance(du, dict):
+            errs.append(f"{where}: 'duration' must be {{kind, base?}}")
+        else:
+            for k in du:
+                if k not in ("kind", "base"):
+                    errs.append(f"{where}: duration has unknown key '{k}'")
+            if du.get("kind") not in DURATION_KINDS:
+                errs.append(f"{where}: duration kind '{du.get('kind')}' unknown ({_j(DURATION_KINDS)})")
+            if "base" in du and not _is_number(du["base"]):
+                errs.append(f"{where}: duration base must be a number")
+    if "stacking" in d:
+        st = d["stacking"]
+        if not isinstance(st, dict):
+            errs.append(f"{where}: 'stacking' must be {{mode, max?}}")
+        else:
+            for k in st:
+                if k not in ("mode", "max"):
+                    errs.append(f"{where}: stacking has unknown key '{k}'")
+            if st.get("mode") not in STACKING_MODES:
+                errs.append(f"{where}: stacking mode '{st.get('mode')}' unknown ({_j(STACKING_MODES)})")
+            if "max" in st and not _is_number(st["max"]):
+                errs.append(f"{where}: stacking max must be a number")
+    if "flags" in d:
+        if not isinstance(d["flags"], list):
+            errs.append(f"{where}: 'flags' must be a list")
+        else:
+            for f in d["flags"]:
+                if not isinstance(f, str):
+                    errs.append(f"{where}: a flag must be a string")
+                elif f.startswith(IMMUNE_FLAG_PREFIX):
+                    if len(f) == len(IMMUNE_FLAG_PREFIX):
+                        errs.append(f"{where}: flag 'immune:' names nothing")
+                elif f not in FLAGS:
+                    errs.append(f"{where}: unknown flag '{f}' (approved: {_j(FLAGS)}, or immune:<...>)")
+    if "while_active" in d:
+        wa = d["while_active"]
+        if not isinstance(wa, list):
+            errs.append(f"{where}: 'while_active' must be a list of effects")
+        else:
+            errs.extend(check_effects(wa, where + ".while_active"))
+            for i, e in enumerate(wa):
+                if isinstance(e, dict) and e.get("op") == "modify" \
+                        and e.get("mode", "") not in LASTING_MODES:
+                    errs.append(f"{where}.while_active[{i}]: mode '{e.get('mode', '')}' is "
+                                f"instant, not lasting ({_j(LASTING_MODES)})")
+    if "periodic" in d:
+        per = d["periodic"]
+        if not isinstance(per, dict) or not isinstance(per.get("effects"), list):
+            errs.append(f"{where}: 'periodic' must be an object with an 'effects' list")
+        else:
+            errs.extend(check_effects(per["effects"], where + ".periodic.effects"))
+    if "triggers" in d:
+        if not isinstance(d["triggers"], list):
+            errs.append(f"{where}: 'triggers' must be a list")
+        else:
+            for i, t in enumerate(d["triggers"]):
+                label = f"{where}.triggers[{i}]"
+                if not isinstance(t, dict):
+                    errs.append(f"{label}: a trigger must be an object")
+                    continue
+                if t.get("on") not in STATUS_TRIGGERS:
+                    errs.append(f"{label}: unknown trigger '{t.get('on')}' (approved: {_j(STATUS_TRIGGERS)})")
+                if "effects" in t:
+                    if not isinstance(t["effects"], list):
+                        errs.append(f"{label}: 'effects' must be a list")
+                    else:
+                        errs.extend(check_effects(t["effects"], label + ".effects"))
+    if "save" in d:
+        sv = d["save"]
+        if not isinstance(sv, dict):
+            errs.append(f"{where}: 'save' must be {{stat, tier}}")
+        else:
+            if str(sv.get("stat", "")).lower() not in SAVE_ATTRIBUTES:
+                errs.append(f"{where}: save stat '{sv.get('stat', '')}' is not an attribute")
+            if sv.get("tier", "") not in SAVE_TIERS:
+                errs.append(f"{where}: save tier '{sv.get('tier', '')}' unknown")
+    if "cleared_by" in d:
+        _validate_cleared_by(d["cleared_by"], where, errs)
     return errs
 
 
@@ -308,6 +432,11 @@ def _validate_cleared_by(lst, where, errs):
                 msg = _value_path_error(arg)
                 if msg:
                     errs.append(f"{where}: cleared_by restore: {msg}")
+        elif kind == "cleanse":
+            if not isinstance(arg, dict) or set(arg) != {"category"}:
+                errs.append(f"{where}: cleared_by cleanse takes {{\"category\": <status category>}}")
+            elif not is_status_category(arg["category"]):
+                errs.append(f"{where}: cleared_by cleanse category '{arg['category']}' unknown")
         else:
             errs.append(f"{where}: unknown cleared_by kind '{kind}' (approved: {_j(CLEARED_BY)})")
 

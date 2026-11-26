@@ -897,7 +897,14 @@ for _sid, _sp in _spells.items():
 # GDScript file; importing it here makes check_effect / check_effects available
 # to the data checks of later stages. Nothing calls them on a data file yet.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from effect_check import check_effect, check_effects  # noqa: E402,F401
+from effect_check import check_effect, check_effects, check_status  # noqa: E402,F401
+
+# Status shape (stage 2b). Only statuses that already carry `polarity` are
+# checked; Task 6 removes this gate so every status must have it.
+for _st in load("resources/data/statuses.json")["statuses"]:
+    if "polarity" in _st:
+        for _m in check_status(_st, f"status '{_st.get('name', '?')}'"):
+            err("status-shape", _m)
 
 
 # ── Resurrection ─────────────────────────────────────────────────────────────

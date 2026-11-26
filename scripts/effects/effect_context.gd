@@ -26,6 +26,11 @@ var container_kind: String = ""
 ## Its id ("fireball", "Burning" ...). Also names persistent damage entries.
 var container_id: String = ""
 
+## The categories of the container that is writing (a status's `categories`).
+## A `damage`-mode modify records them on its damaged_values entry as
+## `source_categories`, so a later {"cleanse": {"category": c}} can match.
+var source_categories: Array = []
+
 ## The spellpower bonus, as CombatManager._calculate_spell_bonus computes it
 ## today: the caster's spellpower plus 2 per level in each matching school.
 ## Read by {"base", "per_spellpower"} magnitudes and by scale per "spellpower".

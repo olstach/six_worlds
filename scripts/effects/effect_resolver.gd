@@ -267,7 +267,7 @@ static func _do_modify(effect: Dictionary, ctx: EffectContext, unit: Node, m: fl
 	# Persistent harm, and what undoes it.
 	if mode == "damage":
 		ValuePaths.apply_damage_mode(unit, value, m, effect.get("cleared_by", []),
-			"%s:%s" % [ctx.container_kind, ctx.container_id])
+			"%s:%s" % [ctx.container_kind, ctx.container_id], ctx.source_categories)
 		return _entry("modify", unit, true, "", m)
 	if mode == "restore":
 		if ValuePaths.is_party_unit(unit):
