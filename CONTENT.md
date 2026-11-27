@@ -7406,28 +7406,28 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Thin_Air** `Thin_Air` — positive · spellpower · +4 movement · immune to physical · cannot deal physical damage
   - desc: (empty)
-- **Solar_Form** `Solar_Form` — positive · spellpower · immune to fire · ice resistance −50% · when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit
+- **Solar_Form** `Solar_Form` — positive · spellpower · immune to fire · ice resistance −50% · when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit · aura: Light of the Sun
   - desc: (empty)
 
 ## Aura `aura`
 
 - **Magnetizing_Aura** `Magnetizing_Aura` — positive · spellpower · may charm enemies that approach in melee
   - desc: (empty)
-- **Favorable_Wind** `Favorable_Wind` — positive · spellpower
+- **Favorable_Wind** `Favorable_Wind` — positive · spellpower · aura: Favorable Wind
   - desc: (empty)
-- **Shield_Wall** `Shield_Wall` — positive · turns 1
+- **Shield_Wall** `Shield_Wall` — positive · turns 1 · aura: Shield Wall · aura: Shield Wall (cover)
   - desc: (empty)
-- **Soothing_Presence** `Soothing_Presence` — positive · spellpower · heals 5 HP at the start of each turn
+- **Soothing_Presence** `Soothing_Presence` — positive · spellpower · heals 5 HP at the start of each turn · aura: Soothing Presence
   - desc: (empty)
-- **Aura_of_Blessing** `Aura_of_Blessing` — positive · spellpower
+- **Aura_of_Blessing** `Aura_of_Blessing` — positive · spellpower · aura: Aura of Blessing
   - desc: (empty)
-- **Dampening_Aura** `Dampening_Aura` — positive · spellpower
+- **Dampening_Aura** `Dampening_Aura` — positive · spellpower · aura: Dampening Aura
   - desc: (empty)
-- **Radiance** `Radiance` — positive · spellpower
+- **Radiance** `Radiance` — positive · spellpower · aura: Radiance · aura: Radiant Glare
   - desc: A standing light that mends companions and dazzles whoever comes close.
-- **Radiant_Visage** `Radiant_Visage` — positive · spellpower
+- **Radiant_Visage** `Radiant_Visage` — positive · spellpower · aura: Radiant Visage
   - desc: The caster's face shines; those near it are hard to frighten or deceive.
-- **Shining_Mirage** `Shining_Mirage` — positive · spellpower
+- **Shining_Mirage** `Shining_Mirage` — positive · spellpower · aura: Shining Mirage
   - desc: The caster's outline swims and doubles. Those who look at it lose track of themselves — until they learn to look past it.
 
 ## Disease `disease`

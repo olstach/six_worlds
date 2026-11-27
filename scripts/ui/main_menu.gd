@@ -3242,6 +3242,7 @@ func _create_party_card(character: Dictionary) -> PanelContainer:
 	if lasting != "":
 		var lasting_label := Label.new()
 		lasting_label.name = "LastingDamage"
+		lasting_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		lasting_label.text = lasting
 		lasting_label.add_theme_font_size_override("font_size", 11)
 		lasting_label.add_theme_color_override("font_color", Color(0.85, 0.5, 0.4))

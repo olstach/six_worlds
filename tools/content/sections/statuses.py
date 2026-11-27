@@ -49,7 +49,16 @@ def _damage_names() -> dict:
             if isinstance(v, dict)}
 
 
+def _aura_names() -> dict:
+    path = _ROOT / "resources/data/auras.json"
+    if not path.is_file():
+        return {}
+    auras = json.loads(path.read_text(encoding="utf-8")).get("auras", {})
+    return {k: str(v.get("name", k)) for k, v in auras.items() if isinstance(v, dict)}
+
+
 FLAG_LABELS = _flag_labels()
+AURA_NAMES = _aura_names()
 DAMAGE_NAMES = _damage_names()
 
 # Who `to: "source"` is, by what set the trigger off (SOURCE_WORDS in GDScript).
@@ -118,6 +127,28 @@ def _resist_name(key: str) -> str:
     return {"all": "all damage", "magic": "magic damage"}.get(key, DAMAGE_NAMES.get(key, key))
 
 
+def _cleared_by(clauses: list, value: str) -> str:
+    """What clears lasting damage: "full rest or White magic 5"."""
+    clauses = clauses or [{"rest": "full"}, {"restore": value}]
+    out = []
+    for clause in clauses:
+        for kind, want in clause.items():
+            rule = want if isinstance(want, dict) else {}
+            if kind == "rest":
+                out.append(f"{want} rest")
+            elif kind == "heal":
+                school = str(rule.get("school", "")).removesuffix("_magic").capitalize()
+                text = f"{school} magic" if school else "healing"
+                if int(rule.get("min_level", 0)) > 0:
+                    text += f" {int(rule['min_level'])}"
+                out.append(text)
+            elif kind == "restore":
+                out.append("a restore")
+            elif kind == "cleanse":
+                out.append(f"a cleanse of {rule.get('category', 'its cause')}")
+    return " or ".join(out)
+
+
 def _modify(e: dict) -> str:
     value, mode, amt = str(e.get("value", "")), str(e.get("mode", "")), e.get("amount", 0)
     ns, _, name = value.partition(".")
@@ -132,8 +163,8 @@ def _modify(e: dict) -> str:
         if mode == "absorb":
             return f"takes {shown} {pool} from the target{note}"
     if num and abs(float(amt) - round(float(amt))) < 1e-9:
-        n = int(round(float(amt)))
-        signed = (MINUS if mode == "drain" else "+") + str(n)
+        n = int(round(float(amt))) * (-1 if mode == "drain" else 1)
+        signed = ("+" if n >= 0 else MINUS) + str(abs(n))
     else:
         signed = (MINUS if mode == "drain" else "+") + shown
     if ns == "resist":
@@ -156,7 +187,7 @@ def _modify(e: dict) -> str:
         if mode in ("fortify", "drain"):
             return f"{signed} {label}{note}"
         if mode == "damage":
-            return f"{MINUS}{shown} {label} (lasting)"
+            return f"{MINUS}{shown} {label} (until {_cleared_by(e.get('cleared_by') or [], value)})"
     return ""
 
 
@@ -292,6 +323,20 @@ def describe_triggers(triggers) -> list:
     return out
 
 
+def effect_parts(s: dict) -> list:
+    """What a status holds, ticks, answers and switches on, one lower-case
+    phrase each, in the order the tooltip words them (while_active, periodic,
+    triggers, flags). tools/fixtures/status_wording.json is the GDScript
+    side of exactly this list, and a test compares them."""
+    parts = [_effect(e) for e in s.get("while_active") or []]
+    per = s.get("periodic") or {}
+    when = PERIODIC_WORDS.get(per.get("when", "turn_start"), PERIODIC_WORDS["turn_start"])
+    parts += [_effect(e, "", when) for e in per.get("effects", [])]
+    parts += describe_triggers(s.get("triggers"))
+    parts += describe_flags(s.get("flags"))
+    return [_lc(p) for p in parts if p]
+
+
 def _context(s: dict) -> str:
     """negative · turns 3 · −10 armor · cannot move: polarity, duration, then
     what it holds, ticks, answers and switches on, one phrase each."""
@@ -300,14 +345,11 @@ def _context(s: dict) -> str:
     if isinstance(dur, dict) and dur.get("kind"):
         n = dur.get("base")
         parts.append(f"{dur['kind']} {n}" if n is not None else str(dur["kind"]))
-    for e in s.get("while_active") or []:
-        parts.append(_effect(e))
-    per = s.get("periodic") or {}
-    when = PERIODIC_WORDS.get(per.get("when", "turn_start"), PERIODIC_WORDS["turn_start"])
-    for e in per.get("effects", []):
-        parts.append(_effect(e, "", when))
-    parts += describe_triggers(s.get("triggers"))
-    parts += describe_flags(s.get("flags"))
+    parts += effect_parts(s)
+    # An aura is worded by the tooltip from auras.json; here it is just named.
+    auras = s.get("aura") or []
+    for aura_id in ([auras] if isinstance(auras, str) else auras):
+        parts.append("aura: " + AURA_NAMES.get(aura_id, str(aura_id).replace("_", " ")))
     if s.get("save"):
         parts.append("save " + str(s["save"].get("stat", "")))
     if s.get("spread"):

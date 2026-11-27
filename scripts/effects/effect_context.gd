@@ -94,7 +94,7 @@ func position() -> Vector2i:
 ## Every school of the container: `schools`, or [school] when only that was set.
 func all_schools() -> Array[String]:
 	if not schools.is_empty():
-		return schools
+		return schools.duplicate()
 	var only: Array[String] = []
 	if school != "":
 		only.append(school)
@@ -120,10 +120,10 @@ static func for_spell(caster: Node, target: Node, spell_id: String, spell: Dicti
 	ctx.container_kind = "spell"
 	ctx.container_id = spell_id
 	ctx.level = int(spell.get("level", 0))
-	var schools: Array = spell.get("schools", [])
-	ctx.school = String(schools[0]).to_lower() if not schools.is_empty() else ""
+	var spell_schools: Array = spell.get("schools", [])
+	ctx.school = String(spell_schools[0]).to_lower() if not spell_schools.is_empty() else ""
 	# Keep them all: a heal tagged White + Water clears either school's damage.
-	for each_school in schools:
+	for each_school in spell_schools:
 		ctx.schools.append(String(each_school).to_lower())
 	if caster != null and caster.has_method("get_spellpower"):
 		ctx.power = CombatManager._calculate_spell_bonus(caster, spell)

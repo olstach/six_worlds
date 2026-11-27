@@ -1,0 +1,665 @@
+{
+	"Air_Immune": [
+		"immune to lightning"
+	],
+	"Air_Shield": [
+		"takes less damage from ranged attacks"
+	],
+	"Ancestors_Blessing": [
+		"+3 initiative",
+		"+5 accuracy",
+		"+5 dodge",
+		"+3 damage",
+		"+5 armor",
+		"+3 crit chance",
+		"+3 spellpower",
+		"resists death"
+	],
+	"Ancestral_Guidance": [
+		"+3 spellpower"
+	],
+	"Ancestral_Vengeance": [
+		"hits harder when an ally dies"
+	],
+	"Anchored": [
+		"cannot teleport"
+	],
+	"Armor_Debuff_50": [
+		"−20 armor"
+	],
+	"Armor_Reduced": [
+		"−10 armor"
+	],
+	"Armored_Major": [
+		"physical resistance +50%"
+	],
+	"Armored_Minor": [
+		"physical resistance +25%"
+	],
+	"Armored_Supreme": [
+		"physical resistance +75%"
+	],
+	"Aura_of_Blessing": [],
+	"Awareness_Buff": [
+		"+3 spellpower"
+	],
+	"Awareness_Plus_3": [
+		"+3 Awareness"
+	],
+	"Berserk": [
+		"attacks the closest creature",
+		"ignores who is friend or foe",
+		"breaks concentration"
+	],
+	"Bleeding": [
+		"3 physical damage (or the spell's value) at the start of each turn"
+	],
+	"Blessed": [
+		"+10 accuracy",
+		"+10 armor"
+	],
+	"Blessed_Shot": [
+		"+15 damage",
+		"+10 crit chance",
+		"its next ranged attack always hits"
+	],
+	"Blinded": [
+		"−40 accuracy",
+		"cannot use ranged attacks"
+	],
+	"Blood_Hunger": [
+		"heals from the damage it deals"
+	],
+	"Bloodlust": [
+		"+5 damage"
+	],
+	"Blurred": [
+		"+15 dodge",
+		"its attacks may miss"
+	],
+	"Boiling_Blood": [
+		"15 physical damage (or the spell's value) at the start of each turn"
+	],
+	"Burning": [
+		"5 fire damage (or the spell's value) at the start of each turn"
+	],
+	"Burning_Weapon": [
+		"when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit"
+	],
+	"Caged": [
+		"cannot move",
+		"cannot be targeted"
+	],
+	"Camels_Blessing": [],
+	"Chameleon": [
+		"harder to spot"
+	],
+	"Chaotic": [
+		"moves randomly",
+		"breaks concentration"
+	],
+	"Charmed": [
+		"treats the caster as an ally",
+		"will not attack the caster",
+		"breaks concentration",
+		"ends if the one who caused it hurts it"
+	],
+	"Cleansed": [
+		"removes every debuff when applied",
+		"immune to negative"
+	],
+	"Confused": [
+		"moves randomly",
+		"attacks random targets",
+		"breaks concentration"
+	],
+	"Constitution_Buff": [
+		"+2 Constitution"
+	],
+	"Constitution_Minus_2": [
+		"−2 Constitution"
+	],
+	"Counterstance": [
+		"when attacked in melee (up to 3 times a turn, once per attacker): makes a free attack against the attacker"
+	],
+	"Crystal_Diadem": [
+		"+8 initiative",
+		"+13 spellpower"
+	],
+	"Cursed": [
+		"−10 accuracy",
+		"−10 armor"
+	],
+	"Damage_Debuff": [
+		"−5 damage"
+	],
+	"Dampening_Aura": [],
+	"Dazed": [
+		"−5 initiative",
+		"−10 accuracy"
+	],
+	"Death_Immunity": [
+		"cannot die",
+		"hP cannot drop below 1"
+	],
+	"Demoralized": [
+		"−10 accuracy",
+		"−10 armor",
+		"counts as demoralized"
+	],
+	"Disarmed": [
+		"cannot make weapon attacks"
+	],
+	"Diseased": [
+		"10 poison damage (or the spell's value) at the start of each turn"
+	],
+	"Disoriented": [
+		"−3 initiative",
+		"−5 accuracy",
+		"−5 dodge",
+		"−5 damage",
+		"−5 armor",
+		"−5 spellpower"
+	],
+	"Divine_Champion": [
+		"+8 initiative",
+		"+8 accuracy",
+		"+8 dodge",
+		"+8 damage",
+		"+8 armor",
+		"+5 crit chance",
+		"+8 spellpower"
+	],
+	"Divinely_Inspired": [
+		"+8 damage",
+		"+8 spellpower"
+	],
+	"Dodge_Buff": [
+		"+15 dodge"
+	],
+	"Dodge_Debuff": [
+		"−15 dodge"
+	],
+	"Dominated": [
+		"controlled by the caster",
+		"breaks concentration"
+	],
+	"Doomed": [
+		"when it runs out: it dies (black damage)"
+	],
+	"Drowning": [
+		"cannot move"
+	],
+	"Electrified_Weapon": [
+		"when it hits: 20% of the damage dealt as lightning damage (at least 1) to the unit it hit",
+		"its hits may stun"
+	],
+	"Encouraged": [
+		"+5 initiative"
+	],
+	"Entangled": [
+		"−15 dodge",
+		"cannot move"
+	],
+	"Eternal_Vow": [
+		"returns next turn if it dies"
+	],
+	"Extra_Action": [
+		"grants an extra action"
+	],
+	"Fan_the_Flames": [
+		"burning damage it deals is increased"
+	],
+	"Favorable_Wind": [],
+	"Feared": [
+		"flees from whoever caused it",
+		"breaks concentration",
+		"counts as demoralized"
+	],
+	"Festering": [
+		"5 poison damage (or the spell's value) at the start of each turn, 5 more for each turn it has lasted"
+	],
+	"Finesse_Plus_2": [
+		"+2 Finesse"
+	],
+	"Fire_Immune": [
+		"immune to fire"
+	],
+	"Fire_Resistance_25": [
+		"fire resistance +25%"
+	],
+	"Fire_Vulnerable": [
+		"fire resistance −50%"
+	],
+	"Fire_Vulnerable_50": [
+		"fire resistance −50%"
+	],
+	"Fireshield": [
+		"when struck in melee: 5 fire damage to the attacker (plus the spell's value)"
+	],
+	"Flying": [
+		"can fly",
+		"immune to ground effects",
+		"immune to melee, except from flyers"
+	],
+	"Focus_Buff_Major": [
+		"+8 spellpower"
+	],
+	"Focus_Minus_2": [
+		"−2 Focus"
+	],
+	"Focus_Plus_3": [
+		"+3 Focus"
+	],
+	"Following_Wind": [],
+	"Force_Miss": [
+		"its next attack misses"
+	],
+	"Forgetful": [
+		"cannot attack",
+		"cannot cast spells"
+	],
+	"Fortified": [
+		"+10 armor",
+		"physical resistance +25%"
+	],
+	"Friendly": [],
+	"Frozen": [
+		"physical resistance −50%",
+		"skips next turn",
+		"breaks concentration"
+	],
+	"Glass_Globe": [
+		"+5 armor"
+	],
+	"Gloomy": [
+		"−1 movement",
+		"−10 armor",
+		"counts as demoralized"
+	],
+	"Golden_Defense": [
+		"physical resistance +50%",
+		"takes less damage from spells"
+	],
+	"Grappled": [
+		"−15 dodge",
+		"cannot move"
+	],
+	"Grounded": [
+		"cannot fly"
+	],
+	"Guarding": [
+		"physical resistance +25%"
+	],
+	"Guarding_The_Gap": [
+		"when an ally is threatened (within 1 tile, up to 3 times a turn): makes a free attack against the threatening enemy"
+	],
+	"Hasted": [
+		"+5 initiative",
+		"+2 movement"
+	],
+	"Hastened": [
+		"+5 initiative",
+		"+2 movement"
+	],
+	"Heavenly_Counterflow": [
+		"when attacked in melee (once a turn): the attack misses, makes a free attack against the attacker at 130% power, moves itself 2 tiles (scatter)"
+	],
+	"Held": [
+		"cannot move",
+		"cannot act",
+		"breaks concentration"
+	],
+	"Immobilized": [
+		"cannot move",
+		"cannot act",
+		"breaks concentration"
+	],
+	"Infected": [
+		"when it runs out: 20 physical damage, Bleeding (3 turns), a Fungal Spawn emerges"
+	],
+	"Initiative_Buff": [
+		"+5 initiative"
+	],
+	"Initiative_Debuff": [
+		"−5 initiative"
+	],
+	"Inner_Flame": [
+		"fire resistance +25%",
+		"ice resistance +25%",
+		"when struck in melee: Burning (3 turns) on the attacker, unless already Burning"
+	],
+	"Inspired": [
+		"+10 accuracy"
+	],
+	"Invincible": [
+		"hP cannot drop below 1"
+	],
+	"Invisible": [
+		"cannot be targeted",
+		"breaks on attacking",
+		"hidden from sight"
+	],
+	"Invulnerable": [
+		"immune to all damage"
+	],
+	"Karmic_Bond": [
+		"shares 75% of healing with its bond"
+	],
+	"Keen_Weapon": [
+		"+10 accuracy",
+		"+10 crit chance"
+	],
+	"Kill_Zone": [
+		"when an enemy comes within reach (within weapon reach, up to 3 times a turn): makes a free attack against the enemy that came close"
+	],
+	"Knocked_Down": [
+		"−10 armor",
+		"loses 1 action"
+	],
+	"Lava_Walking": [],
+	"Levitating": [
+		"immune to ground effects",
+		"immune to terrain hazards"
+	],
+	"Lifelink": [
+		"heals from the damage it deals"
+	],
+	"Lightning_Form": [
+		"immune to lightning",
+		"physical resistance +50%",
+		"ice resistance −50%",
+		"when struck in melee: 10 lightning damage to the attacker (plus the spell's value), 30% chance of Stunned (1 turn) on the attacker, unless already Stunned",
+		"can fly"
+	],
+	"Lucky": [
+		"+15 crit chance"
+	],
+	"Lured": [
+		"is drawn toward its target"
+	],
+	"Magic_Mirror": [
+		"when targeted by a spell (50% chance): it is turned back on whoever sent it"
+	],
+	"Magic_Shield": [
+		"takes less damage from spells"
+	],
+	"Magnetizing_Aura": [
+		"may charm enemies that approach in melee"
+	],
+	"Major_Dodge": [
+		"+30 dodge"
+	],
+	"Mantric_Armor": [
+		"magic damage resistance +25%",
+		"damage is taken from a shield first"
+	],
+	"Marked_for_Death": [
+		"takes more damage",
+		"vulnerable to critical hits"
+	],
+	"Marshtread": [],
+	"Melee_Attack_Debuff_50": [
+		"−40 accuracy"
+	],
+	"Mental_Immunity": [
+		"immune to Charmed",
+		"immune to Dominated",
+		"immune to Feared",
+		"immune to Confused",
+		"immune to Chaotic"
+	],
+	"Mindmucked": [
+		"−8 initiative",
+		"−13 spellpower"
+	],
+	"Mirror_Images": [
+		"its copies absorb attacks"
+	],
+	"Mirthful": [
+		"+5 initiative",
+		"+2 movement",
+		"+5 damage"
+	],
+	"Movement_Debuff": [
+		"movement halved"
+	],
+	"None_Shall_Pass": [
+		"when an enemy comes within reach (within 2 tiles, up to 3 times a turn): makes a free attack against the enemy that came close, Slowed (1 turn) on the enemy that came close"
+	],
+	"Pacified": [
+		"is out of the fight",
+		"will not attack"
+	],
+	"Pain_Mirror": [
+		"when struck: reflects 50% of the damage taken as physical damage to the attacker"
+	],
+	"Paralyzed": [
+		"cannot move",
+		"cannot act",
+		"breaks concentration"
+	],
+	"Petrified": [
+		"immune to physical",
+		"skips next turn",
+		"cannot act",
+		"breaks concentration"
+	],
+	"Phase_Wind": [
+		"+15 dodge",
+		"can move through enemies"
+	],
+	"Phasing": [
+		"physical resistance +50%"
+	],
+	"Physical_Immune": [
+		"immune to physical"
+	],
+	"Physical_Resist_50": [
+		"physical resistance +50%"
+	],
+	"Pinned": [
+		"cannot move"
+	],
+	"Poison_Skin": [
+		"when struck in melee: Poisoned (3 turns) on the attacker, unless already Poisoned"
+	],
+	"Poisoned": [
+		"3 poison damage (or the spell's value) at the start of each turn"
+	],
+	"Praying": [
+		"+10 armor",
+		"magic damage resistance +15%"
+	],
+	"Precision": [
+		"+10 accuracy",
+		"+8 crit chance"
+	],
+	"Prone": [
+		"−10 armor",
+		"loses 1 action"
+	],
+	"Pushed": [],
+	"Radiance": [],
+	"Radiant_Visage": [],
+	"Rage": [
+		"+5 damage",
+		"−10 armor"
+	],
+	"Rahulas_Cloak": [],
+	"Rainbow_Cloak": [
+		"+15 dodge",
+		"magic damage resistance +15%"
+	],
+	"Range_Debuff": [],
+	"Ranged_Attack_Debuff_50": [
+		"−40 accuracy"
+	],
+	"Ranged_Damage_Debuff_50": [
+		"−10 damage"
+	],
+	"Reflect": [
+		"when attacked (60% chance): it is turned back on whoever sent it"
+	],
+	"Regenerating": [
+		"heals 10 HP at the start of each turn"
+	],
+	"Resolute": [
+		"immune to Charmed",
+		"immune to Dominated",
+		"immune to Feared",
+		"immune to Confused",
+		"immune to Chaotic"
+	],
+	"Riposte_Ready": [
+		"ripostes its next sword attack"
+	],
+	"Rooted": [
+		"cannot move"
+	],
+	"Rotting": [
+		"−3 initiative",
+		"−5 accuracy",
+		"−5 dodge",
+		"−5 damage",
+		"−5 armor",
+		"−5 spellpower",
+		"50 black damage (or the spell's value) at the start of each turn"
+	],
+	"Sanctuary": [
+		"cannot be targeted",
+		"cannot target enemies",
+		"breaks on any offensive action"
+	],
+	"Set_For_Charge": [
+		"when an enemy comes within reach (within 2 tiles, once a turn): makes a free attack against the enemy that came close at 200% power"
+	],
+	"Shadow_Cloaked": [
+		"+15 dodge",
+		"harder to spot"
+	],
+	"Shadow_Pinned": [
+		"rooted in place",
+		"takes damage when it tries to move"
+	],
+	"Shield_Wall": [],
+	"Shielded": [
+		"+10 armor"
+	],
+	"Shimmering": [
+		"+5 dodge"
+	],
+	"Shining_Mirage": [],
+	"Silenced": [
+		"cannot cast spells"
+	],
+	"Slippery_Terrain": [
+		"may fall prone when moving"
+	],
+	"Slowed": [
+		"movement halved"
+	],
+	"Slowed_After_Escape": [
+		"movement halved"
+	],
+	"Smoke_Form": [
+		"+25 dodge",
+		"ice resistance −25%",
+		"can move through enemies"
+	],
+	"Soaked": [
+		"lightning resistance −25%"
+	],
+	"Solar_Form": [
+		"immune to fire",
+		"ice resistance −50%",
+		"when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit"
+	],
+	"Soothing_Presence": [
+		"heals 5 HP at the start of each turn"
+	],
+	"Soul_Burning": [
+		"20 black damage (or the spell's value) at the start of each turn"
+	],
+	"Storm_Lord": [
+		"when struck in melee: 8 lightning damage to the attacker (plus the spell's value)",
+		"can fly",
+		"immune to ranged attacks"
+	],
+	"Strength_Buff": [
+		"+3 damage"
+	],
+	"Strength_Plus_2": [
+		"+2 Strength"
+	],
+	"Strengthened": [
+		"+5 damage"
+	],
+	"Stunned": [
+		"skips next turn",
+		"cannot act",
+		"breaks concentration"
+	],
+	"Subjugated": [
+		"cannot move",
+		"cannot attack"
+	],
+	"Suffering": [
+		"−5 initiative",
+		"−1 movement",
+		"−10 armor"
+	],
+	"Suffocating": [
+		"30 physical damage (or the spell's value) at the start of each turn",
+		"cannot cast spells"
+	],
+	"Swarmed": [
+		"1 physical damage (or the spell's value) at the start of each turn",
+		"focus save on each hit, or lose actions"
+	],
+	"Taunt": [
+		"must attack whoever taunted it"
+	],
+	"Thin_Air": [
+		"+4 movement",
+		"immune to physical",
+		"cannot deal physical damage"
+	],
+	"Time_Stopped": [
+		"skips next turn",
+		"cannot act"
+	],
+	"Tongues_of_Fire": [
+		"when struck in melee: 5 fire damage to the attacker (plus the spell's value)",
+		"when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit"
+	],
+	"Trapped": [
+		"−10 armor",
+		"cannot move"
+	],
+	"Water_Immune": [
+		"immune to ice"
+	],
+	"Water_Vulnerable": [
+		"ice resistance −50%"
+	],
+	"Water_Vulnerable_25": [
+		"ice resistance −25%"
+	],
+	"Water_Vulnerable_50": [
+		"ice resistance −50%"
+	],
+	"Water_Walking": [
+		"immune to water terrain"
+	],
+	"Weakened": [
+		"−10 accuracy",
+		"−5 damage"
+	],
+	"Wrathfully_Bound": [
+		"25 space damage (or the spell's value) at the start of each turn"
+	],
+	"Yaksha_Strength": [
+		"+13 damage"
+	]
+}

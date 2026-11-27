@@ -604,10 +604,10 @@ static func _modify_sentence(effect: Dictionary, entry: Dictionary, note: String
 			if mode == "set" and is_number:
 				if amount >= Resistance.DECLARED_IMMUNITY:
 					return "Immune to %s" % what
-				return "%s resistance set to %d%%" % [what.capitalize(), int(amount)]
+				return "%s resistance set to %d%%" % [what.substr(0, 1).to_upper() + what.substr(1), int(amount)]
 			if is_number and mode == "fortify" and amount >= Resistance.DECLARED_IMMUNITY:
 				return "Immune to %s" % what
-			return "%s resistance %s%%%s" % [what.capitalize(), signed_text, note]
+			return "%s resistance %s%%%s" % [what.substr(0, 1).to_upper() + what.substr(1), signed_text, note]
 		"stat":
 			var word: String = str(STAT_WORDS.get(name, name.replace("_", " ")))
 			match mode:

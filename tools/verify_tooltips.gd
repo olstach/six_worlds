@@ -15,7 +15,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 18
+const EXPECTED_CHECKS: int = 19
 
 
 func _ready() -> void:
@@ -39,6 +39,7 @@ func _ready() -> void:
 	_check_status_tooltip_from_fields()
 	_check_every_flag_has_words()
 	_check_party_line_lists_lasting_damage()
+	_check_status_wording_matches_fixture()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -564,9 +565,26 @@ func _check_status_tooltip_from_fields() -> void:
 	var abstract: String = TooltipText.status("Burning")
 	if not "5 fire damage (or the spell's value) at the start of each turn" in abstract:
 		_fail("an abstract Burning should say its 5 is a default: %s" % abstract)
+	# Every status that has anything to say says it: at least one line beyond
+	# the header, description, duration and dispel lines. That is every status
+	# with effect fields, a save, a spread or an aura, and every status with no
+	# description that is not an "Unbuilt" stub.
 	for sname in CombatManager._status_effects:
-		if TooltipText.status(sname, {"status": sname, "duration": 2}).strip_edges() == "":
-			_fail("%s has an empty tooltip" % sname)
+		var def: Dictionary = CombatManager._status_effects[sname]
+		var has_fields: bool = false
+		for key in ["while_active", "periodic", "flags", "triggers", "save", "spread", "aura"]:
+			if not def.get(key, [] if key != "periodic" else {}).is_empty():
+				has_fields = true
+		var stub: bool = "Unbuilt" in str(def.get("notes", ""))
+		if not has_fields and (str(def.get("description", "")) != "" or stub):
+			continue
+		var said: int = 0
+		for line in TooltipText.status(sname, {"status": sname, "duration": 2}).split("\n"):
+			if line.begins_with("  \u2022 ") or line.begins_with("When ") or line.begins_with("At the ") \
+					or line.begins_with("Save:") or line.begins_with("Can spread") or line.begins_with("Aura:"):
+				said += 1
+		if said == 0:
+			_fail("%s has fields to word (or no description) but its tooltip says nothing about them" % sname)
 	# The helpers are reusable on their own, for spells in stage 3.
 	var lines: PackedStringArray = TooltipText.describe_effects([
 		{"op": "damage", "amount": 3, "type": "piercing", "to": "source"}], {}, "struck")
@@ -607,4 +625,59 @@ func _check_party_line_lists_lasting_damage() -> void:
 	for want in ["Focus \u22122 (until full rest or White magic 5)", "Swords \u22121 (until full rest or a restore)"]:
 		if not want in line:
 			_fail("the party line '%s' does not say '%s'" % [line, want])
+	_done()
+
+
+## Where the wording of every status is kept so the Python side can be
+## compared with it (tools/test_content_sections_rules.py). Regenerate after a
+## wording change with:
+##   godot --headless --path . tools/verify_tooltips.tscn -- --write-wording
+const WORDING_FIXTURE: String = "res://tools/fixtures/status_wording.json"
+
+
+## The effect wording of every status, name -> its lines from describe_effects
+## (while_active), describe_periodic, describe_triggers and describe_flags,
+## described in the abstract (no live entry) with the first letter lower-cased,
+## which is how the CONTENT.md context line writes them.
+func _status_wording() -> Dictionary:
+	var out: Dictionary = {}
+	for sname in CombatManager._status_effects:
+		var def: Dictionary = CombatManager._status_effects[sname]
+		var lines: Array = []
+		for group in [TooltipText.describe_effects(def.get("while_active", [])),
+				TooltipText.describe_periodic(def.get("periodic", {})),
+				TooltipText.describe_triggers(def.get("triggers", [])),
+				TooltipText.describe_flags(def.get("flags", []))]:
+			for line in group:
+				lines.append(line.substr(0, 1).to_lower() + line.substr(1))
+		out[str(def.get("name", sname))] = lines
+	return out
+
+
+## The committed fixture must equal what the game words today (so a wording
+## change forces a regenerate, and the Python test then checks the other side).
+func _check_status_wording_matches_fixture() -> void:
+	var now: Dictionary = _status_wording()
+	if "--write-wording" in OS.get_cmdline_user_args():
+		var file := FileAccess.open(WORDING_FIXTURE, FileAccess.WRITE)
+		file.store_string(JSON.stringify(now, "\t", true) + "\n")
+		file.close()
+		print("  wrote %s (%d statuses)" % [WORDING_FIXTURE, now.size()])
+		_done()
+		return
+	var saved = JSON.parse_string(FileAccess.get_file_as_string(WORDING_FIXTURE))
+	if typeof(saved) != TYPE_DICTIONARY:
+		_fail("%s is missing or not JSON; regenerate it (see WORDING_FIXTURE)" % WORDING_FIXTURE)
+	else:
+		var differing: Array = []
+		for sname in now:
+			if not saved.has(sname) or str(saved[sname]) != str(now[sname]):
+				differing.append(sname)
+		for sname in saved:
+			if not now.has(sname):
+				differing.append(sname)
+		if not differing.is_empty():
+			_fail("status wording differs from %s for %d status(es), e.g. %s; regenerate with "
+				% [WORDING_FIXTURE, differing.size(), differing.slice(0, 3)]
+				+ "godot --headless --path . tools/verify_tooltips.tscn -- --write-wording")
 	_done()

@@ -135,11 +135,35 @@ class RulesRoundTrip(unittest.TestCase):
     def test_every_status_has_a_context_line_and_every_flag_words(self):
         rows = jsonio.DataSet.load(ROOT).get(statuses.FILE)["statuses"]
         for s in rows:
-            self.assertTrue(statuses._context(s), s["name"])
+            has_fields = any(s.get(k) for k in
+                             ("while_active", "periodic", "flags", "triggers", "save", "spread", "aura"))
+            stub = "Unbuilt" in str(s.get("notes", ""))
+            if not has_fields and (s.get("description") or stub):
+                continue
+            # More than polarity and duration: something was worded.
+            line = statuses._context(s)
+            base = 1 + (1 if (s.get("duration") or {}).get("kind") else 0)
+            self.assertGreater(len(line.split(" \u00b7 ")), base,
+                               (s["name"], line))
         vocab = (ROOT / "scripts/effects/effect_vocab.gd").read_text(encoding="utf-8")
         block = vocab.split("const FLAGS: Array[String] = [", 1)[1].split("]", 1)[0]
         for flag in re.findall(r'"([a-z_0-9]+)"', block):
             self.assertIn(flag, statuses.FLAG_LABELS, flag)
+
+    def test_python_wording_matches_the_game_for_every_status(self):
+        """The CONTENT.md context line (statuses.py) and the tooltip
+        (tooltip_text.gd) are two ports of one wording. verify_tooltips writes
+        the game's lines to tools/fixtures/status_wording.json; they must equal
+        statuses.effect_parts for EVERY status. After a wording change,
+        regenerate the fixture with:
+          godot --headless --path . tools/verify_tooltips.tscn -- --write-wording
+        """
+        fixture = json.loads((ROOT / "tools/fixtures/status_wording.json")
+                             .read_text(encoding="utf-8"))
+        rows = jsonio.DataSet.load(ROOT).get(statuses.FILE)["statuses"]
+        self.assertEqual(sorted(fixture), sorted(s["name"] for s in rows))
+        for s in rows:
+            self.assertEqual(statuses.effect_parts(s), fixture[s["name"]], s["name"])
 
     def test_statuses_cover_every_status(self):
         ds = jsonio.DataSet.load(ROOT)
