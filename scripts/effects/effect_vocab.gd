@@ -106,6 +106,11 @@ const STATS: Array[String] = [
 ## total a getter can scale: only fortify and drain mean anything on them.
 const FLAT_ONLY_STATS: Array[String] = ["max_hp", "mana_cost_pct"]
 
+## Stats that ARE a multiplier (base 1): apply_damage multiplies the damage
+## taken by them. Only `multiply` means anything here; a fortify of 0.2 would
+## turn a x1.2 into a x21 without a word, so the other modes are refused.
+const MULTIPLY_ONLY_STATS: Array[String] = ["magic_damage_taken", "physical_damage_taken"]
+
 ## Extra resist names beyond the damage types in damage_types.json. Each names
 ## a group of types, and Resistance decides which hits it reaches:
 ##   all_elemental  the types of category `element` (fire, lightning, space, ice)
@@ -228,6 +233,18 @@ const STACKING_MODES: Array[String] = ["refresh", "stack", "independent"]
 ## The `modify` modes that LAST (and so may sit in a status's `while_active`).
 ## restore and absorb are instant, so they belong in `periodic` or a trigger.
 const LASTING_MODES: Array[String] = ["fortify", "drain", "set", "multiply", "damage"]
+
+## Namespaces a `while_active` modify may not change, whatever its mode: every
+## change to a resource (hp, mana ...) and every push of pressure happens once,
+## so it would never be released, and it would run again each time a stack is
+## gained or lost (CombatManager._refresh_status_holds).
+const INSTANT_NAMESPACES: Array[String] = ["resource", "pressure"]
+
+## The modes that become holds (ValuePaths.add_hold). Two of these on the same
+## value in one `while_active` list would share one source id, and a hold
+## replaces any other hold of its source on that value, so the first would be
+## lost without a word. `damage` is not a hold (it lives on the character).
+const HOLD_MODES: Array[String] = ["fortify", "drain", "set", "multiply"]
 
 ## Rule flags a status may carry: the yes/no rules statuses.json used to say
 ## as words in `effects` (and the status-name lists CombatManager kept in code).
@@ -486,12 +503,7 @@ static func validate_status(def: Dictionary, where: String) -> Array[String]:
 			errs.append("%s: 'while_active' must be a list of effects" % where)
 		else:
 			errs.append_array(validate_list(def["while_active"], where + ".while_active"))
-			for i in def["while_active"].size():
-				var e = def["while_active"][i]
-				if typeof(e) == TYPE_DICTIONARY and e.get("op", "") == "modify" \
-						and not e.get("mode", "") in LASTING_MODES:
-					errs.append("%s.while_active[%d]: mode '%s' is instant, not lasting (%s)"
-						% [where, i, e.get("mode", ""), ", ".join(LASTING_MODES)])
+			_validate_while_active(def["while_active"], where, errs)
 
 	if def.has("periodic"):
 		var per = def["periodic"]
@@ -554,6 +566,51 @@ static func validate_status(def: Dictionary, where: String) -> Array[String]:
 		_validate_cleared_by(def["cleared_by"], where, errs)
 
 	return errs
+
+
+## The rules only `while_active` has. Its effects are held for as long as the
+## status lasts and released by the status's id from the CARRIER when it ends
+## (CombatManager._end_status), so each one must be something that can be
+## released from there:
+##   * a `modify` (any other op would fire once, at application, and then
+##     never again: put it in a trigger or `periodic` instead);
+##   * on the carrier: no `to`, or `to: "target"` (a hold put on anyone else
+##     would stay until the end of the fight);
+##   * in a lasting mode, and not on a resource or pressure (those act once);
+##   * no two holds on the same value, counting group members: they would
+##     share the status's id, and the second would silently replace the first.
+static func _validate_while_active(list: Array, where: String, errs: Array[String]) -> void:
+	var held: Dictionary = {}   # expanded value -> index of the effect holding it
+	for i in list.size():
+		var e = list[i]
+		if typeof(e) != TYPE_DICTIONARY:
+			continue
+		var label := "%s.while_active[%d]" % [where, i]
+		var op: String = str(e.get("op", ""))
+		if op != "modify":
+			errs.append("%s: while_active holds modify effects only; a '%s' fires once (use a trigger or periodic)"
+				% [label, op])
+			continue
+		if e.has("to") and e["to"] != "target":
+			errs.append("%s: a while_active effect holds on the carrier; 'to' must be \"target\" or left out, not '%s'"
+				% [label, e["to"]])
+		var mode: String = str(e.get("mode", ""))
+		if not mode in LASTING_MODES:
+			errs.append("%s: mode '%s' is instant, not lasting (%s)"
+				% [label, mode, ", ".join(LASTING_MODES)])
+		var value: String = str(e.get("value", ""))
+		if value.get_slice(".", 0) in INSTANT_NAMESPACES:
+			errs.append("%s: %s acts once and cannot be held; put it in a trigger or periodic"
+				% [label, value])
+			continue
+		if not mode in HOLD_MODES or not is_value_path(value):
+			continue
+		for member in ValuePaths.expand(value):
+			if held.has(member):
+				errs.append("%s: %s is already held by while_active[%d]; two holds of one status on one value replace each other"
+					% [label, member, held[member]])
+			else:
+				held[member] = i
 
 
 ## `stacking.grow`: {on, by, if?}. Each time the owner's trigger `on` fires,
@@ -769,6 +826,11 @@ static func validate_zone(def: Dictionary, where: String) -> Array[String]:
 				errs.append("%s: a %s happens once at the tile; give the zone an 'affects' instead of a 'to'" % [label, op])
 			if op == "summon" and e.get("from", "") == "corpse" and trigger != "on_death_inside":
 				errs.append("%s: summon from 'corpse' only means something in on_death_inside" % label)
+			if str(e.get("value", "")) == "stat.max_hp":
+				# Max HP is pushed onto units by _refresh_aura_max_hp, which a
+				# zone's placing, drifting and ending does not call, so a zone's
+				# max HP would arrive and leave a move late. Refused until it does.
+				errs.append("%s: a zone cannot change stat.max_hp (nothing refreshes it when the zone moves or ends)" % label)
 			if trigger == "while_inside":
 				_validate_inside_effect(e, label, errs)
 				continue
@@ -1047,7 +1109,33 @@ static func _validate_modify(effect: Dictionary, where: String, errs: Array[Stri
 					and not mode in ["fortify", "drain"]:
 				errs.append("%s: %s is a number of points; only fortify and drain change it"
 					% [where, effect["value"]])
+			elif ns == "stat" and String(effect["value"]).get_slice(".", 1) in MULTIPLY_ONLY_STATS \
+					and mode != "multiply":
+				errs.append("%s: %s is a multiplier; only multiply changes it"
+					% [where, effect["value"]])
+			elif ns == "affinity" and _reads_value(effect.get("amount", null), String(effect["value"])):
+				# Reading an affinity runs its holds and auras, which would read
+				# the amount again, which reads the affinity ... without end.
+				errs.append("%s: a modify of %s cannot read its amount from %s itself"
+					% [where, effect["value"], effect["value"]])
 	_validate_magnitude(effect, "amount", false, where, errs)
+
+
+## True when the magnitude `m` reads the value path `value` (a borrow
+## "<unit>.<value>" or a pct_of "<value>" / "<unit>.<value>").
+static func _reads_value(m, value: String) -> bool:
+	if typeof(m) != TYPE_DICTIONARY:
+		return false
+	for key in ["from", "pct_of"]:
+		if not m.has(key):
+			continue
+		var src: String = str(m[key])
+		if src == value:
+			return true
+		var prefix: String = src.get_slice(".", 0)
+		if prefix in BORROW_UNIT_PREFIXES and src.substr(prefix.length() + 1) == value:
+			return true
+	return false
 
 
 static func _validate_status(effect: Dictionary, where: String, errs: Array[String]) -> void:

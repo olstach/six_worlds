@@ -85,7 +85,6 @@ NAMESPACES = _gd_list(_vocab_src, "NAMESPACES")
 ATTRIBUTES = _gd_list(_vocab_src, "ATTRIBUTES")
 SKILL_GROUP_CATEGORIES = _gd_list(_vocab_src, "SKILL_GROUP_CATEGORIES")
 UNREADABLE_NAMESPACES = _gd_list(_vocab_src, "UNREADABLE_NAMESPACES")
-
 RESOURCES = _gd_list(_vocab_src, "RESOURCES")
 STATS = _gd_list(_vocab_src, "STATS")
 RESIST_GROUPS = _gd_list(_vocab_src, "RESIST_GROUPS")
@@ -107,6 +106,8 @@ SCOPES = _gd_list(_vocab_src, "SCOPES")
 DURATION_KINDS = _gd_list(_vocab_src, "DURATION_KINDS")
 STACKING_MODES = _gd_list(_vocab_src, "STACKING_MODES")
 LASTING_MODES = _gd_list(_vocab_src, "LASTING_MODES")
+INSTANT_NAMESPACES = _gd_list(_vocab_src, "INSTANT_NAMESPACES")
+HOLD_MODES = _gd_list(_vocab_src, "HOLD_MODES")
 FLAGS = _gd_list(_vocab_src, "FLAGS")
 IMMUNE_FLAG_PREFIX = _gd_string(_vocab_src, "IMMUNE_FLAG_PREFIX")
 STATUS_TRIGGERS = _gd_list(_vocab_src, "STATUS_TRIGGERS")
@@ -131,6 +132,7 @@ SPREAD_TO = _gd_list(_vocab_src, "SPREAD_TO")
 SPREAD_WHEN = _gd_list(_vocab_src, "SPREAD_WHEN")
 BUILT_IN_CREATURE_TAGS = _gd_list(_vocab_src, "BUILT_IN_CREATURE_TAGS")
 FLAT_ONLY_STATS = _gd_list(_vocab_src, "FLAT_ONLY_STATS")
+MULTIPLY_ONLY_STATS = _gd_list(_vocab_src, "MULTIPLY_ONLY_STATS")
 SUMMON_FROM = _gd_list(_vocab_src, "SUMMON_FROM")
 SAVE_FIELDS = _gd_list(_vocab_src, "SAVE_FIELDS")
 AURA_FIELDS = _gd_list(_vocab_src, "AURA_FIELDS")
@@ -172,7 +174,21 @@ def _live(d):
     return [k for k in d if not k.startswith("_")]
 
 
-SKILL_IDS = sorted(_json("resources/data/skills.json").get("skills", {}))   # PerkSystem.get_all_skill_ids
+_SKILLS = {k: v for k, v in _json("resources/data/skills.json").get("skills", {}).items()
+           if not k.startswith("_")}
+SKILL_IDS = sorted(_SKILLS)   # PerkSystem.get_all_skill_ids
+
+
+def expand_value(value):
+    """ValuePaths.expand: the values a group path stands for, else the path itself."""
+    parts = value.split(".")
+    if parts[0] == "attributes" and len(parts) == 2:
+        return ["attribute." + a for a in ATTRIBUTES]
+    if parts[0] == "skills" and len(parts) == 3 and parts[1] == "element":
+        return ["skill." + k for k in SKILL_IDS if _SKILLS[k].get("element") == parts[2]]
+    if parts[0] == "skills" and len(parts) == 2:
+        return ["skill." + k for k in SKILL_IDS if _SKILLS[k].get("category") == parts[1]]
+    return [value]
 STATUS_NAMES = [s["name"] for s in _json("resources/data/statuses.json")["statuses"]]
 SUMMON_TEMPLATES = list(_json("resources/data/summon_templates.json").get("templates", {}))
 ZONES = _live(_json("resources/data/zones.json").get("zones", {}))
@@ -323,11 +339,7 @@ def check_status(d, where):
             errs.append(f"{where}: 'while_active' must be a list of effects")
         else:
             errs.extend(check_effects(wa, where + ".while_active"))
-            for i, e in enumerate(wa):
-                if isinstance(e, dict) and e.get("op") == "modify" \
-                        and e.get("mode", "") not in LASTING_MODES:
-                    errs.append(f"{where}.while_active[{i}]: mode '{e.get('mode', '')}' is "
-                                f"instant, not lasting ({_j(LASTING_MODES)})")
+            _validate_while_active(wa, where, errs)
     if "periodic" in d:
         per = d["periodic"]
         if not isinstance(per, dict) or not isinstance(per.get("effects"), list):
@@ -380,6 +392,41 @@ def check_status(d, where):
     if "cleared_by" in d:
         _validate_cleared_by(d["cleared_by"], where, errs)
     return errs
+
+
+def _validate_while_active(lst, where, errs):
+    """The rules only `while_active` has (EffectVocab._validate_while_active):
+    modify only, on the carrier, lasting, not resource/pressure, and no two
+    holds on one (expanded) value."""
+    held = {}
+    for i, e in enumerate(lst):
+        if not isinstance(e, dict):
+            continue
+        label = f"{where}.while_active[{i}]"
+        op = str(e.get("op", ""))
+        if op != "modify":
+            errs.append(f"{label}: while_active holds modify effects only; a '{op}' fires "
+                        "once (use a trigger or periodic)")
+            continue
+        if "to" in e and e["to"] != "target":
+            errs.append(f"{label}: a while_active effect holds on the carrier; 'to' must be "
+                        f"\"target\" or left out, not '{e['to']}'")
+        mode = str(e.get("mode", ""))
+        if mode not in LASTING_MODES:
+            errs.append(f"{label}: mode '{mode}' is instant, not lasting ({_j(LASTING_MODES)})")
+        value = str(e.get("value", ""))
+        if value.split(".")[0] in INSTANT_NAMESPACES:
+            errs.append(f"{label}: {value} acts once and cannot be held; put it in a trigger "
+                        "or periodic")
+            continue
+        if mode not in HOLD_MODES or _value_path_error(value):
+            continue
+        for member in expand_value(value):
+            if member in held:
+                errs.append(f"{label}: {member} is already held by while_active[{held[member]}]; "
+                            "two holds of one status on one value replace each other")
+            else:
+                held[member] = i
 
 
 def _validate_grow(st, where, errs):
@@ -696,7 +743,29 @@ def _validate_modify(effect, where, errs):
                     and mode not in ("fortify", "drain"):
                 errs.append(f"{where}: {effect['value']} is a number of points; only fortify "
                             "and drain change it")
+            elif ns == "stat" and str(effect["value"]).split(".")[1] in MULTIPLY_ONLY_STATS \
+                    and mode != "multiply":
+                errs.append(f"{where}: {effect['value']} is a multiplier; only multiply changes it")
+            elif ns == "affinity" and _reads_value(effect.get("amount"), str(effect["value"])):
+                errs.append(f"{where}: a modify of {effect['value']} cannot read its amount "
+                            f"from {effect['value']} itself")
     _validate_magnitude(effect, "amount", False, where, errs)
+
+
+def _reads_value(m, value):
+    """EffectVocab._reads_value: does the magnitude borrow or pct_of `value`?"""
+    if not isinstance(m, dict):
+        return False
+    for key in ("from", "pct_of"):
+        if key not in m:
+            continue
+        src = str(m[key])
+        if src == value:
+            return True
+        prefix = src.split(".")[0]
+        if prefix in BORROW_UNIT_PREFIXES and src[len(prefix) + 1:] == value:
+            return True
+    return False
 
 
 def _validate_status(effect, where, errs):
@@ -1003,6 +1072,9 @@ def check_zone(d, where):
                             "'affects' instead of a 'to'")
             if op == "summon" and e.get("from", "") == "corpse" and trigger != "on_death_inside":
                 errs.append(f"{label}: summon from 'corpse' only means something in on_death_inside")
+            if str(e.get("value", "")) == "stat.max_hp":
+                errs.append(f"{label}: a zone cannot change stat.max_hp (nothing refreshes it "
+                            "when the zone moves or ends)")
             if trigger == "while_inside":
                 _check_inside_effect(e, label, errs)
                 continue

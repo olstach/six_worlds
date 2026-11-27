@@ -1168,13 +1168,8 @@ for _sid, _sp in _spells.items():
 # trigger's `summon` effect, which check_status() checks against the templates.)
 
 
-# ── Granted resistances ─────────────────────────────────────────────────────
-# (Retaliation is a status's `struck` trigger now, checked by check_status().)
-for _st in load("resources/data/statuses.json")["statuses"]:
-    _gr = _st.get("grants_resistance")
-    if _gr is not None and not isinstance(_gr, dict):
-        err("data->code", f"status '{_st.get('name')}' has a non-object "
-            "`grants_resistance`")
+# (Retaliation is a status's `struck` trigger now, and a status's resistances
+# are `resist.` holds in `while_active`: check_status() checks both.)
 
 
 # ── The damage-type vocabulary ──────────────────────────────────────────────

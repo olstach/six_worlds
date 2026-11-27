@@ -315,6 +315,64 @@ class EffectVocabTests(unittest.TestCase):
             self.assertNotEqual(check_status(dict(STATUS_MINIMAL, **patch), "t"), [], label)
 
 
+    # ── Final-review fixes (stage 2b) ───────────────────────────────────────
+    def _wa(self, *effects):
+        return check_status(dict(STATUS_MINIMAL, while_active=list(effects)), "t")
+
+    def test_while_active_refuses_what_cannot_be_released(self):
+        dodge = {"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 2}
+        self.assertEqual(self._wa(dodge), [])
+        self.assertEqual(self._wa(dict(dodge, to="target")), [])
+        for label, e in {
+            "to party": dict(dodge, to="party"),
+            "to caster": dict(dodge, to="caster"),
+            "resource drain": {"op": "modify", "value": "resource.mana", "mode": "drain", "amount": 5},
+            "pressure fortify": {"op": "modify", "value": "pressure.fire", "mode": "fortify", "amount": 5},
+            "non-modify op": {"op": "damage", "amount": 5, "type": "fire"},
+        }.items():
+            self.assertNotEqual(self._wa(e), [], label)
+
+    def test_while_active_refuses_overlapping_values(self):
+        def m(value, mode="fortify", amount=2):
+            return {"op": "modify", "value": value, "mode": mode, "amount": amount}
+        for label, pair in {
+            "fortify and multiply on one stat": (m("stat.damage", amount=5),
+                                                 m("stat.damage", "multiply", 1.2)),
+            "attributes.all and one attribute": (m("attributes.all"), m("attribute.strength", amount=3)),
+            "skills.magic and the fire skills": (m("skills.magic"), m("skills.element.fire")),
+        }.items():
+            self.assertNotEqual(self._wa(*pair), [], label)
+        # Different values, and a persistent `damage` (not a hold), are fine.
+        self.assertEqual(self._wa(m("stat.damage"), m("stat.dodge")), [])
+        self.assertEqual(self._wa(m("skills.magic"), m("skills.general")), [])
+        self.assertEqual(self._wa(m("attribute.focus", "damage"), m("attribute.focus")), [])
+
+    def test_multiply_only_stats(self):
+        for v in ["stat.magic_damage_taken", "stat.physical_damage_taken"]:
+            self.assertEqual(check_effect({"op": "modify", "value": v, "mode": "multiply",
+                                           "amount": 1.2}, "t"), [], v)
+            for mode in ("fortify", "drain", "set"):
+                self.assertNotEqual(check_effect({"op": "modify", "value": v, "mode": mode,
+                                                  "amount": 0.2}, "t"), [], (v, mode))
+
+    def test_zone_refuses_max_hp(self):
+        z = {"name": "Z", "affects": "allies", "while_inside": [
+            {"op": "modify", "value": "stat.max_hp", "mode": "fortify", "amount": 10}]}
+        self.assertNotEqual(check_zone(z, "z"), [])
+
+    def test_affinity_cannot_borrow_itself(self):
+        base = {"op": "modify", "value": "affinity.fire", "mode": "fortify"}
+        for amount in [{"from": "caster.affinity.fire"}, {"from": "target.affinity.fire", "pct": 50},
+                       {"pct_of": "affinity.fire", "value": 50}]:
+            self.assertNotEqual(check_effect(dict(base, amount=amount), "t"), [], amount)
+        self.assertEqual(check_effect(dict(base, amount={"from": "caster.affinity.water"}), "t"), [])
+
+    def test_live_statuses_validate(self):
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        for st in json.load(open(os.path.join(root, "resources/data/statuses.json")))["statuses"]:
+            self.assertEqual(check_status(st, st["name"]), [], st["name"])
+
+
 STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",
                   "categories": ["control"], "scope": "combat",
                   "duration": {"kind": "turns", "base": 1}, "stacking": {"mode": "refresh"}}
