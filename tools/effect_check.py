@@ -108,6 +108,21 @@ PERIODIC_WHEN = _gd_list(_vocab_src, "PERIODIC_WHEN")
 STATUS_FIELDS = _gd_list(_vocab_src, "STATUS_FIELDS")
 LEGACY_STATUS_FIELDS = _gd_list(_vocab_src, "LEGACY_STATUS_FIELDS")
 OP_FIELDS = _gd_dict_of_lists(_vocab_src, "OP_FIELDS")
+INTERCEPT_OPS = _gd_list(_vocab_src, "INTERCEPT_OPS")
+ATTACK_TARGETS = _gd_list(_vocab_src, "ATTACK_TARGETS")
+SUMMON_OWNERS = _gd_list(_vocab_src, "SUMMON_OWNERS")
+BORROW_SOURCES = _gd_list(_vocab_src, "BORROW_SOURCES")
+BORROW_UNIT_PREFIXES = _gd_list(_vocab_src, "BORROW_UNIT_PREFIXES")
+BORROW_FIELDS = _gd_list(_vocab_src, "BORROW_FIELDS")
+ROUNDINGS = _gd_list(_vocab_src, "ROUNDINGS")
+INTERCEPT_TRIGGERS = _gd_list(_vocab_src, "INTERCEPT_TRIGGERS")
+REACTION_TRIGGERS = _gd_list(_vocab_src, "REACTION_TRIGGERS")
+REACH_TRIGGERS = _gd_list(_vocab_src, "REACH_TRIGGERS")
+TRIGGER_FIELDS = _gd_list(_vocab_src, "TRIGGER_FIELDS")
+LIMIT_PER = _gd_list(_vocab_src, "LIMIT_PER")
+SAVE_WHEN = _gd_list(_vocab_src, "SAVE_WHEN")
+SPREAD_TO = _gd_list(_vocab_src, "SPREAD_TO")
+SPREAD_WHEN = _gd_list(_vocab_src, "SPREAD_WHEN")
 BUILT_IN_CREATURE_TAGS = _gd_list(_vocab_src, "BUILT_IN_CREATURE_TAGS")
 
 # Lists EffectVocab borrows from other classes.
@@ -188,12 +203,17 @@ def _j(items):
 
 
 # ── Public API ──────────────────────────────────────────────────────────────
-def check_effect(effect, where):
-    """Validate one effect dict; returns error strings, empty when valid."""
+def check_effect(effect, where, intercepting=False):
+    """Validate one effect dict; returns error strings, empty when valid.
+    `intercepting`: the effect sits in a trigger in INTERCEPT_TRIGGERS, the one
+    place INTERCEPT_OPS may appear."""
     errs = []
     op = effect.get("op")
     if not isinstance(op, str) or op not in OPS_PY:
         return [f"{where}: unknown op '{op}' (approved: {_j(OPS_PY)})"]
+    if op in INTERCEPT_OPS and not intercepting:
+        return [f"{where}: '{op}' only works in a status trigger that runs before the "
+                f"attack or spell lands (on: {_j(INTERCEPT_TRIGGERS)})"]
 
     allowed = SHARED_FIELDS + OP_FIELDS[op]
     for key in effect:
@@ -297,28 +317,89 @@ def check_status(d, where):
                 if not isinstance(t, dict):
                     errs.append(f"{label}: a trigger must be an object")
                     continue
-                if t.get("on") not in STATUS_TRIGGERS:
-                    errs.append(f"{label}: unknown trigger '{t.get('on')}' (approved: {_j(STATUS_TRIGGERS)})")
-                if "effects" in t:
-                    if not isinstance(t["effects"], list):
-                        errs.append(f"{label}: 'effects' must be a list")
-                    else:
-                        errs.extend(check_effects(t["effects"], label + ".effects"))
+                _validate_trigger(t, label, errs)
     if "save" in d:
         sv = d["save"]
         if not isinstance(sv, dict):
-            errs.append(f"{where}: 'save' must be {{stat, tier}}")
+            errs.append(f"{where}: 'save' must be {{stat, dc, when}}")
         else:
+            for k in sv:
+                if k not in ("stat", "dc", "when"):
+                    errs.append(f"{where}: save has unknown key '{k}'")
             if str(sv.get("stat", "")).lower() not in SAVE_ATTRIBUTES:
                 errs.append(f"{where}: save stat '{sv.get('stat', '')}' is not an attribute")
-            if sv.get("tier", "") not in SAVE_TIERS:
-                errs.append(f"{where}: save tier '{sv.get('tier', '')}' unknown")
+            if not _is_number(sv.get("dc")):
+                errs.append(f"{where}: save needs a number 'dc'")
+            if sv.get("when") not in SAVE_WHEN:
+                errs.append(f"{where}: save when '{sv.get('when')}' unknown ({_j(SAVE_WHEN)})")
+    if "spread" in d:
+        sp = d["spread"]
+        if not isinstance(sp, dict):
+            errs.append(f"{where}: 'spread' must be {{to, reach?, chance, when}}")
+        else:
+            for k in sp:
+                if k not in ("to", "reach", "chance", "when"):
+                    errs.append(f"{where}: spread has unknown key '{k}'")
+            if sp.get("to") not in SPREAD_TO:
+                errs.append(f"{where}: spread to '{sp.get('to')}' unknown ({_j(SPREAD_TO)})")
+            if sp.get("when") not in SPREAD_WHEN:
+                errs.append(f"{where}: spread when '{sp.get('when')}' unknown ({_j(SPREAD_WHEN)})")
+            c = sp.get("chance")
+            if not _is_number(c) or c < 0 or c > 100:
+                errs.append(f"{where}: spread chance must be a number from 0 to 100")
+            if "reach" in sp and not (_is_number(sp["reach"]) and sp["reach"] >= 1):
+                errs.append(f"{where}: spread reach must be a number of tiles, 1 or more")
     if "cleared_by" in d:
         _validate_cleared_by(d["cleared_by"], where, errs)
     return errs
 
 
-def check_effects(effects, where):
+def _validate_trigger(t, label, errs):
+    """One entry of a status's `triggers` (EffectVocab._validate_trigger)."""
+    for k in t:
+        if k not in TRIGGER_FIELDS:
+            errs.append(f"{label}: unknown trigger field '{k}' (approved: {_j(TRIGGER_FIELDS)})")
+    on = t.get("on")
+    if on not in STATUS_TRIGGERS:
+        errs.append(f"{label}: unknown trigger '{on}' (approved: {_j(STATUS_TRIGGERS)})")
+    if "chance" in t and (not _is_number(t["chance"]) or t["chance"] < 0 or t["chance"] > 100):
+        errs.append(f"{label}: trigger chance must be a number from 0 to 100")
+    if "if" in t:
+        if not isinstance(t["if"], list):
+            errs.append(f"{label}: 'if' must be a list of conditions")
+        else:
+            for cond in t["if"]:
+                msg = _condition_error(cond)
+                if msg:
+                    errs.append(f"{label}: {msg}")
+    if "reach" in t:
+        if on not in REACH_TRIGGERS:
+            errs.append(f"{label}: a '{on}' trigger takes no reach ({_j(REACH_TRIGGERS)} do)")
+        r = t["reach"]
+        if not (r == "weapon" or (_is_number(r) and r >= 1)):
+            errs.append(f"{label}: reach must be a number of tiles or \"weapon\"")
+    if "limit" in t:
+        lim = t["limit"]
+        if not isinstance(lim, dict):
+            errs.append(f"{label}: 'limit' must be {{per, count, once_per_source?}}")
+        else:
+            for k in lim:
+                if k not in ("per", "count", "once_per_source"):
+                    errs.append(f"{label}: limit has unknown key '{k}'")
+            if lim.get("per") not in LIMIT_PER:
+                errs.append(f"{label}: limit per '{lim.get('per')}' unknown ({_j(LIMIT_PER)})")
+            if not (_is_number(lim.get("count")) and lim["count"] >= 1):
+                errs.append(f"{label}: limit count must be a number, 1 or more")
+            if "once_per_source" in lim and not isinstance(lim["once_per_source"], bool):
+                errs.append(f"{label}: limit once_per_source must be true or false")
+    if "effects" in t:
+        if not isinstance(t["effects"], list):
+            errs.append(f"{label}: 'effects' must be a list")
+        else:
+            errs.extend(check_effects(t["effects"], label + ".effects", on in INTERCEPT_TRIGGERS))
+
+
+def check_effects(effects, where, intercepting=False):
     """Validate a list of effects, labelling each by index."""
     errs = []
     for i, e in enumerate(effects):
@@ -326,7 +407,7 @@ def check_effects(effects, where):
         if not isinstance(e, dict):
             errs.append(f"{label}: an effect must be an object, got {type(e).__name__}")
             continue
-        errs.extend(check_effect(e, label))
+        errs.extend(check_effect(e, label, intercepting))
     return errs
 
 
@@ -484,6 +565,15 @@ def _validate_op(op, effect, where, errs):
             errs.append(f"{where}: summon template '{effect['as']}' is not in summon_templates.json")
         if "count" in effect and not _is_number(effect["count"]):
             errs.append(f"{where}: summon count must be a number")
+        if "owner" in effect and effect["owner"] not in SUMMON_OWNERS:
+            errs.append(f"{where}: summon owner '{effect['owner']}' unknown ({_j(SUMMON_OWNERS)})")
+    elif op == "attack":
+        if effect.get("target", "source") not in ATTACK_TARGETS:
+            errs.append(f"{where}: attack target '{effect.get('target', '')}' unknown ({_j(ATTACK_TARGETS)})")
+        if "power_pct" in effect and not (_is_number(effect["power_pct"]) and effect["power_pct"] > 0):
+            errs.append(f"{where}: attack power_pct must be a number above 0")
+    elif op in ("negate", "reflect"):
+        pass   # no fields: the hook that fired the trigger does the work
     elif op == "zone":
         _require(effect, ["zone"], where, errs)
         if "zone" in effect and str(effect["zone"]) not in ZONES:
@@ -574,9 +664,39 @@ def _validate_magnitude(effect, field, allow_full, where, errs):
             errs.append(f"{where}: {msg}")
         if not _is_number(m["value"]):
             errs.append(f"{where}: {field} pct_of value must be a number")
+    elif "from" in m:
+        _validate_borrow(m, field, where, errs)
     else:
         errs.append(f"{where}: '{field}' object has keys {keys}; expected "
-                    "{base, per_spellpower}, {pct_of, value} or {min, max}")
+                    "{base, per_spellpower}, {pct_of, value}, {min, max} or {from, ...}")
+
+
+def _validate_borrow(m, field, where, errs):
+    """A borrowed magnitude {from, pct?, default?, add?, round?, min?}."""
+    for k in m:
+        if k not in BORROW_FIELDS:
+            errs.append(f"{where}: {field} borrowed value has unknown key '{k}' "
+                        f"(approved: {_j(BORROW_FIELDS)})")
+    msg = borrow_source_error(str(m["from"]))
+    if msg:
+        errs.append(f"{where}: {msg}")
+    for k in ("pct", "default", "add", "min"):
+        if k in m and not _is_number(m[k]):
+            errs.append(f"{where}: {field} borrowed '{k}' must be a number")
+    if "round" in m and m["round"] not in ROUNDINGS:
+        errs.append(f"{where}: {field} borrowed round '{m['round']}' unknown ({_j(ROUNDINGS)})")
+
+
+def borrow_source_error(source):
+    """Empty when a magnitude may borrow from `source`, otherwise the reason."""
+    if source in BORROW_SOURCES:
+        return ""
+    prefix = source.split(".")[0]
+    if prefix in BORROW_UNIT_PREFIXES and source.count(".") == 2:
+        msg = _value_path_error(source[len(prefix) + 1:])
+        return "" if not msg else f"borrowed from '{source}': {msg}"
+    return (f"cannot borrow from '{source}' ({_j(BORROW_SOURCES)}, or "
+            f"{'/'.join(BORROW_UNIT_PREFIXES)}.<value path>)")
 
 
 def _validate_damage_type(t, where, errs):
@@ -664,5 +784,9 @@ def _condition_error(cond):
             if arg in CREATURE_TAGS:
                 return ""
             return f"target_is '{arg}' is not a creature tag"
+        if key == "target_lacks":
+            if arg in STATUS_TAGS or not _status_error(arg):
+                return ""
+            return f"target_lacks '{arg}' is neither a status nor a status tag"
         return f"unknown condition form '{key}' (approved: {_j(CONDITION_KEYS)})"
     return f"a condition is a name or a one-key object, got {cond}"

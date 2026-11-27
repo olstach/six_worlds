@@ -17,12 +17,29 @@ def _context(s: dict) -> str:
     if isinstance(dur, dict) and dur.get("kind"):
         n = dur.get("base")
         parts.append(f"{dur['kind']} {n}" if n is not None else str(dur["kind"]))
-    # The words still in `effects`, then the yes/no rules in `flags`. (Task 7
-    # words the whole line from the new fields.)
-    eff = list(s.get("effects") or []) + list(s.get("flags") or [])
+    # The yes/no rules in `flags`, then short words for what it does: its
+    # damage/healing over time and its triggers. (Task 7 words the whole line
+    # from the new fields.)
+    eff = list(s.get("flags") or [])
+    for e in (s.get("periodic") or {}).get("effects", []):
+        if e.get("op") == "damage":
+            eff.append(f"{_amount(e.get('amount'))} {e.get('type', '')} per turn")
+        elif e.get("op") == "heal":
+            eff.append(f"heals {_amount(e.get('amount'))} per turn")
+    for t in s.get("triggers") or []:
+        eff.append("on " + str(t.get("on", "")))
+    if s.get("save"):
+        eff.append("save " + str(s["save"].get("stat", "")))
     if eff:
         parts.append(", ".join(map(str, eff)))
     return clean(" · ".join(p for p in parts if p))
+
+
+def _amount(a) -> str:
+    """A number, or the default of a borrowed one ({from, default})."""
+    if isinstance(a, dict):
+        return str(a.get("default", a.get("add", "?")))
+    return str(a)
 
 
 def group_of(s: dict) -> str:

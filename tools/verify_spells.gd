@@ -1243,15 +1243,25 @@ func _check_a_spell_can_treat_the_two_sides_differently() -> void:
 
 ## The scheduler the game already had and did not finish: three `*_on_expire`
 ## effects worked and the fourth carried a TODO and a hardcoded creature name.
+## All four are one `expire` trigger on Infected and Doomed now.
 func _check_a_status_can_hatch_a_creature_on_expiry() -> void:
 	var victim := _make_unit(Vector2i(5, 5), 1)
 	var before: int = CombatManager.all_units.size()
 
+	# The hatching is the status's `expire` trigger now (stage 2b Task 6).
 	var def: Dictionary = CombatManager.get_status_definition("Infected")
-	if def.get("summon_on_expire", "") != "Fungal_Spawn":
-		_fail("Infected declares summon_on_expire '%s'"
-			% str(def.get("summon_on_expire", "")))
-	CombatManager._on_status_expired(victim, "Infected", def, {})
+	var hatches: String = ""
+	for t in def.get("triggers", []):
+		if str(t.get("on", "")) == "expire":
+			for e in t.get("effects", []):
+				if str(e.get("op", "")) == "summon":
+					hatches = str(e.get("as", ""))
+	if hatches != "Fungal_Spawn":
+		_fail("Infected's expire trigger summons '%s'" % hatches)
+	CombatManager._apply_status_effect(victim, "Infected", 3)
+	for entry in victim.status_effects.duplicate():
+		if str(entry.get("status", "")) == "Infected":
+			CombatManager._end_status(victim, entry, "expired")
 
 	if CombatManager.all_units.size() <= before:
 		_fail("Infected expired and nothing crawled out — the expiry summon "

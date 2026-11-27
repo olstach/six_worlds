@@ -132,6 +132,54 @@ class EffectVocabTests(unittest.TestCase):
             d = dict(STATUS_MINIMAL, **{key: 1})
             self.assertNotEqual(check_status(d, "t"), [], key)
 
+    # ── Behaviour as triggers, periodic effects, intercepts (Task 6) ───────
+    def test_borrowed_value_magnitude(self):
+        for src in ["status.value", "status.stacks", "caster.skill.leadership",
+                    "target.attribute.focus", "source.stat.dodge", "event.damage"]:
+            e = {"op": "damage", "type": "fire",
+                 "amount": {"from": src, "pct": 50, "default": 5}}
+            self.assertEqual(check_effect(e, "t"), [], src)
+        for bad in [{"from": "caster.skill.knitting"}, {"from": "moon.phase"},
+                    {"from": "status.value", "pct": "half"},
+                    {"from": "event.damage", "round": "sideways"},
+                    {"from": "status.value", "bonus": 1}]:
+            self.assertNotEqual(check_effect({"op": "heal", "amount": bad}, "t"), [], bad)
+
+    def test_task6_triggers_and_limit(self):
+        for on in ["struck", "hit", "enemy_enters_reach", "ally_threatened"]:
+            t = {"on": on, "limit": {"per": "turn", "count": 1},
+                 "effects": [{"op": "damage", "to": "source", "amount": 5, "type": "fire"}]}
+            if on != "hit":
+                t["reach"] = "weapon" if on == "struck" else 2
+            d = dict(STATUS_MINIMAL, triggers=[t])
+            self.assertEqual(check_status(d, "t"), [], on)
+        d = dict(STATUS_MINIMAL, triggers=[{"on": "hit", "reach": 1, "effects": []}])
+        self.assertNotEqual(check_status(d, "t"), [])
+        d = dict(STATUS_MINIMAL, triggers=[{"on": "struck", "limit": {"per": "round"}, "effects": []}])
+        self.assertNotEqual(check_status(d, "t"), [])
+
+    def test_intercept_ops_only_in_intercepting_triggers(self):
+        d = dict(STATUS_MINIMAL, triggers=[{"on": "attacked_in_melee", "effects": [
+            {"op": "negate"}, {"op": "attack", "target": "source", "power_pct": 130}]}])
+        self.assertEqual(check_status(d, "t"), [])
+        d = dict(STATUS_MINIMAL, triggers=[{"on": "struck", "effects": [{"op": "negate"}]}])
+        self.assertNotEqual(check_status(d, "t"), [])
+        self.assertNotEqual(check_effect({"op": "negate"}, "spell"), [])
+
+    def test_status_save_and_spread(self):
+        d = dict(STATUS_MINIMAL, save={"stat": "constitution", "dc": 15, "when": "turn_start"},
+                 spread={"to": "adjacent", "chance": 15, "when": "turn_start"})
+        self.assertEqual(check_status(d, "t"), [])
+        d = dict(STATUS_MINIMAL, spread={"to": "everyone", "chance": "low"})
+        self.assertNotEqual(check_status(d, "t"), [])
+
+    def test_task6_legacy_keys_rejected(self):
+        for key in ["effects", "damage_per_turn", "heal_per_turn", "retaliation",
+                    "reaction", "save_type", "summon_on_expire",
+                    "damage_increase_per_turn"]:
+            d = dict(STATUS_MINIMAL, **{key: 1})
+            self.assertNotEqual(check_status(d, "t"), [], key)
+
 
 STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",
                   "categories": ["control"], "scope": "combat",

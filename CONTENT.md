@@ -7055,9 +7055,9 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Held** `Held` — negative · until_save · cannot_move, cannot_act, breaks_concentration
   - desc: (empty)
-- **Drowning** `Drowning` — negative · spellpower · physical_damage_per_turn, cannot_move
+- **Drowning** `Drowning` — negative · spellpower · cannot_move
   - desc: (empty)
-- **Swarmed** `Swarmed` — negative · spellpower · physical_damage_per_turn, focus_save_on_damage
+- **Swarmed** `Swarmed` — negative · spellpower · focus_save_on_damage, 1 physical per turn
   - desc: (empty)
 - **Forgetful** `Forgetful` — negative · turns 1 · cannot_attack, cannot_cast
   - desc: (empty)
@@ -7069,13 +7069,13 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Dominated** `Dominated` — negative · permanent · controlled_by_caster, breaks_concentration
   - desc: (empty)
-- **Stunned** `Stunned` — negative · turns 1 · save_at_end_of_turn, skip_turn, cannot_act, breaks_concentration
+- **Stunned** `Stunned` — negative · turns 1 · skip_turn, cannot_act, breaks_concentration, save constitution
   - desc: (empty)
-- **Suffocating** `Suffocating` — negative · spellpower · physical_damage_per_turn, cannot_cast
+- **Suffocating** `Suffocating` — negative · spellpower · cannot_cast, 30 physical per turn
   - desc: (empty)
 - **Shadow_Pinned** `Shadow_Pinned` — negative · spellpower · rooted, damage_on_move_attempt
   - desc: (empty)
-- **Wrathfully_Bound** `Wrathfully_Bound` — negative · spellpower · space_damage_per_turn
+- **Wrathfully_Bound** `Wrathfully_Bound` — negative · spellpower · 25 space per turn
   - desc: (empty)
 - **Chaotic** `Chaotic` — negative · spellpower · random_movement, breaks_concentration
   - desc: (empty)
@@ -7120,30 +7120,30 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Elemental fire `elemental.fire`
 
-- **Burning** `Burning` — negative · turns 3 · fire_damage_per_turn
+- **Burning** `Burning` — negative · turns 3 · 5 fire per turn
   - desc: (empty)
-- **Boiling_Blood** `Boiling_Blood` — negative · spellpower
+- **Boiling_Blood** `Boiling_Blood` — negative · spellpower · 15 physical per turn
   - desc: (empty)
 
 ## Poison `poison`
 
-- **Poisoned** `Poisoned` — negative · turns 5 · poison_damage_per_turn
+- **Poisoned** `Poisoned` — negative · turns 5 · 3 poison per turn
   - desc: (empty)
-- **Festering** `Festering` — negative · spellpower · poison_damage_per_turn
+- **Festering** `Festering` — negative · spellpower · 5 poison per turn
   - desc: (empty)
 
 ## Wound `wound`
 
-- **Bleeding** `Bleeding` — negative · turns 3 · physical_damage_per_turn
+- **Bleeding** `Bleeding` — negative · turns 3 · 3 physical per turn
   - desc: (empty)
 
 ## Negative `negative`
 
 - **Soaked** `Soaked` — negative · turns 1
   - desc: (empty)
-- **Infected** `Infected` — negative · turns 3 · damage_on_expire, bleed_on_expire
+- **Infected** `Infected` — negative · turns 3 · on expire
   - desc: (empty)
-- **Doomed** `Doomed` — negative · turns · death_on_expire
+- **Doomed** `Doomed` — negative · turns · on expire
   - desc: (empty)
 - **Fire_Vulnerable** `Fire_Vulnerable` — negative · spellpower
   - desc: (empty)
@@ -7157,7 +7157,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Suffering** `Suffering` — negative · spellpower
   - desc: (empty)
-- **Rotting** `Rotting` — negative · spellpower · black_damage_per_turn
+- **Rotting** `Rotting` — negative · spellpower · 50 black per turn
   - desc: (empty)
 - **Armor_Debuff_50** `Armor_Debuff_50` — negative · spellpower
   - desc: (empty)
@@ -7179,7 +7179,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Slippery_Terrain** `Slippery_Terrain` — negative · spellpower · prone_chance_on_movement
   - desc: (empty)
-- **Soul_Burning** `Soul_Burning` — negative · spellpower · black_damage_per_turn
+- **Soul_Burning** `Soul_Burning` — negative · spellpower · 20 black per turn
   - desc: (empty)
 - **Water_Vulnerable** `Water_Vulnerable` — negative · spellpower
   - desc: (empty)
@@ -7210,15 +7210,15 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Hasted** `Hasted` — positive · spellpower
   - desc: (empty)
-- **Regenerating** `Regenerating` — positive · spellpower · heal_per_turn
+- **Regenerating** `Regenerating` — positive · spellpower · heals 10 per turn
   - desc: (empty)
 - **Bloodlust** `Bloodlust` — positive · spellpower
   - desc: (empty)
-- **Fireshield** `Fireshield` — positive · spellpower
+- **Fireshield** `Fireshield` — positive · spellpower · on struck
   - desc: (empty)
 - **Fan_the_Flames** `Fan_the_Flames` — positive · spellpower · increase_burning_damage_dealt
   - desc: (empty)
-- **Electrified_Weapon** `Electrified_Weapon` — positive · spellpower · adds_air_damage_to_attacks, stun_chance_on_hit
+- **Electrified_Weapon** `Electrified_Weapon` — positive · spellpower · stun_chance_on_hit, on hit
   - desc: (empty)
 - **Levitating** `Levitating` — positive · spellpower · immune_to_ground_effects, immune_to_terrain_hazards
   - desc: (empty)
@@ -7230,7 +7230,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Blessed_Shot** `Blessed_Shot` — positive · turns 1 · next_ranged_guaranteed_hit
   - desc: (empty)
-- **Poison_Skin** `Poison_Skin` — positive · spellpower
+- **Poison_Skin** `Poison_Skin` — positive · spellpower · on struck
   - desc: (empty)
 - **Chameleon** `Chameleon` — positive · spellpower · stealth_bonus
   - desc: (empty)
@@ -7240,7 +7240,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Magic_Shield** `Magic_Shield` — positive · spellpower · spell_damage_reduction
   - desc: (empty)
-- **Magic_Mirror** `Magic_Mirror` — positive · spellpower · spell_reflect_chance
+- **Magic_Mirror** `Magic_Mirror` — positive · spellpower · on incoming_spell
   - desc: (empty)
 - **Phasing** `Phasing` — positive · spellpower
   - desc: (empty)
@@ -7260,7 +7260,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Lifelink** `Lifelink` — positive · spellpower · lifesteals_on_hit
   - desc: (empty)
-- **Pain_Mirror** `Pain_Mirror` — positive · spellpower
+- **Pain_Mirror** `Pain_Mirror` — positive · spellpower · on struck
   - desc: (empty)
 - **Ancestral_Guidance** `Ancestral_Guidance` — positive · spellpower
   - desc: (empty)
@@ -7284,7 +7284,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Awareness_Buff** `Awareness_Buff` — positive · spellpower
   - desc: (empty)
-- **Burning_Weapon** `Burning_Weapon` — positive · spellpower · adds_fire_damage_to_attacks
+- **Burning_Weapon** `Burning_Weapon` — positive · spellpower · on hit
   - desc: (empty)
 - **Constitution_Buff** `Constitution_Buff` — positive · spellpower
   - desc: (empty)
@@ -7308,7 +7308,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Strength_Buff** `Strength_Buff` — positive · spellpower
   - desc: (empty)
-- **Tongues_of_Fire** `Tongues_of_Fire` — positive · spellpower · adds_fire_damage_to_attacks
+- **Tongues_of_Fire** `Tongues_of_Fire` — positive · spellpower · on struck, on hit
   - desc: (empty)
 - **Water_Walking** `Water_Walking` — positive · spellpower · immune_to_water_terrain
   - desc: (empty)
@@ -7348,9 +7348,9 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Riposte_Ready** `Riposte_Ready` — positive · turns 1 · riposte_next_sword_attack
   - desc: (empty)
-- **Reflect** `Reflect` — positive · turns 3 · attack_reflect_chance
+- **Reflect** `Reflect` — positive · turns 3 · on incoming_attack
   - desc: (empty)
-- **Inner_Flame** `Inner_Flame` — positive · spellpower
+- **Inner_Flame** `Inner_Flame` — positive · spellpower · on struck
   - desc: Inner heat. Fire and water both find less purchase, and whoever strikes you in close catches light.
 - **Lava_Walking** `Lava_Walking` — positive · spellpower
   - desc: The ground runs molten and does not care. Fire has no mobility magic of its own; this is the whole of it.
@@ -7400,13 +7400,13 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 - **Smoke_Form** `Smoke_Form` — positive · spellpower · can_move_through_enemies
   - desc: (empty)
-- **Storm_Lord** `Storm_Lord` — positive · spellpower · grants_flight, immune_to_ranged
+- **Storm_Lord** `Storm_Lord` — positive · spellpower · grants_flight, immune_to_ranged, on struck
   - desc: (empty)
-- **Lightning_Form** `Lightning_Form` — positive · spellpower · grants_flight
+- **Lightning_Form** `Lightning_Form` — positive · spellpower · grants_flight, on struck
   - desc: (empty)
 - **Thin_Air** `Thin_Air` — positive · spellpower · cannot_deal_physical
   - desc: (empty)
-- **Solar_Form** `Solar_Form` — positive · spellpower · adds_fire_damage_to_attacks
+- **Solar_Form** `Solar_Form` — positive · spellpower · on hit
   - desc: (empty)
 
 ## Aura `aura`
@@ -7417,7 +7417,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Shield_Wall** `Shield_Wall` — positive · turns 1
   - desc: (empty)
-- **Soothing_Presence** `Soothing_Presence` — positive · spellpower
+- **Soothing_Presence** `Soothing_Presence` — positive · spellpower · heals 5 per turn
   - desc: (empty)
 - **Aura_of_Blessing** `Aura_of_Blessing` — positive · spellpower
   - desc: (empty)
@@ -7432,22 +7432,22 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Disease `disease`
 
-- **Diseased** `Diseased` — negative · spellpower · poison_damage_per_turn
+- **Diseased** `Diseased` — negative · spellpower · 10 poison per turn
   - desc: (empty)
 
 ## Stance `stance`
 
-- **Counterstance** `Counterstance` — positive · turns 1
+- **Counterstance** `Counterstance` — positive · turns 1 · on attacked_in_melee
   - desc: Blade held ready. The first blow each attacker throws is answered.
-- **Guarding_The_Gap** `Guarding_The_Gap` — positive · turns 1
+- **Guarding_The_Gap** `Guarding_The_Gap` — positive · turns 1 · on ally_threatened
   - desc: Standing over someone. Whoever comes for them comes past you first.
-- **Set_For_Charge** `Set_For_Charge` — positive · turns 1
+- **Set_For_Charge** `Set_For_Charge` — positive · turns 1 · on enemy_enters_reach
   - desc: Butt of the spear in the dirt. Whatever runs onto it runs onto it hard.
-- **Kill_Zone** `Kill_Zone` — positive · turns 1
+- **Kill_Zone** `Kill_Zone` — positive · turns 1 · on enemy_enters_reach
   - desc: Ground you have already decided about. Three shots, and then you are reloading.
-- **Heavenly_Counterflow** `Heavenly_Counterflow` — positive · turns 1
+- **Heavenly_Counterflow** `Heavenly_Counterflow` — positive · turns 1 · on attacked_in_melee
   - desc: The blow arrives and finds nobody there. You are already elsewhere, and already answering.
-- **None_Shall_Pass** `None_Shall_Pass` — positive · turns 1
+- **None_Shall_Pass** `None_Shall_Pass` — positive · turns 1 · on enemy_enters_reach
   - desc: The reach of a spear, declared as a rule rather than a threat.
 - **Guarding** `Guarding` — positive · turns 1
   - desc: Standing in front of somebody. Harder to put down for it.

@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 80
+const EXPECTED_CHECKS: int = 87
 
 var grid: CombatGrid
 
@@ -128,6 +128,15 @@ func _ready() -> void:
 	_check_flags_match_old_words()
 	_check_concentration_breaks_on_flag()
 	_check_mental_immunity_by_flag()
+
+	# Stage 2b, Task 6: behaviour is triggers, periodic effects and intercepts.
+	_check_dot_uses_spell_value()
+	_check_retaliation_trigger()
+	_check_expire_summon()
+	_check_intercept_negate()
+	_check_borrowed_value()
+	_check_no_legacy_status_keys()
+	_check_behaviour_numbers_match_today()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -2270,7 +2279,9 @@ const STATUS_WORDS_PATH: String = "res://tools/fixtures/status_words.json"
 const FLAG_FOR_WORD: Dictionary = {
 	"attack_breaks_invisibility": ["attack_breaks_invisibility"],
 	"attack_damage_buff_when_ally_dies": ["attack_damage_buff_when_ally_dies"],
-	"attack_reflect_chance": ["attack_reflect_chance"],
+	# Task 6 turned these two into intercepting triggers (on: incoming_attack /
+	# incoming_spell with reflect); they are flags no more.
+	"attack_reflect_chance": [],
 	"attacks_closest_creature": ["attacks_closest_creature"],
 	"attacks_have_miss_chance": ["attacks_have_miss_chance"],
 	"breaks_on_offensive_action": ["breaks_on_offensive_action"],
@@ -2324,7 +2335,7 @@ const FLAG_FOR_WORD: Dictionary = {
 	"skip_next_action": ["skip_next_action"],
 	"skip_turn": ["skip_turn"],
 	"spell_damage_reduction": ["spell_damage_reduction"],
-	"spell_reflect_chance": ["spell_reflect_chance"],
+	"spell_reflect_chance": [],
 	"stealth_bonus": ["stealth_bonus"],
 	"stun_chance_on_hit": ["stun_chance_on_hit"],
 	"treats_caster_as_ally": ["treats_caster_as_ally"],
@@ -2351,8 +2362,10 @@ const FLAG_FOR_NAME: Dictionary = {
 	"Demoralized": ["counts_as_demoralized"], "Gloomy": ["counts_as_demoralized"],
 }
 
-## Words that stay in  for Task 6: something reads them as more than
-## a yes/no (a damage type, a tick, an expiry hook, a save, an enchant table).
+## Words Task 5 left in `effects` for Task 6, because something read them as
+## more than a yes/no (a damage type, a tick, an expiry hook, a save, an
+## enchant table). Task 6 made each a periodic effect, a trigger or a save, so
+## no status keeps them (_check_no_legacy_status_keys checks the shapes).
 const WORDS_LEFT_FOR_TASK_6: Array[String] = [
 	"fire_damage_per_turn", "poison_damage_per_turn", "physical_damage_per_turn",
 	"black_damage_per_turn", "space_damage_per_turn", "heal_per_turn",
@@ -2373,7 +2386,7 @@ const UNBUILT_WORDS: Array[String] = [
 
 
 ## For every status, `flags` is exactly what its old yes/no words (plus the
-## hard-coded name lists) say, `effects` keeps only the Task 6 words, and a
+## hard-coded name lists) say, `effects` is gone (Task 6), and a
 ## status that had a word nothing read says so in `notes`.
 func _check_flags_match_old_words() -> void:
 	var old: Dictionary = _read_fixture(STATUS_WORDS_PATH).get("statuses", {})
@@ -2394,7 +2407,7 @@ func _check_flags_match_old_words() -> void:
 					if not f in want_flags:
 						want_flags.append(f)
 			elif word in WORDS_LEFT_FOR_TASK_6:
-				want_effects.append(word)
+				pass   # Task 6 made each a periodic effect, trigger or save: `effects` is gone
 			elif word in UNBUILT_WORDS:
 				unbuilt.append(word)
 		for f in FLAG_FOR_NAME.get(name, []):
@@ -2468,4 +2481,232 @@ func _check_mental_immunity_by_flag() -> void:
 	if not u.has_status("Burning"):
 		_fail("Mental_Immunity blocked Burning, which it never did")
 	_cleanup([u])
+	_done()
+
+
+# ── Stage 2b, Task 6: triggers, periodic effects, intercepts ────────────────
+
+## The status a definition's first trigger with `on` belongs to, or {}.
+func _trigger_on(def: Dictionary, on: String) -> Dictionary:
+	for t in def.get("triggers", []):
+		if typeof(t) == TYPE_DICTIONARY and str(t.get("on", "")) == on:
+			return t
+	return {}
+
+
+## Burning ticks the value the spell gave it ({from: status.value}), and its
+## own 5 when the spell gave none ({default: 5}), at the start of the turn.
+func _check_dot_uses_spell_value() -> void:
+	var def: Dictionary = CombatManager.get_status_definition("Burning")
+	var per: Dictionary = def.get("periodic", {})
+	if per.is_empty() or def.has("damage_per_turn") or def.has("effects"):
+		_fail("Burning is not a periodic effect yet: %s" % [def])
+	var u := _make_unit(Vector2i(5, 5))
+	for pair in [[9, 9], [0, 5]]:
+		for entry in u.status_effects.duplicate():
+			CombatManager._end_status(u, entry, "removed")
+		CombatManager._apply_status_effect(u, "Burning", 3, int(pair[0]))
+		var hp: int = u.current_hp
+		CombatManager._process_status_effects(u)
+		if hp - u.current_hp != int(pair[1]):
+			_fail("Burning with value %d ticked %d, wanted %d"
+				% [pair[0], hp - u.current_hp, pair[1]])
+	_cleanup([u])
+	_done()
+
+
+## Fireshield hits a melee attacker back for its 5 fire, as a `struck` trigger.
+func _check_retaliation_trigger() -> void:
+	var def: Dictionary = CombatManager.get_status_definition("Fireshield")
+	if def.has("retaliation") or _trigger_on(def, "struck").is_empty():
+		_fail("Fireshield still has no struck trigger: %s" % [def])
+	var defender := _make_unit(Vector2i(5, 5), 0)
+	var attacker := _make_unit(Vector2i(6, 5), 1)
+	CombatManager._apply_status_effect(defender, "Fireshield", 3)
+	var hp: int = attacker.current_hp
+	CombatManager._process_reactive_statuses(attacker, defender, {"damage": 10})
+	if hp - attacker.current_hp != 5:
+		_fail("Fireshield struck back for %d, wanted 5" % (hp - attacker.current_hp))
+	_cleanup([defender, attacker])
+	_done()
+
+
+## Infected hatches its Fungal Spawn when it runs out, and not when dispelled.
+func _check_expire_summon() -> void:
+	var def: Dictionary = CombatManager.get_status_definition("Infected")
+	var t: Dictionary = _trigger_on(def, "expire")
+	var summons: bool = false
+	for e in t.get("effects", []):
+		if str(e.get("op", "")) == "summon" and str(e.get("as", "")) == "Fungal_Spawn":
+			summons = true
+	if def.has("summon_on_expire") or not summons:
+		_fail("Infected has no expire trigger that summons Fungal_Spawn: %s" % [def])
+	var victim := _make_unit(Vector2i(8, 8), 1)
+	var before: int = CombatManager.all_units.size()
+	CombatManager._apply_status_effect(victim, "Infected", 1)
+	CombatManager._process_status_effects(victim)
+	var after_expiry: int = CombatManager.all_units.size()
+	if after_expiry != before + 1:
+		_fail("Infected expired and %d units appeared, wanted 1" % (after_expiry - before))
+	victim.current_hp = victim.max_hp
+	CombatManager._apply_status_effect(victim, "Infected", 3)
+	CombatManager._end_status(victim, _entry_of(victim, "Infected"), "dispelled")
+	if CombatManager.all_units.size() != after_expiry:
+		_fail("dispelling Infected hatched something")
+	for unit in CombatManager.all_units.duplicate():
+		if unit != victim and is_instance_valid(unit) and unit.unit_name != "Probe0" \
+				and unit.unit_name != "Probe1":
+			_cleanup([unit])
+	_cleanup([victim])
+	_done()
+
+
+## Heavenly Counterflow's `negate` turns aside one melee blow before it lands,
+## then its limit (1 a turn) lets the next one through.
+func _check_intercept_negate() -> void:
+	var def: Dictionary = CombatManager.get_status_definition("Heavenly_Counterflow")
+	var t: Dictionary = _trigger_on(def, "attacked_in_melee")
+	var negates: bool = false
+	for e in t.get("effects", []):
+		if str(e.get("op", "")) == "negate":
+			negates = true
+	if def.has("reaction") or not negates:
+		_fail("Heavenly_Counterflow has no attacked_in_melee trigger with negate: %s" % [def])
+	var monk := _make_unit(Vector2i(10, 10), 0)
+	var foe := _make_unit(Vector2i(11, 10), 1)
+	for u in [monk, foe]:
+		u.character_data["derived"]["accuracy"] = 999
+		u.character_data["derived"]["dodge"] = 0
+		u.max_hp = 100000
+		u.current_hp = 100000
+	CombatManager._apply_status_effect(monk, "Heavenly_Counterflow", 2)
+	var landed: Array[int] = []
+	for blow in 2:
+		# Back into melee every time: the counterflow steps away.
+		grid.unit_positions.erase(monk.grid_position)
+		monk.grid_position = Vector2i(10, 10)
+		grid.unit_positions[monk.grid_position] = monk
+		var hp: int = monk.current_hp
+		var result: Dictionary = {}
+		for _try in 20:
+			foe.actions_remaining = 9
+			CombatManager.turn_order = [foe]
+			CombatManager.current_unit_index = 0
+			result = CombatManager.attack_unit(foe, monk)
+			if bool(result.get("hit", false)) or bool(result.get("dodged", false)):
+				break
+		landed.append(hp - monk.current_hp)
+	if landed[0] != 0:
+		_fail("the first blow landed for %d through the counterflow" % landed[0])
+	if landed[1] <= 0:
+		_fail("the second blow was negated too; the limit is 1 a turn")
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_cleanup([monk, foe])
+	_done()
+
+
+## {"from": "caster.skill.leadership", "pct": 50}: half the caster's
+## EFFECTIVE Leadership (a hold on the skill counts).
+func _check_borrowed_value() -> void:
+	var leader := _make_unit(Vector2i(5, 5), 0)
+	var ally := _make_unit(Vector2i(6, 5), 0)
+	leader.character_data["skills"]["leadership"] = 6
+	ValuePaths.add_hold(leader, "skill.leadership", "fortify", 2, "t6")
+	var name := _with_test_status({"polarity": "positive", "while_active": [
+		{"op": "modify", "value": "stat.accuracy", "mode": "fortify",
+		 "amount": {"from": "caster.skill.leadership", "pct": 50}}]})
+	var errs := EffectVocab.validate_status(CombatManager.get_status_definition(name), "borrowed")
+	if not errs.is_empty():
+		_fail("a borrowed amount was refused: %s" % [errs])
+	var base: int = ally.get_accuracy()
+	CombatManager._apply_status_effect(ally, name, 3, 0, leader)
+	if ally.get_accuracy() != base + 4:
+		_fail("half of Leadership 6+2 gave %+d accuracy, wanted +4" % (ally.get_accuracy() - base))
+	ValuePaths.release(leader, "t6")
+	_cleanup([leader, ally])
+	_done()
+
+
+## The removed keys are gone from every status, every status has a polarity,
+## and the validator runs on all of them and refuses a legacy key.
+const REMOVED_STATUS_KEYS: Array[String] = [
+	"effects", "type", "category", "duration_type", "default_duration", "stackable",
+	"bonus_amount", "penalty_amount", "damage_per_turn", "heal_per_turn", "retaliation",
+	"reaction", "save_type", "summon_on_expire", "death_on_expire", "damage_on_expire",
+	"bleed_on_expire", "damage_increase_per_turn",
+]
+
+func _check_no_legacy_status_keys() -> void:
+	var defs: Dictionary = CombatManager.get_all_status_definitions()
+	for name in defs:
+		if str(name).begins_with("_"):
+			continue
+		var def: Dictionary = defs[name]
+		for key in REMOVED_STATUS_KEYS:
+			if def.has(key):
+				_fail("%s still has the removed key '%s'" % [name, key])
+		if not def.has("polarity"):
+			_fail("%s has no polarity" % name)
+		var errs := EffectVocab.validate_status(def, str(name))
+		if not errs.is_empty():
+			_fail("%s does not validate: %s" % [name, errs[0]])
+	for key in ["retaliation", "reaction", "damage_per_turn", "effects", "save_type"]:
+		var bad: Dictionary = {"name": "X", "polarity": "negative", key: {}}
+		if EffectVocab.validate_status(bad, "legacy").is_empty():
+			_fail("validate_status accepted the legacy key '%s'" % key)
+	_done()
+
+
+## The numbers the deleted code worked out, from the migrated data:
+## Festering grows 5 a tick (5, 10), an enchant adds a fifth of the hit
+## rounded up (12 -> 3), Pain Mirror reflects half (40 -> 20), Doomed's expiry
+## kills, Regenerating heals 10, Stunned saves on Constitution at DC 15.
+func _check_behaviour_numbers_match_today() -> void:
+	var u := _make_unit(Vector2i(5, 5), 1)
+	u.max_hp = 1000
+	u.current_hp = 1000
+	CombatManager._apply_status_effect(u, "Festering", 5)
+	var ticks: Array[int] = []
+	for _i in 2:
+		var hp: int = u.current_hp
+		CombatManager._process_status_effects(u)
+		ticks.append(hp - u.current_hp)
+	if ticks != [5, 10]:
+		_fail("Festering ticked %s, wanted [5, 10]" % [ticks])
+	for entry in u.status_effects.duplicate():
+		CombatManager._end_status(u, entry, "removed")
+
+	var smith := _make_unit(Vector2i(6, 5), 0)
+	CombatManager._apply_status_effect(smith, "Burning_Weapon", 3)
+	var hp2: int = u.current_hp
+	CombatManager._process_status_weapon_enchants(smith, u, {"damage": 12})
+	if hp2 - u.current_hp != 3:
+		_fail("Burning_Weapon on a 12 hit added %d, wanted 3" % (hp2 - u.current_hp))
+
+	var mirror := _make_unit(Vector2i(9, 9), 0)
+	CombatManager._apply_status_effect(mirror, "Pain_Mirror", 3)
+	var hp3: int = u.current_hp
+	CombatManager._process_reactive_statuses(u, mirror, {"damage": 40})
+	if hp3 - u.current_hp != 20:
+		_fail("Pain_Mirror reflected %d of 40, wanted 20" % (hp3 - u.current_hp))
+
+	var healer := _make_unit(Vector2i(12, 12), 0)
+	healer.current_hp = 50
+	CombatManager._apply_status_effect(healer, "Regenerating", 3)
+	CombatManager._process_status_effects(healer)
+	if healer.current_hp != 60:
+		_fail("Regenerating healed %d, wanted 10" % (healer.current_hp - 50))
+
+	var doomed := _make_unit(Vector2i(14, 14), 1)
+	CombatManager._apply_status_effect(doomed, "Doomed", 1)
+	CombatManager._process_status_effects(doomed)
+	if doomed.current_hp > 0:
+		_fail("Doomed ran out and %s lived (%d HP)" % [doomed.unit_name, doomed.current_hp])
+
+	var save: Dictionary = CombatManager.get_status_definition("Stunned").get("save", {})
+	if str(save.get("stat", "")) != "constitution" or int(save.get("dc", 0)) != 15 \
+			or str(save.get("when", "")) != "turn_start":
+		_fail("Stunned's save is %s" % [save])
+	_cleanup([u, smith, mirror, healer, doomed])
 	_done()

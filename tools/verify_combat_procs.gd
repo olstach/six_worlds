@@ -175,12 +175,24 @@ func _check_ritual_reaches_auras_retaliation_and_perk_procs() -> void:
 	var f := FileAccess.open("res://scripts/autoload/combat_manager.gd", FileAccess.READ)
 	var src := f.get_as_text() if f != null else ""
 	for needle in ["ritual_chance(source, chance)", "status_save_dc_bonus(source)",
-			'ritual_chance(defender, float(retal.get("status_chance"',
 			"ritual_chance(defender, 0.25)", "ritual_chance(attacker, 0.15)",
 			"ritual_chance(attacker, 0.20)"]:
 		if not src.contains(needle):
 			_fail("combat_manager.gd no longer contains '%s' — a status roll "
 				% needle + "has slipped out from under Ritual")
+	# Retaliation is a `struck` trigger now (stage 2b Task 6). Its status roll is
+	# the effect's `chance`, which EffectResolver puts through
+	# effective_status_chance of the effects' caster — and in a trigger that
+	# answers an attacker the caster is the carrier, the defender, as
+	# ritual_chance(defender, ...) was.
+	var rf := FileAccess.open("res://scripts/effects/effect_resolver.gd", FileAccess.READ)
+	var resolver_src := rf.get_as_text() if rf != null else ""
+	if not resolver_src.contains("CombatManager.effective_status_chance(caster_data, float(effect[\"chance\"]))"):
+		_fail("effect_resolver.gd no longer puts an effect's chance through "
+			+ "effective_status_chance — retaliation's status roll has slipped out from under Ritual")
+	if not src.contains("if not str(trigger.get(\"on\", \"\")) in _SELF_TRIGGERS:\n\t\tctx.caster = unit"):
+		_fail("a reacting status trigger no longer makes its carrier the caster, so a "
+			+ "retaliation would roll on the applier's Ritual instead of the defender's")
 	_done()
 
 

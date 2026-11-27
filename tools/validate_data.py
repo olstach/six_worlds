@@ -647,12 +647,6 @@ def _read_by_code(value):
     """
     if f'"{value}"' in _gd_source:
         return True
-    # Names CombatManager assembles at runtime. `_dot_element` reads any
-    # `<damage type>_damage_per_turn` by trimming the suffix off the effect
-    # string, so the full name never appears as a literal.
-    if value.endswith("_damage_per_turn") and \
-            'trim_suffix("_damage_per_turn")' in _gd_source:
-        return True
     return False
 
 
@@ -733,18 +727,17 @@ check_vocabulary("base_bonuses stat", _stat_keys, [
     'for_character(member, "%s"',
 ])
 
-# Behaviour on status definitions: `flags` (yes/no rules) and the few words
-# still in `effects` (damage-over-time types, expiry hooks, saves — Task 6).
-_status_effects = set()
+# Behaviour on status definitions: `flags` (yes/no rules). Everything else a
+# status does is effects (while_active, periodic, triggers), which
+# check_status() below validates against EffectVocab; the old `effects` word
+# list is gone (stage 2b Task 6).
 _status_flags = set()
 _status_names = set()
 for _s in load("resources/data/statuses.json")["statuses"]:
-    _status_effects.update(str(e) for e in _s.get("effects", []))
     _status_flags.update(str(f) for f in _s.get("flags", [])
                          if not str(f).startswith("immune:"))
     if _s.get("name"):
         _status_names.add(str(_s["name"]))
-check_vocabulary("status effect", _status_effects)
 
 # A flag is read where the code asks StatusRules for it: has_flag(unit, "x"),
 # has_any_flag(unit, ["x", "y"]), def_has_flag(def, "x"), entry_with_flag(...).
@@ -929,12 +922,14 @@ for _sid, _sp in _spells.items():
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from effect_check import check_effect, check_effects, check_status  # noqa: E402,F401
 
-# Status shape (stage 2b). Only statuses that already carry `polarity` are
-# checked; Task 6 removes this gate so every status must have it.
+# Status shape (stage 2b): every status, which must have a polarity. The keys
+# stage 2b removed (effects, damage_per_turn, retaliation, reaction,
+# save_type, the *_on_expire keys ...) fail here as unknown fields.
 for _st in load("resources/data/statuses.json")["statuses"]:
-    if "polarity" in _st:
-        for _m in check_status(_st, f"status '{_st.get('name', '?')}'"):
-            err("status-shape", _m)
+    if "polarity" not in _st:
+        err("status-shape", f"status '{_st.get('name', '?')}' has no polarity")
+    for _m in check_status(_st, f"status '{_st.get('name', '?')}'"):
+        err("status-shape", _m)
 
 
 # ── Resurrection ─────────────────────────────────────────────────────────────
@@ -1169,36 +1164,13 @@ for _sid, _sp in _spells.items():
             err("data->code", f"spell '{_sid}' `{_side}` saves on "
                 f"'{_b['save_type']}', which is not an attribute")
 
-for _st in load("resources/data/statuses.json")["statuses"]:
-    _hatch = _st.get("summon_on_expire")
-    if _hatch and _hatch not in _summon_templates:
-        err("data->code", f"status '{_st.get('name')}' hatches '{_hatch}' on "
-            "expiry, and no summon template by that name exists")
+# (A status that hatches something when it runs out says so with an `expire`
+# trigger's `summon` effect, which check_status() checks against the templates.)
 
 
-# ── Retaliation and granted resistances ─────────────────────────────────────
-_RETAL_KEYS = {"range", "damage", "element", "reflect_pct", "status",
-               "status_duration", "status_chance"}
+# ── Granted resistances ─────────────────────────────────────────────────────
+# (Retaliation is a status's `struck` trigger now, checked by check_status().)
 for _st in load("resources/data/statuses.json")["statuses"]:
-    _r = _st.get("retaliation")
-    if _r is None:
-        continue
-    if not isinstance(_r, dict):
-        err("data->code", f"status '{_st.get('name')}' has a non-object `retaliation`")
-        continue
-    for _k in _r:
-        if _k not in _RETAL_KEYS:
-            err("data->code", f"status '{_st.get('name')}' retaliation carries "
-                f"'{_k}', which _process_reactive_statuses does not resolve")
-    if _r.get("range", "melee") not in ("melee", "any"):
-        err("data->code", f"status '{_st.get('name')}' retaliates at range "
-            f"'{_r.get('range')}'; only 'melee' and 'any' are resolved")
-    if _r.get("status") and _r["status"] not in _status_names:
-        err("data->code", f"status '{_st.get('name')}' retaliates with status "
-            f"'{_r['status']}', which does not exist")
-    if not _r.get("damage") and not _r.get("reflect_pct") and not _r.get("status"):
-        err("data->code", f"status '{_st.get('name')}' has a retaliation that "
-            "deals no damage, reflects nothing and applies nothing")
     _gr = _st.get("grants_resistance")
     if _gr is not None and not isinstance(_gr, dict):
         err("data->code", f"status '{_st.get('name')}' has a non-object "
@@ -1332,68 +1304,22 @@ for _gd in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
         if _m.group(1) not in _damage_types:
             err("code->data", f"{_rel}: apply_damage deals '{_m.group(1)}', which "
                 "is not in damage_types.json")
-    # And the two lookup tables that feed apply_damage a VARIABLE, which the
-    # regex above cannot see: the talisman brands ("air_brand": ["air", 0.10])
-    # and the status weapon enchants ("adds_air_damage_to_attacks": "air").
-    # Storm, Frost and Stone brands and Electrified_Weapon dealt air, water and
-    # earth — no resistance in the game matched them — until 2026-10-15.
+    # And the lookup table that feeds apply_damage a VARIABLE, which the
+    # regex above cannot see: the talisman brands ("air_brand": ["air", 0.10]).
+    # Storm, Frost and Stone brands dealt air, water and earth — no resistance
+    # in the game matched them — until 2026-10-15. (The status weapon enchants
+    # that had the same table are `hit` triggers now, whose damage `type`
+    # check_status() checks.)
     for _m in re.finditer(r'"[a-z_]*brand[a-z_]*":\s*\["([a-z_]+)"', _src):
         if _m.group(1) not in _damage_types:
             err("code->data", f"{_rel}: a talisman brand deals '{_m.group(1)}', "
                 "which is not in damage_types.json")
-    for _m in re.finditer(r'"adds_[a-z_]+_damage_to_attacks":\s*"([a-z_]+)"', _src):
-        if _m.group(1) not in _damage_types:
-            err("code->data", f"{_rel}: a weapon enchant deals '{_m.group(1)}', "
-                "which is not in damage_types.json")
 
 
 # ── Reaction stances ────────────────────────────────────────────────────────
-#
-# A reaction declared with a trigger nothing fires, or a response nothing
-# performs, is a stance that costs a turn and answers nothing. The vocabulary
-# is read from reaction.gd rather than restated.
-_reaction_src = open(os.path.join(ROOT, "scripts/combat/reaction.gd"), encoding="utf-8").read()
-_reaction_triggers = _gd_list(_reaction_src, "TRIGGERS")
-_reaction_responses = _gd_list(_reaction_src, "RESPONSES")
-if not _reaction_triggers or not _reaction_responses:
-    err("data->code", "could not read Reaction.TRIGGERS/RESPONSES — reactions unchecked")
-
-_reposition_src = open(os.path.join(ROOT, "scripts/combat/repositioning.gd"), encoding="utf-8").read()
-_reposition_modes = _gd_list(_reposition_src, "MODES")
-
-for _st in load("resources/data/statuses.json")["statuses"]:
-    _rx = _st.get("reaction")
-    if _rx is None:
-        continue
-    _name = _st.get("name", "?")
-    if not isinstance(_rx, dict):
-        err("data->code", f"status '{_name}' has a non-object `reaction`")
-        continue
-    if _rx.get("trigger") not in _reaction_triggers:
-        err("data->code", f"status '{_name}' reacts to '{_rx.get('trigger')}', "
-            "which is not in Reaction.TRIGGERS — nothing would fire it")
-    _responses = _rx.get("responses", [])
-    if not _responses:
-        err("data->code", f"status '{_name}' declares a reaction with no "
-            "responses, so it fires and does nothing")
-    for _r in _responses:
-        if _r not in _reaction_responses:
-            err("data->code", f"status '{_name}' responds with '{_r}', which is "
-                "not in Reaction.RESPONSES")
-    if _rx.get("status") and _rx["status"] not in _status_names:
-        err("data->code", f"status '{_name}' reacts by applying "
-            f"'{_rx['status']}', which does not exist")
-    if "status" in _responses and not _rx.get("status"):
-        err("data->code", f"status '{_name}' lists a `status` response and "
-            "names no status to apply")
-    if _rx.get("reposition_mode") and _reposition_modes \
-            and _rx["reposition_mode"] not in _reposition_modes:
-        err("data->code", f"status '{_name}' repositions with mode "
-            f"'{_rx['reposition_mode']}', which is not in Repositioning.MODES")
-    _reach = _rx.get("reach", 1)
-    if isinstance(_reach, str) and _reach != "weapon":
-        err("data->code", f"status '{_name}' reaches '{_reach}'; the only word "
-            "Reaction.reach_of() knows is 'weapon'")
+# A stance is a status trigger now (attacked_in_melee, enemy_enters_reach,
+# ally_threatened), and reaction.gd is gone: check_status() refuses a trigger
+# nothing fires and an effect nothing performs.
 
 
 # ── Zones ───────────────────────────────────────────────────────────────────

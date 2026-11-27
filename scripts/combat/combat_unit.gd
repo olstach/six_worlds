@@ -1381,6 +1381,11 @@ const STATUS_TYPE_COLORS: Dictionary = {
 	"stealth": Color(0.5, 0.5, 0.6),    # Grey
 }
 
+## Damage types whose colour goes by another name in STATUS_ELEMENT_COLORS.
+const DAMAGE_TYPE_COLOR_KEYS: Dictionary = {
+	"lightning": "air", "slashing": "physical", "piercing": "physical", "crushing": "physical",
+}
+
 ## Color used for "Resisted!" text — same shade as "Miss!" (grey)
 const COLOR_RESISTED = Color(0.8, 0.8, 0.8)
 
@@ -1400,27 +1405,18 @@ func _get_status_color(status_name: String) -> Color:
 	if element != "" and STATUS_ELEMENT_COLORS.has(element):
 		return STATUS_ELEMENT_COLORS[element]
 
-	# Infer element from the words in the effects and flags lists
-	var effects: Array = def.get("effects", []) + def.get("flags", [])
-	for fx in effects:
-		if "fire" in fx:
-			return STATUS_ELEMENT_COLORS["fire"]
-		if "poison" in fx:
-			return STATUS_ELEMENT_COLORS["poison"]
-		if "water" in fx:
-			return STATUS_ELEMENT_COLORS["water"]
-		if "ice" in fx or "frozen" in fx or "cold" in fx:
-			return STATUS_ELEMENT_COLORS["ice"]
-		if "air" in fx or "lightning" in fx:
-			return STATUS_ELEMENT_COLORS["air"]
-		if "space" in fx:
-			return STATUS_ELEMENT_COLORS["space"]
-		if "black" in fx:
-			return STATUS_ELEMENT_COLORS["black"]
-		if "holy" in fx or "white" in fx or "blessed" in fx:
-			return STATUS_ELEMENT_COLORS["white"]
-		if "physical" in fx:
-			return STATUS_ELEMENT_COLORS["physical"]
+	# The damage type the status itself deals: its damage over time
+	# (`periodic`), else what its hits add (`hit` triggers: Burning_Weapon).
+	var dealt: Array = def.get("periodic", {}).get("effects", []).duplicate()
+	for trigger in def.get("triggers", []):
+		if typeof(trigger) == TYPE_DICTIONARY and str(trigger.get("on", "")) == "hit":
+			dealt.append_array(trigger.get("effects", []))
+	for effect in dealt:
+		if typeof(effect) != TYPE_DICTIONARY or str(effect.get("op", "")) != "damage":
+			continue
+		var key: String = str(DAMAGE_TYPE_COLOR_KEYS.get(str(effect.get("type", "")), effect.get("type", "")))
+		if STATUS_ELEMENT_COLORS.has(key):
+			return STATUS_ELEMENT_COLORS[key]
 
 	# Fall back to the first category that has a color
 	for category in StatusRules.categories_of(def):

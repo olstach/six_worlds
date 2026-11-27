@@ -242,6 +242,7 @@ func _ready() -> void:
 	_load_spell_database()
 	_load_status_definitions()
 	_load_summon_templates()
+	_validate_status_definitions()
 	# max_hp auras are the one payload that has to be stored, so they need a
 	# refresh whenever the distance between units changes.
 	unit_moved.connect(_on_unit_moved_refresh_auras)
@@ -309,6 +310,18 @@ func _load_status_definitions() -> void:
 			continue
 
 		_status_effects[sname] = status
+
+
+## Check every status against EffectVocab.validate_status, loudly. Run after
+## the summon templates load, since an expiry may summon one. A status that
+## fails still loads (the game keeps running); the error names what to fix,
+## and tools/validate_data.py fails on the same thing before it ships.
+func _validate_status_definitions() -> void:
+	for sname in _status_effects:
+		if str(sname).begins_with("_"):
+			continue
+		for msg in EffectVocab.validate_status(_status_effects[sname], "status '%s'" % sname):
+			push_error("CombatManager: " + msg)
 
 
 ## Get a status definition by name (for external use by CombatUnit, etc.)
@@ -566,7 +579,7 @@ func _sync_combat_state_to_characters() -> void:
 				persisting.append({
 					"status": sname,
 					"duration": effect.get("duration", 1),
-					"damage_per_step": def.get("damage_per_turn", 3)
+					"damage_per_step": StatusRules.periodic_damage_base(def, 3)
 				})
 		cdata["overworld_statuses"] = persisting
 
@@ -1307,13 +1320,12 @@ func _start_current_turn() -> void:
 	if unit == null:
 		return
 
-	# A reaction stance lasts "until your next turn", so its per-round budget
-	# refills here rather than on the round boundary — initiative means those
-	# are not the same moment.
+	# A trigger's `limit {per: "turn"}` lasts "until your next turn", so its
+	# allowance refills here rather than on the round boundary — initiative
+	# means those are not the same moment.
 	if "status_effects" in unit:
 		for entry in unit.status_effects:
-			if not Reaction.of(_status_effects.get(str(entry.get("status", "")), {})).is_empty():
-				Reaction.refresh(entry)
+			entry.erase("_trigger_uses")
 
 	# Units with no actions (illusions/decoys) skip their turn automatically —
 	# but their statuses and modifiers still count down here, the moment the
@@ -2014,15 +2026,33 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		_consume_mirror_image(defender)
 		combat_log.emit("%s's blow passes through an illusory copy of %s!" % [attacker.unit_name, defender.unit_name])
 
-	# Reflect (Turquoise Mirror mantra): 60% chance the strike rebounds on the attacker.
-	# The rebound uses the damage the defender would have taken.
-	if hit and attacker != defender and StatusRules.has_flag(defender, "attack_reflect_chance") and randf() < 0.60:
-		hit = false
-		var refl_type: String = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
-		var refl_result = calculate_physical_damage(attacker, defender, refl_type)
-		var refl_dmg: int = maxi(1, refl_result.get("damage", 1))
-		apply_damage(attacker, refl_dmg, refl_type)
-		combat_log.emit("%s's mirror turns the blow back — %s takes %d damage!" % [defender.unit_name, attacker.unit_name, refl_dmg])
+	# --- Intercepting triggers: the defender's statuses answer the blow before
+	# it lands (EffectVocab.INTERCEPT_TRIGGERS). `incoming_attack` first (Reflect:
+	# the strike rebounds on the attacker, for the damage the defender would have
+	# taken), then `attacked_in_melee` (the stances: Heavenly Counterflow turns it
+	# aside). Whatever else those triggers do — a counter-attack, a step away —
+	# waits in `pending` until the blow is over.
+	var negated := false
+	var pending: Array = []
+	if hit and attacker != defender:
+		var seen: Dictionary = _intercept(defender, attacker, "incoming_attack", true, pending)
+		if seen.reflect:
+			hit = false
+			var refl_type: String = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
+			var refl_result = calculate_physical_damage(attacker, defender, refl_type)
+			var refl_dmg: int = maxi(1, refl_result.get("damage", 1))
+			apply_damage(attacker, refl_dmg, refl_type)
+			combat_log.emit("%s's mirror turns the blow back — %s takes %d damage!" % [defender.unit_name, attacker.unit_name, refl_dmg])
+		elif seen.negate:
+			hit = false
+			negated = true
+	if hit and _grid_distance(attacker.grid_position, defender.grid_position) <= 1:
+		var seen: Dictionary = _intercept(defender, attacker, "attacked_in_melee", true, pending)
+		if seen.negate:
+			hit = false
+			negated = true
+			combat_log.emit("%s: %s — the blow finds nobody there."
+				% [defender.unit_name, str(seen.by).replace("_", " ")])
 
 	# Get weapon damage type (slashing, crushing, piercing)
 	var weapon_dmg_type = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
@@ -2037,8 +2067,15 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		"damage_type": weapon_dmg_type,
 		"cover": _last_cover_result
 	}
+	if negated:
+		# Turned aside by a status, not missed: it reads as a dodge.
+		result["dodged"] = true
+		result["negated"] = true
 
 	if hit:
+		# Reactions decided before the blow answer it once it has landed
+		# (_process_reactive_statuses runs them first).
+		result["_pending_reactions"] = pending
 		# Track last attacker for risen_dead and similar effects
 		if "last_attacker" in defender:
 			defender.last_attacker = attacker
@@ -2194,14 +2231,19 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 						result["sweep_hit"] = true
 
 	else:
-		# Attack missed — check dodge/parry perks on defender
-		_process_on_dodge_perks(defender, attacker)
-		_fire_dodge_success(defender, attacker, is_ranged)
+		# Attack missed — check dodge/parry perks on defender. A blow a status
+		# turned aside (negated) was not dodged by the defender's own skill, so
+		# it fires none of them; it answers with its own trigger's effects.
+		if negated:
+			_run_pending_triggers(pending)
+		else:
+			_process_on_dodge_perks(defender, attacker)
+			_fire_dodge_success(defender, attacker, is_ranged)
 		# A melee blow that missed someone holding a melee weapon met steel:
 		# that is a parry as well as a dodge, and fires both. Riposte has
 		# always read "dodge or parry" as one moment; this keeps the two
 		# apart for perks that want only the second.
-		if _is_parry(defender, attacker, is_ranged):
+		if not negated and _is_parry(defender, attacker, is_ranged):
 			_fire_perk_triggers(defender, "parry_success", {"attacker": attacker})
 		# Reset consecutive hit streaks on miss
 		attacker.momentum_stacks = 0
@@ -2723,7 +2765,7 @@ func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String
 		damage = int(damage * 1.3)
 
 	# A braced spear hits harder than a swing of opportunity. Set around
-	# attack_unit() by _perform_reaction() and cleared immediately after.
+	# attack_unit() by free_reaction_attack() and cleared immediately after.
 	if not is_equal_approx(_reaction_damage_mult, 1.0):
 		damage = int(damage * _reaction_damage_mult)
 
@@ -4450,12 +4492,14 @@ func _calculate_status_duration(caster: Node, spell: Dictionary, bonus: int) -> 
 ## Apply spell effects to a target
 ## Reads directly from spells.json format: damage, damage_type, heal, statuses_caused
 func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: int) -> Dictionary:
-	# Magic_Mirror: offensive spells have a 50% chance to reflect back at the caster.
-	# target == caster afterwards, so a mirrored caster can't bounce it again.
-	if target != caster and _spell_is_offensive(spell) \
-			and StatusRules.has_flag(target, "spell_reflect_chance") and randf() < 0.50:
-		combat_log.emit("%s's magic mirror hurls the spell back at %s!" % [target.unit_name, caster.unit_name])
-		return _apply_spell_effects(caster, caster, spell, bonus)
+	# `incoming_spell` triggers answer an offensive spell before it lands.
+	# Magic_Mirror's (50%) reflects it back at the caster; target == caster
+	# afterwards, so a mirrored caster can't bounce it again.
+	if target != caster and _spell_is_offensive(spell):
+		var seen: Dictionary = _intercept(target, caster, "incoming_spell", false, [])
+		if seen.reflect:
+			combat_log.emit("%s's magic mirror hurls the spell back at %s!" % [target.unit_name, caster.unit_name])
+			return _apply_spell_effects(caster, caster, spell, bonus)
 
 	var result = {
 		"target": target,
@@ -5441,8 +5485,9 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 #   hold values    `while_active` effects, resolved once on entry with the
 #                  entry's id as the hold source, so ending it releases them
 #   tick           `periodic` effects at the start or end of the carrier's turn
-#   react          `triggers` on expire, turn_start and turn_end (Task 6 adds
-#                  the rest)
+#   react          `triggers`: on expire, turn_start and turn_end, and on what
+#                  other units do (struck, hit, the intercepting triggers
+#                  before an attack lands, the movement reactions)
 # Every one of these goes through EffectResolver with an EffectContext whose
 # status_entry is the entry, so a magnitude can read its stacks and turns.
 
@@ -5495,6 +5540,8 @@ func _status_context(unit: Node, entry: Dictionary) -> EffectContext:
 	ctx.container_id = status_name
 	ctx.status_entry = entry
 	ctx.source_categories = Array(StatusRules.categories_of(_status_effects.get(status_name, {})))
+	# A status's damage names no dealer, as it never has (see EffectContext).
+	ctx.anonymous_damage = true
 	return ctx
 
 
@@ -5528,24 +5575,192 @@ func _refresh_status_holds(unit: Node, entry: Dictionary) -> void:
 	_resolve_status_effects(unit, entry, held, true)
 
 
-## Fire every trigger of the status `entry` whose `on` is `event`. A trigger
-## may carry `chance` (percent) and `if` (conditions, as on an effect).
-func _fire_status_triggers(unit: Node, entry: Dictionary, event: String) -> void:
-	var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
-	for trigger in def.get("triggers", []):
-		if typeof(trigger) != TYPE_DICTIONARY or str(trigger.get("on", "")) != event:
+## Fire every trigger of the status `entry` whose `on` is `event`. `info` is
+## what happened: {"source": the other unit, "damage": the blow's damage}.
+## Returns the last trigger's outcome (see _run_status_trigger).
+func _fire_status_triggers(unit: Node, entry: Dictionary, event: String,
+		info: Dictionary = {}) -> Dictionary:
+	var outcome: Dictionary = {}
+	var triggers: Array = _status_effects.get(str(entry.get("status", "")), {}).get("triggers", [])
+	for i in triggers.size():
+		if typeof(triggers[i]) == TYPE_DICTIONARY and str(triggers[i].get("on", "")) == event:
+			outcome = _run_status_trigger(unit, entry, i, info)
+	return outcome
+
+
+## The events in which a status trigger merely ticks or ends with its carrier;
+## in every other one it answers another unit, and the carrier is the one acting.
+const _SELF_TRIGGERS: Array[String] = ["expire", "turn_start", "turn_end"]
+
+
+## Run trigger number `index` of the status `entry` on `unit`.
+##   1. its `limit` (or, for a reaction, EffectVocab.DEFAULT_TRIGGER_LIMIT a
+##      turn) must have room, for this source too if once_per_source
+##   2. its `if` conditions must hold and its `chance` (percent) must roll
+##   3. intercept ops (negate, reflect) are not resolved: they come back in
+##      the outcome for the hook to act on
+##   4. the other effects resolve now, or with `defer` come back in
+##      outcome.pending for _run_pending_triggers() once the attack is over
+##   5. if it did anything at all, one use of its limit is spent
+## A reaction that could not reach its target (an attack out of range) did
+## nothing, so it spends nothing: a braced spear stays braced.
+## Returns {fired, acted, negate, reflect, log, pending}.
+func _run_status_trigger(unit: Node, entry: Dictionary, index: int, info: Dictionary,
+		defer: bool = false) -> Dictionary:
+	var out := {"fired": false, "acted": false, "negate": false, "reflect": false,
+		"log": [], "pending": {}}
+	var trigger: Dictionary = _status_effects.get(str(entry.get("status", "")), {}).get("triggers", [])[index]
+	var against: Node = info.get("source", null)
+	if not _trigger_has_room(entry, index, trigger, against):
+		return out
+	var ctx := _status_context(unit, entry)
+	if not str(trigger.get("on", "")) in _SELF_TRIGGERS:
+		ctx.caster = unit
+	ctx.source = against
+	ctx.event = info
+	for cond in trigger.get("if", []):
+		if not EffectResolver._condition_met(cond, ctx, unit):
+			return out
+	if trigger.has("chance") and not randf() * 100.0 < float(trigger["chance"]):
+		return out
+	out.fired = true
+	var rest: Array = []
+	for effect in trigger.get("effects", []):
+		var op: String = str(effect.get("op", ""))
+		if op in EffectVocab.INTERCEPT_OPS:
+			out[op] = true
+			out.acted = true
+		else:
+			rest.append(effect)
+	if defer and not rest.is_empty():
+		out.pending = {"unit": unit, "entry": entry, "index": index, "ctx": ctx,
+			"effects": rest, "spent": out.acted, "against": against}
+	elif not rest.is_empty():
+		out.log = EffectResolver.resolve(rest, ctx)
+		for item in out.log:
+			if bool(item.get("applied", false)):
+				out.acted = true
+	if out.acted:
+		_spend_trigger(entry, index, trigger, against)
+	return out
+
+
+## Resolve the effects intercepting triggers held back until the attack was
+## over (a counter-attack, a step away), spending a use where that is what
+## made the trigger act.
+func _run_pending_triggers(pending: Array) -> void:
+	for p in pending:
+		if not is_instance_valid(p.unit) or p.unit.is_dead:
 			continue
-		var ctx := _status_context(unit, entry)
-		var met: bool = true
-		for cond in trigger.get("if", []):
-			if not EffectResolver._condition_met(cond, ctx, unit):
-				met = false
-				break
-		if not met:
+		var acted := false
+		for item in EffectResolver.resolve(p.effects, p.ctx):
+			if bool(item.get("applied", false)):
+				acted = true
+		if acted and not p.spent:
+			var trigger: Dictionary = _status_effects.get(str(p.entry.get("status", "")), {}).get("triggers", [])[p.index]
+			_spend_trigger(p.entry, p.index, trigger, p.against)
+
+
+## The intercepting triggers on `unit` for `event` ("incoming_attack",
+## "attacked_in_melee", "incoming_spell"), set off by `against`. Returns
+## {negate, reflect, by}: whether any said negate / reflect, and which status
+## said it first. With `defer`, each trigger's other effects are added to
+## `pending` instead of resolving now.
+func _intercept(unit: Node, against: Node, event: String, defer: bool, pending: Array) -> Dictionary:
+	var seen := {"negate": false, "reflect": false, "by": ""}
+	if unit == null or not is_instance_valid(unit) or unit.is_dead or not "status_effects" in unit:
+		return seen
+	if against == null or not is_instance_valid(against) or against.is_dead:
+		return seen
+	for entry in unit.status_effects.duplicate():
+		if _status_entry_index(unit, entry) == -1:
 			continue
-		if trigger.has("chance") and not randf() * 100.0 < float(trigger["chance"]):
+		var triggers: Array = _status_effects.get(str(entry.get("status", "")), {}).get("triggers", [])
+		for i in triggers.size():
+			if typeof(triggers[i]) != TYPE_DICTIONARY or str(triggers[i].get("on", "")) != event:
+				continue
+			var out: Dictionary = _run_status_trigger(unit, entry, i, {"source": against}, defer)
+			for op in EffectVocab.INTERCEPT_OPS:
+				if out[op] and not seen[op]:
+					seen[op] = true
+					if seen.by == "":
+						seen.by = str(entry.get("status", ""))
+			if not out.pending.is_empty():
+				pending.append(out.pending)
+	return seen
+
+
+## How a trigger is limited: its own `limit`, or for a reaction (EffectVocab.
+## REACTION_TRIGGERS) DEFAULT_TRIGGER_LIMIT a turn; {} means unlimited.
+func _trigger_limit(trigger: Dictionary) -> Dictionary:
+	if trigger.has("limit"):
+		return trigger["limit"]
+	if str(trigger.get("on", "")) in EffectVocab.REACTION_TRIGGERS:
+		return {"per": "turn", "count": EffectVocab.DEFAULT_TRIGGER_LIMIT}
+	return {}
+
+
+## Has trigger `index` of `entry` room left this turn (for `against`, if it
+## is once_per_source)? The count lives on the status ENTRY, so two stances
+## do not share one allowance and a refreshed stance keeps counting.
+func _trigger_has_room(entry: Dictionary, index: int, trigger: Dictionary, against: Node) -> bool:
+	var lim: Dictionary = _trigger_limit(trigger)
+	if lim.is_empty():
+		return true
+	var uses: Dictionary = entry.get("_trigger_uses", {}).get(index, {})
+	if int(uses.get("used", 0)) >= int(lim.get("count", EffectVocab.DEFAULT_TRIGGER_LIMIT)):
+		return false
+	if bool(lim.get("once_per_source", false)) and against != null \
+			and uses.get("seen", {}).has(against.get_instance_id()):
+		return false
+	return true
+
+
+## Record one use of trigger `index` of `entry`, against `against`.
+func _spend_trigger(entry: Dictionary, index: int, trigger: Dictionary, against: Node) -> void:
+	if _trigger_limit(trigger).is_empty():
+		return
+	var all: Dictionary = entry.get("_trigger_uses", {})
+	var uses: Dictionary = all.get(index, {"used": 0, "seen": {}})
+	uses["used"] = int(uses.get("used", 0)) + 1
+	if against != null:
+		uses["seen"][against.get_instance_id()] = true
+	all[index] = uses
+	entry["_trigger_uses"] = all
+
+
+## How many times the limited triggers of `entry` have fired since its
+## carrier's turn began (what a test asks of a stance).
+func trigger_uses(entry: Dictionary) -> int:
+	var total := 0
+	for uses in entry.get("_trigger_uses", {}).values():
+		total += int(uses.get("used", 0))
+	return total
+
+
+## How far a trigger reaches, in tiles: its `reach`, where "weapon" means the
+## carrier's own attack range (a Kill Zone is everything you could have shot).
+## A trigger with no reach reaches 1.
+func trigger_reach(trigger: Dictionary, unit: Node) -> int:
+	var declared = trigger.get("reach", 1)
+	if typeof(declared) == TYPE_STRING and str(declared) == "weapon":
+		if unit != null and unit.has_method("get_attack_range"):
+			return int(unit.get_attack_range())
+		return 1
+	return maxi(1, int(declared))
+
+
+## Say what a reacting trigger did, the way the arena log reads it: one
+## "reactive" line per damage dealt (its amount) and per status given (0).
+func _announce_trigger(unit: Node, status_name: String, outcome: Dictionary) -> void:
+	for item in outcome.get("log", []):
+		if not bool(item.get("applied", false)):
 			continue
-		EffectResolver.resolve(trigger.get("effects", []), ctx)
+		match str(item.get("op", "")):
+			"damage":
+				status_effect_triggered.emit(unit, status_name, int(item.get("amount", 0)), "reactive")
+			"status":
+				status_effect_triggered.emit(unit, status_name, 0, "reactive")
 
 
 ## Run the `periodic` effects (and `when`-matching triggers) of every status on
@@ -5559,8 +5774,55 @@ func _tick_status_effects_at(unit: Node, when: String) -> void:
 		var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
 		var periodic: Dictionary = def.get("periodic", {})
 		if not periodic.is_empty() and str(periodic.get("when", "turn_start")) == when:
-			_resolve_status_effects(unit, entry, periodic.get("effects", []), false)
+			_tick_periodic(unit, entry, periodic.get("effects", []))
 		_fire_status_triggers(unit, entry, when)
+
+
+## One tick of a status's `periodic` effects. The applier's damage-over-time
+## bonuses apply to its damage (ctx.dot_tick, see status_tick_damage), and
+## each tick is announced as the arena log expects: "damage" with what was
+## dealt, "heal" (and unit_healed) with what was healed.
+func _tick_periodic(unit: Node, entry: Dictionary, effects: Array) -> void:
+	if effects.is_empty():
+		return
+	var status_name: String = str(entry.get("status", ""))
+	var ctx := _status_context(unit, entry)
+	ctx.dot_tick = true
+	for item in EffectResolver.resolve(effects, ctx):
+		if not bool(item.get("applied", false)):
+			continue
+		var amount: int = int(item.get("amount", 0))
+		match str(item.get("op", "")):
+			"damage":
+				status_effect_triggered.emit(unit, status_name, amount, "damage")
+			"heal":
+				unit_healed.emit(unit, amount)
+				status_effect_triggered.emit(unit, status_name, amount, "heal")
+
+
+## A damage-over-time tick of `damage` of type `element`, after the bonuses of
+## whoever applied it (`source`, which may be null or gone). Fire Magic makes a
+## burn bite harder through burning_damage_pct, Alchemy a venom through
+## poison_damage_pct, and Fan_the_Flames (the flag increase_burning_damage_dealt
+## on the source) adds half again to fire. Read off the applier, the way the
+## status entry has always remembered them: the poisoner's skill, not the
+## victim's.
+func status_tick_damage(source: Node, element: String, damage: int) -> int:
+	if source == null or not is_instance_valid(source):
+		return damage
+	var derived: Dictionary = source.character_data.get("derived", {}) \
+		if "character_data" in source else {}
+	if element == "poison":
+		var venom_pct: float = float(derived.get("poison_damage_pct", 0.0))
+		if venom_pct > 0.0:
+			damage = int(damage * (1.0 + venom_pct / 100.0))
+	elif element == "fire":
+		var burn_pct: float = float(derived.get("burning_damage_pct", 0.0))
+		if burn_pct > 0.0:
+			damage = int(damage * (1.0 + burn_pct / 100.0))
+		if StatusRules.has_flag(source, "increase_burning_damage_dealt"):
+			damage = int(damage * 1.5)
+	return damage
 
 
 ## The end of `unit`'s turn: the turn_end half of _process_status_effects.
@@ -5581,9 +5843,9 @@ func _process_status_turn_end(unit: Node) -> void:
 ## status again starts a fresh one instead of refreshing the dying one.
 ##
 ## Floating text and the status_effect_expired signal stay with the callers,
-## which have always decided those for themselves. So do the old-shape expiry
-## words (_on_status_expired: Doomed, bleed_on_expire ...), which Task 6 moves
-## into `expire` triggers.
+## which have always decided those for themselves. So does the Invisible rule
+## in _on_status_expired. What a status does when it runs out (Doomed kills,
+## Infected bursts and hatches) is its `expire` triggers, fired here.
 func _end_status(unit: Node, entry: Dictionary, reason: String) -> void:
 	if not reason in STATUS_END_REASONS:
 		push_error("CombatManager._end_status: unknown reason '%s' (%s)"
@@ -5820,27 +6082,10 @@ func _cleanse_status_effects(unit: Node, count: int) -> int:
 	return removed
 
 
-## The damage type a status's DoT deals, read from its `<type>_damage_per_turn`
-## effect string.
-##
-## A status may override it with an explicit `element`; nothing does yet. The
-## fallback is physical, which is what a wound is when nothing says otherwise.
-func _dot_element(effect_def: Dictionary) -> String:
-	for name in effect_def.get("effects", []):
-		var text: String = str(name)
-		if not text.ends_with("_damage_per_turn"):
-			continue
-		var candidate: String = text.trim_suffix("_damage_per_turn")
-		if DamageType.exists(candidate):
-			return candidate
-		push_warning("CombatManager: status effect '%s' names damage type '%s', "
-			% [text, candidate] + DamageType.explain_unknown(candidate))
-	return "physical"
-
-
 ## Process status effects at turn start.
-## Handles DoT, HoT, incapacitation, saving throws, escalating damage,
-## expiry callbacks, and status spread.
+## Damage and healing over time are the statuses' `periodic` effects, run first
+## (_tick_status_effects_at). Then, status by status: incapacitation, the
+## status's own `save`, the duration, and expiry; then spread and auras.
 ## Returns true if the unit should skip their turn (incapacitated).
 func _process_status_effects(unit: Node) -> bool:
 	if not "status_effects" in unit or unit.status_effects.is_empty():
@@ -5863,76 +6108,19 @@ func _process_status_effects(unit: Node) -> bool:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
 
-		# --- Damage over time ---
-		var dot = effect_def.get("damage_per_turn", 0)
-		if dot > 0:
-			var damage = dot
-			# Use per-instance value if present (for variable damage)
-			if effect.get("value", 0) > 0:
-				damage = effect.value
-			# Escalating DoT (Festering: damage increases each turn)
-			var escalation = effect_def.get("damage_increase_per_turn", 0)
-			if escalation > 0:
-				# Store accumulated escalation on the effect instance
-				var extra = effect.get("_escalation_ticks", 0) * escalation
-				damage += extra
-				effect["_escalation_ticks"] = effect.get("_escalation_ticks", 0) + 1
-			# The element of a damage-over-time tick. It defaulted to
-			# `physical` and no status in the game declares an `element`, so
-			# every DoT dealt physical damage — Burning included. Fire
-			# resistance did nothing against burning, and armour reduced it.
-			# The element is in the effect string (`fire_damage_per_turn`),
-			# which is where it has been all along.
-			var element = str(effect_def.get("element", _dot_element(effect_def)))
-
-			# Alchemy makes venom bite harder, the way Fire Magic makes a burn
-			# bite harder. Read off whoever applied it, which the status entry
-			# already remembers — the poisoner's skill, not the victim's.
-			if element == "poison" and effect.has("source"):
-				var venom_source = effect["source"]
-				if is_instance_valid(venom_source) and "character_data" in venom_source:
-					var venom_pct: float = venom_source.character_data.get("derived", {}).get(
-						"poison_damage_pct", 0.0)
-					if venom_pct > 0.0:
-						damage = int(damage * (1.0 + venom_pct / 100.0))
-
-			# Fan_the_Flames: source with increase_burning_damage_dealt adds 50% to fire DoT
-			if element == "fire" and effect.has("source"):
-				var dot_source = effect["source"]
-				# Fire Magic makes the burn bite harder. Read off whoever set
-				# the fire, which the status entry already remembers.
-				if is_instance_valid(dot_source) and "character_data" in dot_source:
-					var burn_pct: float = dot_source.character_data.get("derived", {}).get(
-						"burning_damage_pct", 0.0)
-					if burn_pct > 0.0:
-						damage = int(damage * (1.0 + burn_pct / 100.0))
-				if is_instance_valid(dot_source) and StatusRules.has_flag(dot_source, "increase_burning_damage_dealt"):
-					damage = int(damage * 1.5)
-			apply_damage(unit, damage, element)
-			status_effect_triggered.emit(unit, status_name, damage, "damage")
-
-		# --- Heal over time ---
-		var hot_val = effect_def.get("heal_per_turn", 0)
-		if hot_val is bool:
-			hot_val = 0  # Legacy: some entries used true/false
-		if hot_val > 0 or "heal_per_turn" in effect_def:
-			var heal_amount = hot_val if hot_val > 0 else effect.get("value", 5)
-			if heal_amount > 0:
-				unit.heal(heal_amount)
-				unit_healed.emit(unit, heal_amount)
-				status_effect_triggered.emit(unit, status_name, heal_amount, "heal")
-
 		# --- Incapacitation check ---
 		if StatusRules.def_has_any_flag(effect_def, ["skip_turn", "cannot_act"]):
 			skip_turn = true
 
-		# --- Saving throw (end-of-turn save to shake off CC) ---
+		# --- The status's own save, {stat, dc, when} (Stunned shakes itself off) ---
+		# d20 + the carrier's effective attribute against the fixed DC, with no
+		# natural 1 or 20 and no save bonuses: the roll statuses have always made.
 		var saved = false
-		if effect_def.get("save_at_end_of_turn", false) or "save_at_end_of_turn" in effect_def.get("effects", []):
-			var save_type = effect_def.get("save_type", "Constitution")
-			var save_attr: int = unit_attribute(unit, save_type.to_lower())
+		var own_save: Dictionary = effect_def.get("save", {})
+		if not own_save.is_empty() and str(own_save.get("when", "")) == "turn_start":
+			var save_attr: int = unit_attribute(unit, str(own_save.get("stat", "constitution")).to_lower())
 			var roll = randi_range(1, 20) + save_attr
-			if roll >= 15:  # DC 15 base save
+			if roll >= int(own_save.get("dc", 15)):
 				saved = true
 				effect.duration = 0  # Will be removed below
 				# Show "Resisted!" floating text
@@ -5986,22 +6174,11 @@ func _process_status_effects(unit: Node) -> bool:
 	return skip_turn
 
 
-## Handle special effects that trigger when a status expires.
-## E.g. Doomed kills the unit, Infected spawns a fungal creature and applies Bleeding.
+## What the code still does as a status goes, whatever took it off: Invisible
+## takes stealth with it. What a status does when it RUNS OUT (Doomed kills,
+## Infected bursts, bleeds and hatches) is data now: its `expire` triggers,
+## which _end_status fires on expiry only.
 func _on_status_expired(unit: Node, status_name: String, def: Dictionary, _effect_instance: Dictionary = {}) -> void:
-	var effects = def.get("effects", [])
-
-	if "death_on_expire" in effects:
-		# Doomed — instant kill
-		apply_damage(unit, unit.max_hp * 10, "black")
-
-	if "damage_on_expire" in effects:
-		var expire_dmg = def.get("expire_damage", 20)
-		apply_damage(unit, expire_dmg, "physical")
-
-	if "bleed_on_expire" in effects:
-		_apply_status_effect(unit, "Bleeding", 3)
-
 	# Invisible expiry: drop stealth unless unit has Blend In (own stealth ability)
 	if StatusRules.def_has_flag(def, "grants_stealth"):
 		if "is_stealthed" in unit and unit.is_stealthed:
@@ -6012,156 +6189,75 @@ func _on_status_expired(unit: Node, status_name: String, def: Dictionary, _effec
 			else:
 				combat_log.emit("%s's invisibility fades but stays hidden (Blend In)." % unit.unit_name)
 
-	# Spawn-on-expire effects (Infected spawns fungal creature) — emit signal for
-	# encounter system to handle, since we don't create units directly here
-	# A status that leaves something behind when it runs out. This is the
-	# scheduler the game already had and did not finish: `death_on_expire`,
-	# `damage_on_expire` and `bleed_on_expire` all work, and the fourth —
-	# something crawling out of the corpse — carried a TODO and a hardcoded
-	# creature name. `summon_on_expire` names the template instead, so any
-	# status can ripen into any creature.
-	var hatches: String = def.get("summon_on_expire", "")
-	if hatches != "" and "grid_position" in unit:
-		_spawn_summoned_unit(unit, hatches, unit.grid_position, 0)
-		combat_log.emit("Something tears its way out of %s." % unit.unit_name)
 
-
-## Fire every reaction `unit` carries whose trigger matches.
-##
-## `in_range` is the trigger's own range test, done by the caller because only
-## it knows what "in range" means for that trigger.
-func _fire_reactions(unit: Node, against: Node, trigger: String, in_range: bool,
-		result: Dictionary = {}) -> void:
-	if not in_range or unit == null or against == null:
-		return
-	if not is_instance_valid(unit) or unit.is_dead or not "status_effects" in unit:
-		return
-	if not is_instance_valid(against) or against.is_dead:
-		return
-
-	for entry in unit.status_effects:
-		var status_name: String = str(entry.get("status", ""))
-		var spec: Dictionary = Reaction.of(_status_effects.get(status_name, {}))
-		if spec.is_empty() or str(spec.get("trigger", "")) != trigger:
-			continue
-		if not Reaction.is_trigger(str(spec.get("trigger", ""))):
-			push_warning("CombatManager: status '%s' — %s"
-				% [status_name, Reaction.explain_unknown_trigger(str(spec.get("trigger", "")))])
-			continue
-		if not Reaction.can_fire(spec, entry, against):
-			continue
-		if _perform_reaction(unit, against, status_name, spec, result):
-			Reaction.spend(entry, against)
-
-
-## The movement trigger, which needs the distances the mover crossed.
+## The movement triggers of `reactor`'s statuses, for `mover` having just
+## moved from old_dist to new_dist tiles away (ending on new_pos):
+##   enemy_enters_reach  crossing IN to the trigger's reach, not merely being
+##                       in it: a unit walking about inside provokes once
+##   ally_threatened     the mover ended next to an ally standing within the
+##                       trigger's reach of the reactor
 func _fire_move_reactions(reactor: Node, mover: Node, old_dist: int, new_dist: int,
 		_old_pos: Vector2i, new_pos: Vector2i) -> void:
 	if not "status_effects" in reactor:
 		return
-	for entry in reactor.status_effects:
-		var status_name: String = str(entry.get("status", ""))
-		var spec: Dictionary = Reaction.of(_status_effects.get(status_name, {}))
-		if spec.is_empty():
+	for entry in reactor.status_effects.duplicate():
+		if _status_entry_index(reactor, entry) == -1:
 			continue
-		var trigger: String = str(spec.get("trigger", ""))
-		var reach: int = Reaction.reach_of(spec, reactor)
+		var triggers: Array = _status_effects.get(str(entry.get("status", "")), {}).get("triggers", [])
+		for i in triggers.size():
+			var trigger = triggers[i]
+			if typeof(trigger) != TYPE_DICTIONARY:
+				continue
+			var on: String = str(trigger.get("on", ""))
+			if on != "enemy_enters_reach" and on != "ally_threatened":
+				continue
+			var reach: int = trigger_reach(trigger, reactor)
+			var fires := false
+			if on == "enemy_enters_reach":
+				fires = new_dist <= reach and old_dist > reach
+			else:
+				# Somebody has come for one of the people you are standing over.
+				for ally in all_units:
+					if ally == reactor or ally.is_dead or not "team" in ally:
+						continue
+					if ally.team != reactor.team or not "grid_position" in ally:
+						continue
+					if _grid_distance(reactor.grid_position, ally.grid_position) > reach:
+						continue
+					if _grid_distance(new_pos, ally.grid_position) <= 1:
+						fires = true
+						break
+			if fires:
+				_run_status_trigger(reactor, entry, i, {"source": mover})
 
-		var fires := false
-		if trigger == "enemy_enters_reach":
-			# Crossing IN, not merely being in: a unit walking around inside
-			# your reach provokes once, when it arrives.
-			fires = new_dist <= reach and old_dist > reach
-		elif trigger == "ally_threatened":
-			# Somebody has come for one of the people you are standing over.
-			for ally in all_units:
-				if ally == reactor or ally.is_dead or not "team" in ally:
-					continue
-				if ally.team != reactor.team or not "grid_position" in ally:
-					continue
-				if _grid_distance(reactor.grid_position, ally.grid_position) > reach:
-					continue
-				if _grid_distance(new_pos, ally.grid_position) <= 1:
-					fires = true
-					break
-		if not fires or not Reaction.can_fire(spec, entry, mover):
-			continue
-		if _perform_reaction(reactor, mover, status_name, spec, {}):
-			Reaction.spend(entry, mover)
 
-
-## Carry out one reaction's responses, in the order they are declared.
-##
-## Returns whether anything actually happened, because a reaction that could
-## not reach its target must not spend the round's allowance: a spear braced
-## against a charge that stops three tiles out is still braced.
-func _perform_reaction(unit: Node, against: Node, status_name: String,
-		spec: Dictionary, result: Dictionary) -> bool:
-	var label: String = status_name.replace("_", " ")
-	var acted := false
-	for response in spec.get("responses", []):
-		match str(response):
-			"auto_dodge":
-				acted = true
-				# The blow that triggered this one never lands. The reactive
-				# hook runs AFTER the damage is applied, so turning a blow
-				# aside means giving back what it just took rather than
-				# preventing it — the same answer, one step later.
-				var landed: int = int(result.get("damage", 0))
-				if landed > 0 and unit.has_method("heal"):
-					unit.heal(landed)
-				result["hit"] = false
-				result["damage"] = 0
-				result["dodged"] = true
-				combat_log.emit("%s: %s — the blow finds nobody there."
-					% [unit.unit_name, label])
-
-			"reposition":
-				acted = true
-				var spec_move: Dictionary = {
-					"mode": str(spec.get("reposition_mode", "scatter")),
-					"range": int(spec.get("reposition_tiles", 1)),
-					"tiles": int(spec.get("reposition_tiles", 1)),
-				}
-				reposition(unit, spec_move, unit, unit.grid_position)
-
-			"attack":
-				if not is_instance_valid(against) or against.is_dead:
-					continue
-				# A free attack still has to be able to reach: a stance may
-				# threaten two tiles because it is a spear stance, and the same
-				# rule keeps a swordsman from answering across the gap.
-				var range_ok: int = unit.get_attack_range() \
-					if unit.has_method("get_attack_range") else 1
-				if _grid_distance(unit.grid_position, against.grid_position) > range_ok:
-					continue
-				acted = true
-				combat_log.emit("%s: %s!" % [unit.unit_name, label])
-				var mult: float = float(spec.get("damage_mult", 1.0))
-				if is_equal_approx(mult, 1.0):
-					attack_unit(unit, against, true)
-				else:
-					# A braced spear hits harder than a swing of opportunity.
-					_reaction_damage_mult = mult
-					attack_unit(unit, against, true)
-					_reaction_damage_mult = 1.0
-
-			"status":
-				var give: String = str(spec.get("status", ""))
-				if give != "" and is_instance_valid(against) and not against.is_dead:
-					acted = true
-					_apply_status_effect(against, give,
-						int(spec.get("status_duration", 1)), 0, unit)
-
-			_:
-				push_warning("CombatManager: status '%s' — %s"
-					% [status_name, Reaction.explain_unknown_response(str(response))])
-	return acted
+## The `attack` op: a free weapon attack by `unit` against `against`, at
+## `power_pct` percent damage (Set for Charge's braced spear: 200). It still has
+## to be able to reach — a stance may threaten two tiles because it is a spear
+## stance, and the same rule keeps a swordsman from answering across the gap —
+## and returns false when it could not, so the trigger spends nothing.
+## `label` (the status name) goes in the combat log.
+func free_reaction_attack(unit: Node, against: Node, power_pct: float, label: String) -> bool:
+	if not is_instance_valid(against) or against.is_dead:
+		return false
+	var range_ok: int = unit.get_attack_range() if unit.has_method("get_attack_range") else 1
+	if _grid_distance(unit.grid_position, against.grid_position) > range_ok:
+		return false
+	combat_log.emit("%s: %s!" % [unit.unit_name, label.replace("_", " ")])
+	var mult: float = power_pct / 100.0
+	if is_equal_approx(mult, 1.0):
+		attack_unit(unit, against, true)
+	else:
+		# A braced spear hits harder than a swing of opportunity.
+		_reaction_damage_mult = mult
+		attack_unit(unit, against, true)
+		_reaction_damage_mult = 1.0
+	return true
 
 
 ## Multiplier applied to the next reaction attack, set around attack_unit()
-## because the attack path takes no such argument. Set for Charge is the only
-## thing that uses it, and it is cleared immediately.
+## because the attack path takes no such argument (free_reaction_attack sets
+## it from an `attack` op's power_pct), and cleared immediately.
 var _reaction_damage_mult: float = 1.0
 
 
@@ -6856,8 +6952,10 @@ func _obstacle_id(name: String) -> int:
 	return CombatGrid.ObstacleType.NONE
 
 
-## Process status spread — statuses with "spread" data can jump to adjacent units.
-## Called once per unit per turn, after normal status processing.
+## Process status spread: a status's `spread` {to, reach?, chance, when} lets it
+## jump, with `chance` percent each turn, to one unit within `reach` tiles
+## (default 1, adjacent) that does not have it yet. Called once per unit per
+## turn, after normal status processing.
 func _process_status_spread(unit: Node) -> void:
 	if not "status_effects" in unit or unit.status_effects.is_empty():
 		return
@@ -6865,21 +6963,15 @@ func _process_status_spread(unit: Node) -> void:
 	for effect in unit.status_effects:
 		var status_name = effect.get("status", "")
 		var def = _status_effects.get(status_name, {})
-		var spread = def.get("spread", {})
-		if spread.is_empty():
+		var spread: Dictionary = def.get("spread", {})
+		if spread.is_empty() or str(spread.get("when", "turn_start")) != "turn_start":
 			continue
 
-		var chance = spread_chance_to_float(spread.get("chance", "none"))
+		var chance: float = float(spread.get("chance", 0)) / 100.0
 		if chance <= 0.0 or randf() > chance:
 			continue
 
-		# Find units close enough to catch it. `range` was declared by every
-		# spreading status and read by none of them — "melee" means adjacent,
-		# and a number means that many tiles.
-		var reach: int = 1
-		var declared_range = spread.get("range", "melee")
-		if declared_range is int or declared_range is float:
-			reach = maxi(1, int(declared_range))
+		var reach: int = maxi(1, int(spread.get("reach", 1)))
 		var adjacent = _get_units_in_range(unit, reach)
 		for adj in adjacent:
 			if adj.is_dead or adj.is_bleeding_out:
@@ -6888,19 +6980,6 @@ func _process_status_spread(unit: Node) -> void:
 				var spread_duration = int(def.get("duration", {}).get("base", 2))
 				_apply_status_effect(adj, status_name, spread_duration)
 				break  # Spread to one unit per tick
-
-
-## Convert spread chance string to float probability
-func spread_chance_to_float(chance_str: String) -> float:
-	match chance_str:
-		"low":
-			return 0.15
-		"medium":
-			return 0.30
-		"high":
-			return 0.50
-		_:
-			return 0.0
 
 
 ## Fire the per-turn payloads of every aura this unit emits.
@@ -7086,64 +7165,37 @@ func _get_units_in_range(source: Node, radius: int) -> Array[Node]:
 	return result
 
 
-## Process reactive status effects when a unit is hit by a melee/ranged attack.
-## Handles Fireshield, Poison_Skin, Pain_Mirror, and similar "on-hit" effects.
+## A weapon attack has just hit `defender`. First the reactions its
+## intercepting triggers chose before the blow (a counter-attack) answer it,
+## then its `struck` triggers fire: Fireshield's flames, Pain Mirror's
+## reflection, Lightning Form's shock and stun. A trigger with `reach` 1
+## answers only a melee attacker; one without answers any.
 func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictionary) -> void:
 	if not "status_effects" in defender:
 		return
+	_run_pending_triggers(result.get("_pending_reactions", []))
+	result.erase("_pending_reactions")
 
-	var is_melee = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
-
-	# --- Reaction stances: answering a blow with a blow ---
-	#
-	# `retaliation` could deal flat damage, reflect a percentage or apply a
-	# status; it could not swing a weapon, which is what a counterstance is.
-	# Six active perks waited on that half.
-	_fire_reactions(defender, attacker, "attacked_in_melee", is_melee, result)
-
-	for effect in defender.status_effects:
+	var distance: int = _grid_distance(attacker.grid_position, defender.grid_position)
+	var is_melee: bool = distance <= 1
+	var info := {"source": attacker, "damage": int(result.get("damage", 0))}
+	for effect in defender.status_effects.duplicate():
+		if _status_entry_index(defender, effect) == -1:
+			continue
 		var status_name = effect.get("status", "")
 		var def = _status_effects.get(status_name, {})
+		var triggers: Array = def.get("triggers", [])
+		for i in triggers.size():
+			var trigger = triggers[i]
+			if typeof(trigger) != TYPE_DICTIONARY or str(trigger.get("on", "")) != "struck":
+				continue
+			if trigger.has("reach") and distance > trigger_reach(trigger, defender):
+				continue
+			_announce_trigger(defender, status_name, _run_status_trigger(defender, effect, i, info))
 
-		# --- Retaliation, declared on the status rather than branched on here ---
-		#
-		# Six statuses hit back at whoever hits them, and each had its own
-		# branch: an eight-entry map of "<element>_damage_to_melee_attackers"
-		# strings, two lightning variants differing only in magnitude and a
-		# stun, a poison one, and a reflection. They are one mechanic — when
-		# struck, do something to the attacker — with different numbers.
-		var retal: Dictionary = def.get("retaliation", {})
-		if not retal.is_empty():
-			var reach: String = retal.get("range", "melee")
-			if reach != "melee" or is_melee:
-				# `value` on the status entry is a per-application bonus the
-				# old branches all honoured, so it survives the move.
-				var bonus: int = int(effect.get("value", 0))
-				var element: String = retal.get("element", "physical")
-
-				var hit: int = int(retal.get("damage", 0))
-				if hit > 0:
-					apply_damage(attacker, hit + bonus, element)
-					status_effect_triggered.emit(defender, status_name, hit + bonus, "reactive")
-
-				# A reflection is measured against what just landed, which is
-				# why Pain Mirror answers a spell from across the room and the
-				# others only answer a blade.
-				var reflect_pct: float = float(retal.get("reflect_pct", 0))
-				if reflect_pct > 0.0:
-					var reflected: int = int(result.get("damage", 0) * reflect_pct / 100.0)
-					if reflected > 0:
-						apply_damage(attacker, reflected, element)
-						status_effect_triggered.emit(defender, status_name, reflected, "reactive")
-
-				var give: String = retal.get("status", "")
-				if give != "" and not attacker.has_status(give):
-					if randf() <= ritual_chance(defender, float(retal.get("status_chance", 1.0))):
-						_apply_status_effect(attacker, give,
-							int(retal.get("status_duration", 1)), 0, defender)
-						status_effect_triggered.emit(defender, status_name, 0, "reactive")
-
-		# Magnetizing Aura — chance to charm melee attackers
+		# Magnetizing Aura — chance to charm melee attackers. Kept as a flag: the
+		# charm it gives has no source, which a `status` op would set to the
+		# carrier (and so stop the charmed unit attacking it).
 		if StatusRules.def_has_flag(def, "charm_chance_on_enemy_melee_approach") and is_melee:
 			# 25% chance to charm the attacker for 1 turn, raised by Ritual
 			if randf() < ritual_chance(defender, 0.25):
@@ -7151,39 +7203,17 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 				status_effect_triggered.emit(defender, status_name, 0, "reactive")
 
 
-## Process status-based weapon enchant effects when a unit lands an attack.
-## Checks for any "adds_X_damage_to_attacks" effect and applies bonus elemental damage.
+## A unit's weapon attack has just hit `defender`: its statuses' `hit`
+## triggers fire (Burning_Weapon's extra fire, Electrified_Weapon's lightning:
+## a fifth of the hit again, rounded up, at least 1). `source` in those
+## effects is the unit that was hit.
 func _process_status_weapon_enchants(attacker: Node, defender: Node, result: Dictionary) -> void:
 	if not "status_effects" in attacker:
 		return
-	# Map effect strings to the damage TYPE they deal. The keys are named after
-	# schools (air, water, earth), but schools are not damage types: these
-	# dealt `air`, `water` and `earth` until 2026-10-15, which no resistance
-	# matches, so Electrified_Weapon's bonus landed unresisted. The value is
-	# what that school's spells actually deal (damage_types.json), and
-	# validate_data.py checks these literals.
-	var enchant_map = {
-		"adds_fire_damage_to_attacks": "fire",
-		"adds_air_damage_to_attacks": "lightning",
-		"adds_water_damage_to_attacks": "ice",
-		"adds_earth_damage_to_attacks": "crushing",
-		"adds_space_damage_to_attacks": "space",
-		"adds_poison_damage_to_attacks": "poison",
-		"adds_black_damage_to_attacks": "black",
-		"adds_white_damage_to_attacks": "white",
-	}
-	var enchant_base = result.get("damage", 0)
-	for effect in attacker.status_effects:
-		var sname = effect.get("status", "")
-		var sdef = get_status_definition(sname)
-		var seffects = sdef.get("effects", [])
-		for enchant_effect in enchant_map:
-			if enchant_effect in seffects:
-				var element = enchant_map[enchant_effect]
-				var bonus_dmg = maxi(1, ceili(enchant_base * 0.20))  # +20% as elemental damage
-				apply_damage(defender, bonus_dmg, element)
-				var key = "enchant_%s_damage" % element
-				result[key] = result.get(key, 0) + bonus_dmg
+	var info := {"source": defender, "damage": int(result.get("damage", 0))}
+	for entry in attacker.status_effects.duplicate():
+		if _status_entry_index(attacker, entry) != -1:
+			_fire_status_triggers(attacker, entry, "hit", info)
 
 
 ## Process stat modifier durations
@@ -11358,9 +11388,10 @@ func _check_zoc_reactions(mover: Node, old_pos: Vector2i, new_pos: Vector2i) -> 
 		return
 
 	# Reaction stances first: an enemy stepping into a threatened area, or up to
-	# an ally somebody is guarding. Declared by the status rather than branched
-	# on per perk — the three branches below this are the older way, kept
-	# because they are passives rather than stances.
+	# an ally somebody is guarding — the `enemy_enters_reach` and
+	# `ally_threatened` triggers of the reactor's statuses. Declared by the
+	# status rather than branched on per perk — the three branches below this
+	# are the older way, kept because they are passives rather than stances.
 	for reactor in all_units:
 		if reactor.is_dead or not "team" in reactor or reactor.team == mover.team:
 			continue

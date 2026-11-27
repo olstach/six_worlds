@@ -319,7 +319,7 @@ func _check_status_tooltip_names_retaliation_aura_spread() -> void:
 	for sname in CombatManager._status_effects:
 		var def: Dictionary = CombatManager._status_effects[sname]
 		var text: String = TooltipText.status(sname, {"status": sname, "duration": 2}, def)
-		if def.has("retaliation") and not "Hits back" in text:
+		if _has_trigger(def, "struck") and not "Hits back" in text:
 			_fail("%s declares retaliation but its tooltip does not say so" % sname)
 		if def.has("aura") and not "Aura:" in text:
 			_fail("%s declares an aura but its tooltip does not say so" % sname)
@@ -521,3 +521,11 @@ func _check_a_critical_main_hit_says_crit() -> void:
 	CombatManager.combat_grid = old_grid
 	grid.queue_free()
 	_done()
+
+
+## True when the status has a trigger on `on` (retaliation is `struck`).
+func _has_trigger(def: Dictionary, on: String) -> bool:
+	for t in def.get("triggers", []):
+		if str(t.get("on", "")) == on:
+			return true
+	return false

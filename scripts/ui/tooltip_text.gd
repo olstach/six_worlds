@@ -17,24 +17,10 @@ class_name TooltipText
 # STATUS EFFECTS
 # ============================================
 
-## Readable wording for the tokens still in statuses.json `effects` lists
-## (damage and healing over time, what happens when a status runs out). A
-## status's NUMBERS are not tokens any more: they are `while_active` modifies,
-## worded by _modify_bullet() from the effect itself, so the tooltip can only
-## say what the game does. Tokens that are not listed fall back to the token
-## itself with underscores turned to spaces, so a new status still says
-## *something* true rather than nothing.
-const EFFECT_LABELS: Dictionary = {
-	"fire_damage_per_turn": "fire damage each turn",
-	"poison_damage_per_turn": "poison damage each turn",
-	"physical_damage_per_turn": "physical damage each turn",
-	"black_damage_per_turn": "black damage each turn",
-	"heal_per_turn": "HP healed each turn",
-	"death_on_expire": "Dies when it runs out",
-	"damage_on_expire": "Bursts when it runs out",
-	"bleed_on_expire": "Bleeds when it runs out",
-	"spawn_fungal_spawn_on_expire": "Spawns a creature when it runs out",
-}
+## A status says what it does as effects (spec §4.4): `while_active`
+## modifies, `periodic` ticks, `triggers`, a `save`, a `spread`. Each line here
+## is worded from those effects themselves, so the tooltip can only say what
+## the game does. (Stage 2b Task 7 words the rest of the effect language.)
 
 ## Readable wording for a status's `flags` (the yes/no rules it switches on).
 ## A flag not listed falls back to its name with underscores turned to spaces.
@@ -68,9 +54,6 @@ const _FLAGS_NOT_SHOWN: Array[String] = [
 
 ## The word the header shows for each polarity.
 const POLARITY_WORDS: Dictionary = {"positive": "buff", "negative": "debuff"}
-
-## Tokens that the tooltip states in its own line instead of as a bullet.
-const _EFFECTS_SHOWN_ELSEWHERE: Array[String] = ["save_at_end_of_turn"]
 
 
 ## Full tooltip for ONE status on a unit.
@@ -109,21 +92,20 @@ static func status(status_name: String, entry: Dictionary = {}, def: Dictionary 
 
 	# What it does to others: hitting back, a field around the bearer, and
 	# jumping to neighbours. Each is structured data on the status.
-	var retaliation_line: String = _status_retaliation_line(def.get("retaliation", {}))
-	if retaliation_line != "":
-		lines.append(retaliation_line)
+	for trigger_line in _status_trigger_lines(entry, def):
+		lines.append(trigger_line)
 	for aura_line in _status_aura_lines(def):
 		lines.append(aura_line)
 	var spread_line: String = _status_spread_line(def.get("spread", {}))
 	if spread_line != "":
 		lines.append(spread_line)
 
-	# How to get rid of it.
-	var save_type: String = str(def.get("save_type", ""))
-	if save_type != "":
-		var when: String = " at end of turn" \
-			if "save_at_end_of_turn" in def.get("effects", []) else ""
-		lines.append("Save: %s%s" % [save_type, when])
+	# How to get rid of it. The save is rolled as the carrier's turn comes
+	# round (`when: turn_start`), i.e. at the end of the turn it lost.
+	var own_save: Dictionary = def.get("save", {})
+	if not own_save.is_empty():
+		var when: String = " at end of turn" if str(own_save.get("when", "")) == "turn_start" else ""
+		lines.append("Save: %s%s" % [str(own_save.get("stat", "")).capitalize(), when])
 	if def.has("dispellable") and not bool(def.get("dispellable", true)):
 		lines.append("Cannot be dispelled")
 	else:
@@ -169,31 +151,21 @@ static func _status_duration_line(entry: Dictionary, def: Dictionary) -> String:
 	return ""
 
 
-## One readable line per effect token and per flag. Damage and healing over time are given
-## their numbers — the per-instance `value` wins over the table's
-## damage_per_turn, exactly as CombatManager._process_status_effects() does.
+## One readable line per periodic tick, per hit trigger and per flag. Damage
+## over time is given its number as the tick works it out: the entry's `value`
+## (what the spell gave it) wins over the status's own default.
 static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[String]:
 	var bullets: Array[String] = []
-	for token in def.get("effects", []):
-		var fx: String = str(token)
-		if fx in _EFFECTS_SHOWN_ELSEWHERE:
-			continue
-		var label: String = str(EFFECT_LABELS.get(fx, fx.replace("_", " ").capitalize()))
-		if fx.ends_with("damage_per_turn"):
-			var dmg: int = int(def.get("damage_per_turn", 0))
-			if int(entry.get("value", 0)) > 0:
-				dmg = int(entry.get("value", 0))
-			if dmg > 0:
-				label = "%d %s" % [dmg, label]
-		elif fx == "heal_per_turn":
-			var heal = def.get("heal_per_turn", 0)
-			if heal is bool:
-				heal = 0   # a few old entries wrote true/false here
-			var amount: int = int(heal) if int(heal) > 0 else int(entry.get("value", 0))
-			if amount > 0:
-				label = "%d %s" % [amount, label]
-		if not label in bullets:
-			bullets.append(label)
+	for effect in def.get("periodic", {}).get("effects", []):
+		var line: String = _periodic_bullet(effect, entry)
+		if line != "" and not line in bullets:
+			bullets.append(line)
+	for trigger in def.get("triggers", []):
+		if typeof(trigger) == TYPE_DICTIONARY and str(trigger.get("on", "")) == "hit":
+			for effect in trigger.get("effects", []):
+				var line: String = _hit_bullet(effect)
+				if line != "" and not line in bullets:
+					bullets.append(line)
 	# The yes/no rules it switches on, from `flags`.
 	for flag in def.get("flags", []):
 		var line: String = _flag_label(str(flag))
@@ -207,6 +179,41 @@ static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[
 			if text != "" and not text in bullets:
 				bullets.append(text)
 	return bullets
+
+
+## How much a status's effect amounts to for this entry, worked out as the
+## game works it out (EffectResolver.magnitude, reading the entry's value).
+static func _amount_for(effect: Dictionary, entry: Dictionary) -> int:
+	var ctx := EffectContext.new()
+	ctx.status_entry = entry
+	return int(EffectResolver.magnitude(effect.get("amount", 0), ctx, null))
+
+
+## "5 fire damage each turn", "10 HP healed each turn".
+static func _periodic_bullet(effect: Dictionary, entry: Dictionary) -> String:
+	if typeof(effect) != TYPE_DICTIONARY:
+		return ""
+	var amount: int = _amount_for(effect, entry)
+	match str(effect.get("op", "")):
+		"damage":
+			var kind: String = DamageType.display_name(str(effect.get("type", "physical"))).to_lower()
+			if amount > 0:
+				return "%d %s damage each turn" % [amount, kind]
+			return "%s damage each turn" % kind
+		"heal":
+			return "%d HP healed each turn" % amount
+	return ""
+
+
+## "Hits deal 20% more as fire damage": a `hit` trigger's damage.
+static func _hit_bullet(effect: Dictionary) -> String:
+	if typeof(effect) != TYPE_DICTIONARY or str(effect.get("op", "")) != "damage":
+		return ""
+	var amount = effect.get("amount", 0)
+	var kind: String = DamageType.display_name(str(effect.get("type", "physical"))).to_lower()
+	if typeof(amount) == TYPE_DICTIONARY and str(amount.get("from", "")) == "event.damage":
+		return "Hits deal %d%% more as %s damage" % [int(amount.get("pct", 100)), kind]
+	return "Hits deal %d more %s damage" % [int(amount) if typeof(amount) != TYPE_DICTIONARY else 0, kind]
 
 
 ## One flag as a line, or "" for a flag that is not shown. `immune:<word>`
@@ -262,33 +269,58 @@ static func _modify_bullet(effect: Dictionary) -> String:
 	return ""
 
 
-## "Hits back at melee attackers: 10 air damage, 30% chance of Stunned (1 turn)".
-## Reads the same `retaliation` keys CombatManager's on-hit code applies
-## (the block that handles "Retaliation, declared on the status"): range,
-## damage, element, reflect_pct, status, status_duration, status_chance.
-static func _status_retaliation_line(retal: Dictionary) -> String:
-	if retal.is_empty():
+## The lines for a status's `struck` and `expire` triggers:
+##   "Hits back at melee attackers: 10 lightning damage, 30% chance of Stunned (1 turn)"
+##   "When it runs out: 20 physical damage, Bleeding (3 turns), a Fungal Spawn emerges"
+## (`hit` triggers are bullets, see _hit_bullet; the stances' reactions are
+## worded in Task 7.)
+static func _status_trigger_lines(entry: Dictionary, def: Dictionary) -> Array[String]:
+	var lines: Array[String] = []
+	for trigger in def.get("triggers", []):
+		if typeof(trigger) != TYPE_DICTIONARY:
+			continue
+		var parts: Array[String] = []
+		for effect in trigger.get("effects", []):
+			var text: String = _trigger_effect_text(effect, entry)
+			if text != "":
+				parts.append(text)
+		if parts.is_empty():
+			continue
+		match str(trigger.get("on", "")):
+			"struck":
+				var who: String = "melee attackers" if int(trigger.get("reach", 0)) == 1 else "any attacker"
+				lines.append("Hits back at %s: %s" % [who, ", ".join(parts)])
+			"expire":
+				lines.append("When it runs out: " + ", ".join(parts))
+	return lines
+
+
+## One trigger effect in words, or "".
+static func _trigger_effect_text(effect: Dictionary, entry: Dictionary) -> String:
+	if typeof(effect) != TYPE_DICTIONARY:
 		return ""
-	var parts: Array[String] = []
-	var element: String = DamageType.display_name(str(retal.get("element", "physical"))).to_lower()
-	var hit: int = int(retal.get("damage", 0))
-	if hit > 0:
-		parts.append("%d %s damage" % [hit, element])
-	var reflect_pct: int = int(retal.get("reflect_pct", 0))
-	if reflect_pct > 0:
-		parts.append("reflects %d%% of the damage taken as %s" % [reflect_pct, element])
-	var give: String = str(retal.get("status", "")).replace("_", " ")
-	if give != "":
-		var turns: int = int(retal.get("status_duration", 1))
-		var status_text: String = "%s (%d turn%s)" % [give, turns, "" if turns == 1 else "s"]
-		var chance: float = float(retal.get("status_chance", 1.0))
-		if chance < 1.0:
-			status_text = "%d%% chance of %s" % [roundi(chance * 100.0), status_text]
-		parts.append(status_text)
-	if parts.is_empty():
-		return ""
-	var who: String = "melee attackers" if str(retal.get("range", "melee")) == "melee" else "any attacker"
-	return "Hits back at %s: %s" % [who, ", ".join(parts)]
+	match str(effect.get("op", "")):
+		"damage":
+			var kind: String = DamageType.display_name(str(effect.get("type", "physical"))).to_lower()
+			var amount = effect.get("amount", 0)
+			if typeof(amount) == TYPE_DICTIONARY and str(amount.get("from", "")) == "event.damage":
+				return "reflects %d%% of the damage taken as %s" % [int(amount.get("pct", 100)), kind]
+			if typeof(amount) == TYPE_DICTIONARY and str(amount.get("pct_of", "")) == "target.max_hp" \
+					and float(amount.get("value", 0)) >= 100.0:
+				return "it dies (%s damage)" % kind
+			return "%d %s damage" % [_amount_for(effect, entry), kind]
+		"status":
+			if str(effect.get("action", "")) != "apply":
+				return ""
+			var give: String = str(effect.get("status", "")).replace("_", " ")
+			var turns: int = int(effect.get("duration", 1))
+			var text: String = "%s (%d turn%s)" % [give, turns, "" if turns == 1 else "s"]
+			if effect.has("chance") and float(effect["chance"]) < 100.0:
+				text = "%d%% chance of %s" % [roundi(float(effect["chance"])), text]
+			return text
+		"summon":
+			return "a %s emerges" % str(effect.get("as", "")).replace("_", " ")
+	return ""
 
 
 ## One line per aura the status emits, read from auras.json through
@@ -349,20 +381,18 @@ static func _aura_payload_text(payload: Dictionary) -> String:
 	return ""
 
 
-## "Can spread to an adjacent unit (15% chance each turn)". The chance words
-## are turned into numbers by CombatManager.spread_chance_to_float(), the
-## same function _process_status_spread() uses.
+## "Can spread to an adjacent unit (15% chance each turn)", from the status's
+## `spread` {to, reach?, chance, when}, as _process_status_spread() reads it.
 static func _status_spread_line(spread: Dictionary) -> String:
 	if spread.is_empty():
 		return ""
-	var chance: float = CombatManager.spread_chance_to_float(str(spread.get("chance", "none")))
+	var chance: float = float(spread.get("chance", 0))
 	if chance <= 0.0:
 		return ""
-	var declared_range = spread.get("range", "melee")
 	var where: String = "an adjacent unit"
-	if (declared_range is int or declared_range is float) and int(declared_range) > 1:
-		where = "a unit within %d tiles" % int(declared_range)
-	return "Can spread to %s (%d%% chance each turn)" % [where, roundi(chance * 100.0)]
+	if int(spread.get("reach", 1)) > 1:
+		where = "a unit within %d tiles" % int(spread.get("reach", 1))
+	return "Can spread to %s (%d%% chance each turn)" % [where, roundi(chance)]
 
 
 ## One tooltip line for a status's resistance key: "Immune to fire",

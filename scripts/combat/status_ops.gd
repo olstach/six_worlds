@@ -181,7 +181,7 @@ static func tick_overworld(party: Array, defs: Dictionary) -> Array[String]:
 			var def: Dictionary = defs.get(entry.get("status", ""), {})
 			if is_damage_over_time(entry, def):
 				var dmg: int = int(entry.get("damage_per_step",
-					def.get("damage_per_turn", 3)))
+					StatusRules.periodic_damage_base(def, 3)))
 				var derived: Dictionary = character.get("derived", {})
 				var hp: int = int(derived.get("current_hp", derived.get("max_hp", 10)))
 				derived["current_hp"] = maxi(0, hp - dmg)
@@ -209,4 +209,4 @@ static func tick_overworld(party: Array, defs: Dictionary) -> Array[String]:
 static func is_damage_over_time(entry: Dictionary, def: Dictionary) -> bool:
 	if def.get("polarity", "negative") != "negative":
 		return false
-	return entry.has("damage_per_step") or def.has("damage_per_turn")
+	return entry.has("damage_per_step") or not StatusRules.periodic_damage(def).is_empty()

@@ -41,6 +41,28 @@ Task 5 moves the YES/NO words (a reader that only asks "has it?") into `flags`:
   everything else    -> stays in `effects` for Task 6 (a damage-over-time type,
                         a tick, an expiry hook, a save, the enchant table)
 
+Task 6 moves the BEHAVIOUR (what a status does, rather than what it changes)
+into triggers, periodic effects and intercepts, and removes the last old keys:
+
+  damage_per_turn + <type>_damage_per_turn word -> periodic damage, amount
+                       {from: status.value, default: <damage_per_turn>}, the
+                       type from the word (physical without one); a
+                       damage_increase_per_turn grows it, scale per turn_active
+  heal_per_turn      -> periodic heal
+  retaliation        -> trigger on: struck (reach 1 for melee), damage /
+                       reflected damage / status at the source
+  *_on_expire        -> trigger on: expire (damage, status, summon)
+  spread             -> {to: adjacent, reach?, chance: percent, when: turn_start}
+  save_at_end_of_turn + save_type -> save {stat, dc: 15, when: turn_start};
+                       a save_type with nothing rolling it is dropped (notes)
+  reaction           -> an intercepting / movement trigger (attacked_in_melee,
+                       enemy_enters_reach, ally_threatened) with reach and
+                       limit; responses become negate / attack / move / status
+  attack_reflect_chance, spell_reflect_chance (flags) -> trigger on:
+                       incoming_attack / incoming_spell with reflect
+  adds_<x>_damage_to_attacks -> trigger on: hit, 20% of the hit (rounded up,
+                       at least 1) as that damage type
+
 Re-runnable and idempotent: each step only acts on the old keys and words it
 finds, so running it on migrated data changes nothing.
 
@@ -296,7 +318,41 @@ REMOVED_KEYS = ["type", "category", "duration_type", "default_duration",
 
 # The new keys, written right after name/icon in this order.
 NEW_KEY_ORDER = ["name", "icon", "polarity", "categories", "scope",
-                 "duration", "stacking", "flags", "while_active"]
+                 "duration", "stacking", "flags", "while_active", "periodic",
+                 "triggers", "save", "spread"]
+
+# ── Task 6: behaviour ────────────────────────────────────────────────────────
+
+# Keys Task 6 removes once converted (plus `effects` when it is empty).
+BEHAVIOUR_KEYS = ["damage_per_turn", "damage_increase_per_turn", "heal_per_turn",
+                  "retaliation", "reaction", "save_type", "summon_on_expire",
+                  "expire_damage"]
+
+# The words in `effects` an expiry hook read.
+EXPIRE_WORDS = ["death_on_expire", "damage_on_expire", "bleed_on_expire"]
+
+# spread_chance_to_float(), the deleted GDScript table: word -> percent.
+SPREAD_CHANCE = {"low": 15, "medium": 30, "high": 50, "none": 0}
+
+# _process_status_weapon_enchants' enchant_map: word -> the damage type it
+# dealt (a school name is not a damage type: air dealt lightning).
+ENCHANT_WORDS = {
+    "adds_fire_damage_to_attacks": "fire", "adds_air_damage_to_attacks": "lightning",
+    "adds_water_damage_to_attacks": "ice", "adds_earth_damage_to_attacks": "crushing",
+    "adds_space_damage_to_attacks": "space", "adds_poison_damage_to_attacks": "poison",
+    "adds_black_damage_to_attacks": "black", "adds_white_damage_to_attacks": "white",
+}
+
+# Before-resolution flags whose reader an intercepting trigger fully expresses:
+# flag -> (on, chance percent). Both did "roll, then turn it back".
+REFLECT_FLAGS = {"attack_reflect_chance": ("incoming_attack", 60),
+                 "spell_reflect_chance": ("incoming_spell", 50)}
+
+# The old Reaction.DEFAULT_MAX_PER_ROUND.
+REACTION_DEFAULT_MAX = 3
+
+# The fixed DC _process_status_effects rolled a save_at_end_of_turn against.
+STATUS_SAVE_DC = 15
 
 
 # ── Reading the game's own lists ─────────────────────────────────────────────
@@ -431,6 +487,167 @@ def _flags_and_unbuilt(s, effects, old_words):
     return flags, unbuilt, consumed
 
 
+def _whole(n):
+    """2.0 -> 2, so the JSON says what was meant."""
+    return int(n) if isinstance(n, float) and n.is_integer() else n
+
+
+def _dot_type(effects):
+    """The damage type of a <type>_damage_per_turn word, as _dot_element read
+    it (physical when there is none)."""
+    for word in effects:
+        m = re.fullmatch(r"([a-z]+)_damage_per_turn", str(word))
+        if m:
+            return m.group(1)
+    return "physical"
+
+
+def _behaviour(s):
+    """(new keys, keys to drop, words consumed, unbuilt notes) for Task 6."""
+    new, unbuilt = {}, []
+    effects = list(s.get("effects", []))
+    used = set()
+    periodic = []
+    triggers = list(s.get("triggers", []))
+
+    # Damage and healing over time.
+    dot_words = [w for w in effects if re.fullmatch(r"[a-z]+_damage_per_turn", str(w))]
+    used.update(dot_words)
+    dpt = s.get("damage_per_turn", 0)
+    if isinstance(dpt, (int, float)) and not isinstance(dpt, bool) and dpt > 0:
+        tick = {"op": "damage", "amount": {"from": "status.value", "default": _whole(dpt)},
+                "type": _dot_type(effects)}
+        inc = s.get("damage_increase_per_turn", 0)
+        if inc:
+            tick["scale"] = {"per": "turn_active", "amount": _whole(inc)}
+        periodic.append(tick)
+    elif dot_words:
+        unbuilt.append("%s (it has no damage_per_turn, so it never ticked)" % dot_words[0])
+    hot = s.get("heal_per_turn", 0)
+    used.add("heal_per_turn")
+    if isinstance(hot, (int, float)) and not isinstance(hot, bool) and hot > 0:
+        periodic.append({"op": "heal", "amount": _whole(hot)})
+    if periodic:
+        new["periodic"] = {"when": "turn_start", "effects": periodic}
+
+    # Expiry.
+    expire = []
+    if "death_on_expire" in effects:
+        expire.append({"op": "damage", "amount": {"pct_of": "target.max_hp", "value": 1000},
+                       "type": "black"})
+    if "damage_on_expire" in effects:
+        expire.append({"op": "damage", "amount": _whole(s.get("expire_damage", 20)),
+                       "type": "physical"})
+    if "bleed_on_expire" in effects:
+        expire.append({"op": "status", "action": "apply", "status": "Bleeding", "duration": 3})
+    if s.get("summon_on_expire"):
+        expire.append({"op": "summon", "as": s["summon_on_expire"], "owner": "target"})
+    used.update(EXPIRE_WORDS)
+    if expire:
+        triggers.append({"on": "expire", "effects": expire})
+
+    # Retaliation.
+    r = s.get("retaliation")
+    if r:
+        element = r.get("element", "physical")
+        fx = []
+        if r.get("damage"):
+            fx.append({"op": "damage", "to": "source", "type": element,
+                       "amount": {"from": "status.value", "add": _whole(r["damage"])}})
+        if r.get("reflect_pct"):
+            fx.append({"op": "damage", "to": "source", "type": element,
+                       "amount": {"from": "event.damage", "pct": _whole(r["reflect_pct"])}})
+        if r.get("status"):
+            give = {"op": "status", "action": "apply", "status": r["status"],
+                    "duration": _whole(r.get("status_duration", 1)), "to": "source",
+                    "if": [{"target_lacks": r["status"]}]}
+            chance = float(r.get("status_chance", 1.0))
+            if chance < 1.0:
+                give["chance"] = _whole(round(chance * 100, 6))
+            fx.append(give)
+        t = {"on": "struck"}
+        if r.get("range", "melee") == "melee":
+            t["reach"] = 1
+        t["effects"] = fx
+        triggers.append(t)
+
+    # Weapon enchants.
+    for word, dtype in ENCHANT_WORDS.items():
+        if word in effects:
+            used.add(word)
+            triggers.append({"on": "hit", "effects": [
+                {"op": "damage", "to": "source", "type": dtype,
+                 "amount": {"from": "event.damage", "pct": 20, "round": "up", "min": 1}}]})
+
+    # Reactions.
+    rx = s.get("reaction")
+    if rx:
+        fx = []
+        for resp in rx.get("responses", []):
+            if resp == "auto_dodge":
+                fx.append({"op": "negate"})
+            elif resp == "attack":
+                a = {"op": "attack", "target": "source"}
+                mult = float(rx.get("damage_mult", 1.0))
+                if abs(mult - 1.0) > 1e-9:
+                    a["power_pct"] = _whole(round(mult * 100, 6))
+                fx.append(a)
+            elif resp == "reposition":
+                fx.append({"op": "move", "to": "caster",
+                           "mode": rx.get("reposition_mode", "scatter"),
+                           "tiles": _whole(rx.get("reposition_tiles", 1))})
+            elif resp == "status":
+                fx.append({"op": "status", "action": "apply", "status": rx["status"],
+                           "duration": _whole(rx.get("status_duration", 1)), "to": "source"})
+            else:
+                raise RuntimeError(f"{s.get('name')}: unknown reaction response {resp}")
+        t = {"on": rx["trigger"]}
+        if "reach" in rx:
+            t["reach"] = _whole(rx["reach"])
+        lim = {"per": "turn", "count": _whole(rx.get("max_per_round", REACTION_DEFAULT_MAX))}
+        if rx.get("once_per_attacker"):
+            lim["once_per_source"] = True
+        t["limit"] = lim
+        t["effects"] = fx
+        triggers.append(t)
+
+    # Reflections, from flags.
+    flags = list(s.get("flags", []))
+    for flag, (on, chance) in REFLECT_FLAGS.items():
+        if flag in flags:
+            flags.remove(flag)
+            triggers.append({"on": on, "chance": chance, "effects": [{"op": "reflect"}]})
+    if flags != list(s.get("flags", [])):
+        new["flags"] = flags
+
+    if triggers != list(s.get("triggers", [])):
+        new["triggers"] = triggers
+
+    # The status's own save.
+    used.add("save_at_end_of_turn")
+    if "save_at_end_of_turn" in effects:
+        new["save"] = {"stat": str(s.get("save_type", "Constitution")).lower(),
+                       "dc": STATUS_SAVE_DC, "when": "turn_start"}
+    elif s.get("save_type"):
+        unbuilt.append("save_type %s (nothing ever rolled it)" % s["save_type"])
+
+    # Spread.
+    sp = s.get("spread")
+    if sp and "to" not in sp:
+        out = {"to": "adjacent"}
+        rng = sp.get("range", "melee")
+        if isinstance(rng, (int, float)) and int(rng) > 1:
+            out["reach"] = int(rng)
+        out["chance"] = SPREAD_CHANCE[sp.get("chance", "none")]
+        out["when"] = "turn_start"
+        new["spread"] = out
+        for k in sp:
+            if k not in ("chance", "range"):
+                unbuilt.append("spread.%s" % k)
+
+    return new, used, unbuilt
+
+
 def migrate_one(s, world, old_words=()):
     """Return the migrated copy of status `s` (a dict); `s` is not changed."""
     new = {}
@@ -466,6 +683,18 @@ def migrate_one(s, world, old_words=()):
         note = "Unbuilt: " + ", ".join(unbuilt)
         new["notes"] = (str(s["notes"]) + " " + note) if s.get("notes") else note
 
+    # Task 6: behaviour. Runs on the status as it stands after the steps
+    # above, so it sees their flags.
+    staged = dict(s)
+    staged.update(new)
+    beh, beh_used, beh_unbuilt = _behaviour(staged)
+    new.update(beh)
+    used = used | beh_used
+    note6 = "Unbuilt (stage 2b Task 6): " + "; ".join(beh_unbuilt)
+    if beh_unbuilt and note6 not in str(new.get("notes", s.get("notes", ""))):
+        old_note = str(new.get("notes", s.get("notes", "")))
+        new["notes"] = (old_note + " " + note6) if old_note else note6
+
     out = {}
     merged = dict(s)
     merged.update(new)
@@ -473,7 +702,7 @@ def migrate_one(s, world, old_words=()):
         if key in merged:
             out[key] = merged[key]
     for key, value in merged.items():
-        if key in out or key in REMOVED_KEYS:
+        if key in out or key in REMOVED_KEYS or key in BEHAVIOUR_KEYS:
             continue
         if key == "effects":
             left = [w for w in effects if w not in used]
@@ -481,6 +710,8 @@ def migrate_one(s, world, old_words=()):
                 out["effects"] = left
             continue
         out[key] = value
+    if out.get("flags") == []:
+        del out["flags"]          # Task 6 turned the last flag into a trigger
     return out
 
 

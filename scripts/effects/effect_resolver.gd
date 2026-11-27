@@ -23,7 +23,12 @@ extends RefCounted
 ##
 ## Every op in EffectVocab.OPS is built. status, move, kill, summon, zone and
 ## resurrect only DELEGATE: each calls the CombatManager function that cast_spell
-## already uses, so the old and new paths cannot drift apart.
+## already uses, so the old and new paths cannot drift apart. `attack` is a free
+## weapon attack by the caster at the trigger's source. `negate` and `reflect`
+## are never resolved here: they change an attack that is still on its way, so
+## the hook that fired the intercepting trigger reads them (see
+## CombatManager._run_status_trigger), and the vocabulary refuses them anywhere
+## else.
 
 
 ## Ops placed at a ground tile rather than done to a unit.
@@ -55,6 +60,11 @@ static func resolve(effects: Array, ctx: EffectContext) -> Array[Dictionary]:
 		if op in POSITION_OPS:
 			out.append(_resolve_one(effect, ctx, ctx.target))
 			continue
+		# A free attack is made once, by the caster, at whoever set the
+		# trigger off; `if` and `chance` are asked of that unit.
+		if op == "attack":
+			out.append(_resolve_one(effect, ctx, ctx.source))
+			continue
 		for unit in recipients(str(effect.get("to", "target")), ctx):
 			out.append(_resolve_one(effect, ctx, unit))
 	return out
@@ -66,6 +76,8 @@ static func resolve(effects: Array, ctx: EffectContext) -> Array[Dictionary]:
 ##   {"base": 10, "per_spellpower": 0.5}   base + 0.5 x ctx.power
 ##   {"min": 5, "max": 10}             rolled; whole numbers if both are
 ##   {"pct_of": "target.max_hp", "value": 25}   25% of that value
+##   {"from": "caster.skill.leadership", "pct": 50}   a borrowed value: see
+##                                     EffectVocab.BORROW_SOURCES and borrow()
 ## For pct_of, "target." means the recipient and "caster." the caster, each
 ## followed by a derived stat; a bare value path ("resource.mana") is read on
 ## the recipient.
@@ -88,7 +100,52 @@ static func magnitude(spec: Variant, ctx: EffectContext, recipient: Node) -> flo
 			if spec.has("pct_of"):
 				return _read_source(str(spec["pct_of"]), ctx, recipient) \
 					* float(spec.get("value", 0)) / 100.0
+			if spec.has("from"):
+				return borrow(spec, ctx, recipient)
 	push_error("EffectResolver.magnitude: cannot read magnitude %s" % [spec])
+	return 0.0
+
+
+## A borrowed magnitude {from, pct?, default?, add?, round?, min?}, worked out
+## in that order (EffectVocab documents each key):
+##   {"from": "status.value", "default": 5}       the spell's value, else 5
+##   {"from": "status.value", "add": 5}           5 plus the spell's value
+##   {"from": "event.damage", "pct": 20, "round": "up", "min": 1}
+static func borrow(spec: Dictionary, ctx: EffectContext, recipient: Node) -> float:
+	var raw: float = _borrowed_raw(str(spec["from"]), ctx, recipient)
+	var v: float = raw * float(spec.get("pct", 100)) / 100.0
+	if raw <= 0.0 and spec.has("default"):
+		v = float(spec["default"])
+	v += float(spec.get("add", 0))
+	match str(spec.get("round", "")):
+		"up":
+			v = ceilf(v)
+		"down":
+			v = floorf(v)
+	if spec.has("min"):
+		v = maxf(v, float(spec["min"]))
+	return v
+
+
+## The number a borrowed magnitude's `from` names, before pct and the rest.
+static func _borrowed_raw(source: String, ctx: EffectContext, recipient: Node) -> float:
+	match source:
+		"status.value":
+			return float(ctx.status_entry.get("value", 0))
+		"status.stacks":
+			return float(ctx.status_entry.get("stacks", 1))
+		"event.damage":
+			return float(ctx.event.get("damage", 0))
+	var prefix: String = source.get_slice(".", 0)
+	var path: String = source.substr(prefix.length() + 1)
+	match prefix:
+		"caster":
+			return _read_value_path(path, ctx.caster)
+		"target":
+			return _read_value_path(path, recipient)
+		"source":
+			return _read_value_path(path, ctx.source)
+	push_error("EffectResolver: cannot borrow from '%s'" % source)
 	return 0.0
 
 
@@ -117,6 +174,9 @@ static func recipients(selector: String, ctx: EffectContext) -> Array:
 			for unit in CombatManager.all_units:
 				if unit != null and _alive(unit) and _same_team(unit, ctx.caster):
 					out.append(unit)
+		"source":
+			if ctx.source != null and is_instance_valid(ctx.source):
+				out.append(ctx.source)
 		_:
 			push_error("EffectResolver.recipients: unknown selector '%s'" % selector)
 	return out
@@ -196,6 +256,8 @@ static func _resolve_one(effect: Dictionary, ctx: EffectContext, unit: Node) -> 
 			return _do_zone(effect, ctx)
 		"resurrect":
 			return _do_resurrect(effect, ctx, unit)
+		"attack":
+			return _do_attack(effect, ctx, unit)
 	push_error("EffectResolver: op '%s' is not built yet" % op)
 	return _entry(op, unit, false, "op '%s' not built yet" % op, 0.0)
 
@@ -224,24 +286,34 @@ static func _scaled_magnitude(effect: Dictionary, ctx: EffectContext, unit: Node
 
 ## Typed damage through CombatManager.apply_damage (resistance, absorption and
 ## on-hit reactions all live there). A split type hits once per part.
+## Nothing at all happens for an amount below 1 (a reflection of a blow that
+## did no damage), as no one ever applied zero damage on purpose.
+## A status's own damage names no dealer (ctx.anonymous_damage), and a status
+## tick gets its applier's damage-over-time bonuses (ctx.dot_tick).
 static func _do_damage(effect: Dictionary, ctx: EffectContext, unit: Node, m: float) -> Dictionary:
 	var type = effect["type"]
+	var dealer: Node = null if ctx.anonymous_damage else ctx.caster
+	if ctx.dot_tick and typeof(type) == TYPE_STRING:
+		m = float(CombatManager.status_tick_damage(ctx.caster, str(type), int(m)))
+	if int(m) <= 0:
+		return _entry("damage", unit, false, "no damage", 0.0)
 	if typeof(type) == TYPE_DICTIONARY:
 		for part in type:
-			CombatManager.apply_damage(unit, int(m * float(type[part])), str(part), ctx.caster)
+			CombatManager.apply_damage(unit, int(m * float(type[part])), str(part), dealer)
 	else:
-		CombatManager.apply_damage(unit, int(m), str(type), ctx.caster)
+		CombatManager.apply_damage(unit, int(m), str(type), dealer)
 	return _entry("damage", unit, true, "", m)
 
 
 ## Heal HP (CombatUnit.heal applies healing_pct), then let the heal clear any
-## persistent damage whose cleared_by accepts this school and level.
+## persistent damage whose cleared_by accepts this school and level. A
+## status's heal over time is not a spell's heal, so it clears nothing.
 static func _do_heal(ctx: EffectContext, unit: Node, m: float) -> Dictionary:
 	if not unit.has_method("heal"):
 		push_error("EffectResolver: %s cannot be healed" % unit)
 		return _entry("heal", unit, false, "cannot be healed", 0.0)
 	unit.heal(int(m))
-	if ValuePaths.is_party_unit(unit):
+	if ValuePaths.is_party_unit(unit) and ctx.container_kind != "status":
 		_clear_damage(unit, "heal", {"school": ctx.school, "level": ctx.level})
 	return _entry("heal", unit, true, "", m)
 
@@ -377,10 +449,15 @@ static func _do_summon(effect: Dictionary, ctx: EffectContext) -> Dictionary:
 	var at: Vector2i = ctx.position()
 	if at == EffectContext.NO_POS:
 		return _no_position("summon", what)
+	# Whose side it fights on, and whose Summoning scales it.
+	var owner: Node = ctx.target if str(effect.get("owner", "caster")) == "target" else ctx.caster
+	if owner == null:
+		push_error("EffectResolver: summon '%s' has no %s to fight for" % [what, effect.get("owner", "caster")])
+		return _placed_entry("summon", what, false, "no owner", 0.0)
 	var made: int = 0
 	for i in maxi(1, int(effect.get("count", 1))):
 		var spawned: Dictionary = CombatManager._spawn_summoned_unit(
-			ctx.caster, what, at, ctx.power)
+			owner, what, at, ctx.power)
 		if spawned.get("success", false):
 			made += 1
 	return _placed_entry("summon", what, made > 0, "" if made > 0 else "no space for summon", float(made))
@@ -417,6 +494,18 @@ static func _do_resurrect(effect: Dictionary, ctx: EffectContext, unit: Node) ->
 		else:
 			why = str(item.get("reason", ""))
 	return _entry("resurrect", unit, raised > 0, why, float(raised))
+
+
+## A free weapon attack by the caster at `victim` (the trigger's source), at
+## `power_pct` percent damage. It needs the victim alive and within the
+## caster's own attack range; out of reach it does nothing and reports so,
+## which keeps a stance's per-turn allowance unspent.
+static func _do_attack(effect: Dictionary, ctx: EffectContext, victim: Node) -> Dictionary:
+	if ctx.caster == null or victim == null:
+		return _entry("attack", victim, false, "nobody to attack", 0.0)
+	var struck: bool = CombatManager.free_reaction_attack(ctx.caster, victim,
+		float(effect.get("power_pct", 100)), ctx.container_id)
+	return _entry("attack", victim, struck, "" if struck else "out of reach", 1.0 if struck else 0.0)
 
 
 ## clear_damage on a party unit's character, passing the unit so held entries
@@ -474,6 +563,8 @@ static func _condition_met(cond, ctx: EffectContext, unit: Node) -> bool:
 			return unit.has_method("has_status") and unit.has_status(arg)
 		"target_is":
 			return arg in unit_tags(unit)
+		"target_lacks":
+			return not _condition_met({"target_has": arg}, ctx, unit)
 	push_error("EffectResolver: unknown condition %s" % [cond])
 	return false
 

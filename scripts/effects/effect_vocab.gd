@@ -22,11 +22,29 @@ extends RefCounted
 
 # ── The approved lists ───────────────────────────────────────────────────────
 
-## What an effect can do. Stage 1 only; aura, cast, grant and the map ops
-## arrive with the stages that build them.
+## What an effect can do. aura, cast, grant and the map ops arrive with the
+## stages that build them. `attack` (a free weapon attack), `negate` and
+## `reflect` came with stage 2b Task 6, for statuses that answer what is done
+## to their carrier.
 const OPS: Array[String] = [
 	"damage", "heal", "modify", "status", "move", "kill", "summon", "zone", "resurrect",
+	"attack", "negate", "reflect",
 ]
+
+## Ops that only make sense BEFORE an attack or spell lands, because they
+## change what it does: `negate` (it misses outright) and `reflect` (it turns
+## back on whoever sent it). They are refused anywhere except in a status
+## trigger whose `on` is one of INTERCEPT_TRIGGERS, where the hook that fired
+## the trigger reads them and acts on the attack itself.
+const INTERCEPT_OPS: Array[String] = ["negate", "reflect"]
+
+## Whom an `attack` op swings at. `source` is whoever set the trigger off.
+const ATTACK_TARGETS: Array[String] = ["source"]
+
+## Whose side a `summon` fights on: the caster's (default) or the target's.
+## `target` is for a status whose expiry hatches something out of its carrier
+## (Infected), which has always joined the carrier's side.
+const SUMMON_OWNERS: Array[String] = ["caster", "target"]
 
 ## How a `modify` changes a value.
 const MODES: Array[String] = [
@@ -73,8 +91,9 @@ const STATS: Array[String] = [
 const RESIST_GROUPS: Array[String] = ["all_elemental", "all", "magic"]
 
 ## The `to` field: who an effect hits, relative to its container.
+## `source` is whoever set a status trigger off (the attacker, the mover).
 const SELECTORS: Array[String] = [
-	"target", "caster", "allies_in_area", "enemies_in_area", "all_in_area", "party",
+	"target", "caster", "allies_in_area", "enemies_in_area", "all_in_area", "party", "source",
 ]
 
 ## Fields any effect may carry, whatever its op.
@@ -94,7 +113,34 @@ const SCALE_STATUS_STACK_PREFIX: String = "status_stack:"
 ## The structured forms {"target_has": ...} and {"target_is": ...} are checked
 ## in _condition_error(). See CONDITION_KEYS.
 const CONDITIONS: Array[String] = CombatStats.PERK_CONDITIONS
-const CONDITION_KEYS: Array[String] = ["target_has", "target_is"]
+## `target_lacks` is the opposite of `target_has`: a retaliation that only
+## stuns someone not already stunned.
+const CONDITION_KEYS: Array[String] = ["target_has", "target_is", "target_lacks"]
+
+## Borrowed values (spec §10.3 extension 3): a magnitude may be read from
+## somewhere else instead of written as a number,
+##   {"from": "caster.skill.leadership", "pct": 50}
+## "half the caster's Leadership". `from` is one of BORROW_SOURCES, or one of
+## BORROW_UNIT_PREFIXES followed by a value path ("target.attribute.focus"):
+##   status.value    the status entry's `value` (what the spell that applied
+##                   it put there, e.g. a Burning that ticks 9)
+##   status.stacks   the entry's stack count
+##   event.damage    the damage of the event that fired the trigger (the blow
+##                   that struck, the hit that landed)
+##   caster.<path>   the unit the effects belong to (who applied a status, or
+##                   the carrier, in a trigger that answers something)
+##   target.<path>   the recipient
+##   source.<path>   whoever set the trigger off
+## The other keys are optional, applied in this order:
+##   pct      percent of the borrowed value (default 100)
+##   default  used instead when the borrowed value is missing or not above 0
+##   add      a flat number added after that
+##   round    "down" or "up" to a whole number
+##   min      the smallest the result may be
+const BORROW_SOURCES: Array[String] = ["status.value", "status.stacks", "event.damage"]
+const BORROW_UNIT_PREFIXES: Array[String] = ["caster", "target", "source"]
+const BORROW_FIELDS: Array[String] = ["from", "pct", "default", "add", "round", "min"]
+const ROUNDINGS: Array[String] = ["down", "up"]
 
 ## What may clear a `damage`-mode modify. `cleanse` clears when a status of the
 ## named category is removed ({"cleanse": {"category": "curse"}}); `service`
@@ -145,7 +191,7 @@ const LASTING_MODES: Array[String] = ["fortify", "drain", "set", "multiply", "da
 ## Alphabetical. The word-by-word record is docs/plans/STATUS_MIGRATION_2026-11.md.
 const FLAGS: Array[String] = [
 	"attack_breaks_invisibility", "attack_damage_buff_when_ally_dies",
-	"attack_reflect_chance", "attacks_closest_creature", "attacks_have_miss_chance",
+	"attacks_closest_creature", "attacks_have_miss_chance",
 	"breaks_concentration", "breaks_on_damage_from_source", "breaks_on_offensive_action",
 	"can_move_through_enemies", "cannot_act", "cannot_attack", "cannot_be_targeted",
 	"cannot_cast", "cannot_deal_physical", "cannot_die", "cannot_make_weapon_attacks",
@@ -164,39 +210,90 @@ const FLAGS: Array[String] = [
 	"random_target", "ranged_damage_reduction", "remove_all_debuffs",
 	"return_on_death_next_turn", "riposte_next_sword_attack", "rooted",
 	"share_healing_75_percent", "skip_next_action", "skip_turn", "spell_damage_reduction",
-	"spell_reflect_chance", "stealth_bonus", "stun_chance_on_hit",
+	"stealth_bonus", "stun_chance_on_hit",
 	"treats_caster_as_ally", "will_not_attack", "will_not_attack_caster",
 ]
 const IMMUNE_FLAG_PREFIX: String = "immune:"
 
-## When a status's `triggers` may fire. `expire`: the status ran out (its
-## duration, or its upkeep), not when it was cleansed or removed. `turn_start`
-## and `turn_end`: the carrier's own turn. Task 6 adds the rest.
+## When a status's `triggers` may fire.
+##   expire              the status ran out (its duration, or its upkeep), not
+##                       when it was cleansed, dispelled or removed
+##   turn_start/turn_end the carrier's own turn
+##   struck              a weapon attack hit the carrier (after it landed)
+##   hit                 the carrier's weapon attack hit someone (after)
+##   attacked_in_melee   a melee blow is about to land on the carrier
+##   incoming_attack     any weapon attack is about to land on the carrier
+##   incoming_spell      an offensive spell is about to land on the carrier
+##   enemy_enters_reach  an enemy moved into the carrier's reach
+##   ally_threatened     an enemy moved next to an ally within the carrier's reach
+## In a trigger that answers something another unit did (all but expire,
+## turn_start and turn_end) the carrier acts: it is the effects' caster, and
+## `to: "source"` names the other unit (the attacker, the mover, or for `hit`
+## the unit that was hit).
 const STATUS_TRIGGERS: Array[String] = [
-	"expire", "turn_start", "turn_end",
+	"expire", "turn_start", "turn_end", "struck", "hit",
+	"attacked_in_melee", "incoming_attack", "incoming_spell",
+	"enemy_enters_reach", "ally_threatened",
 ]
+
+## Triggers that run BEFORE the attack or spell resolves. Only these may use
+## INTERCEPT_OPS. Their other effects (a counter-attack, a step away) wait
+## until the attack is over, so they answer it rather than pre-empt it.
+const INTERCEPT_TRIGGERS: Array[String] = ["attacked_in_melee", "incoming_attack", "incoming_spell"]
+
+## Triggers that answer a unit near the carrier. REACTION_TRIGGERS are limited
+## to DEFAULT_TRIGGER_LIMIT firings a turn when they do not say otherwise, so
+## that a stance cannot end a fight on its own. REACH_TRIGGERS may take a
+## `reach` (tiles, or "weapon" for the carrier's own attack range; a `struck`
+## with reach 1 answers melee attackers only).
+const REACTION_TRIGGERS: Array[String] = ["attacked_in_melee", "enemy_enters_reach", "ally_threatened"]
+const REACH_TRIGGERS: Array[String] = ["struck", "attacked_in_melee", "enemy_enters_reach", "ally_threatened"]
+const DEFAULT_TRIGGER_LIMIT: int = 3
+
+## Fields a trigger may carry. `limit` is {per: "turn", count, once_per_source?}:
+## at most `count` firings until the carrier's next turn begins, and with
+## once_per_source at most one for each other unit.
+const TRIGGER_FIELDS: Array[String] = ["on", "if", "chance", "effects", "reach", "limit"]
+const LIMIT_PER: Array[String] = ["turn"]
 
 ## When a status's `periodic` effects run: the start or the end of the
 ## carrier's turn. Left out, `when` means turn_start.
 const PERIODIC_WHEN: Array[String] = ["turn_start", "turn_end"]
 
 ## Top-level fields of a status definition, in the new shape.
+## `dispellable` and `dispel_methods` are still how dispels choose; stage 3
+## moves dispel onto `categories` and retires them.
 const STATUS_FIELDS: Array[String] = [
 	"name", "icon", "polarity", "categories", "scope", "duration", "stacking",
 	"flags", "while_active", "periodic", "triggers", "save", "aura", "spread",
 	"cleared_by", "upkeep", "link", "description", "notes",
+	"dispellable", "dispel_methods",
 ]
 
-## The OLD status fields statuses.json still uses. Accepted alongside the new
-## ones until the migration finishes; Tasks 4-6 delete entries from this list
-## as the data stops using them. Nothing new should be added here.
+## Old fields a few statuses still carry, outside stage 2b's scope: each is
+## read by its own code (Glass_Globe's `special`, the map's movement and
+## travel keys, an aura's `aura_value`) and moves with the stage that owns it
+## (stage 3 for `special`, stage 5 for the world keys). Nothing new should be
+## added here. The fields stage 2b removed (effects, damage_per_turn,
+## retaliation, reaction, save_type, the *_on_expire keys ...) are NOT here,
+## so validate_status rejects them.
 const LEGACY_STATUS_FIELDS: Array[String] = [
-	"effects", "dispellable", "dispel_methods",
-	"damage_per_turn", "retaliation", "reaction", "affliction", "save_type",
-	"heal_per_turn", "special", "default_duration_range", "summon_on_expire",
-	"damage_increase_per_turn", "aura_value", "damage_increase_pct", "grants_travel_speed_pct",
-	"grants_concealment", "grants_movement_ability", "_comment", "_note",
+	"affliction", "special", "default_duration_range", "aura_value",
+	"damage_increase_pct", "grants_travel_speed_pct", "grants_concealment",
+	"grants_movement_ability", "_comment", "_note",
 ]
+
+## A status's own `save` {stat, dc, when}: at `when` the carrier rolls d20 +
+## its effective `stat` against `dc`, and the status ends on a success.
+## (A tier needs a caster attribute to build the DC from; a status save uses a
+## fixed `dc`, which is what Stunned has always rolled against.)
+const SAVE_WHEN: Array[String] = ["turn_start"]
+
+## A status's `spread` {to, reach?, chance, when}: at `when`, with `chance`
+## percent, it jumps to one unit within `reach` tiles (default 1) that does
+## not have it yet. `to: adjacent` is the one target rule built.
+const SPREAD_TO: Array[String] = ["adjacent"]
+const SPREAD_WHEN: Array[String] = ["turn_start"]
 
 ## Values of {"rest": ...}.
 const REST_KINDS: Array[String] = ["quick", "camp", "full"]
@@ -210,9 +307,12 @@ const OP_FIELDS: Dictionary = {
 	"status": ["action", "status", "duration", "stacks", "select", "count"],
 	"move": ["mode", "tiles", "blocked_damage", "variance", "direction"],
 	"kill": ["immune"],
-	"summon": ["as", "count"],
+	"summon": ["as", "count", "owner"],
 	"zone": ["zone", "aoe", "duration"],
 	"resurrect": ["tier", "hp_pct", "scope"],
+	"attack": ["target", "power_pct"],
+	"negate": [],
+	"reflect": [],
 }
 
 ## Creature tags can't be a const: they come from enemy and race data. Cached
@@ -231,11 +331,17 @@ const RACES_PATH: String = "res://resources/data/races.json"
 
 ## Validate one effect. `where` names its location ("fireball.effects[2]") and
 ## prefixes every message. Returns human-readable errors; empty means valid.
-static func validate(effect: Dictionary, where: String) -> Array[String]:
+## `intercepting` is true only for the effects of a trigger in
+## INTERCEPT_TRIGGERS, the one place INTERCEPT_OPS may appear.
+static func validate(effect: Dictionary, where: String, intercepting: bool = false) -> Array[String]:
 	var errs: Array[String] = []
 	var op = effect.get("op", null)
 	if typeof(op) != TYPE_STRING or not op in OPS:
 		errs.append("%s: unknown op '%s' (approved: %s)" % [where, op, ", ".join(OPS)])
+		return errs
+	if op in INTERCEPT_OPS and not intercepting:
+		errs.append("%s: '%s' only works in a status trigger that runs before the attack "
+			% [where, op] + "or spell lands (on: %s)" % ", ".join(INTERCEPT_TRIGGERS))
 		return errs
 
 	# Unknown field names are almost always typos ("chanse"), so they fail.
@@ -249,8 +355,8 @@ static func validate(effect: Dictionary, where: String) -> Array[String]:
 	return errs
 
 
-## Validate one status definition (new shape). Returns human-readable errors;
-## empty means valid. Legacy fields (LEGACY_STATUS_FIELDS) are tolerated.
+## Validate one status definition. Returns human-readable errors; empty means
+## valid. The few LEGACY_STATUS_FIELDS are tolerated; any other key fails.
 static func validate_status(def: Dictionary, where: String) -> Array[String]:
 	var errs: Array[String] = []
 	for key in def:
@@ -345,29 +451,93 @@ static func validate_status(def: Dictionary, where: String) -> Array[String]:
 				if typeof(t) != TYPE_DICTIONARY:
 					errs.append("%s: a trigger must be an object" % label)
 					continue
-				if not t.get("on", null) in STATUS_TRIGGERS:
-					errs.append("%s: unknown trigger '%s' (approved: %s)"
-						% [label, t.get("on", null), ", ".join(STATUS_TRIGGERS)])
-				if t.has("effects"):
-					if typeof(t["effects"]) != TYPE_ARRAY:
-						errs.append("%s: 'effects' must be a list" % label)
-					else:
-						errs.append_array(validate_list(t["effects"], label + ".effects"))
+				_validate_trigger(t, label, errs)
 
 	if def.has("save"):
 		var sv = def["save"]
 		if typeof(sv) != TYPE_DICTIONARY:
-			errs.append("%s: 'save' must be {stat, tier}" % where)
+			errs.append("%s: 'save' must be {stat, dc, when}" % where)
 		else:
+			for k in sv:
+				if not k in ["stat", "dc", "when"]:
+					errs.append("%s: save has unknown key '%s'" % [where, k])
 			if not String(sv.get("stat", "")).to_lower() in SaveSystem.ATTRIBUTES:
 				errs.append("%s: save stat '%s' is not an attribute" % [where, sv.get("stat", "")])
-			if not SaveSystem.TIERS.has(sv.get("tier", "")):
-				errs.append("%s: save tier '%s' unknown" % [where, sv.get("tier", "")])
+			if not _is_number(sv.get("dc", null)):
+				errs.append("%s: save needs a number 'dc'" % where)
+			if not sv.get("when", null) in SAVE_WHEN:
+				errs.append("%s: save when '%s' unknown (%s)"
+					% [where, sv.get("when", null), ", ".join(SAVE_WHEN)])
+
+	if def.has("spread"):
+		var sp = def["spread"]
+		if typeof(sp) != TYPE_DICTIONARY:
+			errs.append("%s: 'spread' must be {to, reach?, chance, when}" % where)
+		else:
+			for k in sp:
+				if not k in ["to", "reach", "chance", "when"]:
+					errs.append("%s: spread has unknown key '%s'" % [where, k])
+			if not sp.get("to", null) in SPREAD_TO:
+				errs.append("%s: spread to '%s' unknown (%s)" % [where, sp.get("to", null), ", ".join(SPREAD_TO)])
+			if not sp.get("when", null) in SPREAD_WHEN:
+				errs.append("%s: spread when '%s' unknown (%s)"
+					% [where, sp.get("when", null), ", ".join(SPREAD_WHEN)])
+			var c = sp.get("chance", null)
+			if not _is_number(c) or c < 0 or c > 100:
+				errs.append("%s: spread chance must be a number from 0 to 100" % where)
+			if sp.has("reach") and not (_is_number(sp["reach"]) and sp["reach"] >= 1):
+				errs.append("%s: spread reach must be a number of tiles, 1 or more" % where)
 
 	if def.has("cleared_by"):
 		_validate_cleared_by(def["cleared_by"], where, errs)
 
 	return errs
+
+
+## One entry of a status's `triggers`.
+static func _validate_trigger(t: Dictionary, label: String, errs: Array[String]) -> void:
+	for k in t:
+		if not k in TRIGGER_FIELDS:
+			errs.append("%s: unknown trigger field '%s' (approved: %s)" % [label, k, ", ".join(TRIGGER_FIELDS)])
+	var on = t.get("on", null)
+	if not on in STATUS_TRIGGERS:
+		errs.append("%s: unknown trigger '%s' (approved: %s)"
+			% [label, on, ", ".join(STATUS_TRIGGERS)])
+	if t.has("chance") and (not _is_number(t["chance"]) or t["chance"] < 0 or t["chance"] > 100):
+		errs.append("%s: trigger chance must be a number from 0 to 100" % label)
+	if t.has("if"):
+		if typeof(t["if"]) != TYPE_ARRAY:
+			errs.append("%s: 'if' must be a list of conditions" % label)
+		else:
+			for cond in t["if"]:
+				var msg := _condition_error(cond)
+				if not msg.is_empty():
+					errs.append("%s: %s" % [label, msg])
+	if t.has("reach"):
+		if not on in REACH_TRIGGERS:
+			errs.append("%s: a '%s' trigger takes no reach (%s do)" % [label, on, ", ".join(REACH_TRIGGERS)])
+		var r = t["reach"]
+		if not (typeof(r) == TYPE_STRING and r == "weapon") and not (_is_number(r) and r >= 1):
+			errs.append("%s: reach must be a number of tiles or \"weapon\"" % label)
+	if t.has("limit"):
+		var lim = t["limit"]
+		if typeof(lim) != TYPE_DICTIONARY:
+			errs.append("%s: 'limit' must be {per, count, once_per_source?}" % label)
+		else:
+			for k in lim:
+				if not k in ["per", "count", "once_per_source"]:
+					errs.append("%s: limit has unknown key '%s'" % [label, k])
+			if not lim.get("per", null) in LIMIT_PER:
+				errs.append("%s: limit per '%s' unknown (%s)" % [label, lim.get("per", null), ", ".join(LIMIT_PER)])
+			if not (_is_number(lim.get("count", null)) and lim["count"] >= 1):
+				errs.append("%s: limit count must be a number, 1 or more" % label)
+			if lim.has("once_per_source") and typeof(lim["once_per_source"]) != TYPE_BOOL:
+				errs.append("%s: limit once_per_source must be true or false" % label)
+	if t.has("effects"):
+		if typeof(t["effects"]) != TYPE_ARRAY:
+			errs.append("%s: 'effects' must be a list" % label)
+		else:
+			errs.append_array(validate_list(t["effects"], label + ".effects", on in INTERCEPT_TRIGGERS))
 
 
 ## True when `c` is a status category: a STATUS_CATEGORIES name, or
@@ -381,15 +551,16 @@ static func is_status_category(c) -> bool:
 		and c.trim_prefix(ELEMENTAL_CATEGORY_PREFIX) in ELEMENTS
 
 
-## Validate a list of effects, labelling each by index.
-static func validate_list(effects: Array, where: String) -> Array[String]:
+## Validate a list of effects, labelling each by index. `intercepting`: see
+## validate().
+static func validate_list(effects: Array, where: String, intercepting: bool = false) -> Array[String]:
 	var errs: Array[String] = []
 	for i in effects.size():
 		var label := "%s[%d]" % [where, i]
 		if typeof(effects[i]) != TYPE_DICTIONARY:
 			errs.append("%s: an effect must be an object, got %s" % [label, type_string(typeof(effects[i]))])
 			continue
-		errs.append_array(validate(effects[i], label))
+		errs.append_array(validate(effects[i], label, intercepting))
 	return errs
 
 
@@ -569,6 +740,16 @@ static func _validate_op(op: String, effect: Dictionary, where: String, errs: Ar
 				errs.append("%s: summon template '%s' is not in summon_templates.json" % [where, effect["as"]])
 			if effect.has("count") and not _is_number(effect["count"]):
 				errs.append("%s: summon count must be a number" % where)
+			if effect.has("owner") and not effect["owner"] in SUMMON_OWNERS:
+				errs.append("%s: summon owner '%s' unknown (%s)" % [where, effect["owner"], ", ".join(SUMMON_OWNERS)])
+		"attack":
+			if not effect.get("target", "source") in ATTACK_TARGETS:
+				errs.append("%s: attack target '%s' unknown (%s)"
+					% [where, effect.get("target", ""), ", ".join(ATTACK_TARGETS)])
+			if effect.has("power_pct") and not (_is_number(effect["power_pct"]) and effect["power_pct"] > 0):
+				errs.append("%s: attack power_pct must be a number above 0" % where)
+		"negate", "reflect":
+			pass   # no fields: the hook that fired the trigger does the work
 		"zone":
 			_require(effect, ["zone"], where, errs)
 			if effect.has("zone") and not Zone.exists(String(effect["zone"])):
@@ -657,9 +838,39 @@ static func _validate_magnitude(effect: Dictionary, field: String, allow_full: b
 			errs.append("%s: %s" % [where, msg])
 		if not _is_number(m["value"]):
 			errs.append("%s: %s pct_of value must be a number" % [where, field])
+	elif m.has("from"):
+		_validate_borrow(m, field, where, errs)
 	else:
-		errs.append("%s: '%s' object has keys %s; expected {base, per_spellpower}, {pct_of, value} or {min, max}"
+		errs.append("%s: '%s' object has keys %s; expected {base, per_spellpower}, {pct_of, value}, {min, max} or {from, ...}"
 			% [where, field, keys])
+
+
+## A borrowed magnitude {from, pct?, default?, add?, round?, min?}.
+static func _validate_borrow(m: Dictionary, field: String, where: String, errs: Array[String]) -> void:
+	for k in m:
+		if not k in BORROW_FIELDS:
+			errs.append("%s: %s borrowed value has unknown key '%s' (approved: %s)"
+				% [where, field, k, ", ".join(BORROW_FIELDS)])
+	var msg := borrow_source_error(str(m["from"]))
+	if not msg.is_empty():
+		errs.append("%s: %s" % [where, msg])
+	for k in ["pct", "default", "add", "min"]:
+		if m.has(k) and not _is_number(m[k]):
+			errs.append("%s: %s borrowed '%s' must be a number" % [where, field, k])
+	if m.has("round") and not m["round"] in ROUNDINGS:
+		errs.append("%s: %s borrowed round '%s' unknown (%s)" % [where, field, m["round"], ", ".join(ROUNDINGS)])
+
+
+## Empty when a magnitude may borrow from `source`, otherwise the reason.
+static func borrow_source_error(source: String) -> String:
+	if source in BORROW_SOURCES:
+		return ""
+	var prefix: String = source.get_slice(".", 0)
+	if prefix in BORROW_UNIT_PREFIXES and source.count(".") == 2:
+		var msg := _value_path_error(source.substr(prefix.length() + 1))
+		return "" if msg.is_empty() else "borrowed from '%s': %s" % [source, msg]
+	return "cannot borrow from '%s' (%s, or %s.<value path>)" % [source,
+		", ".join(BORROW_SOURCES), "/".join(BORROW_UNIT_PREFIXES)]
 
 
 ## `type` is one damage type, or a split {type: share} whose shares sum to 1.
@@ -757,6 +968,10 @@ static func _condition_error(cond) -> String:
 				if arg in creature_tags():
 					return ""
 				return "target_is '%s' is not a creature tag" % arg
+			"target_lacks":
+				if StatusOps.is_tag(arg) or _status_error(arg).is_empty():
+					return ""
+				return "target_lacks '%s' is neither a status nor a status tag" % arg
 		return "unknown condition form '%s' (approved: %s)" % [key, ", ".join(CONDITION_KEYS)]
 	return "a condition is a name or a one-key object, got %s" % [cond]
 

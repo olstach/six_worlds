@@ -389,19 +389,30 @@ func _check_poison_and_acid_ground_deal_poison() -> void:
 ## struck back with `air` for months after air stopped being one, so the
 ## shock landed unresisted and not as magic.
 func _check_retaliation_names_a_real_damage_type() -> void:
+	# Retaliation is a status's `struck` trigger now (stage 2b Task 6); its
+	# damage effects carry the type.
 	for status_name in CombatManager._status_effects:
-		var retal: Dictionary = CombatManager._status_effects[status_name].get("retaliation", {})
-		if retal.is_empty() or not retal.has("element"):
-			continue
-		if not DamageType.exists(str(retal["element"])):
-			_fail("%s retaliates with '%s', which is not a damage type"
-				% [status_name, str(retal["element"])])
+		for element in _struck_damage_types(CombatManager._status_effects[status_name]):
+			if not DamageType.exists(element):
+				_fail("%s retaliates with '%s', which is not a damage type"
+					% [status_name, element])
 	for status_name in ["Storm_Lord", "Lightning_Form"]:
-		var retal: Dictionary = CombatManager.get_status_definition(status_name).get("retaliation", {})
-		if str(retal.get("element", "")) != "lightning":
-			_fail("%s retaliates with '%s', expected lightning"
-				% [status_name, str(retal.get("element", ""))])
+		var types: Array = _struck_damage_types(CombatManager.get_status_definition(status_name))
+		if types != ["lightning"]:
+			_fail("%s retaliates with '%s', expected lightning" % [status_name, types])
 	_done()
+
+
+## The damage types a status's `struck` triggers deal.
+func _struck_damage_types(def: Dictionary) -> Array:
+	var out: Array = []
+	for t in def.get("triggers", []):
+		if str(t.get("on", "")) != "struck":
+			continue
+		for e in t.get("effects", []):
+			if str(e.get("op", "")) == "damage" and not str(e.get("type", "")) in out:
+				out.append(str(e.get("type", "")))
+	return out
 
 
 ## Wet ground promised a vulnerability in two comments and only slowed. It
@@ -1191,7 +1202,7 @@ func _check_spread_honours_the_reach_it_declares() -> void:
 	var two_away := _make_unit(Vector2i(12, 10), 1)
 	CombatManager._status_effects["_probe_plague"] = {
 		"name": "_probe_plague", "polarity": "negative", "duration": {"kind": "turns", "base": 3},
-		"spread": {"chance": "high", "range": 3},
+		"spread": {"to": "adjacent", "reach": 3, "chance": 50, "when": "turn_start"},
 	}
 
 	var caught := false
@@ -1209,7 +1220,7 @@ func _check_spread_honours_the_reach_it_declares() -> void:
 	# And a melee one does not.
 	CombatManager._status_effects["_probe_touch"] = {
 		"name": "_probe_touch", "polarity": "negative", "duration": {"kind": "turns", "base": 3},
-		"spread": {"chance": "high", "range": "melee"},
+		"spread": {"to": "adjacent", "chance": 50, "when": "turn_start"},
 	}
 	for _i in 40:
 		_clear_statuses(two_away)

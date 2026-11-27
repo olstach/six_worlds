@@ -352,3 +352,167 @@ otherwise it is already the "flag read by today's code" the plan allows.
   by a `has_flag(...)`-family call, be carried by some status, and match the
   data; the old "status effect" baseline (the 19 unread words) is deleted.
 
+
+## Task 6: behaviour becomes triggers, periodic effects and intercepts
+
+After this task no status carries `effects`, `damage_per_turn`,
+`heal_per_turn`, `damage_increase_per_turn`, `retaliation`, `reaction`,
+`save_type`, `summon_on_expire` or an `*_on_expire` word. `validate_status`
+runs on every status (at load, in `CombatManager._validate_status_definitions`,
+and in `tools/validate_data.py`) and rejects those keys. `scripts/combat/reaction.gd`
+is deleted. Run `python3 tools/migrate_statuses.py --write`, then
+`python3 tools/content_sync.py --write`; a second run says "already migrated".
+
+"Was" is `combat_manager.gd` at 9c85f47 unless named; "Now" is the reader
+after this task, under `scripts/`.
+
+### New in the effect language
+
+- **Borrowed values** (spec §10.3 extension 3). A magnitude may be
+  `{"from": <source>, "pct"?, "default"?, "add"?, "round"?, "min"?}`.
+  Sources: `status.value`, `status.stacks`, `event.damage`, and
+  `caster.` / `target.` / `source.` + a value path. `default` is used when the
+  borrowed value is missing or not above 0 (that is how a DoT ticks the
+  spell's value or its own number). `add`, `round` and `min` are the three
+  extras today's code needed: retaliation is "5 plus the entry's value"
+  (`add`), and an enchant is "a fifth of the hit, rounded up, at least 1"
+  (`round: up`, `min: 1`). `event.damage` is the source the reflect and the
+  enchant needed (the damage of the blow that fired the trigger). Reader:
+  `effects/effect_resolver.gd:114` (`borrow`); validated in
+  `EffectVocab._validate_borrow`, mirrored in `tools/effect_check.py`.
+- **Triggers** (`STATUS_TRIGGERS`): `struck`, `hit`, `attacked_in_melee`,
+  `incoming_attack`, `incoming_spell`, `enemy_enters_reach`, `ally_threatened`
+  join expire / turn_start / turn_end. A trigger may carry `reach` (tiles or
+  `"weapon"`) and `limit {per: "turn", count, once_per_source?}`; the
+  reaction triggers default to 3 a turn (`EffectVocab.DEFAULT_TRIGGER_LIMIT`,
+  the old `Reaction.DEFAULT_MAX_PER_ROUND`). In a trigger that answers another
+  unit the carrier is the effects' caster and `to: "source"` names the other
+  unit (new selector `source`). Runner: `autoload/combat_manager.gd:5608`
+  (`_run_status_trigger`), limits `:5695`, reach `:5744`.
+- **Intercepting triggers** (`INTERCEPT_TRIGGERS`: attacked_in_melee,
+  incoming_attack, incoming_spell) run before the attack or spell resolves,
+  and only they may use the intercept ops `negate` and `reflect`
+  (`EffectVocab.validate(..., intercepting)` refuses them anywhere else). The
+  hook reads those two; the trigger's other effects (a counter-attack, a step
+  away) wait until the blow is over (`_run_pending_triggers`, `:5651`), so a
+  counter still answers the blow rather than pre-empting it.
+- **Ops** `attack {target: "source", power_pct}` (a free weapon attack,
+  `free_reaction_attack` `:6240`), `negate`, `reflect`. `absorb_into` and
+  `redirect` were not built: nothing in the data needed them in a form the op
+  would fully express (see "kept as flag" below).
+- `summon` gains `owner: caster | target`; `if` gains `target_lacks`.
+- A status's own `save` is `{stat, dc, when: turn_start}` and its `spread`
+  `{to: adjacent, reach?, chance (percent), when: turn_start}`.
+- `EffectContext` gains `source`, `event`, `anonymous_damage` (a status's own
+  damage names no dealer, as it never has) and `dot_tick` (a tick gets its
+  applier's damage-over-time bonuses).
+
+### Key by key
+
+| Today | Statuses | Was | Now | Became |
+|---|---|---|---|---|
+| `damage_per_turn` + `<type>_damage_per_turn` | Burning 5 fire; Poisoned 3, Festering 5, Diseased 10 poison; Bleeding 3, Swarmed 1, Suffocating 30, Boiling_Blood 15 physical; Rotting 50, Soul_Burning 20 black; Wrathfully_Bound 25 space | `:5867-5912` (tick), `:5828` (`_dot_element`) | `autoload/combat_manager.gd:5785` (`_tick_periodic`), `effects/effect_resolver.gd:295` | `periodic {when: turn_start}` with `damage`, amount `{from: status.value, default: <n>}`, type from the word (physical without one: Boiling_Blood) |
+| the applier's DoT bonuses (Fire Magic, Alchemy, Fan_the_Flames) | all fire / poison DoTs | `:5891-5910` | `autoload/combat_manager.gd:5810` (`status_tick_damage`, called for `ctx.dot_tick`) | same numbers, same order |
+| `damage_increase_per_turn` | Festering (5) | `:5874-5879` (`_escalation_ticks`) | `effects/effect_resolver.gd` `_scaled_magnitude` | `scale {per: turn_active, amount: 5}` |
+| `heal_per_turn` (+ word) | Regenerating 10, Soothing_Presence 5 | `:5915-5923` | `:5785` | `periodic` `heal` |
+| `retaliation` | Fireshield, Tongues_of_Fire 5 fire; Storm_Lord 8, Lightning_Form 10 lightning (+30% Stunned 1); Poison_Skin (Poisoned 3); Inner_Flame (Burning 3); Pain_Mirror (50% of the blow, physical, any range) | `:7115-7144` | `autoload/combat_manager.gd:7173` (`_process_reactive_statuses`) | trigger `on: struck` (`reach: 1` for melee); `damage` to `source` `{from: status.value, add: <n>}`; reflection `{from: event.damage, pct: 50}`; `status` to `source` with `if: [{target_lacks: X}]` and `chance` |
+| `death_on_expire` | Doomed | `:5994` | `autoload/combat_manager.gd:5866` (`_end_status` fires `expire`) | `expire` trigger: `damage {pct_of: target.max_hp, value: 1000}` black (= max_hp × 10) |
+| `damage_on_expire`, `bleed_on_expire`, `summon_on_expire` | Infected | `:5998-6003`, `:6023-6026` | `:5866` | `expire` trigger: 20 physical, Bleeding 3, `summon Fungal_Spawn owner: target` |
+| `spread` | Burning (low), Diseased (medium) | `:6868-6890`, `spread_chance_to_float` | `autoload/combat_manager.gd:6959` | `{to: adjacent, chance: 15 / 30, when: turn_start}`; a numeric `range` becomes `reach` |
+| `save_at_end_of_turn` + `save_type` | Stunned | `:5931-5941` | `autoload/combat_manager.gd:6119` | `save {stat: constitution, dc: 15, when: turn_start}` (d20 + attribute ≥ 15, as before) |
+| `save_type` alone | Held, Paralyzed, Suffocating | tooltip only (`ui/tooltip_text.gd:122`) | none | **dropped**: nothing ever rolled it; `notes` say so |
+| `reaction` | Counterstance, Guarding_The_Gap, Set_For_Charge, Kill_Zone, Heavenly_Counterflow, None_Shall_Pass | `:6033-6159` and `combat/reaction.gd` | `autoload/combat_manager.gd:2050` (attacked_in_melee), `:6199` (movement), `:6240` (attack) | trigger with the same `on`; `reach`; `limit {per: turn, count: max_per_round}` (+ `once_per_source` for once_per_attacker); `auto_dodge` → `negate`, `attack` → `attack {target: source, power_pct: damage_mult × 100}`, `reposition` → `move {to: caster, mode, tiles}`, `status` → `status` to `source` |
+| `attack_reflect_chance` (flag) | Reflect | `:2019` | `autoload/combat_manager.gd:2038` | `incoming_attack`, `chance: 60`, `reflect`; the flag is deleted |
+| `spell_reflect_chance` (flag) | Magic_Mirror | `:4456` | `autoload/combat_manager.gd:4499` | `incoming_spell`, `chance: 50`, `reflect`; the flag is deleted |
+| `adds_fire_damage_to_attacks`, `adds_air_damage_to_attacks` | Burning_Weapon, Solar_Form, Tongues_of_Fire; Electrified_Weapon | `:7165-7186` (enchant table) | `autoload/combat_manager.gd:7210` | trigger `on: hit`: `damage` to `source` (the unit hit), `{from: event.damage, pct: 20, round: up, min: 1}`, fire / lightning |
+| `physical_damage_per_turn` without `damage_per_turn` | Drowning | read, but `dot > 0` never held | none | **dropped**: it never ticked; `notes` say so |
+| `spread.spreads_base_level_only` | Burning | none | none | **dropped**: read by nothing; `notes` say so |
+
+### Kept as flag (the op would not fully express today's code)
+
+| Flag | Status | Reader | Why it stays a flag |
+|---|---|---|---|
+| `next_attack_misses` | Force_Miss | `autoload/combat_manager.gd:2011` | the ATTACKER's own status forcing a miss; no outgoing-attack trigger is built |
+| `next_ranged_guaranteed_hit` | Blessed_Shot | `:2018` | the attacker's own status forcing a hit, ranged only |
+| `riposte_next_sword_attack` | Riposte_Ready | `:2100` | the attacker's own status: +25% damage and 2 stamina back on a sword hit, then consumed |
+| `copies_absorb_attacks` | Mirror_Images | `:2024`, `:3074` | a `negate` would turn the blow aside, but the copy count lives on the entry (`value`, default 3) and no op spends a charge |
+| `hp_shield` | Mantric_Armor | `:2930` | the pool absorbs every kind of damage inside `apply_damage`, after resistances (DoTs too), not an incoming attack; `absorb_into` on `incoming_attack` would miss most of it |
+| `attacks_have_miss_chance` | Blurred | `:2535` | a change to the hit chance, not an intercept |
+| `immune_to_ranged` | Storm_Lord | `:1960` | the attack is refused (`success: false`, before range and line of sight), which is not a `negate` (a negated blow is still made) |
+| `immune_to_melee_unless_flyer` | Flying | `:1982` | refused like the one above, and only when the attacker is not flying |
+| `stun_chance_on_hit` | Electrified_Weapon | `:10963` | goes through `_apply_on_hit_status` (spares a downed defender) and records `electrified_stun`; a `status` op would not |
+| `increase_burning_damage_dealt` | Fan_the_Flames | `:5823` | a multiplier on the carrier's OTHER statuses' fire ticks, not something the status does itself |
+| `charm_chance_on_enemy_melee_approach` | Magnetizing_Aura | `:7199` | the Charmed it gives has no source; a `status` op would name the carrier as the charmer, which stops the charmed attacker attacking it |
+| `focus_save_on_damage` | Swarmed | `:2960` | not a save that ends the status: failing costs an action next turn |
+
+### Single-status-name rules, looked at again
+
+None of them fits a trigger or op this task built, so all stay; each is listed
+with what it would need.
+
+| Rule | Where | Would need |
+|---|---|---|
+| Frozen takes +30% damage (the "Permafrost" comment) | `autoload/combat_manager.gd:2723`, `:2803` | a damage-taken value path (`stat.damage_taken_pct` is not built) |
+| Glass_Globe shatters on damage (AoE slashing + Bleeding) | `:3005` | a `damaged` trigger (not built here) and an area selector around the carrier |
+| Crystal_Diadem may shatter on damage | `:3024` | a `damaged` trigger |
+| Kindled: Burning lasts +1 turn | `:5388` | perk rule; moves with perk normalization |
+| Skull Crack, Thunder Breaker, Feed the Fire, Nothing Burns Alone, Ashes Remember Heat, Deep Freeze, Hungry Flames, Blood in the Wind, the Burning detonation, `target_bleeding` | `:2746`, `:10756`, `:2799`, `:5033`, `:5048`, `:11098`, `:11126`, `:11138`, `:11940`, `combat/combat_unit.gd:916` | perk rules about a named status; perk normalization |
+| Juggernaut, Pain Is Just Information status lists | `:10053`, `:10061` | perk rules; perk normalization |
+
+### Behaviour that changed (no number changed)
+
+- **Expiry fires on expiry only.** The old hooks ran from `_on_status_expired`,
+  which `_remove_status_by_name` also called, so a cleanse that removed Doomed
+  BY NAME killed its carrier and a stolen or cleansed Infected burst and
+  hatched. The `expire` trigger fires only when the status runs out (Task 3's
+  rule), as the brief asks: "summons on expiry, and not on dispel". Dispels
+  and count-based cleanses never fired them, and still do not.
+- **Heavenly Counterflow's `negate` happens before the blow lands.** It used
+  to let the blow land (on-hit procs, oils, lifesteal, the defender's
+  "took damage" perks) and then heal the damage back. Now the blow never
+  lands: the result is a miss that reads `dodged` (and `negated`), the
+  defender's dodge and parry perks do not fire for it (it was the stance, not
+  their footwork), and the counter-attack and the step away follow, as before.
+- **Infected's Bleeding** now names Infected's applier as its source (it had
+  none). Bleeding's damage reads nothing from its source, so its numbers are
+  unchanged.
+- **Tooltips.** Held, Paralyzed and Suffocating lose "Save: <attribute>"
+  (nothing rolled it). Drowning loses its number-less "Physical damage each
+  turn". Boiling_Blood gains "15 physical damage each turn", Soothing_Presence
+  "5 HP healed each turn", Wrathfully_Bound reads "25 space damage each turn"
+  (was "25 Space Damage Per Turn"); enchants read "Hits deal 20% more as fire
+  damage"; Doomed and Infected gain a "When it runs out: ..." line.
+- **Floating-text colour** is read from the damage type of the status's
+  `periodic` effects, then its `hit` triggers, no longer from words in
+  `effects` and `flags`. Four statuses change: Drowning (physical → its
+  control colour), Thin_Air (physical → transformation), Water_Walking
+  (water → the positive colour), Boiling_Blood (the negative colour →
+  physical, which it lost in Task 5).
+- The combat-log line "Something tears its way out of X" for Infected's
+  hatching is gone (the `summon` op logs nothing).
+
+### Tick point and owner death
+
+DoTs tick where they did: `periodic` with `when: turn_start` runs at the top of
+`_process_status_effects`, which is not run for a unit bleeding out or a
+decoy (`_tick_durations_only` counts their durations down and ticks nothing,
+as before) and is run before a `controlled_by_caster` unit idles. One
+difference: `turns_active`, which Festering's growth reads, also counts the
+turns spent bleeding out, where the old `_escalation_ticks` counted only
+ticks. Statuses stay on a dead carrier, as before; no `owner_death` trigger
+was built.
+
+### Tests
+
+- `tools/verify_effects.gd`: `dot_uses_spell_value`, `retaliation_trigger`,
+  `expire_summon`, `intercept_negate`, `borrowed_value`,
+  `no_legacy_status_keys`, `behaviour_numbers_match_today` (Festering 5 then
+  10, an enchant on a 12 hit adds 3, Pain Mirror reflects 20 of 40,
+  Regenerating heals 10, Doomed kills, Stunned's save). `flags_match_old_words`
+  now expects no `effects` and no reflect flags.
+- `tools/test_effect_vocab.py`: borrowed magnitudes, the new triggers and
+  `limit`, intercept ops only in intercepting triggers, `save` / `spread`,
+  the retired keys.
+- `tools/verify_reactions.gd`: every assertion unchanged; the vocabulary check
+  reads triggers through `validate_status`, the reach check
+  `CombatManager.trigger_reach`, the fired count `CombatManager.trigger_uses`.

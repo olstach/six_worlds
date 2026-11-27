@@ -59,6 +59,23 @@ var hold_source: String = ""
 ## `turn_active` reads its `turns_active`.
 var status_entry: Dictionary = {}
 
+## In a status trigger that answers another unit (struck, hit, a reaction):
+## that unit, the one `to: "source"` names and `source.<path>` borrows from.
+var source: Node = null
+## What happened, for a trigger: {"damage": n} is the blow or hit that fired
+## it, read by a magnitude {"from": "event.damage"}.
+var event: Dictionary = {}
+
+## True for a status's own effects. The damage a status deals (a tick, a
+## retaliation, an expiry) has never named a dealer, so it fires no one's
+## "you hurt someone" or "someone hurt you" perks; that stays so here.
+var anonymous_damage: bool = false
+## True while a status's `periodic` damage ticks. The applier's damage-over-time
+## bonuses then apply, as they always have to a tick: Fire Magic's
+## burning_damage_pct and Fan the Flames to fire, Alchemy's poison_damage_pct
+## to poison (CombatManager.status_tick_damage).
+var dot_tick: bool = false
+
 
 ## The tile a position op acts on: target_pos if set, else the target unit's
 ## tile, else NO_POS (the caller must refuse that loudly).

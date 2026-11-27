@@ -101,13 +101,22 @@ func _take_turn(unit: CombatUnit) -> void:
 
 
 ## How many times the reaction on `status_name` has fired since its holder's
-## last turn. This is the deterministic signal: an attack roll can miss, a
-## reaction firing cannot.
+## last turn (the uses of its triggers' `limit`). This is the deterministic
+## signal: an attack roll can miss, a reaction firing cannot.
 func _times_fired(unit: CombatUnit, status_name: String) -> int:
 	for entry in unit.status_effects:
 		if str(entry.get("status", "")) == status_name:
-			return int(entry.get("_reactions_used", 0))
+			return CombatManager.trigger_uses(entry)
 	return 0
+
+
+## The first trigger of `status_name` that answers another unit near it
+## (EffectVocab.REACTION_TRIGGERS), or {}.
+func _reaction_of(status_name: String) -> Dictionary:
+	for t in CombatManager.get_status_definition(status_name).get("triggers", []):
+		if str(t.get("on", "")) in EffectVocab.REACTION_TRIGGERS:
+			return t
+	return {}
 
 
 ## Strike `defender` once with a blow that actually lands, and report how many
@@ -191,18 +200,17 @@ func _revive(unit: CombatUnit) -> void:
 	unit.is_bleeding_out = false
 
 
+## A reaction is a status trigger now (reaction.gd was folded into the effect
+## engine): every trigger must name an event something fires and effects
+## something performs, which is what EffectVocab.validate_status checks.
 func _check_the_vocabulary_is_closed() -> void:
 	for status_name in CombatManager._status_effects:
-		var spec: Dictionary = Reaction.of(CombatManager._status_effects[status_name])
-		if spec.is_empty():
+		var def: Dictionary = CombatManager._status_effects[status_name]
+		if def.get("triggers", []).is_empty():
 			continue
-		if not Reaction.is_trigger(str(spec.get("trigger", ""))):
-			_fail("status '%s' reacts to '%s', which nothing fires"
-				% [status_name, str(spec.get("trigger", ""))])
-		for response in spec.get("responses", []):
-			if not Reaction.is_response(str(response)):
-				_fail("status '%s' responds with '%s', which nothing performs"
-					% [status_name, str(response)])
+		for msg in EffectVocab.validate_status(def, str(status_name)):
+			_fail("status '%s' has a trigger nothing fires or performs: %s"
+				% [status_name, msg])
 	# And the six stances the perks need all exist.
 	for required in ["Counterstance", "Guarding_The_Gap", "Set_For_Charge",
 			"Kill_Zone", "Heavenly_Counterflow", "None_Shall_Pass"]:
@@ -322,14 +330,12 @@ func _check_a_kill_zone_reaches_as_far_as_the_weapon() -> void:
 		_fail("the probe bow did not take: attack range is %d"
 			% archer.get_attack_range())
 	CombatManager._apply_status_effect(archer, "Kill_Zone", 1)
-	var reach: int = Reaction.reach_of(
-		Reaction.of(CombatManager.get_status_definition("Kill_Zone")), archer)
+	var reach: int = CombatManager.trigger_reach(_reaction_of("Kill_Zone"), archer)
 	if reach != archer.get_attack_range():
 		_fail("a kill zone reached %d where the weapon reaches %d"
 			% [reach, archer.get_attack_range()])
 	# A literal reach is not the weapon's.
-	var braced: int = Reaction.reach_of(
-		Reaction.of(CombatManager.get_status_definition("Set_For_Charge")), archer)
+	var braced: int = CombatManager.trigger_reach(_reaction_of("Set_For_Charge"), archer)
 	if braced != 2:
 		_fail("Set for Charge reached %d, expected its declared 2" % braced)
 	_cleanup([archer])
@@ -452,7 +458,8 @@ func _check_a_counterflow_turns_the_blow_aside() -> void:
 	_done()
 
 
-## `max_per_round` is what keeps a stance from ending a fight by itself.
+## The trigger's `limit` (the old `max_per_round`) is what keeps a stance from
+## ending a fight by itself.
 func _check_a_stance_spends_only_what_it_may() -> void:
 	var holder := _make_unit(Vector2i(10, 10), 0)
 	var a := _make_unit(Vector2i(11, 10), 1)

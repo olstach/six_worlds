@@ -124,3 +124,27 @@ static func immune_to(unit: Node, status_name: String, def: Dictionary) -> bool:
 					or (polarity != "" and word == polarity):
 				return true
 	return false
+
+
+## The first `damage` effect of the status's `periodic` list (its damage over
+## time), or {} when it deals none.
+static func periodic_damage(def: Dictionary) -> Dictionary:
+	for effect in def.get("periodic", {}).get("effects", []):
+		if typeof(effect) == TYPE_DICTIONARY and str(effect.get("op", "")) == "damage":
+			return effect
+	return {}
+
+
+## How much a status's damage over time ticks for when nothing else says:
+## its plain `amount`, or the `default` of a borrowed one
+## ({"from": "status.value", "default": 5} ticks 5 unless the spell gave it a
+## value). `fallback` when it deals none. The overworld, which has no spell
+## value to borrow, ticks this.
+static func periodic_damage_base(def: Dictionary, fallback: int) -> int:
+	var dot: Dictionary = periodic_damage(def)
+	if dot.is_empty():
+		return fallback
+	var amount = dot.get("amount", fallback)
+	if typeof(amount) == TYPE_DICTIONARY:
+		return int(amount.get("default", amount.get("base", fallback)))
+	return int(amount)
