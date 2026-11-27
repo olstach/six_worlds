@@ -377,7 +377,11 @@ func _update_visuals() -> void:
 		elif "status_effects" in self and not status_effects.is_empty():
 			var icons: Array[String] = []
 			for effect in status_effects:
-				icons.append(status_icon(str(effect.get("status", ""))))
+				var icon: String = status_icon(str(effect.get("status", "")))
+				# A stacked status shows its count: "🏃×3".
+				if int(effect.get("stacks", 1)) > 1:
+					icon += "×%d" % int(effect["stacks"])
+				icons.append(icon)
 			# A space between icons keeps two-glyph icons ("🔥↓") apart.
 			status_text = " ".join(icons)
 			# Color based on effect type using status definitions

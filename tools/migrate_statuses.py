@@ -304,9 +304,12 @@ UNBUILT_WORDS = """
     can_move cannot_target_spells fire_damage_per_turn_internal
     joins_party_permanently damage_increases_each_turn stat_penalties
     illusory_copies cannot_teleport cannot_flee random_attacks
-    random_spellcasting relationship_bonus heal_50_percent_of_damage_dealt
-    linked_to_ally return_with_20_percent_hp lifesteal_on_attacks cannot_fly
+    random_spellcasting relationship_bonus
+    linked_to_ally return_with_20_percent_hp cannot_fly
     knockback can_walk_on_water range_bonus range_penalty""".split()
+# heal_50_percent_of_damage_dealt (Lifelink) and lifesteal_on_attacks
+# (Blood_Hunger) were listed here as unbuilt, but lifesteal works: both
+# statuses carry the lifesteals_on_hit flag (final review of stage 2b).
 
 STAT_ORDER = ["initiative", "movement", "accuracy", "dodge",
               "damage", "armor", "crit_chance", "spellpower"]
@@ -665,9 +668,11 @@ def migrate_one(s, world, old_words=()):
         if s.get("default_duration") is not None:
             dur["base"] = s["default_duration"]
         new["duration"] = dur
-    if "stacking" not in s:
-        new["stacking"] = {"mode": "independent" if s.get("stackable") is True
-                           else "refresh"}
+    # Owner ruling 2026-11-27: stacking is the default, so only the old
+    # "stackable: true" (separate entries) needs saying; everything else
+    # stacks by omission, and "refresh" is now an opt-out written by hand.
+    if "stacking" not in s and s.get("stackable") is True:
+        new["stacking"] = {"mode": "independent"}
 
     effects = list(s.get("effects", []))
     held, used = _numbers(s, effects)

@@ -692,6 +692,11 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
 - `stat.magic_damage_taken` and `stat.physical_damage_taken` take `multiply`
   only. A modify of `affinity.<el>` may not borrow or `pct_of` that same
   affinity (it would read itself without end).
+- Statuses stack by default (owner ruling 2026-11-27): no `stacking` block
+  means `stack`, uncapped; a stacked `multiply` compounds and a `set` does not
+  scale; `refresh` is the opt-out. A re-application by the same aura or zone
+  and owner (`maintainer`, `kept_by` on the entry) refreshes instead. Steal
+  and transfer carry every stack.
 - Pressure reaches every sheet with psychology state, enemies included (owner
   ruling 2026-11-27); a crisis's fallout reaches the character's own side
   (`PsychologySystem._witnesses_of`).

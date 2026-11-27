@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 109
+const EXPECTED_CHECKS: int = 110
 
 var grid: CombatGrid
 
@@ -157,6 +157,7 @@ func _ready() -> void:
 	_check_affinity_hold()
 	_check_pressure_modify()
 	_check_sheet_shows_temporary_changes()
+	_check_statuses_stack_by_default()
 
 	# Stage 2b, Task 10: building states, comedown, upkeep.
 	_check_mantra_state_example()
@@ -3228,6 +3229,96 @@ func _check_sheet_shows_temporary_changes() -> void:
 		_fail("a trait bonus coloured the sheet as a temporary boost")
 	_cleanup([unit])
 	_done()
+
+## Owner ruling 2026-11-27: stacking is the default. A status with no
+## `stacking` keeps one entry with a stack count and its numbers multiply by
+## it (a multiply compounds; a set does not scale); `stacking.mode: refresh`
+## opts out; and a source that is only keeping its own status up (the same
+## aura or zone, the same owner, each round) refreshes rather than stacks.
+func _check_statuses_stack_by_default() -> void:
+	var caster := _make_unit(Vector2i(3, 3))
+	var unit := _make_unit(Vector2i(4, 3))
+	var base_dodge: float = float(unit.get_dodge())
+	var plain := _with_test_status({"polarity": "positive",
+		"while_active": [{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 15}]})
+	CombatManager._apply_status_effect(unit, plain, 3, 0, caster)
+	CombatManager._apply_status_effect(unit, plain, 3, 0, caster)
+	var entries: int = 0
+	for e in unit.status_effects:
+		if str(e.get("status", "")) == plain:
+			entries += 1
+			if int(e.get("stacks", 1)) != 2:
+				_fail("a twice-applied default status has %d stacks, wanted 2" % int(e.get("stacks", 1)))
+	if entries != 1:
+		_fail("a twice-applied default status made %d entries, wanted 1" % entries)
+	if absf(float(unit.get_dodge()) - base_dodge - 30.0) > 0.01:
+		_fail("+15 dodge at 2 stacks gave %+.1f, wanted +30" % (float(unit.get_dodge()) - base_dodge))
+	_end_named(unit, plain)
+
+	# Opting out: refresh keeps one stack.
+	var single := _with_test_status({"polarity": "positive", "stacking": {"mode": "refresh"},
+		"while_active": [{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 15}]})
+	CombatManager._apply_status_effect(unit, single, 3, 0, caster)
+	CombatManager._apply_status_effect(unit, single, 3, 0, caster)
+	if absf(float(unit.get_dodge()) - base_dodge - 15.0) > 0.01:
+		_fail("a refresh status applied twice gave %+.1f dodge, wanted +15"
+			% (float(unit.get_dodge()) - base_dodge))
+	_end_named(unit, single)
+
+	# A multiply compounds: Slowed twice is a quarter of the movement.
+	var move0: float = float(unit.get_movement())
+	CombatManager._apply_status_effect(unit, "Slowed", 3, 0, caster)
+	CombatManager._apply_status_effect(unit, "Slowed", 3, 0, caster)
+	var want: float = floorf(move0 * 0.25)
+	if absf(float(unit.get_movement()) - want) > 1.0:
+		_fail("Slowed twice left %s movement of %s, wanted about %s"
+			% [unit.get_movement(), move0, want])
+	_end_named(unit, "Slowed")
+
+	# A maintaining source (the same aura, the same owner, every round)
+	# refreshes: standing in Favorable Wind does not pile up Hasted.
+	var ctx := _ctx(caster, unit)
+	ctx.container_kind = "aura"
+	ctx.container_id = "favorable_wind"
+	var keep := {"op": "status", "action": "apply", "status": plain, "duration": 2}
+	for round in 3:
+		EffectResolver.resolve([keep], ctx)
+	for e in unit.status_effects:
+		if str(e.get("status", "")) == plain and int(e.get("stacks", 1)) != 1:
+			_fail("an aura keeping its status up stacked it to %d" % int(e.get("stacks", 1)))
+	# A second, separate source does stack on top.
+	var other := _make_unit(Vector2i(2, 3))
+	var ctx2 := _ctx(other, unit)
+	ctx2.container_kind = "aura"
+	ctx2.container_id = "favorable_wind"
+	EffectResolver.resolve([keep], ctx2)
+	for e in unit.status_effects:
+		if str(e.get("status", "")) == plain and int(e.get("stacks", 1)) != 2:
+			_fail("a second aura owner did not stack (stacks %d)" % int(e.get("stacks", 1)))
+	_end_named(unit, plain)
+
+	# Stealing takes every stack.
+	CombatManager._apply_status_effect(unit, plain, 3, 0, caster)
+	CombatManager._apply_status_effect(unit, plain, 3, 0, caster)
+	CombatManager._apply_status_effect(unit, plain, 3, 0, caster)
+	var result := {"effects_applied": []}
+	CombatManager._apply_status_op(caster, unit, {"op": "steal",
+		"select": {"names": [plain]}, "from": "target", "to": "caster"}, result)
+	var got: int = 0
+	for e in caster.status_effects:
+		if str(e.get("status", "")) == plain:
+			got = int(e.get("stacks", 1))
+	if got != 3:
+		_fail("stealing a 3-stack status gave the thief %d stacks" % got)
+	_end_named(caster, plain)
+	_cleanup([caster, unit, other])
+	_done()
+
+
+func _end_named(unit: Node, status_name: String) -> void:
+	for e in unit.status_effects.duplicate():
+		if str(e.get("status", "")) == status_name:
+			CombatManager._end_status(unit, e, "removed")
 
 # ── Stage 2b, Task 10: building states, comedown, upkeep ────────────────────
 

@@ -277,10 +277,24 @@ static func _scaled_magnitude(effect: Dictionary, ctx: EffectContext, unit: Node
 			if str(tag) in tags:
 				m *= float(effect["bonus_vs"][tag])
 	# A stacking status (stacking.mode "stack") keeps one entry with a
-	# `stacks` count; its magnitudes multiply by that count (spec §4.4).
+	# `stacks` count; its magnitudes multiply by that count (spec §4.4). A
+	# `multiply` compounds instead (Slowed ×0.5 twice is ×0.25, where ×1.0
+	# would speed you up), and a `set` is the same number however many times
+	# it lands.
 	if ctx.status_entry.has("stacks"):
-		m *= float(ctx.status_entry["stacks"])
+		var n: float = float(ctx.status_entry["stacks"])
+		match str(effect.get("mode", "")):
+			"multiply":
+				m = pow(m, n)
+			"set":
+				pass
+			_:
+				m *= n
 	return m
+
+
+## The containers that keep a status up by re-applying it each round.
+const MAINTAINING_KINDS: Array[String] = ["aura", "zone"]
 
 
 # ── Ops ──────────────────────────────────────────────────────────────────────
@@ -434,8 +448,16 @@ static func _do_status(effect: Dictionary, ctx: EffectContext, unit: Node) -> Di
 		# immunity, a talisman, gear, an affliction resistance). The log must
 		# say so, or a spell's report claims a status that never landed.
 		var landed: bool = false
+		# An aura or zone re-applies its status every round to keep it up; it
+		# names itself so the status refreshes instead of stacking again
+		# (CombatManager._apply_status_effect, `maintainer`). Each of an
+		# effect's own `stacks` counts as its own keeper.
+		var keeper: String = ""
+		if ctx.container_kind in MAINTAINING_KINDS:
+			keeper = "%s:%s" % [ctx.container_kind, ctx.container_id]
 		for i in maxi(1, int(effect.get("stacks", 1))):
-			if CombatManager._apply_status_effect(unit, str(effect["status"]), duration, 0, ctx.caster):
+			var mine: String = keeper if keeper == "" or i == 0 else "%s#%d" % [keeper, i]
+			if CombatManager._apply_status_effect(unit, str(effect["status"]), duration, 0, ctx.caster, mine):
 				landed = true
 		if not landed:
 			return _entry("status", unit, false, "resisted", 0.0)

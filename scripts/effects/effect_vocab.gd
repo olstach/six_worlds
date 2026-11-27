@@ -223,9 +223,13 @@ const DURATION_KINDS: Array[String] = [
 	"turns", "spellpower", "until_save", "until_destroyed", "permanent", "instant",
 ]
 
-## What `stacking.mode` may be.
+## What `stacking.mode` may be. A status with no `stacking` block stacks
+## (owner ruling 2026-11-27: stacking is the default; refresh is the opt-out).
 ##   refresh      one entry; a second application keeps the longer duration
-##   stack        one entry with a `stacks` count; its holds scale with it
+##   stack        one entry with a `stacks` count, no cap unless `max`; its
+##                numbers multiply by the count (a multiply compounds, a set
+##                does not scale) and it keeps the longer duration. The same
+##                aura or zone owner keeping it up each round only refreshes.
 ##   independent  every application is its own entry with its own duration
 ##                (Burning: two fires burn twice)
 const STACKING_MODES: Array[String] = ["refresh", "stack", "independent"]

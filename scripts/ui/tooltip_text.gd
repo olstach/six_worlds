@@ -157,6 +157,11 @@ static func status(status_name: String, entry: Dictionary = {}, def: Dictionary 
 	if duration_line != "":
 		lines.append(duration_line)
 
+	# Stacks (stacking is the default): the bullets below are per stack.
+	var stacks: int = int(entry.get("stacks", 1))
+	if stacks > 1:
+		lines.append("×%d stacks (the numbers below are for one)" % stacks)
+
 	# What it does, one bullet per effect token.
 	for bullet in _status_effect_bullets(entry, def):
 		lines.append("  • " + bullet)

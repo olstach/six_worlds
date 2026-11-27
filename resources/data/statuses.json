@@ -13,9 +13,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"skip_turn",
 				"breaks_concentration"
@@ -89,9 +86,6 @@
 				"kind": "turns",
 				"base": 5
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"periodic": {
 				"when": "turn_start",
 				"effects": [
@@ -124,9 +118,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 3
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"periodic": {
 				"when": "turn_start",
@@ -161,9 +152,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_move"
 			],
@@ -184,9 +172,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -215,9 +200,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -243,9 +225,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"skip_turn",
@@ -278,9 +257,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_cast"
 			],
@@ -300,9 +276,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"random_movement",
@@ -332,9 +305,6 @@
 				"kind": "turns",
 				"base": 2
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"flee_from_source",
 				"breaks_concentration",
@@ -357,9 +327,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "instant"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"skip_next_action"
@@ -386,9 +353,6 @@
 			"duration": {
 				"kind": "until_save"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_move",
 				"cannot_act",
@@ -413,9 +377,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_move"
 			],
@@ -437,9 +398,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 3
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -481,9 +439,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"focus_save_on_damage"
 			],
@@ -516,9 +471,6 @@
 			"duration": {
 				"kind": "turns"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"triggers": [
 				{
 					"on": "expire",
@@ -550,9 +502,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -576,9 +525,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -611,9 +557,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -645,9 +588,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"periodic": {
 				"when": "turn_start",
 				"effects": [
@@ -674,9 +614,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_be_targeted",
 				"attack_breaks_invisibility",
@@ -700,9 +637,6 @@
 				"kind": "turns",
 				"base": 3
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_die",
 				"hp_cannot_drop_below_1"
@@ -720,9 +654,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"cannot_be_targeted",
@@ -747,9 +678,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_attack",
 				"cannot_cast"
@@ -772,9 +700,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"treats_caster_as_ally",
@@ -801,9 +726,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"attacks_closest_creature",
 				"ignores_allegiance",
@@ -825,9 +747,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -853,9 +772,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"cannot_use_ranged"
@@ -885,9 +801,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -923,9 +836,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"periodic": {
 				"when": "turn_start",
 				"effects": [
@@ -956,9 +866,6 @@
 			"duration": {
 				"kind": "permanent"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"controlled_by_caster",
 				"breaks_concentration"
@@ -976,9 +883,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"increase_burning_damage_dealt"
@@ -999,9 +903,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"can_move_through_enemies"
@@ -1037,9 +938,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -1065,9 +963,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"skip_turn",
@@ -1096,9 +991,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"charm_chance_on_enemy_melee_approach"
 			],
@@ -1117,9 +1009,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"stun_chance_on_hit"
@@ -1158,9 +1047,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"immune_to_ground_effects",
 				"immune_to_terrain_hazards"
@@ -1181,9 +1067,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -1216,9 +1099,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"ranged_damage_reduction"
 			],
@@ -1239,9 +1119,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -1260,9 +1137,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"dispellable": true,
 			"dispel_methods": [
@@ -1283,9 +1157,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"grants_flight",
@@ -1312,9 +1183,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"grants_flight",
@@ -1354,9 +1222,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"next_ranged_guaranteed_hit"
 			],
@@ -1390,9 +1255,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"grants_flight"
@@ -1464,9 +1326,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_deal_physical"
 			],
@@ -1500,9 +1359,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"cannot_cast"
@@ -1538,9 +1394,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -1564,9 +1417,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -1593,9 +1443,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -1619,9 +1466,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -1660,9 +1504,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"periodic": {
 				"when": "turn_start",
 				"effects": [
@@ -1699,9 +1540,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"periodic": {
 				"when": "turn_start",
@@ -1741,9 +1579,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"stealth_bonus"
 			],
@@ -1762,9 +1597,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"attacks_have_miss_chance"
@@ -1793,9 +1625,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"copies_absorb_attacks"
 			],
@@ -1816,9 +1645,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"spell_damage_reduction"
 			],
@@ -1837,9 +1663,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -1868,9 +1691,6 @@
 			"duration": {
 				"kind": "until_destroyed"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"hp_shield"
 			],
@@ -1894,9 +1714,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -1923,9 +1740,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"rooted",
 				"damage_on_move_attempt"
@@ -1948,9 +1762,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"periodic": {
 				"when": "turn_start",
@@ -1982,9 +1793,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2010,9 +1818,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"random_movement",
 				"breaks_concentration"
@@ -2035,9 +1840,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"cannot_move",
@@ -2063,9 +1865,6 @@
 				"kind": "turns",
 				"base": 3
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2086,9 +1885,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2114,9 +1910,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2134,9 +1927,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"periodic": {
 				"when": "turn_start",
@@ -2165,9 +1955,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"disengaged_from_combat",
 				"will_not_attack"
@@ -2188,9 +1975,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2228,9 +2012,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2260,9 +2041,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2295,9 +2073,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2314,9 +2089,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2378,9 +2150,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"lifesteals_on_hit"
 			],
@@ -2399,9 +2168,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -2435,9 +2201,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2462,9 +2225,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"attack_damage_buff_when_ally_dies"
 			],
@@ -2484,9 +2244,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"share_healing_75_percent"
 			],
@@ -2505,9 +2262,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"return_on_death_next_turn"
 			],
@@ -2524,9 +2278,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"death_resistance"
@@ -2591,9 +2342,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"counts_as_demoralized"
 			],
@@ -2627,9 +2375,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"lifesteals_on_hit"
 			],
@@ -2648,9 +2393,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2681,9 +2423,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2721,9 +2460,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"stealth_bonus"
 			],
@@ -2750,9 +2486,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2821,9 +2554,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2847,9 +2577,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2875,9 +2602,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2901,9 +2625,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -2929,9 +2650,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2956,9 +2674,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -2982,9 +2697,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -3021,9 +2733,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_move",
 				"cannot_be_targeted"
@@ -3044,9 +2753,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3071,9 +2777,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3100,9 +2803,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -3119,9 +2819,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3147,9 +2844,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"cannot_move"
@@ -3179,9 +2873,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"grants_extra_action"
 			],
@@ -3198,9 +2889,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3227,9 +2915,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3254,9 +2939,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3280,9 +2962,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3314,9 +2993,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"spell_damage_reduction"
 			],
@@ -3345,9 +3021,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"loses_flight"
 			],
@@ -3368,9 +3041,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"cannot_move",
@@ -3393,9 +3063,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3420,9 +3087,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3454,9 +3118,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3483,9 +3144,6 @@
 				"kind": "turns",
 				"base": 2
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"forced_movement_toward_target"
 			],
@@ -3505,9 +3163,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3533,9 +3188,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3560,9 +3212,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3586,9 +3235,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"can_move_through_enemies"
@@ -3618,9 +3264,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3645,9 +3288,6 @@
 			"duration": {
 				"kind": "instant"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"dispellable": false,
 			"notes": "Unbuilt: knockback"
 		},
@@ -3661,9 +3301,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"dispellable": true,
 			"dispel_methods": [
@@ -3681,9 +3318,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3709,9 +3343,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3736,9 +3367,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"prone_chance_on_movement"
 			],
@@ -3759,9 +3387,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 2
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3788,9 +3413,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -3842,9 +3464,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"periodic": {
 				"when": "turn_start",
 				"effects": [
@@ -3874,9 +3493,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -3900,9 +3516,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -3954,9 +3567,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_move"
 			],
@@ -3986,9 +3596,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4012,9 +3619,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4040,9 +3644,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"immune_to_water_terrain"
 			],
@@ -4063,9 +3664,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4092,9 +3690,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 99
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"cannot_move"
@@ -4124,9 +3719,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"next_attack_misses"
 			],
@@ -4145,9 +3737,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 2
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"must_attack_taunter"
@@ -4169,9 +3758,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 3
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"counts_as_demoralized"
@@ -4209,9 +3795,6 @@
 				"kind": "turns",
 				"base": 2
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_make_weapon_attacks"
 			],
@@ -4231,9 +3814,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4267,9 +3847,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4308,9 +3885,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4345,9 +3919,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4372,9 +3943,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4401,9 +3969,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4429,9 +3994,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4456,9 +4018,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4486,9 +4045,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4515,9 +4071,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4543,9 +4096,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"remove_all_debuffs",
 				"immune:negative"
@@ -4564,9 +4114,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"immune:Charmed",
@@ -4591,9 +4138,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4621,9 +4165,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"damage_taken_increase",
 				"crit_vulnerability"
@@ -4646,9 +4187,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4683,9 +4221,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_move"
 			],
@@ -4709,9 +4244,6 @@
 				"kind": "turns",
 				"base": 3
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"cannot_move",
 				"cannot_attack"
@@ -4734,9 +4266,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 2
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4770,9 +4299,6 @@
 				"kind": "turns",
 				"base": 2
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4797,9 +4323,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 2
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4832,9 +4355,6 @@
 				"kind": "turns",
 				"base": 2
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4859,9 +4379,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 2
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4888,9 +4405,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"while_active": [
 				{
 					"op": "modify",
@@ -4916,9 +4430,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -4951,9 +4462,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"skip_next_action"
 			],
@@ -4976,9 +4484,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 2
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -5006,9 +4511,6 @@
 				"kind": "turns",
 				"base": 3
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"hp_cannot_drop_below_1"
 			],
@@ -5023,9 +4525,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 3
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"immune:Charmed",
@@ -5046,9 +4545,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"riposte_next_sword_attack"
 			],
@@ -5064,9 +4560,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 3
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -5094,9 +4587,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"aura": [
 				"radiance",
 				"radiance_glare"
@@ -5119,9 +4609,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"aura": [
 				"radiant_visage"
 			],
@@ -5143,9 +4630,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"flags": [
 				"prevents_teleportation"
 			],
@@ -5165,9 +4649,6 @@
 			"scope": "combat",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -5221,9 +4702,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"aura": "shining_mirage",
 			"dispellable": true,
 			"dispel_methods": [
@@ -5242,9 +4720,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"flags": [
 				"skip_turn",
@@ -5265,9 +4740,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{
@@ -5324,9 +4796,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"grants_movement_ability": "lava_immunity",
 			"dispellable": true,
 			"dispel_methods": [
@@ -5344,9 +4813,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"grants_movement_ability": [
 				"surefoot_swamp",
@@ -5369,9 +4835,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"grants_movement_ability": [
 				"surefoot_desert",
 				"surefoot_sand"
@@ -5393,9 +4856,6 @@
 			"duration": {
 				"kind": "spellpower"
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"grants_travel_speed_pct": 40.0,
 			"dispellable": true,
 			"dispel_methods": [
@@ -5413,9 +4873,6 @@
 			"scope": "world",
 			"duration": {
 				"kind": "spellpower"
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"grants_concealment": true,
 			"dispellable": true,
@@ -5436,9 +4893,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -5475,9 +4929,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"triggers": [
 				{
 					"on": "ally_threatened",
@@ -5512,9 +4963,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -5552,9 +5000,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"triggers": [
 				{
 					"on": "enemy_enters_reach",
@@ -5589,9 +5034,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"triggers": [
 				{
@@ -5637,9 +5079,6 @@
 				"kind": "turns",
 				"base": 1
 			},
-			"stacking": {
-				"mode": "refresh"
-			},
 			"triggers": [
 				{
 					"on": "enemy_enters_reach",
@@ -5681,9 +5120,6 @@
 			"duration": {
 				"kind": "turns",
 				"base": 1
-			},
-			"stacking": {
-				"mode": "refresh"
 			},
 			"while_active": [
 				{

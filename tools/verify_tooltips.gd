@@ -15,7 +15,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 19
+const EXPECTED_CHECKS: int = 20
 
 
 func _ready() -> void:
@@ -40,6 +40,7 @@ func _ready() -> void:
 	_check_every_flag_has_words()
 	_check_party_line_lists_lasting_damage()
 	_check_status_wording_matches_fixture()
+	_check_a_stacked_status_says_how_many()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -680,4 +681,16 @@ func _check_status_wording_matches_fixture() -> void:
 			_fail("status wording differs from %s for %d status(es), e.g. %s; regenerate with "
 				% [WORDING_FIXTURE, differing.size(), differing.slice(0, 3)]
 				+ "godot --headless --path . tools/verify_tooltips.tscn -- --write-wording")
+	_done()
+
+
+## Stacking is the default (owner ruling 2026-11-27), so a tooltip must say
+## how many stacks are on, and that its numbers are for one.
+func _check_a_stacked_status_says_how_many() -> void:
+	var text: String = TooltipText.status("Hasted", {"status": "Hasted", "duration": 2, "stacks": 3})
+	if text.find("×3 stacks") == -1:
+		_fail("a 3-stack Hasted tooltip does not say ×3 stacks:\n%s" % text)
+	var one: String = TooltipText.status("Hasted", {"status": "Hasted", "duration": 2, "stacks": 1})
+	if one.find("stacks") != -1:
+		_fail("a single-stack tooltip talks about stacks:\n%s" % one)
 	_done()

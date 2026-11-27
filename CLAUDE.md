@@ -218,3 +218,10 @@ The largest remaining gaps, for orientation only:
 8. **One character sheet** - party, companions and enemies are the same
    dictionary shape, derived by `CharacterSystem.update_derived_stats`; a
    unique feature is a trait, status or effect, never a parallel code path.
+   Every character runs on the same systems too: enemies feel pressure and
+   have emotions, so "should enemies also get X?" is answered yes.
+9. **Effects stack by default** - a status with no `stacking` block keeps one
+   entry with a stack count, numbers multiplied by it (a `multiply` compounds,
+   a `set` does not scale), no cap unless `max`. `stacking.mode: "refresh"`
+   opts a status out for balance. An aura or zone keeping its own status up
+   each round only refreshes it.

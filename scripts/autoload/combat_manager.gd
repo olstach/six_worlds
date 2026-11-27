@@ -5317,7 +5317,8 @@ func _check_talisman_status_immunity(unit: Node, status: String) -> bool:
 ## How a second application behaves is the status's `stacking.mode`: refresh
 ## (the longer duration wins), stack (one entry counts up) or independent (a
 ## new entry beside the old one, e.g. Burning).
-func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0, source: Node = null) -> bool:
+func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0, source: Node = null,
+		maintainer: String = "") -> bool:
 	if not "status_effects" in unit:
 		unit.set("status_effects", [])
 
@@ -5392,20 +5393,34 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	#            re-resolved at the new count, so +15 dodge at 3 stacks is +45
 	#   independent  every application is a new entry of its own, with its own
 	#            duration and id (Burning: two fires burn twice)
-	# A definition with no `stacking` refreshes.
-	var stacking_mode: String = str(def.get("stacking", {}).get("mode", ""))
+	# A definition with no `stacking` STACKS (owner ruling 2026-11-27: stacking
+	# is the default; `refresh` is the opt-out, kept for balance).
+	#
+	# `maintainer` names a source that is only keeping its own status up: the
+	# same aura or zone with the same owner, re-applying it every round. That
+	# refreshes instead of stacking, or standing in Favorable Wind would pile
+	# up Hasted without end. Separate casts, hits and owners still stack.
+	var stacking_mode: String = str(def.get("stacking", {}).get("mode", DEFAULT_STACKING_MODE))
+	var keeper: String = ""
+	if maintainer != "":
+		keeper = "%s@%d" % [maintainer, source.get_instance_id() if source != null else 0]
 	if unit.has_status(status) and stacking_mode == "stack":
 		var stacked: Dictionary = _status_entry_named(unit, status)
 		stacked["duration"] = maxi(int(stacked.get("duration", 0)), duration)
-		if source != null:
-			stacked["source"] = source
-		var cap: int = int(def.get("stacking", {}).get("max", 0))
-		var was: int = int(stacked.get("stacks", 1))
-		var now: int = was + 1 if cap <= 0 else mini(was + 1, cap)
-		if now != was:
-			stacked["stacks"] = now
-			_refresh_status_holds(unit, stacked)
-		if unit.has_method("_update_visuals"):
+		var kept_up: bool = keeper != "" and keeper in stacked.get("kept_by", [])
+		if not kept_up:
+			if source != null:
+				stacked["source"] = source
+			if keeper != "":
+				stacked["kept_by"] = stacked.get("kept_by", []) + [keeper]
+			var cap: int = int(def.get("stacking", {}).get("max", 0))
+			var was: int = int(stacked.get("stacks", 1))
+			var now: int = was + 1 if cap <= 0 else mini(was + 1, cap)
+			if now != was:
+				stacked["stacks"] = now
+				_refresh_status_holds(unit, stacked)
+			_on_status_landed(unit, def, status, false)
+		elif unit.has_method("_update_visuals"):
 			unit._update_visuals()
 		return true
 	if unit.has_status(status):
@@ -5434,6 +5449,8 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	}
 	if stacking_mode == "stack":
 		effect_entry["stacks"] = 1
+		if keeper != "":
+			effect_entry["kept_by"] = [keeper]
 	if source != null:
 		effect_entry["source"] = source
 	unit.get("status_effects").append(effect_entry)
@@ -5442,6 +5459,19 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	# skill holds, under the entry's id). _end_status releases them.
 	_resolve_status_effects(unit, effect_entry, def.get("while_active", []), true)
 
+	_on_status_landed(unit, def, status, true)
+	return true
+
+
+## A status with no `stacking` block stacks (owner ruling 2026-11-27).
+const DEFAULT_STACKING_MODE: String = "stack"
+
+
+## What happens each time a status lands, whether as a new entry or as one
+## more stack on an existing one: hard control breaks concentration, Cleansed
+## strips debuffs, Invisible hides, and the unit shows it. `fresh` is false
+## for a stack added to an entry already there.
+func _on_status_landed(unit: Node, def: Dictionary, status: String, fresh: bool) -> void:
 	# Hard CC breaks concentration on the affected unit
 	if StatusRules.def_has_flag(def, "breaks_concentration"):
 		_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
@@ -5453,7 +5483,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			combat_log.emit("%s is cleansed of all debuffs!" % unit.unit_name)
 
 	# Invisible status grants stealth automatically
-	if StatusRules.def_has_flag(def, "grants_stealth") and "is_stealthed" in unit:
+	if fresh and StatusRules.def_has_flag(def, "grants_stealth") and "is_stealthed" in unit:
 		unit.is_stealthed = true
 		combat_log.emit("%s fades from sight." % unit.unit_name)
 
@@ -5464,7 +5494,6 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	# Update visuals to show new status icon
 	if unit.has_method("_update_visuals"):
 		unit._update_visuals()
-	return true
 
 
 # ── The status container: one way in, one way out ───────────────────────────
@@ -5955,6 +5984,25 @@ func _end_status(unit: Node, entry: Dictionary, reason: String) -> void:
 		_clear_damage_for_removed(unit, status_name)
 
 
+## Put `count` more stacks on the stacking status `status_name` that `unit`
+## already carries (a stolen or handed-over status keeps every stack it had).
+## Nothing happens for count <= 0 or a status that does not stack; the cap,
+## if it has one, still holds.
+func _add_stacks(unit: Node, status_name: String, count: int) -> void:
+	if count <= 0:
+		return
+	var entry: Dictionary = _status_entry_named(unit, status_name)
+	if entry.is_empty() or not entry.has("stacks"):
+		return
+	var cap: int = int(_status_effects.get(status_name, {}).get("stacking", {}).get("max", 0))
+	var now: int = int(entry["stacks"]) + count
+	if cap > 0:
+		now = mini(now, cap)
+	if now != int(entry["stacks"]):
+		entry["stacks"] = now
+		_refresh_status_holds(unit, entry)
+
+
 ## Take `count` stacks off a stacking status. Its holds drop to the new count;
 ## at zero the status ends, for `reason`. An entry without a `stacks` count is
 ## one stack.
@@ -6075,8 +6123,10 @@ func _apply_status_op(caster: Node, target: Node, op_spec: Dictionary,
 					var name: String = entry.get("status", "")
 					var left: int = int(entry.get("duration", 1))
 					var value: int = int(entry.get("value", 0))
+					var stacks: int = int(entry.get("stacks", 1))
 					if _remove_status_by_name(victim, name, "stolen"):
 						_apply_status_effect(thief, name, left, value, caster)
+						_add_stacks(thief, name, stacks - 1)
 						taken += 1
 			if taken > 0:
 				combat_log.emit("%s takes %d blessing(s) for itself!"
@@ -6098,13 +6148,15 @@ func _apply_status_op(caster: Node, target: Node, op_spec: Dictionary,
 				for entry in StatusOps.select(source, selector, _status_effects):
 					var name: String = entry.get("status", "")
 					var left: int = int(entry.get("duration", 1))
+					var stacks: int = int(entry.get("stacks", 1))
 					if _remove_status_by_name(source, name, "stolen"):
-						carried.append({"status": name, "duration": left})
+						carried.append({"status": name, "duration": left, "stacks": stacks})
 			# Even distribution, front to back, so a remainder does not vanish.
 			for i in range(carried.size()):
 				var sink: Node = sinks[i % sinks.size()]
 				_apply_status_effect(sink, carried[i]["status"],
 					carried[i]["duration"], 0, caster)
+				_add_stacks(sink, carried[i]["status"], int(carried[i]["stacks"]) - 1)
 			if not carried.is_empty():
 				combat_log.emit("%d effect(s) change hands." % carried.size())
 			result.effects_applied.append({"type": "transfer", "count": carried.size()})

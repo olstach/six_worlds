@@ -2455,6 +2455,12 @@ Moving content onto one shared effect language. The design is at
         enemies feel pressure (every character runs on the same systems), and
         a crisis's fallout reaches the character's own side, not the player's
         party.*
+      - [x] **Statuses stack by default** (ruled 2026-11-27; spec 10.5). All
+        188 former `refresh` statuses now stack, uncapped. **Balance to watch:**
+        two casts of `Physical_Resist_50` (or four of `Fire_Resistance_25`)
+        reach 100% resistance, which is immunity; reapplied buffs and
+        on-hit debuffs (Bleeding, Poisoned) grow per application. Opt a
+        status out with `stacking: {mode: "refresh"}` or cap it with `max`.
       - [x] ~~About 125 `SCRIPT ERROR`s at `map_manager.gd` on every load.~~
         *Fixed 2026-11-27: subregion seeds came back from JSON as text, so
         every subregion lookup after a load failed and returned nothing.*
