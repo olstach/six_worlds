@@ -137,10 +137,35 @@ const STACKING_MODES: Array[String] = ["refresh", "stack", "independent"]
 ## restore and absorb are instant, so they belong in `periodic` or a trigger.
 const LASTING_MODES: Array[String] = ["fortify", "drain", "set", "multiply", "damage"]
 
-## Rule flags a status may carry. Empty until Task 5 builds them. The form
-## `immune:<status name | category | polarity>` is always accepted.
+## Rule flags a status may carry: the yes/no rules statuses.json used to say
+## as words in `effects` (and the status-name lists CombatManager kept in code).
+## Each is enforced where the code asks StatusRules.has_flag(unit, "<flag>");
+## validate_data.py fails on a flag nothing asks for. The form
+## `immune:<status name | category | polarity>` is always accepted as well.
+## Alphabetical. The word-by-word record is docs/plans/STATUS_MIGRATION_2026-11.md.
 const FLAGS: Array[String] = [
-	# (filled by Task 5)
+	"attack_breaks_invisibility", "attack_damage_buff_when_ally_dies",
+	"attack_reflect_chance", "attacks_closest_creature", "attacks_have_miss_chance",
+	"breaks_concentration", "breaks_on_damage_from_source", "breaks_on_offensive_action",
+	"can_move_through_enemies", "cannot_act", "cannot_attack", "cannot_be_targeted",
+	"cannot_cast", "cannot_deal_physical", "cannot_die", "cannot_make_weapon_attacks",
+	"cannot_move", "cannot_target_enemies", "cannot_use_ranged",
+	"charm_chance_on_enemy_melee_approach", "controlled_by_caster",
+	"copies_absorb_attacks", "counts_as_demoralized", "crit_vulnerability",
+	"damage_on_move_attempt", "damage_taken_increase", "death_resistance",
+	"disengaged_from_combat", "flee_from_source", "focus_save_on_damage",
+	"forced_movement_toward_target", "grants_extra_action", "grants_flight",
+	"grants_stealth", "hp_cannot_drop_below_1", "hp_shield", "ignores_allegiance",
+	"immune_to_ground_effects", "immune_to_melee_unless_flyer", "immune_to_ranged",
+	"immune_to_terrain_hazards", "immune_to_water_terrain",
+	"increase_burning_damage_dealt", "lifesteals_on_hit", "loses_flight",
+	"must_attack_taunter", "next_attack_misses", "next_ranged_guaranteed_hit",
+	"prevents_teleportation", "prone_chance_on_movement", "random_movement",
+	"random_target", "ranged_damage_reduction", "remove_all_debuffs",
+	"return_on_death_next_turn", "riposte_next_sword_attack", "rooted",
+	"share_healing_75_percent", "skip_next_action", "skip_turn", "spell_damage_reduction",
+	"spell_reflect_chance", "stealth_bonus", "stun_chance_on_hit",
+	"treats_caster_as_ally", "will_not_attack", "will_not_attack_caster",
 ]
 const IMMUNE_FLAG_PREFIX: String = "immune:"
 

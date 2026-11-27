@@ -4,7 +4,7 @@
 # so the two validators are held to one standard.
 import json, os, sys, unittest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from effect_check import check_effect, check_effects, check_status, OPS_PY, MODES_PY
+from effect_check import check_effect, check_effects, check_status, OPS_PY, MODES_PY, FLAGS as FLAGS_PY
 
 VALID = [
     {"op": "damage", "amount": 20, "type": "fire"},
@@ -116,6 +116,14 @@ class EffectVocabTests(unittest.TestCase):
                 "mode": "fortify", "amount": 25}, "t"), [], name)
         self.assertNotEqual(check_effect({"op": "modify", "value": "resist.everything",
             "mode": "fortify", "amount": 25}, "t"), [])
+
+    def test_flags_read_from_gdscript(self):
+        # Task 5: FLAGS is the list of yes/no rules statuses.json uses.
+        for f in ["cannot_move", "breaks_concentration", "grants_stealth"]:
+            self.assertIn(f, FLAGS_PY)
+        self.assertNotIn("immobilized", FLAGS_PY)   # merged into cannot_move
+        d = dict(STATUS_MINIMAL, flags=["cannot_move", "breaks_concentration", "immune:Charmed"])
+        self.assertEqual(check_status(d, "t"), [])
 
     def test_retired_legacy_status_keys_rejected(self):
         for key in ["type", "category", "duration_type", "default_duration",

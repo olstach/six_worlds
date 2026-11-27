@@ -442,7 +442,7 @@ func is_targetable() -> bool:
 	for effect in status_effects:
 		var status_name = effect.get("status", "")
 		var sdef = CombatManager.get_status_definition(status_name)
-		if "cannot_be_targeted" in sdef.get("effects", []):
+		if StatusRules.def_has_flag(sdef, "cannot_be_targeted"):
 			return false
 	return true
 
@@ -558,10 +558,9 @@ func get_movement_mode() -> int:
 	var levitating := false
 	for effect in status_effects:
 		var def = CombatManager.get_status_definition(effect.get("status", ""))
-		var fx: Array = def.get("effects", [])
-		if "grants_flight" in fx:
+		if StatusRules.def_has_flag(def, "grants_flight"):
 			flying = true
-		if "loses_flight" in fx:
+		if StatusRules.def_has_flag(def, "loses_flight"):
 			grounded = true
 		if effect.get("status", "").to_lower() == "levitating":
 			levitating = true
@@ -1401,8 +1400,8 @@ func _get_status_color(status_name: String) -> Color:
 	if element != "" and STATUS_ELEMENT_COLORS.has(element):
 		return STATUS_ELEMENT_COLORS[element]
 
-	# Infer element from the effects array
-	var effects = def.get("effects", [])
+	# Infer element from the words in the effects and flags lists
+	var effects: Array = def.get("effects", []) + def.get("flags", [])
 	for fx in effects:
 		if "fire" in fx:
 			return STATUS_ELEMENT_COLORS["fire"]

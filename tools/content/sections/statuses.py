@@ -17,8 +17,10 @@ def _context(s: dict) -> str:
     if isinstance(dur, dict) and dur.get("kind"):
         n = dur.get("base")
         parts.append(f"{dur['kind']} {n}" if n is not None else str(dur["kind"]))
-    eff = s.get("effects")
-    if isinstance(eff, list) and eff:
+    # The words still in `effects`, then the yes/no rules in `flags`. (Task 7
+    # words the whole line from the new fields.)
+    eff = list(s.get("effects") or []) + list(s.get("flags") or [])
+    if eff:
         parts.append(", ".join(map(str, eff)))
     return clean(" · ".join(p for p in parts if p))
 

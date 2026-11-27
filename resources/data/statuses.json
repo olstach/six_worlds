@@ -16,6 +16,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"skip_turn",
+				"breaks_concentration"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -23,9 +27,6 @@
 					"mode": "drain",
 					"amount": 50
 				}
-			],
-			"effects": [
-				"skip_turn"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -135,7 +136,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_move"
 			],
 			"dispellable": true,
@@ -218,6 +219,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"skip_turn",
+				"cannot_act",
+				"breaks_concentration"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -225,10 +231,6 @@
 					"mode": "fortify",
 					"amount": 100
 				}
-			],
-			"effects": [
-				"skip_turn",
-				"cannot_act"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -251,7 +253,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_cast"
 			],
 			"dispellable": true,
@@ -274,9 +276,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"random_movement",
-				"random_target"
+				"random_target",
+				"breaks_concentration"
 			],
 			"default_duration_range": [
 				1,
@@ -304,8 +307,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"flee_from_source"
+			"flags": [
+				"flee_from_source",
+				"breaks_concentration",
+				"counts_as_demoralized"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -328,6 +333,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"skip_next_action"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -335,9 +343,6 @@
 					"mode": "drain",
 					"amount": 10
 				}
-			],
-			"effects": [
-				"skip_next_action"
 			],
 			"dispellable": false
 		},
@@ -356,9 +361,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_move",
-				"cannot_act"
+				"cannot_act",
+				"breaks_concentration"
 			],
 			"save_type": "Strength",
 			"dispellable": true,
@@ -382,9 +388,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"cannot_move"
+			],
 			"effects": [
-				"physical_damage_per_turn",
-				"immobilized"
+				"physical_damage_per_turn"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -432,9 +440,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"physical_damage_per_turn",
+			"flags": [
 				"focus_save_on_damage"
+			],
+			"effects": [
+				"physical_damage_per_turn"
 			],
 			"damage_per_turn": 1,
 			"dispellable": true,
@@ -597,9 +607,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_be_targeted",
-				"attack_breaks_invisibility"
+				"attack_breaks_invisibility",
+				"grants_stealth"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -622,7 +633,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_die",
 				"hp_cannot_drop_below_1"
 			],
@@ -643,7 +654,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_be_targeted",
 				"cannot_target_enemies",
 				"breaks_on_offensive_action"
@@ -669,8 +680,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"can_move",
+			"flags": [
 				"cannot_attack",
 				"cannot_cast"
 			],
@@ -678,7 +688,8 @@
 			"dispel_methods": [
 				"cleanse",
 				"clarity"
-			]
+			],
+			"notes": "Unbuilt: can_move"
 		},
 		{
 			"name": "Charmed",
@@ -695,9 +706,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"treats_caster_as_ally",
-				"will_not_attack_caster"
+				"will_not_attack_caster",
+				"breaks_concentration",
+				"breaks_on_damage_from_source"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -721,9 +734,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"attacks_closest_creature",
-				"ignores_allegiance"
+				"ignores_allegiance",
+				"breaks_concentration"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -773,6 +787,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"cannot_use_ranged"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -781,15 +798,12 @@
 					"amount": 40
 				}
 			],
-			"effects": [
-				"cannot_use_ranged",
-				"cannot_target_spells"
-			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
 				"clarity"
-			]
+			],
+			"notes": "Unbuilt: cannot_target_spells"
 		},
 		{
 			"name": "Fireshield",
@@ -830,14 +844,12 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"fire_damage_per_turn_internal"
-			],
 			"damage_per_turn": 15,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
-			]
+			],
+			"notes": "Unbuilt: fire_damage_per_turn_internal"
 		},
 		{
 			"name": "Dominated",
@@ -853,11 +865,12 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"controlled_by_caster",
-				"joins_party_permanently"
+				"breaks_concentration"
 			],
-			"dispellable": false
+			"dispellable": false,
+			"notes": "Unbuilt: joins_party_permanently"
 		},
 		{
 			"name": "Fan_the_Flames",
@@ -873,7 +886,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"increase_burning_damage_dealt"
 			],
 			"dispellable": true,
@@ -896,6 +909,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"can_move_through_enemies"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -909,9 +925,6 @@
 					"mode": "drain",
 					"amount": 25
 				}
-			],
-			"effects": [
-				"can_move_through_enemies"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -962,9 +975,12 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"skip_turn",
 				"cannot_act",
+				"breaks_concentration"
+			],
+			"effects": [
 				"save_at_end_of_turn"
 			],
 			"save_type": "Constitution",
@@ -988,7 +1004,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"charm_chance_on_enemy_melee_approach"
 			],
 			"dispellable": true,
@@ -1010,9 +1026,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"adds_air_damage_to_attacks",
+			"flags": [
 				"stun_chance_on_hit"
+			],
+			"effects": [
+				"adds_air_damage_to_attacks"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -1033,7 +1051,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"immune_to_ground_effects",
 				"immune_to_terrain_hazards"
 			],
@@ -1074,7 +1092,8 @@
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			]
+			],
+			"notes": "Unbuilt: range_bonus"
 		},
 		{
 			"name": "Air_Shield",
@@ -1090,7 +1109,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"ranged_damage_reduction"
 			],
 			"dispellable": true,
@@ -1158,7 +1177,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"grants_flight",
 				"immune_to_ground_effects",
 				"immune_to_melee_unless_flyer"
@@ -1187,7 +1206,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"grants_flight",
 				"immune_to_ranged"
 			],
@@ -1216,6 +1235,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"next_ranged_guaranteed_hit"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -1229,9 +1251,6 @@
 					"mode": "fortify",
 					"amount": 10
 				}
-			],
-			"effects": [
-				"next_ranged_guaranteed_hit"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -1253,6 +1272,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"grants_flight"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -1272,9 +1294,6 @@
 					"mode": "drain",
 					"amount": 50
 				}
-			],
-			"effects": [
-				"grants_flight"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -1304,6 +1323,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"cannot_deal_physical"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -1317,9 +1339,6 @@
 					"mode": "fortify",
 					"amount": 100
 				}
-			],
-			"effects": [
-				"cannot_deal_physical"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -1341,9 +1360,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"cannot_cast"
+			],
 			"effects": [
-				"physical_damage_per_turn",
-				"silenced"
+				"physical_damage_per_turn"
 			],
 			"damage_per_turn": 30,
 			"save_type": "Constitution",
@@ -1476,8 +1497,7 @@
 			},
 			"affliction": "poison",
 			"effects": [
-				"poison_damage_per_turn",
-				"damage_increases_each_turn"
+				"poison_damage_per_turn"
 			],
 			"damage_per_turn": 5,
 			"damage_increase_per_turn": 5,
@@ -1485,7 +1505,8 @@
 			"dispel_methods": [
 				"cleanse",
 				"herbal_remedy"
-			]
+			],
+			"notes": "Unbuilt: damage_increases_each_turn"
 		},
 		{
 			"name": "Diseased",
@@ -1504,8 +1525,7 @@
 			},
 			"affliction": "disease",
 			"effects": [
-				"poison_damage_per_turn",
-				"stat_penalties"
+				"poison_damage_per_turn"
 			],
 			"spread": {
 				"chance": "medium",
@@ -1517,7 +1537,8 @@
 				"cleanse",
 				"herbal_remedy",
 				"cure_disease"
-			]
+			],
+			"notes": "Unbuilt: stat_penalties"
 		},
 		{
 			"name": "Chameleon",
@@ -1533,7 +1554,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"stealth_bonus"
 			],
 			"dispellable": true,
@@ -1555,6 +1576,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"attacks_have_miss_chance"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -1562,9 +1586,6 @@
 					"mode": "fortify",
 					"amount": 15
 				}
-			],
-			"effects": [
-				"attacks_have_miss_chance"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -1585,14 +1606,14 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"illusory_copies",
+			"flags": [
 				"copies_absorb_attacks"
 			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			]
+			],
+			"notes": "Unbuilt: illusory_copies"
 		},
 		{
 			"name": "Magic_Shield",
@@ -1608,7 +1629,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"spell_damage_reduction"
 			],
 			"dispellable": true,
@@ -1630,7 +1651,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"spell_reflect_chance"
 			],
 			"dispellable": true,
@@ -1652,6 +1673,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"hp_shield"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -1659,9 +1683,6 @@
 					"mode": "fortify",
 					"amount": 25
 				}
-			],
-			"effects": [
-				"hp_shield"
 			],
 			"dispellable": false
 		},
@@ -1707,7 +1728,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"rooted",
 				"damage_on_move_attempt"
 			],
@@ -1734,15 +1755,14 @@
 				"mode": "refresh"
 			},
 			"effects": [
-				"space_damage_per_turn",
-				"cannot_teleport",
-				"cannot_flee"
+				"space_damage_per_turn"
 			],
 			"damage_per_turn": 25,
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
-			]
+			],
+			"notes": "Unbuilt: cannot_teleport, cannot_flee"
 		},
 		{
 			"name": "Shimmering",
@@ -1786,16 +1806,16 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"random_movement",
-				"random_attacks",
-				"random_spellcasting"
+				"breaks_concentration"
 			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse",
 				"clarity"
-			]
+			],
+			"notes": "Unbuilt: random_attacks, random_spellcasting"
 		},
 		{
 			"name": "Paralyzed",
@@ -1812,9 +1832,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_move",
-				"cannot_act"
+				"cannot_act",
+				"breaks_concentration"
 			],
 			"save_type": "Focus",
 			"dispellable": true,
@@ -1889,13 +1910,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"relationship_bonus"
-			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			]
+			],
+			"notes": "Unbuilt: relationship_bonus"
 		},
 		{
 			"name": "Soothing_Presence",
@@ -1935,7 +1954,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"disengaged_from_combat",
 				"will_not_attack"
 			],
@@ -2148,13 +2167,14 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"heal_50_percent_of_damage_dealt"
+			"flags": [
+				"lifesteals_on_hit"
 			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			]
+			],
+			"notes": "Unbuilt: heal_50_percent_of_damage_dealt"
 		},
 		{
 			"name": "Pain_Mirror",
@@ -2221,7 +2241,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"attack_damage_buff_when_ally_dies"
 			],
 			"dispellable": true,
@@ -2243,14 +2263,14 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"linked_to_ally",
+			"flags": [
 				"share_healing_75_percent"
 			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			]
+			],
+			"notes": "Unbuilt: linked_to_ally"
 		},
 		{
 			"name": "Eternal_Vow",
@@ -2264,11 +2284,11 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"return_on_death_next_turn",
-				"return_with_20_percent_hp"
+			"flags": [
+				"return_on_death_next_turn"
 			],
-			"dispellable": false
+			"dispellable": false,
+			"notes": "Unbuilt: return_with_20_percent_hp"
 		},
 		{
 			"name": "Ancestors_Blessing",
@@ -2284,6 +2304,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"death_resistance"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -2328,9 +2351,6 @@
 					"amount": 3
 				}
 			],
-			"effects": [
-				"death_resistance"
-			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
@@ -2350,6 +2370,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"counts_as_demoralized"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -2383,13 +2406,14 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"lifesteal_on_attacks"
+			"flags": [
+				"lifesteals_on_hit"
 			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			]
+			],
+			"notes": "Unbuilt: lifesteal_on_attacks"
 		},
 		{
 			"name": "Cursed",
@@ -2477,6 +2501,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"stealth_bonus"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -2484,9 +2511,6 @@
 					"mode": "fortify",
 					"amount": 15
 				}
-			],
-			"effects": [
-				"stealth_bonus"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -2753,7 +2777,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_move",
 				"cannot_be_targeted"
 			],
@@ -2880,6 +2904,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"cannot_move"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -2887,9 +2914,6 @@
 					"mode": "drain",
 					"amount": 15
 				}
-			],
-			"effects": [
-				"cannot_move"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -2911,7 +2935,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"grants_extra_action"
 			],
 			"dispellable": false
@@ -3046,6 +3070,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"spell_damage_reduction"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -3053,9 +3080,6 @@
 					"mode": "fortify",
 					"amount": 50
 				}
-			],
-			"effects": [
-				"spell_damage_reduction"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -3077,14 +3101,14 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"cannot_fly",
+			"flags": [
 				"loses_flight"
 			],
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
-			]
+			],
+			"notes": "Unbuilt: cannot_fly"
 		},
 		{
 			"name": "Immobilized",
@@ -3101,9 +3125,10 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_move",
-				"cannot_act"
+				"cannot_act",
+				"breaks_concentration"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -3214,7 +3239,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"forced_movement_toward_target"
 			],
 			"dispellable": true,
@@ -3318,6 +3343,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"can_move_through_enemies"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -3325,9 +3353,6 @@
 					"mode": "fortify",
 					"amount": 15
 				}
-			],
-			"effects": [
-				"can_move_through_enemies"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -3376,10 +3401,8 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"knockback"
-			],
-			"dispellable": false
+			"dispellable": false,
+			"notes": "Unbuilt: knockback"
 		},
 		{
 			"name": "Range_Debuff",
@@ -3398,7 +3421,8 @@
 			"dispellable": true,
 			"dispel_methods": [
 				"cleanse"
-			]
+			],
+			"notes": "Unbuilt: range_penalty"
 		},
 		{
 			"name": "Ranged_Attack_Debuff_50",
@@ -3468,7 +3492,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"prone_chance_on_movement"
 			],
 			"dispellable": true,
@@ -3637,6 +3661,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"cannot_move"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -3644,9 +3671,6 @@
 					"mode": "drain",
 					"amount": 10
 				}
-			],
-			"effects": [
-				"cannot_move"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -3723,15 +3747,15 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"can_walk_on_water",
+			"flags": [
 				"immune_to_water_terrain"
 			],
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
 			],
-			"grants_movement_ability": "water_walking"
+			"grants_movement_ability": "water_walking",
+			"notes": "Unbuilt: can_walk_on_water"
 		},
 		{
 			"name": "Yaksha_Strength",
@@ -3776,6 +3800,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"cannot_move"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -3783,9 +3810,6 @@
 					"mode": "drain",
 					"amount": 15
 				}
-			],
-			"effects": [
-				"cannot_move"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -3807,7 +3831,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"next_attack_misses"
 			],
 			"dispellable": false,
@@ -3829,7 +3853,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"must_attack_taunter"
 			],
 			"dispellable": true,
@@ -3853,6 +3877,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"counts_as_demoralized"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -3889,7 +3916,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_make_weapon_attacks"
 			],
 			"dispellable": true,
@@ -4223,9 +4250,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"remove_all_debuffs",
-				"debuff_immunity"
+				"immune:negative"
 			],
 			"dispellable": false,
 			"dispel_methods": [],
@@ -4245,10 +4272,12 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"immune_to_charm",
-				"immune_to_fear",
-				"immune_to_confusion"
+			"flags": [
+				"immune:Charmed",
+				"immune:Dominated",
+				"immune:Feared",
+				"immune:Confused",
+				"immune:Chaotic"
 			],
 			"dispellable": true,
 			"dispel_methods": [
@@ -4299,7 +4328,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"damage_taken_increase",
 				"crit_vulnerability"
 			],
@@ -4361,7 +4390,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_move"
 			],
 			"dispellable": true,
@@ -4387,7 +4416,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"cannot_move",
 				"cannot_attack"
 			],
@@ -4629,6 +4658,9 @@
 			"stacking": {
 				"mode": "refresh"
 			},
+			"flags": [
+				"skip_next_action"
+			],
 			"while_active": [
 				{
 					"op": "modify",
@@ -4636,9 +4668,6 @@
 					"mode": "drain",
 					"amount": 10
 				}
-			],
-			"effects": [
-				"skip_next_action"
 			],
 			"dispellable": false
 		},
@@ -4684,7 +4713,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"hp_cannot_drop_below_1"
 			],
 			"dispellable": false
@@ -4702,10 +4731,12 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
-				"immune_to_charm",
-				"immune_to_fear",
-				"immune_to_confusion"
+			"flags": [
+				"immune:Charmed",
+				"immune:Dominated",
+				"immune:Feared",
+				"immune:Confused",
+				"immune:Chaotic"
 			],
 			"dispellable": false
 		},
@@ -4722,7 +4753,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"riposte_next_sword_attack"
 			],
 			"dispellable": false,
@@ -4741,7 +4772,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"attack_reflect_chance"
 			],
 			"dispellable": false,
@@ -4811,7 +4842,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"prevents_teleportation"
 			],
 			"dispellable": true,
@@ -4896,7 +4927,7 @@
 			"stacking": {
 				"mode": "refresh"
 			},
-			"effects": [
+			"flags": [
 				"skip_turn",
 				"cannot_act"
 			],

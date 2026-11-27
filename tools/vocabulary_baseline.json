@@ -1,33 +1,9 @@
 {
   "_comment": "Values declared in data that no code reads, accepted for now. The data->code check in validate_data.py fails on anything unread that is NOT listed here, so this file is the record of known gaps rather than a way to silence the check. Shrink it by wiring a consumer, never by adding a line without a reason. The check also fails on a line here whose value has gained a reader or left the data, so the file can only shrink.",
   "base_bonuses stat": {
-    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member \u2014 see PartyBonuses), a bare name is flat. One remains, blocked on design work rather than wiring: crafting_quality_pct waits on the equipment and crafting audit (non-consumable items gaining a quality, Smithing producing equipment). Written up in TODO.",
+    "_reason": "Skill payouts with no consumer yet. `_pct` is a percentage, `party_` means one member's skill pays the whole party (best member — see PartyBonuses), a bare name is flat. One remains, blocked on design work rather than wiring: crafting_quality_pct waits on the equipment and crafting audit (non-consumable items gaining a quality, Smithing producing equipment). Written up in TODO.",
     "values": [
       "crafting_quality_pct"
-    ]
-  },
-  "status effect": {
-    "_reason": "Behaviour strings on statuses.json entries that no code interprets. Several are one-off mechanics on a single status; `knockback` gains a reader when forced movement lands.",
-    "values": [
-      "can_move",
-      "can_walk_on_water",
-      "cannot_flee",
-      "cannot_fly",
-      "cannot_target_spells",
-      "cannot_teleport",
-      "damage_increases_each_turn",
-      "fire_damage_per_turn_internal",
-      "heal_50_percent_of_damage_dealt",
-      "illusory_copies",
-      "joins_party_permanently",
-      "knockback",
-      "lifesteal_on_attacks",
-      "linked_to_ally",
-      "random_attacks",
-      "random_spellcasting",
-      "relationship_bonus",
-      "return_with_20_percent_hp",
-      "stat_penalties"
     ]
   }
 }

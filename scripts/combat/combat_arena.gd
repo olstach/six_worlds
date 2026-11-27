@@ -4008,7 +4008,7 @@ func _ai_pick_target(unit: CombatUnit, enemies: Array[Node], prefer: String) -> 
 func _ai_is_compelled(unit: CombatUnit, enemies: Array[Node]) -> bool:
 	for fx in unit.status_effects:
 		var fx_def = CombatManager.get_status_definition(fx.get("status", ""))
-		if "must_attack_taunter" in fx_def.get("effects", []):
+		if StatusRules.def_has_flag(fx_def, "must_attack_taunter"):
 			var taunter = fx.get("source", null)
 			if taunter != null and is_instance_valid(taunter) and taunter.is_alive() \
 					and taunter.is_targetable() and taunter in enemies:
@@ -4506,7 +4506,7 @@ func _find_nearest_enemy(unit: CombatUnit, enemies: Array[Node]) -> CombatUnit:
 	# whoever applied the taunt, as long as the taunter is a valid target.
 	for fx in unit.status_effects:
 		var fx_def = CombatManager.get_status_definition(fx.get("status", ""))
-		if "must_attack_taunter" in fx_def.get("effects", []):
+		if StatusRules.def_has_flag(fx_def, "must_attack_taunter"):
 			var taunter = fx.get("source", null)
 			if taunter != null and is_instance_valid(taunter) and taunter.is_alive() \
 					and taunter.is_targetable() and taunter in enemies:

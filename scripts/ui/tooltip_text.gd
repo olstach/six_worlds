@@ -17,25 +17,33 @@ class_name TooltipText
 # STATUS EFFECTS
 # ============================================
 
-## Readable wording for the effect tokens still in statuses.json `effects`
-## lists. A status's NUMBERS are not tokens any more: they are `while_active`
-## modifies, worded by _modify_bullet() from the effect itself, so the
-## tooltip can only say what the game does. Tokens that are not listed fall
-## back to the token itself with underscores turned to spaces, so a new status
-## still says *something* true rather than nothing.
+## Readable wording for the tokens still in statuses.json `effects` lists
+## (damage and healing over time, what happens when a status runs out). A
+## status's NUMBERS are not tokens any more: they are `while_active` modifies,
+## worded by _modify_bullet() from the effect itself, so the tooltip can only
+## say what the game does. Tokens that are not listed fall back to the token
+## itself with underscores turned to spaces, so a new status still says
+## *something* true rather than nothing.
 const EFFECT_LABELS: Dictionary = {
 	"fire_damage_per_turn": "fire damage each turn",
 	"poison_damage_per_turn": "poison damage each turn",
 	"physical_damage_per_turn": "physical damage each turn",
 	"black_damage_per_turn": "black damage each turn",
 	"heal_per_turn": "HP healed each turn",
+	"death_on_expire": "Dies when it runs out",
+	"damage_on_expire": "Bursts when it runs out",
+	"bleed_on_expire": "Bleeds when it runs out",
+	"spawn_fungal_spawn_on_expire": "Spawns a creature when it runs out",
+}
+
+## Readable wording for a status's `flags` (the yes/no rules it switches on).
+## A flag not listed falls back to its name with underscores turned to spaces.
+const FLAG_LABELS: Dictionary = {
 	"skip_turn": "Skips next turn",
 	"skip_next_action": "Loses 1 action",
 	"cannot_move": "Cannot move",
-	"immobilized": "Cannot move",
 	"cannot_act": "Cannot act",
 	"cannot_cast": "Cannot cast spells",
-	"silenced": "Cannot cast spells",
 	"cannot_attack": "Cannot attack",
 	"cannot_be_targeted": "Cannot be targeted",
 	"cannot_die": "Cannot die",
@@ -47,13 +55,16 @@ const EFFECT_LABELS: Dictionary = {
 	"breaks_on_offensive_action": "Breaks on any offensive action",
 	"treats_caster_as_ally": "Treats the caster as an ally",
 	"will_not_attack_caster": "Will not attack the caster",
-	"death_on_expire": "Dies when it runs out",
-	"damage_on_expire": "Bursts when it runs out",
-	"bleed_on_expire": "Bleeds when it runs out",
-	"spawn_fungal_spawn_on_expire": "Spawns a creature when it runs out",
 	"focus_save_on_damage": "Focus save on each hit, or lose actions",
 	"immune_to_ground_effects": "Immune to ground effects",
 }
+
+## Flags that are rules for the game's own bookkeeping, not something a status
+## tells the player: they added no line to the old tooltips and add none now.
+const _FLAGS_NOT_SHOWN: Array[String] = [
+	"breaks_concentration", "breaks_on_damage_from_source", "grants_stealth",
+	"lifesteals_on_hit", "counts_as_demoralized",
+]
 
 ## The word the header shows for each polarity.
 const POLARITY_WORDS: Dictionary = {"positive": "buff", "negative": "debuff"}
@@ -158,7 +169,7 @@ static func _status_duration_line(entry: Dictionary, def: Dictionary) -> String:
 	return ""
 
 
-## One readable line per effect token. Damage and healing over time are given
+## One readable line per effect token and per flag. Damage and healing over time are given
 ## their numbers — the per-instance `value` wins over the table's
 ## damage_per_turn, exactly as CombatManager._process_status_effects() does.
 static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[String]:
@@ -183,6 +194,11 @@ static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[
 				label = "%d %s" % [amount, label]
 		if not label in bullets:
 			bullets.append(label)
+	# The yes/no rules it switches on, from `flags`.
+	for flag in def.get("flags", []):
+		var line: String = _flag_label(str(flag))
+		if line != "" and not line in bullets:
+			bullets.append(line)
 	# What it holds while it is on: stats, attributes and resistances, one
 	# line per `while_active` modify, worded from the effect itself.
 	for effect in def.get("while_active", []):
@@ -191,6 +207,16 @@ static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[
 			if text != "" and not text in bullets:
 				bullets.append(text)
 	return bullets
+
+
+## One flag as a line, or "" for a flag that is not shown. `immune:<word>`
+## reads "Immune to <word>".
+static func _flag_label(flag: String) -> String:
+	if flag in _FLAGS_NOT_SHOWN:
+		return ""
+	if flag.begins_with(EffectVocab.IMMUNE_FLAG_PREFIX):
+		return "Immune to " + flag.trim_prefix(EffectVocab.IMMUNE_FLAG_PREFIX)
+	return str(FLAG_LABELS.get(flag, flag.replace("_", " ").capitalize()))
 
 
 ## Readable names for the `stat.` values a status may hold.

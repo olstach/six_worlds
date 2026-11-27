@@ -2542,6 +2542,35 @@ write it in `school_notes`.
       instead make burning spread.
 - [ ] `slashing_blade` — description is still "Blade damage (+50% dmg/cost)".
 
+**Status mechanics never built** (found in the stage 2b status migration,
+`docs/plans/STATUS_MIGRATION_2026-11.md`). Each of these words sat in a
+status's `effects` list and nothing in the game ever read it, so the status
+promised something it did not do. They are removed from `statuses.json`, and
+each status carries `notes: "Unbuilt: <words>"`. Build the mechanic, or cut the
+promise from the status's description.
+
+| Status | Unbuilt word | What it promised |
+|---|---|---|
+| Forgetful | `can_move` | can still move while it cannot attack or cast |
+| Blinded | `cannot_target_spells` | cannot aim spells (it does stop ranged attacks) |
+| Boiling_Blood | `fire_damage_per_turn_internal` | fire damage from within (the tick is physical today: the word does not end in `_damage_per_turn`) |
+| Dominated | `joins_party_permanently` | the dominated creature stays after combat |
+| Festering | `damage_increases_each_turn` | the damage climbs each turn (`damage_increase_per_turn` is also unread) |
+| Diseased | `stat_penalties` | stat penalties |
+| Mirror_Images | `illusory_copies` | the copies as units (only the absorb works) |
+| Wrathfully_Bound | `cannot_teleport`, `cannot_flee` | no teleporting, no fleeing |
+| Chaotic | `random_attacks`, `random_spellcasting` | random attacks, random spells (random movement works) |
+| Friendly | `relationship_bonus` | better relations with NPCs |
+| Lifelink | `heal_50_percent_of_damage_dealt` | works, by status name: flag `lifesteals_on_hit` |
+| Blood_Hunger | `lifesteal_on_attacks` | works, by status name: flag `lifesteals_on_hit` |
+| Karmic_Bond | `linked_to_ally` | the link to a chosen ally (the 75% healing share works) |
+| Eternal_Vow | `return_with_20_percent_hp` | works for `return_on_death_next_turn`, which returns at once, not next turn |
+| Grounded | `cannot_fly` | no flight (`loses_flight` works) |
+| Pushed | `knockback` | the push (the Repositioning ops do forced movement) |
+| Water_Walking | `can_walk_on_water` | walking on water (`immune_to_water_terrain` works) |
+| Precision | `range_bonus` | +range: there is no `stat.range` and no getter reads one |
+| Range_Debuff | `range_penalty` | -range: same |
+
 # Part II — Designs waiting to be built
 
 Kept in full: these are settled designs with no implementation yet.

@@ -13,8 +13,8 @@ In the new shape a status is a container of effects, like a spell:
         {"op": "modify", "value": "stat.accuracy", "mode": "fortify", "amount": 10},
         {"op": "modify", "value": "stat.armor", "mode": "fortify", "amount": 10}]}
 
-This file is extended by later tasks (5: flags, 6: behaviour). Task 4 — this
-part — moves the METADATA and every NUMBER:
+This file is extended by later tasks (6: behaviour). Task 4 moved the METADATA
+and every NUMBER:
 
   type            -> polarity    (buff -> positive, debuff -> negative)
   category        -> categories  (CATEGORY_TABLE below, plus poison / disease /
@@ -28,6 +28,18 @@ part — moves the METADATA and every NUMBER:
                                   numbers of the deleted GDScript table)
   named attribute words with an amount (spec section 7) -> modify attribute.<a>
   grants_resistance / grants_vulnerability -> modify resist.<k> fortify / drain
+
+Task 5 moves the YES/NO words (a reader that only asks "has it?") into `flags`:
+
+  yes/no word        -> flags       (FLAG_FOR_WORD; the flag keeps the word, two
+                                     words are merged, four become immune:<...>)
+  hard-coded names   -> flags       (NAME_FLAGS: the status lists the code kept
+                                     as `status in [...]`, now data)
+  words nothing read -> removed     (UNBUILT_WORDS; the status gets a `notes`
+                                     line "Unbuilt: ..." and TODO section 16
+                                     lists them)
+  everything else    -> stays in `effects` for Task 6 (a damage-over-time type,
+                        a tick, an expiry hook, a save, the enchant table)
 
 Re-runnable and idempotent: each step only acts on the old keys and words it
 finds, so running it on migrated data changes nothing.
@@ -198,6 +210,82 @@ CONSTITUTION_DEFAULT_POINTS = 2
 # presence is kept in tools/fixtures/status_words.json.
 UNREAD_STAT_WORDS = {"range_bonus", "range_penalty"}
 
+# ── Task 5 tables ────────────────────────────────────────────────────────────
+
+# Yes/no words. The reader of each only asks "does the unit carry a status with
+# this word?", so the word becomes a flag of the same name. Exceptions, each
+# listed in docs/plans/STATUS_MIGRATION_2026-11.md:
+#   immobilized -> cannot_move   (same tooltip line, same movement block)
+#   silenced    -> cannot_cast   (same tooltip line, same casting block)
+#   immune_to_* / debuff_immunity -> immune:<...> flags (StatusRules.immune_to)
+FLAG_FOR_WORD = {
+    **{w: [w] for w in """
+        attack_breaks_invisibility attack_damage_buff_when_ally_dies
+        attack_reflect_chance attacks_closest_creature attacks_have_miss_chance
+        breaks_on_offensive_action can_move_through_enemies cannot_act
+        cannot_attack cannot_be_targeted cannot_cast cannot_deal_physical
+        cannot_die cannot_make_weapon_attacks cannot_move cannot_target_enemies
+        cannot_use_ranged charm_chance_on_enemy_melee_approach
+        controlled_by_caster copies_absorb_attacks crit_vulnerability
+        damage_on_move_attempt damage_taken_increase death_resistance
+        disengaged_from_combat flee_from_source focus_save_on_damage
+        forced_movement_toward_target grants_extra_action grants_flight
+        hp_cannot_drop_below_1 hp_shield ignores_allegiance
+        immune_to_ground_effects immune_to_melee_unless_flyer immune_to_ranged
+        immune_to_terrain_hazards immune_to_water_terrain
+        increase_burning_damage_dealt loses_flight must_attack_taunter
+        next_attack_misses next_ranged_guaranteed_hit prevents_teleportation
+        prone_chance_on_movement random_movement random_target
+        ranged_damage_reduction remove_all_debuffs return_on_death_next_turn
+        riposte_next_sword_attack rooted share_healing_75_percent
+        skip_next_action skip_turn spell_damage_reduction spell_reflect_chance
+        stealth_bonus stun_chance_on_hit treats_caster_as_ally will_not_attack
+        will_not_attack_caster""".split()},
+    "immobilized": ["cannot_move"],
+    "silenced": ["cannot_cast"],
+    # The four immunity words were `status in ["Charmed", "Dominated"]`-style
+    # name lists in CombatManager._apply_status_effect.
+    "immune_to_charm": ["immune:Charmed", "immune:Dominated"],
+    "immune_to_fear": ["immune:Feared"],
+    "immune_to_confusion": ["immune:Confused", "immune:Chaotic"],
+    "debuff_immunity": ["immune:negative"],
+}
+
+# Name lists CombatManager kept in code (`status in [...]`, `has_status("X")
+# or has_status("Y")`), now a flag on each named status.
+NAME_FLAGS = {
+    # The 15 hard-control names of _apply_status_effect (Stun, Fear and Charm
+    # are in that list but are not statuses in statuses.json).
+    **{n: ["breaks_concentration"] for n in """
+        Stunned Confused Berserk Frozen Petrified Held Paralyzed Immobilized
+        Dominated Chaotic""".split()},
+    "Feared": ["breaks_concentration", "counts_as_demoralized"],
+    # Also: damage from whoever charmed it breaks the charm (attack_unit).
+    "Charmed": ["breaks_concentration", "breaks_on_damage_from_source"],
+    # Invisible: gives stealth when it lands and when it ends, and stays
+    # targetable-by-detection (cannot_be_targeted does not apply to it).
+    "Invisible": ["grants_stealth"],
+    "Lifelink": ["lifesteals_on_hit"],
+    "Blood_Hunger": ["lifesteals_on_hit"],
+    # `has_status("Demoralized") or "Feared" or "Gloomy"` in the skill
+    # that only works on demoralised enemies.
+    "Demoralized": ["counts_as_demoralized"],
+    "Gloomy": ["counts_as_demoralized"],
+}
+
+# Words nothing in the game ever read. They are removed; the status keeps a
+# `notes` line, and TODO section 16 lists them as mechanics never built.
+# range_bonus / range_penalty were already dropped by Task 4 (they were in the
+# old stat table but no getter asked for "range"), so only the fixture still
+# has them.
+UNBUILT_WORDS = """
+    can_move cannot_target_spells fire_damage_per_turn_internal
+    joins_party_permanently damage_increases_each_turn stat_penalties
+    illusory_copies cannot_teleport cannot_flee random_attacks
+    random_spellcasting relationship_bonus heal_50_percent_of_damage_dealt
+    linked_to_ally return_with_20_percent_hp lifesteal_on_attacks cannot_fly
+    knockback can_walk_on_water range_bonus range_penalty""".split()
+
 STAT_ORDER = ["initiative", "movement", "accuracy", "dodge",
               "damage", "armor", "crit_chance", "spellpower"]
 
@@ -208,7 +296,7 @@ REMOVED_KEYS = ["type", "category", "duration_type", "default_duration",
 
 # The new keys, written right after name/icon in this order.
 NEW_KEY_ORDER = ["name", "icon", "polarity", "categories", "scope",
-                 "duration", "stacking", "while_active"]
+                 "duration", "stacking", "flags", "while_active"]
 
 
 # ── Reading the game's own lists ─────────────────────────────────────────────
@@ -321,7 +409,29 @@ def _resists(s):
     return out
 
 
-def migrate_one(s, world):
+def _flags_and_unbuilt(s, effects, old_words):
+    """(flags, unbuilt words, words consumed) for this status's remaining
+    words. `old_words` is the status's pre-migration word list from the
+    fixture, which still names words an earlier task already dropped."""
+    flags = list(s.get("flags", []))
+    consumed = set()
+    for word in effects:
+        for flag in FLAG_FOR_WORD.get(word, []):
+            if flag not in flags:
+                flags.append(flag)
+        if word in FLAG_FOR_WORD or word in UNBUILT_WORDS:
+            consumed.add(word)
+    for flag in NAME_FLAGS.get(s.get("name"), []):
+        if flag not in flags:
+            flags.append(flag)
+    unbuilt = []
+    for word in list(old_words) + list(effects):
+        if word in UNBUILT_WORDS and word not in unbuilt:
+            unbuilt.append(word)
+    return flags, unbuilt, consumed
+
+
+def migrate_one(s, world, old_words=()):
     """Return the migrated copy of status `s` (a dict); `s` is not changed."""
     new = {}
     if "type" in s:
@@ -345,6 +455,16 @@ def migrate_one(s, world):
     held += _resists(s)
     if held:
         new["while_active"] = list(s.get("while_active", [])) + held
+
+    flags, unbuilt, flagged = _flags_and_unbuilt(
+        s, [w for w in effects if w not in used], old_words)
+    used = used | flagged
+    if flags:
+        new["flags"] = flags
+    if unbuilt and not str(s.get("notes", "")).startswith("Unbuilt:"):
+        # Keep a note the owner already wrote; add ours after it.
+        note = "Unbuilt: " + ", ".join(unbuilt)
+        new["notes"] = (str(s["notes"]) + " " + note) if s.get("notes") else note
 
     out = {}
     merged = dict(s)
@@ -379,7 +499,13 @@ def _dump(doc, indent):
 def migrate(doc):
     world = world_statuses()
     doc = dict(doc)
-    doc["statuses"] = [migrate_one(s, world) for s in doc["statuses"]]
+    old = {}
+    if os.path.exists(WORDS_FIXTURE):
+        with open(WORDS_FIXTURE, encoding="utf-8") as fh:
+            old = json.load(fh).get("statuses", {})
+    doc["statuses"] = [
+        migrate_one(s, world, old.get(s.get("name"), {}).get("effects", []))
+        for s in doc["statuses"]]
     return doc
 
 

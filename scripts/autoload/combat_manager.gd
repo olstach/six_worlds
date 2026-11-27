@@ -279,8 +279,8 @@ func _load_spell_database() -> void:
 
 
 ## Load status effect definitions from statuses.json and index by name.
-## Also derives blocks_actions / blocks_movement flags from the effects array
-## so _process_status_effects() and is_unit_incapacitated() work correctly.
+## What a status blocks (acting, moving, casting, attacking) is read from its
+## `flags` where it is asked: see is_unit_incapacitated(), can_unit_move() ...
 func _load_status_definitions() -> void:
 	var file_path = "res://resources/data/statuses.json"
 	if not FileAccess.file_exists(file_path):
@@ -307,36 +307,6 @@ func _load_status_definitions() -> void:
 		var sname = status.get("name", "")
 		if sname == "":
 			continue
-
-		var effects = status.get("effects", [])
-
-		# Derive blocks_actions from effects array
-		if not status.has("blocks_actions"):
-			for fx in effects:
-				if fx in ["skip_turn", "cannot_act"]:
-					status["blocks_actions"] = true
-					break
-
-		# Derive blocks_movement from effects array
-		if not status.has("blocks_movement"):
-			for fx in effects:
-				if fx in ["cannot_move", "immobilized", "rooted"]:
-					status["blocks_movement"] = true
-					break
-
-		# Derive blocks_casting from effects array
-		if not status.has("blocks_casting"):
-			for fx in effects:
-				if fx in ["cannot_cast", "silenced"]:
-					status["blocks_casting"] = true
-					break
-
-		# Derive blocks_attacks from effects array
-		if not status.has("blocks_attacks"):
-			for fx in effects:
-				if fx in ["cannot_attack", "will_not_attack"]:
-					status["blocks_attacks"] = true
-					break
 
 		_status_effects[sname] = status
 
@@ -1411,20 +1381,18 @@ func _start_current_turn() -> void:
 	unit.actions_remaining = unit.get_max_actions()
 
 	# Extra_Action status: grants 1 bonus action this turn, then the status is consumed
-	if _unit_has_effect(unit, "grants_extra_action"):
+	if StatusRules.has_flag(unit, "grants_extra_action"):
 		unit.actions_remaining += 1
 		_remove_status_by_name(unit, "Extra_Action")
 		combat_log.emit("%s surges with extra energy — gains a bonus action!" % unit.unit_name)
 
 	# skip_next_action (Prone, Knocked_Down, …): costs 1 action to stand up at the
 	# start of this turn, then every status carrying the effect is consumed.
-	if _unit_has_effect(unit, "skip_next_action"):
+	if StatusRules.has_flag(unit, "skip_next_action"):
 		unit.actions_remaining = maxi(0, unit.actions_remaining - 1)
 		var stand_up_statuses: Array = []
-		for eff in unit.status_effects:
-			var sdef = _status_effects.get(eff.get("status", ""), {})
-			if "skip_next_action" in sdef.get("effects", []):
-				stand_up_statuses.append(eff.get("status", ""))
+		for eff in StatusRules.entries_with_flag(unit, "skip_next_action"):
+			stand_up_statuses.append(eff.get("status", ""))
 		for sname in stand_up_statuses:
 			_remove_status_by_name(unit, sname)
 		combat_log.emit("%s struggles to their feet — loses 1 action." % unit.unit_name)
@@ -1437,20 +1405,15 @@ func _start_current_turn() -> void:
 
 	# Dominated (controlled_by_caster): simplified — the puppet stands idle.
 	# Full enemy-control AI is a dedicated feature; for now the unit loses its turn.
-	if _unit_has_effect(unit, "controlled_by_caster"):
+	if StatusRules.has_flag(unit, "controlled_by_caster"):
 		combat_log.emit("%s stands slack, will bound to another." % unit.unit_name)
 		_advance_turn()
 		return
 
 	# Lured (forced_movement_toward_target): compelled to step toward the lure source
 	# before acting. Costs the unit 1 action.
-	if _unit_has_effect(unit, "forced_movement_toward_target"):
-		var lure_source = null
-		for eff_l in unit.status_effects:
-			var sdef_l = _status_effects.get(eff_l.get("status", ""), {})
-			if "forced_movement_toward_target" in sdef_l.get("effects", []):
-				lure_source = eff_l.get("source", null)
-				break
+	if StatusRules.has_flag(unit, "forced_movement_toward_target"):
+		var lure_source = StatusRules.entry_with_flag(unit, "forced_movement_toward_target").get("source", null)
 		if lure_source != null and is_instance_valid(lure_source) and lure_source.is_alive() and combat_grid:
 			var lure_from: Vector2i = unit.grid_position
 			var step: Vector2i = lure_from + _dir_toward(lure_from, lure_source.grid_position)
@@ -1660,7 +1623,7 @@ func get_movement_range(unit: Node) -> Array[Vector2i]:
 
 	var movement = unit.get_movement()
 	var movement_mode = unit.get_movement_mode() if unit.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
-	var pass_through = _unit_has_effect(unit, "can_move_through_enemies")
+	var pass_through = StatusRules.has_flag(unit, "can_move_through_enemies")
 	return combat_grid.get_reachable_tiles(unit.grid_position, movement, movement_mode, pass_through)
 
 
@@ -1673,9 +1636,9 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 		return false
 
 	# Shadow_Pinned: damage_on_move_attempt — takes damage if they try to move while pinned
-	# (movement is already blocked via blocks_movement; this fires for AI attempts or edge cases)
+	# (movement is already blocked by the cannot_move / rooted flags; this fires for AI attempts or edge cases)
 	if not can_unit_move(unit):
-		if _unit_has_effect(unit, "damage_on_move_attempt"):
+		if StatusRules.has_flag(unit, "damage_on_move_attempt"):
 			apply_damage(unit, 8, "physical")
 			combat_log.emit("%s strains against the shadow pin and takes damage!" % unit.unit_name)
 		return false
@@ -1697,7 +1660,7 @@ func move_unit(unit: Node, target: Vector2i) -> bool:
 	unit_moved.emit(unit, from, target)
 
 	# Slippery_Terrain: prone_chance_on_movement — 35% chance to fall prone after any move
-	if _unit_has_effect(unit, "prone_chance_on_movement") and randf() < 0.35:
+	if StatusRules.has_flag(unit, "prone_chance_on_movement") and randf() < 0.35:
 		_apply_status_effect(unit, "Knocked_Down", 1, 0, null)
 		combat_log.emit("%s slips on the treacherous ground!" % unit.unit_name)
 
@@ -1950,16 +1913,16 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		return {"success": false, "reason": "Cannot attack in current state"}
 
 	# Disarmed units cannot make weapon attacks (they can still cast spells)
-	if _unit_has_effect(attacker, "cannot_make_weapon_attacks"):
+	if StatusRules.has_flag(attacker, "cannot_make_weapon_attacks"):
 		combat_log.emit("%s is disarmed and cannot make weapon attacks!" % attacker.unit_name)
 		return {"success": false, "reason": "Disarmed — cannot make weapon attacks"}
 
 	# Sanctuary: attacker under Sanctuary cannot target enemies
-	if _unit_has_effect(attacker, "cannot_target_enemies"):
+	if StatusRules.has_flag(attacker, "cannot_target_enemies"):
 		return {"success": false, "reason": "Sanctuary — cannot target enemies"}
 
 	# Sanctuary on defender: cannot be targeted by attacks
-	if _unit_has_effect(defender, "cannot_be_targeted") and not defender.has_status("Invisible"):
+	if StatusRules.has_flag(defender, "cannot_be_targeted") and not StatusRules.has_flag(defender, "grants_stealth"):
 		return {"success": false, "reason": "Target is protected — cannot be attacked"}
 
 	# Somebody may be standing in front of this one. Stalwart Guardian is the
@@ -1979,12 +1942,10 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 	# Blinded units cannot use ranged attacks
 	var is_ranged_check = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
 	if is_ranged_check:
-		for fx in attacker.status_effects:
-			var fx_def = _status_effects.get(fx.get("status", ""), {})
-			if "cannot_use_ranged" in fx_def.get("effects", []):
-				return {"success": false, "reason": "Cannot use ranged attacks while blinded"}
+		if StatusRules.has_flag(attacker, "cannot_use_ranged"):
+			return {"success": false, "reason": "Cannot use ranged attacks while blinded"}
 		# Storm_Lord's immune_to_ranged: ranged attacks against this defender auto-fail
-		if _unit_has_effect(defender, "immune_to_ranged"):
+		if StatusRules.has_flag(defender, "immune_to_ranged"):
 			combat_log.emit("%s's storm form deflects the ranged attack!" % defender.unit_name)
 			return {"success": false, "reason": "Target immune to ranged attacks"}
 
@@ -2006,7 +1967,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			return {"success": false, "reason": "No line of sight"}
 
 	# Flying defenders are out of reach of grounded melee attackers
-	if not is_ranged and _unit_has_effect(defender, "immune_to_melee_unless_flyer"):
+	if not is_ranged and StatusRules.has_flag(defender, "immune_to_melee_unless_flyer"):
 		var attacker_mode = attacker.get_movement_mode() if attacker.has_method("get_movement_mode") else CombatGrid.MovementMode.NORMAL
 		if attacker_mode != CombatGrid.MovementMode.FLYING:
 			combat_log.emit("%s is airborne — melee attacks cannot reach!" % defender.unit_name)
@@ -2017,7 +1978,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		attacker.facing = _dir_toward(attacker.grid_position, defender.grid_position)
 
 	# Sanctuary breaks when attacker takes any offensive action
-	if _unit_has_effect(attacker, "breaks_on_offensive_action"):
+	if StatusRules.has_flag(attacker, "breaks_on_offensive_action"):
 		_remove_status_by_name(attacker, "Sanctuary")
 		combat_log.emit("%s's Sanctuary shatters as they take aggressive action!" % attacker.unit_name)
 
@@ -2035,27 +1996,27 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		attacker.will_miss_next_attack = false
 		combat_log.emit("%s swings wide — it was supposed to miss!" % attacker.unit_name)
 	# Force_Miss status (next_attack_misses effect) also forces a miss and then expires
-	if not _stealth_attack and hit and _unit_has_effect(attacker, "next_attack_misses"):
+	if not _stealth_attack and hit and StatusRules.has_flag(attacker, "next_attack_misses"):
 		hit = false
 		_remove_status_by_name(attacker, "Force_Miss")
 		combat_log.emit("%s's attack goes completely wide!" % attacker.unit_name)
 
 	# Blessed_Shot: next_ranged_guaranteed_hit forces a hit for ranged weapon attacks, then expires
 	var _is_ranged_bshot = attacker.is_ranged_weapon() if attacker.has_method("is_ranged_weapon") else false
-	if not hit and _is_ranged_bshot and _unit_has_effect(attacker, "next_ranged_guaranteed_hit"):
+	if not hit and _is_ranged_bshot and StatusRules.has_flag(attacker, "next_ranged_guaranteed_hit"):
 		hit = true
 		_remove_status_by_name(attacker, "Blessed_Shot")
 		combat_log.emit("%s's shot is divinely guided — guaranteed hit!" % attacker.unit_name)
 
 	# Mirror Images: an illusory copy absorbs the strike instead of the real target
-	if hit and _unit_has_effect(defender, "copies_absorb_attacks"):
+	if hit and StatusRules.has_flag(defender, "copies_absorb_attacks"):
 		hit = false
 		_consume_mirror_image(defender)
 		combat_log.emit("%s's blow passes through an illusory copy of %s!" % [attacker.unit_name, defender.unit_name])
 
 	# Reflect (Turquoise Mirror mantra): 60% chance the strike rebounds on the attacker.
 	# The rebound uses the damage the defender would have taken.
-	if hit and attacker != defender and _unit_has_effect(defender, "attack_reflect_chance") and randf() < 0.60:
+	if hit and attacker != defender and StatusRules.has_flag(defender, "attack_reflect_chance") and randf() < 0.60:
 		hit = false
 		var refl_type: String = attacker.get_weapon_damage_type() if attacker.has_method("get_weapon_damage_type") else "crushing"
 		var refl_result = calculate_physical_damage(attacker, defender, refl_type)
@@ -2087,7 +2048,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		result.merge(damage_result, true)
 
 		# Air_Shield: ranged attacks deal 25% less damage to the defender
-		if is_ranged and _unit_has_effect(defender, "ranged_damage_reduction"):
+		if is_ranged and StatusRules.has_flag(defender, "ranged_damage_reduction"):
 			result["damage"] = int(result["damage"] * 0.75)
 		# `ranged` resistance — Silk armour's +10 — is the same axis as Air_Shield:
 		# a resistance to how the hit arrived, not what it is made of. So it is
@@ -2099,7 +2060,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 				result["damage"] = maxi(1, int(result["damage"] * (1.0 - turned / 100.0)))
 
 		# Riposte_Ready (riposte perk): next sword attack +25% damage, −2 stamina, consumed
-		if _unit_has_effect(attacker, "riposte_next_sword_attack"):
+		if StatusRules.has_flag(attacker, "riposte_next_sword_attack"):
 			var rip_weapon: Dictionary = attacker.get_equipped_weapon() if attacker.has_method("get_equipped_weapon") else {}
 			if rip_weapon.get("type", "") == "sword":
 				result["damage"] = int(result["damage"] * 1.25)
@@ -2115,7 +2076,8 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# Break stealth / invisibility after attacking
 		if _stealth_attack:
 			var _att_char_sd = attacker.character_data if "character_data" in attacker else {}
-			var _is_invisible = attacker.has_status("Invisible") if attacker.has_method("has_status") else false
+			# A status that breaks on attacking but leaves stealth in place (Invisible).
+			var _is_invisible: bool = StatusRules.has_flag(attacker, "attack_breaks_invisibility")
 			if _is_invisible:
 				# Invisible: attacking consumes the Invisible status but stealth persists
 				_remove_status_by_name(attacker, "Invisible")
@@ -2172,22 +2134,17 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 		# --- Damage from caster breaks Charmed ---
 		# If the attacker was the one who charmed the defender, break charm
 		if "status_effects" in defender:
-			var charm_to_remove: Array[int] = []
-			for ci in range(defender.status_effects.size()):
-				var se = defender.status_effects[ci]
-				if se.get("status", "") == "Charmed":
-					var src = se.get("source", null)
-					if src == attacker:
-						charm_to_remove.append(ci)
-			charm_to_remove.reverse()
 			var charms: Array = []
-			for cidx in charm_to_remove:
-				charms.append(defender.status_effects[cidx])
+			for se in StatusRules.entries_with_flag(defender, "breaks_on_damage_from_source"):
+				if se.get("source", null) == attacker:
+					charms.append(se)
+			charms.reverse()
 			for charm in charms:
+				var charm_name: String = str(charm.get("status", ""))
 				_end_status(defender, charm, "removed")
 				if defender.has_method("show_status_expired"):
-					defender.show_status_expired("Charmed")
-				status_effect_expired.emit(defender, "Charmed")
+					defender.show_status_expired(charm_name)
+				status_effect_expired.emit(defender, charm_name)
 
 		# --- Talisman: Thorns — reflect 3 damage to melee attackers ---
 		var is_melee_attack = _grid_distance(attacker.grid_position, defender.grid_position) <= 1
@@ -2196,7 +2153,7 @@ func attack_unit(attacker: Node, defender: Node, reaction: bool = false) -> Dict
 			result["thorns_damage"] = 3
 
 		# --- Attacker lifesteal statuses ---
-		if attacker.has_status("Lifelink") or attacker.has_status("Blood_Hunger"):
+		if StatusRules.has_flag(attacker, "lifesteals_on_hit"):
 			var steal_pct = 0.5
 			if _unit_has_perk(attacker, "blood_pact"):
 				steal_pct *= 1.25  # Blood Pact: lifesteal heals 25% more
@@ -2533,7 +2490,7 @@ func _calculate_hit_chance(attacker: Node, defender: Node) -> float:
 				hit_chance -= 10.0
 
 	# Blurred: defender's blurred state causes an extra 20% miss chance on all attacks
-	if _unit_has_effect(defender, "attacks_have_miss_chance"):
+	if StatusRules.has_flag(defender, "attacks_have_miss_chance"):
 		hit_chance -= 20.0
 
 	# Clamp to 10-95%
@@ -2564,7 +2521,7 @@ func _crit_turned_by_living_fortress(defender: Node) -> bool:
 ## Called through calculate_physical_damage() above, which aims the perks.
 func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String = "crushing") -> Dictionary:
 	# Thin_Air: unit cannot deal physical damage at all
-	if _unit_has_effect(attacker, "cannot_deal_physical"):
+	if StatusRules.has_flag(attacker, "cannot_deal_physical"):
 		return {"damage": 0, "crit": false, "armor_pen": 0}
 
 	# Base damage from weapon + attribute + skill
@@ -2636,7 +2593,7 @@ func _calculate_physical_damage(attacker: Node, defender: Node, dmg_type: String
 				defender.show_combat_text("Backstab! +%d%% crit" % bs_crit, Color(0.75, 0.1, 0.9))
 
 	# Marked_for_Death: defender has crit_vulnerability (+25% crit chance against them)
-	if _unit_has_effect(defender, "crit_vulnerability"):
+	if StatusRules.has_flag(defender, "crit_vulnerability"):
 		crit_chance += 25.0
 
 	var crit = randf() * 100.0 <= crit_chance
@@ -2882,7 +2839,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 	# Marked_for_Death: damage_taken_increase makes the unit take 50% more.
 	# Attacker-side multipliers (Feed the Fire, Permafrost, brands) stay where
 	# the damage is computed — they are facts about the attack, not the target.
-	if damage > 0 and _unit_has_effect(unit, "damage_taken_increase"):
+	if damage > 0 and StatusRules.has_flag(unit, "damage_taken_increase"):
 		damage = int(damage * 1.5)
 
 	# ── 3. Armour, and equanimity ───────────────────────────────────────────
@@ -2928,7 +2885,7 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 	if damage > 0:
 		for effect in unit.status_effects:
 			var sdef_shield = _status_effects.get(effect.get("status", ""), {})
-			if "hp_shield" in sdef_shield.get("effects", []):
+			if StatusRules.def_has_flag(sdef_shield, "hp_shield"):
 				var pool: int = int(effect.get("value", 0))
 				if pool <= 0:
 					pool = 25
@@ -2948,26 +2905,26 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 
 	# Ancestors_Blessing: death_resistance — survive one otherwise-fatal hit at 1 HP,
 	# consuming the blessing.
-	if damage >= unit.current_hp and unit.current_hp > 0 and _unit_has_effect(unit, "death_resistance"):
+	if damage >= unit.current_hp and unit.current_hp > 0 and StatusRules.has_flag(unit, "death_resistance"):
 		damage = unit.current_hp - 1
-		for effect in unit.status_effects.duplicate():
-			var sdef_dr = _status_effects.get(effect.get("status", ""), {})
-			if "death_resistance" in sdef_dr.get("effects", []):
-				_remove_status_by_name(unit, effect.get("status", ""))
-				break
+		var dr_entry: Dictionary = StatusRules.entry_with_flag(unit, "death_resistance")
+		if not dr_entry.is_empty():
+			_remove_status_by_name(unit, dr_entry.get("status", ""))
 		combat_log.emit("The ancestors hold %s back from the brink!" % unit.unit_name)
 		_mark_death_touched(unit)
 
 	# Swarmed: focus_save_on_damage — each hit forces a Focus save (DC 12) or the
 	# swarm's distraction costs the unit an action on its next turn.
-	if damage > 0 and _unit_has_effect(unit, "focus_save_on_damage"):
+	if damage > 0 and StatusRules.has_flag(unit, "focus_save_on_damage"):
 		var focus_val: int = unit_attribute(unit, "focus")
 		if randi() % 20 + 1 + int(focus_val / 2.0) < 12 and not unit.get_meta("swarm_distracted", false):
 			unit.set_meta("swarm_distracted", true)
 			combat_log.emit("%s loses focus amid the swarm!" % unit.unit_name)
 
-	# Death_Immunity: hp_cannot_drop_below_1 — cap damage so unit stays at 1 HP minimum
-	if damage > 0 and _unit_has_effect(unit, "hp_cannot_drop_below_1"):
+	# Death_Immunity: hp_cannot_drop_below_1 — cap damage so unit stays at 1 HP minimum.
+	# `cannot_die` says the same thing in the words its tooltip uses, so it
+	# is read here too (Death_Immunity carries both).
+	if damage > 0 and StatusRules.has_any_flag(unit, ["hp_cannot_drop_below_1", "cannot_die"]):
 		damage = mini(damage, unit.current_hp - 1)
 		damage = maxi(0, damage)
 
@@ -3072,7 +3029,7 @@ func _start_bleed_out(unit: Node) -> void:
 func _consume_mirror_image(unit: Node) -> void:
 	for effect in unit.status_effects:
 		var def = _status_effects.get(effect.get("status", ""), {})
-		if "copies_absorb_attacks" in def.get("effects", []):
+		if StatusRules.def_has_flag(def, "copies_absorb_attacks"):
 			var copies: int = int(effect.get("value", 0))
 			if copies <= 0:
 				copies = 3
@@ -3088,15 +3045,13 @@ func _consume_mirror_image(unit: Node) -> void:
 func _kill_unit(unit: Node) -> void:
 	# Eternal_Vow: instead of dying, the unit is pulled back by their vow at 20% HP.
 	# The vow is consumed. (Simplification of "returns next turn" — the return is immediate.)
-	if _unit_has_effect(unit, "return_on_death_next_turn"):
+	if StatusRules.has_flag(unit, "return_on_death_next_turn"):
 		unit.is_bleeding_out = false
 		unit.bleed_out_turns = 0
 		unit.current_hp = maxi(1, int(unit.max_hp * 0.20))
-		for eff in unit.status_effects.duplicate():
-			var sdef_ev = _status_effects.get(eff.get("status", ""), {})
-			if "return_on_death_next_turn" in sdef_ev.get("effects", []):
-				_remove_status_by_name(unit, eff.get("status", ""))
-				break
+		var vow_entry: Dictionary = StatusRules.entry_with_flag(unit, "return_on_death_next_turn")
+		if not vow_entry.is_empty():
+			_remove_status_by_name(unit, vow_entry.get("status", ""))
 		combat_log.emit("%s's eternal vow refuses death — they rise again!" % unit.unit_name)
 		unit_healed.emit(unit, unit.current_hp)
 		_mark_death_touched(unit)
@@ -3244,7 +3199,7 @@ func _kill_unit(unit: Node) -> void:
 		if av_unit == unit or av_unit.is_dead:
 			continue
 		if "team" in av_unit and av_unit.team == dead_team:
-			if _unit_has_effect(av_unit, "attack_damage_buff_when_ally_dies"):
+			if StatusRules.has_flag(av_unit, "attack_damage_buff_when_ally_dies"):
 				_apply_status_effect(av_unit, "Rage", 2, 0, null)
 				combat_log.emit("%s is filled with ancestral rage at the loss of %s!" % [av_unit.unit_name, unit.unit_name])
 
@@ -3801,7 +3756,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 		return {"success": false, "reason": "Cannot cast while silenced"}
 
 	# Sanctuary: block offensive spells; break Sanctuary if they try to cast offensively
-	if _unit_has_effect(caster, "cannot_target_enemies"):
+	if StatusRules.has_flag(caster, "cannot_target_enemies"):
 		var spell_check = get_spell(spell_id)
 		var spell_targeting = spell_check.get("targeting", "single")
 		# Self/ally spells are still allowed under Sanctuary
@@ -3809,7 +3764,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 			return {"success": false, "reason": "Sanctuary — cannot cast offensive spells"}
 
 	# Sanctuary breaks when casting any offensive spell
-	if _unit_has_effect(caster, "breaks_on_offensive_action"):
+	if StatusRules.has_flag(caster, "breaks_on_offensive_action"):
 		var spell_break_check = get_spell(spell_id)
 		if spell_break_check.get("targeting", "single") not in ["self", "ally", "allies"]:
 			_remove_status_by_name(caster, "Sanctuary")
@@ -3817,7 +3772,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 
 	# Stealth: spell casting breaks stealth unless invisible or Shady Dealings
 	if "is_stealthed" in caster and caster.is_stealthed:
-		var _is_inv = caster.has_status("Invisible") if caster.has_method("has_status") else false
+		var _is_inv: bool = StatusRules.has_flag(caster, "attack_breaks_invisibility")
 		if _is_inv:
 			# Invisible: casting consumes the Invisible status, stealth persists
 			_remove_status_by_name(caster, "Invisible")
@@ -4498,7 +4453,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 	# Magic_Mirror: offensive spells have a 50% chance to reflect back at the caster.
 	# target == caster afterwards, so a mirrored caster can't bounce it again.
 	if target != caster and _spell_is_offensive(spell) \
-			and _unit_has_effect(target, "spell_reflect_chance") and randf() < 0.50:
+			and StatusRules.has_flag(target, "spell_reflect_chance") and randf() < 0.50:
 		combat_log.emit("%s's magic mirror hurls the spell back at %s!" % [target.unit_name, caster.unit_name])
 		return _apply_spell_effects(caster, caster, spell, bonus)
 
@@ -4544,7 +4499,7 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 		total_damage = int(total_damage * variance)
 
 		# Magic_Shield / Golden_Defense: 25% spell damage reduction
-		if _unit_has_effect(target, "spell_damage_reduction"):
+		if StatusRules.has_flag(target, "spell_damage_reduction"):
 			total_damage = int(total_damage * 0.75)
 
 		# Lord of Death DY: empowered summons deal 30% bonus spell damage
@@ -4608,13 +4563,13 @@ func _apply_spell_effects(caster: Node, target: Node, spell: Dictionary, bonus: 
 			unit_healed.emit(target, total_heal)
 			result.effects_applied.append({"type": "heal", "amount": total_heal})
 			# Karmic_Bond: healing one bonded unit flows to the other(s) at 75%
-			if _unit_has_effect(target, "share_healing_75_percent"):
+			if StatusRules.has_flag(target, "share_healing_75_percent"):
 				var shared_heal: int = int(total_heal * 0.75)
 				if shared_heal > 0:
 					for other in all_units:
 						if other == target or not other.is_alive():
 							continue
-						if _unit_has_effect(other, "share_healing_75_percent"):
+						if StatusRules.has_flag(other, "share_healing_75_percent"):
 							other.heal(shared_heal)
 							unit_healed.emit(other, shared_heal)
 							combat_log.emit("The karmic bond carries %d healing to %s." % [shared_heal, other.unit_name])
@@ -5376,27 +5331,10 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			unit.show_resisted_text()
 		return
 
-	# --- Status-based debuff immunity (Cleansed: blocks all incoming debuffs) ---
-	if def.get("polarity", "") == "negative" and _unit_has_effect(unit, "debuff_immunity"):
-		if unit.has_method("show_resisted_text"):
-			unit.show_resisted_text()
-		return
-
-	# --- Mental_Immunity: blocks charm, fear, and confusion effects ---
-	if status in ["Charmed", "Dominated"] and _unit_has_effect(unit, "immune_to_charm"):
-		if unit.has_method("show_resisted_text"):
-			unit.show_resisted_text()
-		return
-	if status in ["Feared"] and _unit_has_effect(unit, "immune_to_fear"):
-		if unit.has_method("show_resisted_text"):
-			unit.show_resisted_text()
-		return
-	if status in ["Confused", "Chaotic"] and _unit_has_effect(unit, "immune_to_confusion"):
-		if unit.has_method("show_resisted_text"):
-			unit.show_resisted_text()
-		return
-
 	# --- An `immune:<name | category | polarity>` flag on something it carries ---
+	#
+	# Mental_Immunity and Resolute say `immune:Charmed`, `immune:Feared`...;
+	# Cleansed says `immune:negative`. One rule, in data, for all of them.
 	if StatusRules.immune_to(unit, status, def):
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
@@ -5449,8 +5387,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 					if source != null:
 						existing["source"] = source
 					# Hard CC breaks concentration even on a refresh
-					if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",
-							"Frozen", "Petrified", "Held", "Paralyzed", "Immobilized", "Dominated", "Chaotic"]:
+					if StatusRules.def_has_flag(def, "breaks_concentration"):
 						_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 					return
 
@@ -5474,18 +5411,17 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	_resolve_status_effects(unit, effect_entry, def.get("while_active", []), true)
 
 	# Hard CC breaks concentration on the affected unit
-	if status in ["Stun", "Stunned", "Fear", "Feared", "Charm", "Charmed", "Confused", "Berserk",
-			"Frozen", "Petrified", "Held", "Paralyzed", "Immobilized", "Dominated", "Chaotic"]:
+	if StatusRules.def_has_flag(def, "breaks_concentration"):
 		_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
 
 	# Cleansed: remove_all_debuffs fires immediately on application
-	if "remove_all_debuffs" in def.get("effects", []):
+	if StatusRules.def_has_flag(def, "remove_all_debuffs"):
 		var removed_count = _cleanse_status_effects(unit, 99)
 		if removed_count > 0:
 			combat_log.emit("%s is cleansed of all debuffs!" % unit.unit_name)
 
 	# Invisible status grants stealth automatically
-	if status == "Invisible" and "is_stealthed" in unit:
+	if StatusRules.def_has_flag(def, "grants_stealth") and "is_stealthed" in unit:
 		unit.is_stealthed = true
 		combat_log.emit("%s fades from sight." % unit.unit_name)
 
@@ -5970,7 +5906,7 @@ func _process_status_effects(unit: Node) -> bool:
 						"burning_damage_pct", 0.0)
 					if burn_pct > 0.0:
 						damage = int(damage * (1.0 + burn_pct / 100.0))
-				if is_instance_valid(dot_source) and _unit_has_effect(dot_source, "increase_burning_damage_dealt"):
+				if is_instance_valid(dot_source) and StatusRules.has_flag(dot_source, "increase_burning_damage_dealt"):
 					damage = int(damage * 1.5)
 			apply_damage(unit, damage, element)
 			status_effect_triggered.emit(unit, status_name, damage, "damage")
@@ -5987,7 +5923,7 @@ func _process_status_effects(unit: Node) -> bool:
 				status_effect_triggered.emit(unit, status_name, heal_amount, "heal")
 
 		# --- Incapacitation check ---
-		if effect_def.get("blocks_actions", false):
+		if StatusRules.def_has_any_flag(effect_def, ["skip_turn", "cannot_act"]):
 			skip_turn = true
 
 		# --- Saving throw (end-of-turn save to shake off CC) ---
@@ -6054,8 +5990,6 @@ func _process_status_effects(unit: Node) -> bool:
 ## E.g. Doomed kills the unit, Infected spawns a fungal creature and applies Bleeding.
 func _on_status_expired(unit: Node, status_name: String, def: Dictionary, _effect_instance: Dictionary = {}) -> void:
 	var effects = def.get("effects", [])
-	if effects.is_empty():
-		return
 
 	if "death_on_expire" in effects:
 		# Doomed — instant kill
@@ -6069,7 +6003,7 @@ func _on_status_expired(unit: Node, status_name: String, def: Dictionary, _effec
 		_apply_status_effect(unit, "Bleeding", 3)
 
 	# Invisible expiry: drop stealth unless unit has Blend In (own stealth ability)
-	if "cannot_be_targeted" in effects and status_name == "Invisible":
+	if StatusRules.def_has_flag(def, "grants_stealth"):
 		if "is_stealthed" in unit and unit.is_stealthed:
 			var char_data = unit.character_data if "character_data" in unit else {}
 			if not PerkSystem.has_perk(char_data, "blend_in"):
@@ -7170,7 +7104,6 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 	for effect in defender.status_effects:
 		var status_name = effect.get("status", "")
 		var def = _status_effects.get(status_name, {})
-		var effects = def.get("effects", [])
 
 		# --- Retaliation, declared on the status rather than branched on here ---
 		#
@@ -7211,7 +7144,7 @@ func _process_reactive_statuses(attacker: Node, defender: Node, result: Dictiona
 						status_effect_triggered.emit(defender, status_name, 0, "reactive")
 
 		# Magnetizing Aura — chance to charm melee attackers
-		if "charm_chance_on_enemy_melee_approach" in effects and is_melee:
+		if StatusRules.def_has_flag(def, "charm_chance_on_enemy_melee_approach") and is_melee:
 			# 25% chance to charm the attacker for 1 turn, raised by Ritual
 			if randf() < ritual_chance(defender, 0.25):
 				_apply_status_effect(attacker, "Charmed", 1)
@@ -7307,12 +7240,12 @@ func _process_terrain_effects(unit: Node) -> void:
 		return
 
 	# Status-based terrain immunity (Levitating, Flying statuses even without movement mode set)
-	if _unit_has_effect(unit, "immune_to_ground_effects") or _unit_has_effect(unit, "immune_to_terrain_hazards"):
+	if StatusRules.has_flag(unit, "immune_to_ground_effects") or StatusRules.has_flag(unit, "immune_to_terrain_hazards"):
 		if not benign:
 			return
 
 	# Water_Walking: immune to water/wet terrain effects
-	if _unit_has_effect(unit, "immune_to_water_terrain") and bool(hazard.get("water", false)):
+	if StatusRules.has_flag(unit, "immune_to_water_terrain") and bool(hazard.get("water", false)):
 		return
 
 	# Healing ground
@@ -7388,7 +7321,7 @@ func is_unit_incapacitated(unit: Node) -> bool:
 	for effect in unit.status_effects:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
-		if effect_def.get("blocks_actions", false):
+		if StatusRules.def_has_any_flag(effect_def, ["skip_turn", "cannot_act"]):
 			return true
 
 	return false
@@ -7402,7 +7335,7 @@ func can_unit_move(unit: Node) -> bool:
 	for effect in unit.status_effects:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
-		if effect_def.get("blocks_movement", false):
+		if StatusRules.def_has_any_flag(effect_def, ["cannot_move", "rooted"]):
 			return false
 
 	return true
@@ -7416,23 +7349,10 @@ func can_unit_cast(unit: Node) -> bool:
 	for effect in unit.status_effects:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
-		if effect_def.get("blocks_casting", false):
+		if StatusRules.def_has_any_flag(effect_def, ["cannot_cast"]):
 			return false
 
 	return true
-
-
-## Returns true if a unit has any active status whose effects[] array contains effect_name.
-func _unit_has_effect(unit: Node, effect_name: String) -> bool:
-	if not "status_effects" in unit:
-		return false
-	for se in unit.status_effects:
-		var sname = se.get("status", "")
-		var sdef = _status_effects.get(sname, {})
-		if effect_name in sdef.get("effects", []):
-			return true
-	return false
-
 
 
 ## Check if unit can make weapon attacks (not Forgetful/Pacified)
@@ -7443,7 +7363,7 @@ func can_unit_attack(unit: Node) -> bool:
 	for effect in unit.status_effects:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
-		if effect_def.get("blocks_attacks", false):
+		if StatusRules.def_has_any_flag(effect_def, ["cannot_attack", "will_not_attack"]):
 			return false
 
 	return true
@@ -7452,7 +7372,7 @@ func can_unit_attack(unit: Node) -> bool:
 ## Get the CC behavior override for a unit, if any.
 ## Returns a string indicating forced behavior, or "" for no CC override.
 ## CC behaviors (checked in priority order):
-##   "stunned"  — skip turn (already handled by blocks_actions)
+##   "stunned"  — skip turn (already handled by the skip_turn / cannot_act flags)
 ##   "feared"   — flee away from fear source each turn
 ##   "confused" — move randomly, attack random adjacent target
 ##   "berserk"  — attack nearest creature regardless of team
@@ -7465,26 +7385,25 @@ func get_cc_behavior(unit: Node) -> String:
 	for effect in unit.status_effects:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
-		var effects = effect_def.get("effects", [])
 
 		# Feared — flee from source (highest priority after stun)
-		if "flee_from_source" in effects:
+		if StatusRules.def_has_flag(effect_def, "flee_from_source"):
 			return "feared"
 
 		# Confused — random movement and targeting
-		if "random_movement" in effects or "random_target" in effects:
+		if StatusRules.def_has_any_flag(effect_def, ["random_movement", "random_target"]):
 			return "confused"
 
 		# Berserk — attack nearest regardless of allegiance
-		if "attacks_closest_creature" in effects or "ignores_allegiance" in effects:
+		if StatusRules.def_has_any_flag(effect_def, ["attacks_closest_creature", "ignores_allegiance"]):
 			return "berserk"
 
 		# Charmed — won't attack caster
-		if "will_not_attack_caster" in effects or "treats_caster_as_ally" in effects:
+		if StatusRules.def_has_any_flag(effect_def, ["will_not_attack_caster", "treats_caster_as_ally"]):
 			return "charmed"
 
 		# Pacified — won't fight
-		if "will_not_attack" in effects or "disengaged_from_combat" in effects:
+		if StatusRules.def_has_any_flag(effect_def, ["will_not_attack", "disengaged_from_combat"]):
 			return "pacified"
 
 	return ""
@@ -7506,10 +7425,9 @@ func get_cc_source(unit: Node, cc_type: String) -> Node:
 	for effect in unit.status_effects:
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})
-		var effects = effect_def.get("effects", [])
 
 		for te in target_effects:
-			if te in effects:
+			if StatusRules.def_has_flag(effect_def, te):
 				# The source is stored on the effect instance when applied
 				var source_ref = effect.get("source", null)
 				if source_ref is Node and is_instance_valid(source_ref):
@@ -8481,7 +8399,7 @@ func _run_stealth_detection(unit: Node) -> bool:
 	var char_data = unit.character_data if "character_data" in unit else {}
 	var guile_level: int = unit_skill(unit, "guile")
 	var has_soft_step: bool = PerkSystem.has_perk(char_data, "soft_step")
-	var is_invisible: bool = unit.has_status("Invisible") if unit.has_method("has_status") else false
+	var is_invisible: bool = StatusRules.has_flag(unit, "grants_stealth")
 
 	for enemy in all_units:
 		if enemy.is_dead or enemy.team == unit.team:
@@ -8509,7 +8427,7 @@ func _run_stealth_detection(unit: Node) -> bool:
 		if is_invisible:
 			dc += 10
 		# Chameleon / Shadow_Cloaked: supernatural camouflage makes detection much harder
-		if _unit_has_effect(unit, "stealth_bonus"):
+		if StatusRules.has_flag(unit, "stealth_bonus"):
 			dc += 6
 
 		var awareness: int = 8
@@ -9316,7 +9234,7 @@ func _resolve_debuff_enemies_aoe(user: Node, combat_data: Dictionary, _target_po
 	for enemy in candidates:
 		# the_laughter_turns: only targets demoralised enemies; uses alternate status otherwise
 		if requires_demoralized:
-			var is_demoralised = enemy.has_status("Demoralized") or enemy.has_status("Feared") or enemy.has_status("Gloomy")
+			var is_demoralised = StatusRules.has_flag(enemy, "counts_as_demoralized")
 			if not is_demoralised:
 				if not alt_status.is_empty() and not _skill_save(user, enemy, combat_data, save_type).success:
 					_apply_status_effect(enemy, alt_status.get("status", "Confused"), alt_status.get("duration", 2), 0, user)
@@ -11012,7 +10930,7 @@ func _process_on_hit_perks(attacker: Node, defender: Node, result: Dictionary) -
 	# Blood in the Wind: +movement when enemies bleeding (checked in stat getter)
 
 	# Electrified_Weapon: stun_chance_on_hit — 25% chance to Stun defender for 1 turn on any hit
-	if _unit_has_effect(attacker, "stun_chance_on_hit") and randf() < 0.25:
+	if StatusRules.has_flag(attacker, "stun_chance_on_hit") and randf() < 0.25:
 		_apply_on_hit_status(defender, "Stunned", 1, 0, attacker)
 		result["electrified_stun"] = true
 
@@ -11368,7 +11286,7 @@ func reposition(unit: Node, spec: Dictionary, source: Node = null,
 		result.reason = "cannot be moved"
 		combat_log.emit("%s cannot be moved." % unit.unit_name)
 		return result
-	if not Repositioning.is_travelled(mode) and _unit_has_effect(unit, "prevents_teleportation"):
+	if not Repositioning.is_travelled(mode) and StatusRules.has_flag(unit, "prevents_teleportation"):
 		result.immune = true
 		result.reason = "anchored to this plane"
 		combat_log.emit("%s is anchored and cannot be displaced." % unit.unit_name)

@@ -47,14 +47,58 @@ static func categories_of(def: Dictionary) -> Array[String]:
 
 
 ## True when any status active on `unit` lists `flag` in its `flags`.
+## A flag is a yes/no rule a status switches on ("cannot_move",
+## "breaks_concentration"); the code that enforces the rule asks this.
 static func has_flag(unit: Node, flag: String) -> bool:
-	if unit == null or not "status_effects" in unit:
-		return false
-	for entry in unit.status_effects:
-		var def: Dictionary = CombatManager._status_effects.get(str(entry.get("status", "")), {})
-		if flag in def.get("flags", []):
+	return not entry_with_flag(unit, flag).is_empty()
+
+
+## True when any status active on `unit` lists at least one of `flags`.
+static func has_any_flag(unit: Node, flags: Array) -> bool:
+	for flag in flags:
+		if has_flag(unit, str(flag)):
 			return true
 	return false
+
+
+## True when the status DEFINITION `def` lists `flag`. For code that walks a
+## unit's statuses itself (it needs the entry too) or has just a definition.
+static func def_has_flag(def: Dictionary, flag: String) -> bool:
+	return flag in def.get("flags", [])
+
+
+## True when the definition `def` lists at least one of `flags`.
+static func def_has_any_flag(def: Dictionary, flags: Array) -> bool:
+	for flag in flags:
+		if def_has_flag(def, str(flag)):
+			return true
+	return false
+
+
+## The first entry in `unit.status_effects` whose status lists `flag`, or an
+## empty dictionary. For rules that need the entry as well as the answer: who
+## cast it (`source`), or its `value` (a shield's pool, a copy count).
+static func entry_with_flag(unit: Node, flag: String) -> Dictionary:
+	if unit == null or not "status_effects" in unit:
+		return {}
+	for entry in unit.status_effects:
+		var def: Dictionary = CombatManager._status_effects.get(str(entry.get("status", "")), {})
+		if def_has_flag(def, flag):
+			return entry
+	return {}
+
+
+## Every entry whose status lists `flag` (a copy of the list, so removing
+## them while walking it is safe).
+static func entries_with_flag(unit: Node, flag: String) -> Array:
+	var found: Array = []
+	if unit == null or not "status_effects" in unit:
+		return found
+	for entry in unit.status_effects:
+		var def: Dictionary = CombatManager._status_effects.get(str(entry.get("status", "")), {})
+		if def_has_flag(def, flag):
+			found.append(entry)
+	return found
 
 
 ## True when something active on `unit` makes it immune to the status

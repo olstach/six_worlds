@@ -733,14 +733,44 @@ check_vocabulary("base_bonuses stat", _stat_keys, [
     'for_character(member, "%s"',
 ])
 
-# Behaviour strings on status definitions.
+# Behaviour on status definitions: `flags` (yes/no rules) and the few words
+# still in `effects` (damage-over-time types, expiry hooks, saves — Task 6).
 _status_effects = set()
+_status_flags = set()
 _status_names = set()
 for _s in load("resources/data/statuses.json")["statuses"]:
     _status_effects.update(str(e) for e in _s.get("effects", []))
+    _status_flags.update(str(f) for f in _s.get("flags", [])
+                         if not str(f).startswith("immune:"))
     if _s.get("name"):
         _status_names.add(str(_s["name"]))
 check_vocabulary("status effect", _status_effects)
+
+# A flag is read where the code asks StatusRules for it: has_flag(unit, "x"),
+# has_any_flag(unit, ["x", "y"]), def_has_flag(def, "x"), entry_with_flag(...).
+# The flag's literal must appear on such a call. effect_vocab.gd (the list
+# itself) and tooltip_text.gd (labels) do not count: a flag only a tooltip
+# mentions is a promise nothing keeps. FLAGS and the data must also agree.
+_flag_call = re.compile(
+    r"\b(?:has_flag|has_any_flag|def_has_flag|def_has_any_flag|"
+    r"entry_with_flag|entries_with_flag)\(([^\n]*)")
+_flag_readers = set()
+for _p in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
+    if os.path.basename(_p) in ("effect_vocab.gd", "tooltip_text.gd"):
+        continue
+    for _m in _flag_call.finditer(open(_p, encoding="utf-8").read()):
+        _flag_readers.update(re.findall(r'"([^"]+)"', _m.group(1)))
+_vocab_flags = set(re.findall(r'"([a-z_0-9]+)"', re.search(
+    r"const FLAGS\b[^=]*=\s*\[(.*?)\]", open(os.path.join(
+        ROOT, "scripts/effects/effect_vocab.gd"), encoding="utf-8").read(), re.S).group(1)))
+for _f in sorted(_vocab_flags):
+    if _f not in _flag_readers:
+        err("data->code", f"status flag '{_f}' is in EffectVocab.FLAGS but no code "
+            f"asks has_flag(..., \"{_f}\")")
+    if _f not in _status_flags:
+        err("data->code", f"status flag '{_f}' is in EffectVocab.FLAGS but no status carries it")
+for _f in sorted(_status_flags - _vocab_flags):
+    err("data->code", f"status flag '{_f}' is used in statuses.json but is not in EffectVocab.FLAGS")
 
 # ── Perk special requirements ────────────────────────────────────────────────
 #

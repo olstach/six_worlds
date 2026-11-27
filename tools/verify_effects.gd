@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 77
+const EXPECTED_CHECKS: int = 80
 
 var grid: CombatGrid
 
@@ -123,6 +123,11 @@ func _ready() -> void:
 	# Stage 2b, Task 4: statuses migrated — their numbers are effects now.
 	_check_status_numbers_match_baseline()
 	_check_status_tags_select_same()
+
+	# Stage 2b, Task 5: the yes/no words are flags now.
+	_check_flags_match_old_words()
+	_check_concentration_breaks_on_flag()
+	_check_mental_immunity_by_flag()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -2253,4 +2258,214 @@ func _check_status_tags_select_same() -> void:
 			var lost: Array = a.filter(func(n): return not n in b)
 			var gained: Array = b.filter(func(n): return not n in a)
 			_fail("tag %s: lost %s, gained %s" % [tag, lost, gained])
+	_done()
+
+
+# ── Stage 2b, Task 5: yes/no words became flags ──────────────────────────────
+
+const STATUS_WORDS_PATH: String = "res://tools/fixtures/status_words.json"
+
+## word -> flag(s), the yes/no words of statuses.json. Written out by hand here, on
+## purpose: it is the check's own copy of the migration's mapping.
+const FLAG_FOR_WORD: Dictionary = {
+	"attack_breaks_invisibility": ["attack_breaks_invisibility"],
+	"attack_damage_buff_when_ally_dies": ["attack_damage_buff_when_ally_dies"],
+	"attack_reflect_chance": ["attack_reflect_chance"],
+	"attacks_closest_creature": ["attacks_closest_creature"],
+	"attacks_have_miss_chance": ["attacks_have_miss_chance"],
+	"breaks_on_offensive_action": ["breaks_on_offensive_action"],
+	"can_move_through_enemies": ["can_move_through_enemies"],
+	"cannot_act": ["cannot_act"],
+	"cannot_attack": ["cannot_attack"],
+	"cannot_be_targeted": ["cannot_be_targeted"],
+	"cannot_cast": ["cannot_cast"],
+	"cannot_deal_physical": ["cannot_deal_physical"],
+	"cannot_die": ["cannot_die"],
+	"cannot_make_weapon_attacks": ["cannot_make_weapon_attacks"],
+	"cannot_move": ["cannot_move"],
+	"cannot_target_enemies": ["cannot_target_enemies"],
+	"cannot_use_ranged": ["cannot_use_ranged"],
+	"charm_chance_on_enemy_melee_approach": ["charm_chance_on_enemy_melee_approach"],
+	"controlled_by_caster": ["controlled_by_caster"],
+	"copies_absorb_attacks": ["copies_absorb_attacks"],
+	"crit_vulnerability": ["crit_vulnerability"],
+	"damage_on_move_attempt": ["damage_on_move_attempt"],
+	"damage_taken_increase": ["damage_taken_increase"],
+	"death_resistance": ["death_resistance"],
+	"disengaged_from_combat": ["disengaged_from_combat"],
+	"flee_from_source": ["flee_from_source"],
+	"focus_save_on_damage": ["focus_save_on_damage"],
+	"forced_movement_toward_target": ["forced_movement_toward_target"],
+	"grants_extra_action": ["grants_extra_action"],
+	"grants_flight": ["grants_flight"],
+	"hp_cannot_drop_below_1": ["hp_cannot_drop_below_1"],
+	"hp_shield": ["hp_shield"],
+	"ignores_allegiance": ["ignores_allegiance"],
+	"immune_to_ground_effects": ["immune_to_ground_effects"],
+	"immune_to_melee_unless_flyer": ["immune_to_melee_unless_flyer"],
+	"immune_to_ranged": ["immune_to_ranged"],
+	"immune_to_terrain_hazards": ["immune_to_terrain_hazards"],
+	"immune_to_water_terrain": ["immune_to_water_terrain"],
+	"increase_burning_damage_dealt": ["increase_burning_damage_dealt"],
+	"loses_flight": ["loses_flight"],
+	"must_attack_taunter": ["must_attack_taunter"],
+	"next_attack_misses": ["next_attack_misses"],
+	"next_ranged_guaranteed_hit": ["next_ranged_guaranteed_hit"],
+	"prevents_teleportation": ["prevents_teleportation"],
+	"prone_chance_on_movement": ["prone_chance_on_movement"],
+	"random_movement": ["random_movement"],
+	"random_target": ["random_target"],
+	"ranged_damage_reduction": ["ranged_damage_reduction"],
+	"remove_all_debuffs": ["remove_all_debuffs"],
+	"return_on_death_next_turn": ["return_on_death_next_turn"],
+	"riposte_next_sword_attack": ["riposte_next_sword_attack"],
+	"rooted": ["rooted"],
+	"share_healing_75_percent": ["share_healing_75_percent"],
+	"skip_next_action": ["skip_next_action"],
+	"skip_turn": ["skip_turn"],
+	"spell_damage_reduction": ["spell_damage_reduction"],
+	"spell_reflect_chance": ["spell_reflect_chance"],
+	"stealth_bonus": ["stealth_bonus"],
+	"stun_chance_on_hit": ["stun_chance_on_hit"],
+	"treats_caster_as_ally": ["treats_caster_as_ally"],
+	"will_not_attack": ["will_not_attack"],
+	"will_not_attack_caster": ["will_not_attack_caster"],
+	"immobilized": ["cannot_move"],
+	"silenced": ["cannot_cast"],
+	"immune_to_charm": ["immune:Charmed", "immune:Dominated"],
+	"immune_to_fear": ["immune:Feared"],
+	"immune_to_confusion": ["immune:Confused", "immune:Chaotic"],
+	"debuff_immunity": ["immune:negative"],
+}
+
+## Statuses a hard-coded name list used to pick out, now carrying a flag.
+const FLAG_FOR_NAME: Dictionary = {
+	"Stunned": ["breaks_concentration"], "Feared": ["breaks_concentration", "counts_as_demoralized"],
+	"Charmed": ["breaks_concentration", "breaks_on_damage_from_source"],
+	"Confused": ["breaks_concentration"], "Berserk": ["breaks_concentration"],
+	"Frozen": ["breaks_concentration"], "Petrified": ["breaks_concentration"],
+	"Held": ["breaks_concentration"], "Paralyzed": ["breaks_concentration"],
+	"Immobilized": ["breaks_concentration"], "Dominated": ["breaks_concentration"],
+	"Chaotic": ["breaks_concentration"], "Invisible": ["grants_stealth"],
+	"Lifelink": ["lifesteals_on_hit"], "Blood_Hunger": ["lifesteals_on_hit"],
+	"Demoralized": ["counts_as_demoralized"], "Gloomy": ["counts_as_demoralized"],
+}
+
+## Words that stay in  for Task 6: something reads them as more than
+## a yes/no (a damage type, a tick, an expiry hook, a save, an enchant table).
+const WORDS_LEFT_FOR_TASK_6: Array[String] = [
+	"fire_damage_per_turn", "poison_damage_per_turn", "physical_damage_per_turn",
+	"black_damage_per_turn", "space_damage_per_turn", "heal_per_turn",
+	"death_on_expire", "damage_on_expire", "bleed_on_expire", "save_at_end_of_turn",
+	"adds_fire_damage_to_attacks", "adds_air_damage_to_attacks",
+]
+
+## Words nothing ever read. They are gone from the data, and the status says so
+## in its .
+const UNBUILT_WORDS: Array[String] = [
+	"can_move", "cannot_target_spells", "fire_damage_per_turn_internal",
+	"joins_party_permanently", "damage_increases_each_turn", "stat_penalties",
+	"illusory_copies", "cannot_teleport", "cannot_flee", "random_attacks",
+	"random_spellcasting", "relationship_bonus", "heal_50_percent_of_damage_dealt",
+	"linked_to_ally", "return_with_20_percent_hp", "lifesteal_on_attacks",
+	"cannot_fly", "knockback", "can_walk_on_water", "range_bonus", "range_penalty",
+]
+
+
+## For every status, `flags` is exactly what its old yes/no words (plus the
+## hard-coded name lists) say, `effects` keeps only the Task 6 words, and a
+## status that had a word nothing read says so in `notes`.
+func _check_flags_match_old_words() -> void:
+	var old: Dictionary = _read_fixture(STATUS_WORDS_PATH).get("statuses", {})
+	var defs: Dictionary = CombatManager.get_all_status_definitions()
+	if old.size() < 150:
+		_fail("status_words.json has only %d statuses" % old.size())
+	var shown: int = 0
+	for name in old:
+		if not defs.has(name):
+			_fail("%s is in status_words.json but not in statuses.json" % name)
+			continue
+		var want_flags: Array = []
+		var want_effects: Array = []
+		var unbuilt: Array = []
+		for word in old[name].get("effects", []):
+			if FLAG_FOR_WORD.has(word):
+				for f in FLAG_FOR_WORD[word]:
+					if not f in want_flags:
+						want_flags.append(f)
+			elif word in WORDS_LEFT_FOR_TASK_6:
+				want_effects.append(word)
+			elif word in UNBUILT_WORDS:
+				unbuilt.append(word)
+		for f in FLAG_FOR_NAME.get(name, []):
+			if not f in want_flags:
+				want_flags.append(f)
+		var got_flags: Array = defs[name].get("flags", [])
+		var got_effects: Array = defs[name].get("effects", [])
+		var a: Array = want_flags.duplicate()
+		var b: Array = got_flags.duplicate()
+		a.sort()
+		b.sort()
+		if a != b or got_effects != want_effects:
+			shown += 1
+			if shown <= 20:
+				_fail("%s: flags %s effects %s, wanted flags %s effects %s"
+					% [name, got_flags, got_effects, want_flags, want_effects])
+		var notes: String = str(defs[name].get("notes", ""))
+		for word in unbuilt:
+			if not str(word) in notes:
+				_fail("%s lost the unbuilt word '%s' without saying so in notes" % [name, word])
+		if unbuilt.is_empty() and notes.begins_with("Unbuilt:"):
+			_fail("%s says Unbuilt in notes but had no such word" % name)
+	if shown > 20:
+		_fail("... and %d more statuses differ" % (shown - 20))
+	_done()
+
+
+## A status carrying the `breaks_concentration` flag interrupts a mantra when
+## it lands (and one without the flag does not), whatever it is called.
+func _check_concentration_breaks_on_flag() -> void:
+	var rattling := _with_test_status({"polarity": "negative", "flags": ["breaks_concentration"]})
+	var gentle := _with_test_status({"polarity": "negative"})
+	var u := _make_unit(Vector2i(5, 5))
+	u.active_mantras = {"some_mantra": 2}
+	CombatManager._apply_status_effect(u, gentle, 2)
+	if u.active_mantras.is_empty():
+		_fail("a status without the flag broke concentration")
+	CombatManager._apply_status_effect(u, rattling, 2)
+	if not u.active_mantras.is_empty():
+		_fail("a status with breaks_concentration did not interrupt the mantra")
+	# A refresh counts too.
+	u.active_mantras = {"some_mantra": 2}
+	CombatManager._apply_status_effect(u, rattling, 3)
+	if not u.active_mantras.is_empty():
+		_fail("refreshing a breaks_concentration status did not interrupt the mantra")
+	# The real hard-control statuses carry it.
+	for real in ["Stunned", "Frozen", "Held", "Feared", "Chaotic"]:
+		if not "breaks_concentration" in CombatManager.get_status_definition(real).get("flags", []):
+			_fail("%s does not carry breaks_concentration" % real)
+	_cleanup([u])
+	_done()
+
+
+## Mental_Immunity says what it blocks as `immune:` flags, and the one shared
+## immunity rule (StatusRules.immune_to) is what keeps the statuses off.
+func _check_mental_immunity_by_flag() -> void:
+	var flags: Array = CombatManager.get_status_definition("Mental_Immunity").get("flags", [])
+	for want in ["immune:Charmed", "immune:Dominated", "immune:Feared",
+			"immune:Confused", "immune:Chaotic"]:
+		if not want in flags:
+			_fail("Mental_Immunity has no %s flag (has %s)" % [want, flags])
+	if not "immune:negative" in CombatManager.get_status_definition("Cleansed").get("flags", []):
+		_fail("Cleansed has no immune:negative flag")
+	var u := _make_unit(Vector2i(5, 5))
+	CombatManager._apply_status_effect(u, "Mental_Immunity", 3)
+	for blocked in ["Charmed", "Feared", "Dominated", "Confused", "Chaotic"]:
+		CombatManager._apply_status_effect(u, blocked, 2)
+		if u.has_status(blocked):
+			_fail("Mental_Immunity let %s on" % blocked)
+	CombatManager._apply_status_effect(u, "Burning", 2)
+	if not u.has_status("Burning"):
+		_fail("Mental_Immunity blocked Burning, which it never did")
+	_cleanup([u])
 	_done()

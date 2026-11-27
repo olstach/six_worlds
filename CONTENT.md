@@ -7037,49 +7037,49 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Control `control`
 
-- **Frozen** `Frozen` — negative · turns 1 · skip_turn
+- **Frozen** `Frozen` — negative · turns 1 · skip_turn, breaks_concentration
   - desc: (empty)
 - **Rooted** `Rooted` — negative · spellpower · cannot_move
   - desc: (empty)
 - **Slowed** `Slowed` — negative · spellpower
   - desc: (empty)
-- **Petrified** `Petrified` — negative · spellpower · skip_turn, cannot_act
+- **Petrified** `Petrified` — negative · spellpower · skip_turn, cannot_act, breaks_concentration
   - desc: (empty)
 - **Silenced** `Silenced` — negative · spellpower · cannot_cast
   - desc: (empty)
-- **Confused** `Confused` — negative · spellpower · random_movement, random_target
+- **Confused** `Confused` — negative · spellpower · random_movement, random_target, breaks_concentration
   - desc: (empty)
-- **Feared** `Feared` — negative · turns 2 · flee_from_source
+- **Feared** `Feared` — negative · turns 2 · flee_from_source, breaks_concentration, counts_as_demoralized
   - desc: (empty)
 - **Prone** `Prone` — negative · instant · skip_next_action
   - desc: (empty)
-- **Held** `Held` — negative · until_save · cannot_move, cannot_act
+- **Held** `Held` — negative · until_save · cannot_move, cannot_act, breaks_concentration
   - desc: (empty)
-- **Drowning** `Drowning` — negative · spellpower · physical_damage_per_turn, immobilized
+- **Drowning** `Drowning` — negative · spellpower · physical_damage_per_turn, cannot_move
   - desc: (empty)
 - **Swarmed** `Swarmed` — negative · spellpower · physical_damage_per_turn, focus_save_on_damage
   - desc: (empty)
-- **Forgetful** `Forgetful` — negative · turns 1 · can_move, cannot_attack, cannot_cast
+- **Forgetful** `Forgetful` — negative · turns 1 · cannot_attack, cannot_cast
   - desc: (empty)
-- **Charmed** `Charmed` — negative · spellpower · treats_caster_as_ally, will_not_attack_caster
+- **Charmed** `Charmed` — negative · spellpower · treats_caster_as_ally, will_not_attack_caster, breaks_concentration, breaks_on_damage_from_source
   - desc: (empty)
-- **Berserk** `Berserk` — negative · spellpower · attacks_closest_creature, ignores_allegiance
+- **Berserk** `Berserk` — negative · spellpower · attacks_closest_creature, ignores_allegiance, breaks_concentration
   - desc: (empty)
-- **Blinded** `Blinded` — negative · spellpower · cannot_use_ranged, cannot_target_spells
+- **Blinded** `Blinded` — negative · spellpower · cannot_use_ranged
   - desc: (empty)
-- **Dominated** `Dominated` — negative · permanent · controlled_by_caster, joins_party_permanently
+- **Dominated** `Dominated` — negative · permanent · controlled_by_caster, breaks_concentration
   - desc: (empty)
-- **Stunned** `Stunned` — negative · turns 1 · skip_turn, cannot_act, save_at_end_of_turn
+- **Stunned** `Stunned` — negative · turns 1 · save_at_end_of_turn, skip_turn, cannot_act, breaks_concentration
   - desc: (empty)
-- **Suffocating** `Suffocating` — negative · spellpower · physical_damage_per_turn, silenced
+- **Suffocating** `Suffocating` — negative · spellpower · physical_damage_per_turn, cannot_cast
   - desc: (empty)
 - **Shadow_Pinned** `Shadow_Pinned` — negative · spellpower · rooted, damage_on_move_attempt
   - desc: (empty)
-- **Wrathfully_Bound** `Wrathfully_Bound` — negative · spellpower · space_damage_per_turn, cannot_teleport, cannot_flee
+- **Wrathfully_Bound** `Wrathfully_Bound` — negative · spellpower · space_damage_per_turn
   - desc: (empty)
-- **Chaotic** `Chaotic` — negative · spellpower · random_movement, random_attacks, random_spellcasting
+- **Chaotic** `Chaotic` — negative · spellpower · random_movement, breaks_concentration
   - desc: (empty)
-- **Paralyzed** `Paralyzed` — negative · spellpower · cannot_move, cannot_act
+- **Paralyzed** `Paralyzed` — negative · spellpower · cannot_move, cannot_act, breaks_concentration
   - desc: (empty)
 - **Pacified** `Pacified` — negative · spellpower · disengaged_from_combat, will_not_attack
   - desc: (empty)
@@ -7087,13 +7087,13 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Entangled** `Entangled` — negative · spellpower · cannot_move
   - desc: (empty)
-- **Grounded** `Grounded` — negative · spellpower · cannot_fly, loses_flight
+- **Grounded** `Grounded` — negative · spellpower · loses_flight
   - desc: (empty)
-- **Immobilized** `Immobilized` — negative · spellpower · cannot_move, cannot_act
+- **Immobilized** `Immobilized` — negative · spellpower · cannot_move, cannot_act, breaks_concentration
   - desc: (empty)
 - **Lured** `Lured` — negative · turns 2 · forced_movement_toward_target
   - desc: (empty)
-- **Pushed** `Pushed` — negative · instant · knockback
+- **Pushed** `Pushed` — negative · instant
   - desc: (empty)
 - **Slowed_After_Escape** `Slowed_After_Escape` — negative · turns 2
   - desc: (empty)
@@ -7122,14 +7122,14 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 - **Burning** `Burning` — negative · turns 3 · fire_damage_per_turn
   - desc: (empty)
-- **Boiling_Blood** `Boiling_Blood` — negative · spellpower · fire_damage_per_turn_internal
+- **Boiling_Blood** `Boiling_Blood` — negative · spellpower
   - desc: (empty)
 
 ## Poison `poison`
 
 - **Poisoned** `Poisoned` — negative · turns 5 · poison_damage_per_turn
   - desc: (empty)
-- **Festering** `Festering` — negative · spellpower · poison_damage_per_turn, damage_increases_each_turn
+- **Festering** `Festering` — negative · spellpower · poison_damage_per_turn
   - desc: (empty)
 
 ## Wound `wound`
@@ -7151,7 +7151,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Water_Vulnerable_50** `Water_Vulnerable_50` — negative · spellpower
   - desc: (empty)
-- **Gloomy** `Gloomy` — negative · spellpower
+- **Gloomy** `Gloomy` — negative · spellpower · counts_as_demoralized
   - desc: (empty)
 - **Cursed** `Cursed` — negative · spellpower
   - desc: (empty)
@@ -7185,7 +7185,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Force_Miss** `Force_Miss` — negative · turns 1 · next_attack_misses
   - desc: The next attack made by this unit automatically misses.
-- **Demoralized** `Demoralized` — negative · turns 3
+- **Demoralized** `Demoralized` — negative · turns 3 · counts_as_demoralized
   - desc: Spirit broken — -10 accuracy and -10 armor.
 - **Mindmucked** `Mindmucked` — negative · spellpower
   - desc: Mind clouded with filth — major penalty to Awareness and Focus.
@@ -7236,7 +7236,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Blurred** `Blurred` — positive · spellpower · attacks_have_miss_chance
   - desc: (empty)
-- **Mirror_Images** `Mirror_Images` — positive · spellpower · illusory_copies, copies_absorb_attacks
+- **Mirror_Images** `Mirror_Images` — positive · spellpower · copies_absorb_attacks
   - desc: (empty)
 - **Magic_Shield** `Magic_Shield` — positive · spellpower · spell_damage_reduction
   - desc: (empty)
@@ -7248,7 +7248,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Encouraged** `Encouraged` — positive · spellpower
   - desc: (empty)
-- **Friendly** `Friendly` — positive · spellpower · relationship_bonus
+- **Friendly** `Friendly` — positive · spellpower
   - desc: (empty)
 - **Mirthful** `Mirthful` — positive · spellpower
   - desc: (empty)
@@ -7258,7 +7258,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Divine_Champion** `Divine_Champion` — positive · spellpower
   - desc: (empty)
-- **Lifelink** `Lifelink` — positive · spellpower · heal_50_percent_of_damage_dealt
+- **Lifelink** `Lifelink` — positive · spellpower · lifesteals_on_hit
   - desc: (empty)
 - **Pain_Mirror** `Pain_Mirror` — positive · spellpower
   - desc: (empty)
@@ -7266,13 +7266,13 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Ancestral_Vengeance** `Ancestral_Vengeance` — positive · spellpower · attack_damage_buff_when_ally_dies
   - desc: (empty)
-- **Karmic_Bond** `Karmic_Bond` — positive · spellpower · linked_to_ally, share_healing_75_percent
+- **Karmic_Bond** `Karmic_Bond` — positive · spellpower · share_healing_75_percent
   - desc: (empty)
-- **Eternal_Vow** `Eternal_Vow` — positive · spellpower · return_on_death_next_turn, return_with_20_percent_hp
+- **Eternal_Vow** `Eternal_Vow` — positive · spellpower · return_on_death_next_turn
   - desc: (empty)
 - **Ancestors_Blessing** `Ancestors_Blessing` — positive · spellpower · death_resistance
   - desc: (empty)
-- **Blood_Hunger** `Blood_Hunger` — positive · spellpower · lifesteal_on_attacks
+- **Blood_Hunger** `Blood_Hunger` — positive · spellpower · lifesteals_on_hit
   - desc: (empty)
 - **Shadow_Cloaked** `Shadow_Cloaked` — positive · spellpower · stealth_bonus
   - desc: (empty)
@@ -7310,7 +7310,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Tongues_of_Fire** `Tongues_of_Fire` — positive · spellpower · adds_fire_damage_to_attacks
   - desc: (empty)
-- **Water_Walking** `Water_Walking` — positive · spellpower · can_walk_on_water, immune_to_water_terrain
+- **Water_Walking** `Water_Walking` — positive · spellpower · immune_to_water_terrain
   - desc: (empty)
 - **Yaksha_Strength** `Yaksha_Strength` — positive · spellpower
   - desc: (empty)
@@ -7324,9 +7324,9 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: +3 Focus.
 - **Awareness_Plus_3** `Awareness_Plus_3` — positive · spellpower
   - desc: +3 Awareness.
-- **Cleansed** `Cleansed` — positive · turns 1 · remove_all_debuffs, debuff_immunity
+- **Cleansed** `Cleansed` — positive · turns 1 · remove_all_debuffs, immune:negative
   - desc: All debuffs removed. Immune to new debuffs for 1 turn.
-- **Mental_Immunity** `Mental_Immunity` — positive · spellpower · immune_to_charm, immune_to_fear, immune_to_confusion
+- **Mental_Immunity** `Mental_Immunity` — positive · spellpower · immune:Charmed, immune:Dominated, immune:Feared, immune:Confused, immune:Chaotic
   - desc: Immune to charm, fear, and confusion effects.
 - **Rainbow_Cloak** `Rainbow_Cloak` — positive · spellpower
   - desc: Shimmering cloak of prismatic light grants resistance to all elements and a dodge bonus.
@@ -7344,7 +7344,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Invincible** `Invincible` — positive · turns 3 · hp_cannot_drop_below_1
   - desc: (empty)
-- **Resolute** `Resolute` — positive · turns 3 · immune_to_charm, immune_to_fear, immune_to_confusion
+- **Resolute** `Resolute` — positive · turns 3 · immune:Charmed, immune:Dominated, immune:Feared, immune:Confused, immune:Chaotic
   - desc: (empty)
 - **Riposte_Ready** `Riposte_Ready` — positive · turns 1 · riposte_next_sword_attack
   - desc: (empty)
@@ -7365,7 +7365,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Stealth `stealth`
 
-- **Invisible** `Invisible` — positive · spellpower · cannot_be_targeted, attack_breaks_invisibility
+- **Invisible** `Invisible` — positive · spellpower · cannot_be_targeted, attack_breaks_invisibility, grants_stealth
   - desc: (empty)
 
 ## Blessing `blessing`
@@ -7432,7 +7432,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Disease `disease`
 
-- **Diseased** `Diseased` — negative · spellpower · poison_damage_per_turn, stat_penalties
+- **Diseased** `Diseased` — negative · spellpower · poison_damage_per_turn
   - desc: (empty)
 
 ## Stance `stance`
