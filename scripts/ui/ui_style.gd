@@ -4,6 +4,22 @@ class_name UIStyle
 extends RefCounted
 
 
+## The character sheet's colours for a number a temporary effect has moved:
+## green while it is boosted above the character's lasting value, red while it
+## is drained below it (CharacterSystem.get_temporary_change).
+const BOOSTED_COLOR := Color(0.45, 0.9, 0.45)
+const DRAINED_COLOR := Color(1.0, 0.45, 0.4)
+
+
+## BOOSTED_COLOR for a positive temporary change, DRAINED_COLOR for a negative
+## one. `fallback` (the number's usual colour) when nothing has moved it.
+static func change_color(change: int, fallback: Color) -> Color:
+	if change > 0:
+		return BOOSTED_COLOR
+	if change < 0:
+		return DRAINED_COLOR
+	return fallback
+
 ## Create a StyleBoxFlat with standard Tibetan-themed borders and corners.
 ## `accent` is the main color; background is auto-darkened from it.
 ## Optional overrides: border_width (default 4), corner_radius (default 8),

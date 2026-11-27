@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 108
+const EXPECTED_CHECKS: int = 109
 
 var grid: CombatGrid
 
@@ -156,6 +156,7 @@ func _ready() -> void:
 	_check_group_attributes_all()
 	_check_affinity_hold()
 	_check_pressure_modify()
+	_check_sheet_shows_temporary_changes()
 
 	# Stage 2b, Task 10: building states, comedown, upkeep.
 	_check_mantra_state_example()
@@ -3190,6 +3191,43 @@ func _check_pressure_modify() -> void:
 	_cleanup([party, foe])
 	_done()
 
+
+## The character sheet colours a number a temporary effect moved: green for a
+## boost a status holds, red for a drain or lasting damage not yet healed.
+## Gear, birth and traits are the character's own and colour nothing.
+func _check_sheet_shows_temporary_changes() -> void:
+	var unit := _make_unit(Vector2i(5, 5))
+	var sheet: Dictionary = unit.character_data
+	ValuePaths.add_hold(unit, "attribute.finesse", "fortify", 2.0, "probe:sheet")
+	ValuePaths.add_hold(unit, "skill.fire_magic", "drain", 1.0, "probe:sheet")
+	ValuePaths.refresh_character(unit)
+	if CharacterSystem.get_temporary_change(sheet, "attribute.finesse") != 2:
+		_fail("a +2 Finesse hold reads as %d on the sheet"
+			% CharacterSystem.get_temporary_change(sheet, "attribute.finesse"))
+	if CharacterSystem.get_temporary_change(sheet, "skill.fire_magic") != -1:
+		_fail("a -1 Fire magic hold reads as %d on the sheet"
+			% CharacterSystem.get_temporary_change(sheet, "skill.fire_magic"))
+	if UIStyle.change_color(2, Color.WHITE) != UIStyle.BOOSTED_COLOR \
+			or UIStyle.change_color(-1, Color.WHITE) != UIStyle.DRAINED_COLOR \
+			or UIStyle.change_color(0, Color.WHITE) != Color.WHITE:
+		_fail("UIStyle.change_color does not map boosted/drained/unchanged")
+	ValuePaths.release(unit, "probe:sheet")
+	ValuePaths.refresh_character(unit)
+	if CharacterSystem.get_temporary_change(sheet, "attribute.finesse") != 0:
+		_fail("a released hold still colours Finesse")
+	# Lasting damage that has not healed is a drain too.
+	sheet["damaged_values"] = [{"value": "attribute.focus", "amount": 2,
+		"cleared_by": [{"rest": "full"}]}]
+	if CharacterSystem.get_temporary_change(sheet, "attribute.focus") != -2:
+		_fail("2 lasting Focus damage reads as %d on the sheet"
+			% CharacterSystem.get_temporary_change(sheet, "attribute.focus"))
+	# A trait's bonus is the character's own.
+	sheet["damaged_values"] = []
+	sheet["skill_bonuses"]["swords"] = {"traits": 2}
+	if CharacterSystem.get_temporary_change(sheet, "skill.swords") != 0:
+		_fail("a trait bonus coloured the sheet as a temporary boost")
+	_cleanup([unit])
+	_done()
 
 # ── Stage 2b, Task 10: building states, comedown, upkeep ────────────────────
 

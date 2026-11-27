@@ -1193,6 +1193,24 @@ func get_effective_attribute(character: Dictionary, attr: String) -> int:
 	return _attribute_value(character, attr, equip_bonus, trait_bonus)
 
 
+## How far a temporary effect has moved `value` ("attribute.finesse",
+## "skill.fire_magic") away from the character's lasting number: boosts and
+## drains held by statuses in a fight (the "effects" source ValuePaths writes)
+## minus lasting damage that has not healed yet. Gear, birth and traits are
+## not temporary and do not count. Positive is boosted, negative drained; the
+## character sheet colours the number green or red by it.
+func get_temporary_change(character: Dictionary, value: String) -> int:
+	var parts: PackedStringArray = value.split(".", true, 1)
+	if parts.size() != 2:
+		return 0
+	var table: String = "attribute_bonuses" if parts[0] == "attribute" else \
+		("skill_bonuses" if parts[0] == "skill" else "")
+	if table == "":
+		return 0
+	var held: int = int(character.get(table, {}).get(parts[1], {}).get(ValuePaths.SKILL_EFFECTS_KEY, 0))
+	return held - int(ValuePaths.damaged_total(character, value))
+
+
 ## Sum of every source in character["attribute_bonuses"][attr] (0 if none).
 func get_attribute_bonus_total(character: Dictionary, attr: String) -> int:
 	var sources: Dictionary = character.get("attribute_bonuses", {}).get(attr, {})

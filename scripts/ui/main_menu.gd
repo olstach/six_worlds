@@ -464,10 +464,13 @@ func _update_attributes(character: Dictionary) -> void:
 
 	for attr_key in ATTRIBUTE_ABBREVS.keys():
 		var attr_value = attributes.get(attr_key, 10)
-		var row = _create_attribute_row(attr_key, attr_value)
+		var row = _create_attribute_row(attr_key, attr_value, character)
 		attributes_container.add_child(row)
 
-func _create_attribute_row(attr_key: String, value: int) -> HBoxContainer:
+## One attribute line. `value` is the bought value (what the next point costs
+## from); the number shown is the effective one the game uses, green while a
+## temporary effect boosts it and red while one drains it.
+func _create_attribute_row(attr_key: String, value: int, character: Dictionary = {}) -> HBoxContainer:
 	var row = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
 
@@ -478,11 +481,29 @@ func _create_attribute_row(attr_key: String, value: int) -> HBoxContainer:
 	abbrev_label.add_theme_font_size_override("font_size", 14)
 	row.add_child(abbrev_label)
 
-	# Value label
+	# Value label: the effective number, coloured by any temporary change.
 	var value_label = Label.new()
-	value_label.text = str(value)
+	var shown: int = value
+	var change: int = 0
+	if not character.is_empty():
+		shown = CharacterSystem.get_effective_attribute(character, attr_key)
+		change = CharacterSystem.get_temporary_change(character, "attribute." + attr_key)
+	value_label.text = str(shown)
 	value_label.custom_minimum_size.x = 30
 	value_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	if change != 0:
+		value_label.add_theme_color_override("font_color",
+			UIStyle.change_color(change, Color.WHITE))
+	if shown != value or change != 0:
+		value_label.mouse_filter = Control.MOUSE_FILTER_STOP
+		var tip: String = "Bought: %d" % value
+		if shown - change != value:
+			tip += "\nGear, birth and traits: %+d" % (shown - change - value)
+		if change > 0:
+			tip += "\nBoosted for now: %+d" % change
+		elif change < 0:
+			tip += "\nDrained for now: %+d" % change
+		value_label.tooltip_text = tip
 	row.add_child(value_label)
 
 	# Upgrade button — for companions check free_xp, for player check xp
@@ -648,15 +669,21 @@ func _update_skills_grid(character: Dictionary) -> void:
 			var bonus = 0
 			for src in bonus_sources:
 				bonus += int(bonus_sources[src])
-			var effective = trained + bonus
+			var effective: int = CharacterSystem.get_effective_skill_level(character, skill_id)
+			var change: int = CharacterSystem.get_temporary_change(character, "skill." + skill_id)
 
 			var skill_btn = Button.new()
 			skill_btn.text = _format_skill_name(skill_id) + " [" + str(int(effective)) + "]"
 			skill_btn.custom_minimum_size = Vector2(110, 28)
 			skill_btn.add_theme_font_size_override("font_size", 11)
 
-			# Color: yellow if boosted by item/race, element color if just trained, muted if 0
-			if effective > 0:
+			# Color: green/red while a temporary effect boosts or drains it,
+			# yellow if raised by item/race/traits, element colour if just
+			# trained, muted if 0.
+			if change != 0:
+				skill_btn.add_theme_color_override("font_color",
+					UIStyle.change_color(change, Color.WHITE))
+			elif effective > 0:
 				if bonus > 0:
 					skill_btn.add_theme_color_override("font_color", Color.YELLOW)
 				else:
