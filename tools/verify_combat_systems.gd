@@ -411,7 +411,18 @@ func _check_duel_ends_the_moment_the_boss_yields() -> void:
 		_done()
 		return
 	var hero := _make_unit(Vector2i(24, 20), CombatManager.Team.PLAYER)
-	king.resistances = {}  # so the blow lands at exactly the size we ask for
+	# So the blow lands at exactly the size we ask for, whatever kit rolled.
+	# Enemy resistance is no longer the unit field alone: Resistance._gather
+	# also sums effect holds and mantras, and apply_damage then applies the
+	# sheet's flat magic_resistance_pct (fire counts as magic) and the unit's
+	# damage-taken multipliers. Clear every one of those inputs.
+	king.resistances = {}
+	king.effect_holds = []
+	king.mantra_stat_bonuses = {}
+	var sheet_derived: Dictionary = king.character_data.get("derived", {})
+	sheet_derived["resistances"] = {}
+	sheet_derived["magic_resistance_pct"] = 0.0
+	sheet_derived["damage_reduction_pct"] = 0.0
 
 	var outcome: Array[bool] = []
 	var on_end := func(victory: bool) -> void: outcome.append(victory)
