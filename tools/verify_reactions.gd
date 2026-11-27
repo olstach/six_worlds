@@ -14,7 +14,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 13
+const EXPECTED_CHECKS: int = 14
 var grid: CombatGrid
 
 
@@ -31,6 +31,7 @@ func _ready() -> void:
 	_check_the_vocabulary_is_closed()
 	_check_a_counterstance_answers_a_melee_blow()
 	_check_a_counterstance_answers_each_attacker_once()
+	_check_two_counterstances_stop_after_two_answers_each()
 	_check_a_stance_without_the_status_answers_nothing()
 	_check_a_brace_hits_harder_than_a_swing_of_opportunity()
 	_check_a_kill_zone_reaches_as_far_as_the_weapon()
@@ -255,6 +256,37 @@ func _check_a_counterstance_answers_each_attacker_once() -> void:
 	_cleanup([holder, first, second])
 	_done()
 
+
+## Two units both in Counterstance used to answer each other's answers until
+## one missed or died: a use is spent only after the counter-attack returns,
+## so inside the exchange neither allowance ever filled. Owner ruling
+## 2026-11-27: each side gets two answers in one exchange, unless a miss or a
+## death ends it first.
+func _check_two_counterstances_stop_after_two_answers_each() -> void:
+	var a := _make_unit(Vector2i(10, 10), 0)
+	var b := _make_unit(Vector2i(11, 10), 1)
+	CombatManager._apply_status_effect(a, "Counterstance", 1)
+	CombatManager._apply_status_effect(b, "Counterstance", 1)
+	# Several exchanges, because any swing can miss (95% cap) and end one
+	# early; the cap must hold in every one, and a full exchange must happen.
+	var full := false
+	for exchange in 8:
+		for u in [a, b]:
+			for entry in u.status_effects:
+				entry.erase("_trigger_uses")
+		_strike(a, b, "Counterstance")
+		var by_b: int = _times_fired(b, "Counterstance")
+		var by_a: int = _times_fired(a, "Counterstance")
+		if by_b > 2 or by_a > 2:
+			_fail("one exchange of counters ran to %d answers by the defender "
+				% by_b + "and %d by the attacker; the cap is two each" % by_a)
+			break
+		if by_b == 2 and by_a == 2:
+			full = true
+	if not full:
+		_fail("in 8 exchanges the two stances never traded two answers each")
+	_cleanup([a, b])
+	_done()
 
 ## The stance is the status. Holding the perk without pressing the button
 ## answers nothing, which is what makes it a decision.

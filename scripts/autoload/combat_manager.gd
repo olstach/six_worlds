@@ -6344,6 +6344,15 @@ func free_reaction_attack(unit: Node, against: Node, power_pct: float, label: St
 	var range_ok: int = unit.get_attack_range() if unit.has_method("get_attack_range") else 1
 	if _grid_distance(unit.grid_position, against.grid_position) > range_ok:
 		return false
+	# A counter can provoke a counter (two units both in Counterstance). A
+	# stance spends its use only after its answer returns, so inside one
+	# exchange no allowance ever fills; this cap is what ends it. Returning
+	# false spends nothing, the same as an answer that could not reach.
+	var me: int = unit.get_instance_id()
+	if int(_reaction_chain.get(me, 0)) >= REACTION_CHAIN_MAX:
+		return false
+	_reaction_chain[me] = int(_reaction_chain.get(me, 0)) + 1
+	_reaction_depth += 1
 	combat_log.emit("%s: %s!" % [unit.unit_name, label.replace("_", " ")])
 	var mult: float = power_pct / 100.0
 	if is_equal_approx(mult, 1.0):
@@ -6353,7 +6362,21 @@ func free_reaction_attack(unit: Node, against: Node, power_pct: float, label: St
 		_reaction_damage_mult = mult
 		attack_unit(unit, against, true)
 		_reaction_damage_mult = 1.0
+	_reaction_depth -= 1
+	if _reaction_depth == 0:
+		_reaction_chain.clear()
 	return true
+
+
+## How many free reaction attacks one unit may make inside a single exchange
+## of answers to answers (owner ruling 2026-11-27: two each, unless a miss or a
+## death ends it first). Separate exchanges, such as walking past two enemies,
+## each start from zero.
+const REACTION_CHAIN_MAX: int = 2
+## Reaction attacks made so far in the current exchange, by unit instance id,
+## and how deep the exchange is; both clear when the outermost one returns.
+var _reaction_chain: Dictionary = {}
+var _reaction_depth: int = 0
 
 
 ## Multiplier applied to the next reaction attack, set around attack_unit()
