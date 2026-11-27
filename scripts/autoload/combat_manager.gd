@@ -1376,6 +1376,9 @@ func _start_current_turn() -> void:
 	# Process terrain effects (standing in fire, poison, etc.)
 	_process_terrain_effects(unit)
 
+	# And any zone it starts its turn in (turn_start_inside).
+	_zones_turn_trigger(unit, "turn_start_inside")
+
 	# Check if unit died from status effect or terrain damage
 	if unit.current_hp <= 0 and not unit.is_bleeding_out:
 		_start_bleed_out(unit)
@@ -1467,6 +1470,7 @@ func end_turn() -> void:
 	var unit = get_current_unit()
 	if unit:
 		_process_status_turn_end(unit)
+		_zones_turn_trigger(unit, "turn_end_inside")
 		turn_ended.emit(unit)
 
 	_advance_turn()
@@ -2907,16 +2911,14 @@ func apply_damage(unit: Node, damage: int, damage_type: String, source: Node = n
 
 	# ── 4. Auras and the ground ─────────────────────────────────────────────
 	#
-	# Dampening_Aura and anything else declaring damage_taken_pct, a unit's own
-	# or the zone it is standing in. Multiplicative with everything above, and
-	# with each other.
+	# Dampening_Aura, the Vajra Mandala and anything else that multiplies
+	# stat.magic_damage_taken / stat.physical_damage_taken: an aura reaching the
+	# unit, the zone it stands in, or a status's hold, all read through
+	# ValuePaths. Multiplicative with everything above, and with each other.
 	if damage > 0:
 		var kind: String = "magic" if DamageType.is_magic(damage_type) else "physical"
-		var aura_mult: float = AuraSystem.damage_taken_multiplier(
-			unit, kind, all_units, _aura_distance)
-		# And the ground they are standing on, which asks the same question of
-		# the same payload kind.
-		aura_mult *= _zone_damage_taken_multiplier(unit, kind)
+		var aura_mult: float = maxf(0.0, ValuePaths.apply_to(
+			unit, "stat.%s_damage_taken" % kind, 1.0))
 		if not is_equal_approx(aura_mult, 1.0):
 			damage = maxi(1, int(damage * aura_mult))
 
@@ -3338,62 +3340,6 @@ func place_zone(zone_id: String, tiles: Array, source: Node, turns: int) -> bool
 	return true
 
 
-## Continuous zone payloads — the ones that are READ where they apply rather
-## than applied on a tick.
-##
-## Sharing the aura payload vocabulary means sharing both halves of it. A
-## `grant_status` or a `heal` is pushed onto a unit once a round; a
-## `damage_taken_pct` or a `stat` has to be asked for at the moment it matters,
-## or it silently does nothing — which is exactly what the mandala's shelter
-## did until a test asked whether an ally inside actually took less.
-func _zone_damage_taken_multiplier(unit: Node, damage_kind: String) -> float:
-	var mult := 1.0
-	if not "grid_position" in unit:
-		return mult
-	for zone in zones_at(unit.grid_position):
-		for payload in zone.def.get("while_inside", []):
-			if payload.get("kind", "") != "damage_taken_pct":
-				continue
-			if not Zone.reaches(payload, zone.def, zone.source, unit):
-				continue
-			var only: String = str(payload.get("only", ""))
-			if only != "" and only != damage_kind:
-				continue
-			mult *= 1.0 + float(payload.get("amount", 0)) / 100.0
-	return maxf(0.0, mult)
-
-
-## Flat stat bonuses from the ground a unit is standing on.
-func _zone_stat_bonus(unit: Node, stat: String) -> float:
-	var total := 0.0
-	if not "grid_position" in unit:
-		return total
-	for zone in zones_at(unit.grid_position):
-		for payload in zone.def.get("while_inside", []):
-			if payload.get("kind", "") != "stat" or payload.get("stat", "") != stat:
-				continue
-			if Zone.reaches(payload, zone.def, zone.source, unit):
-				total += float(payload.get("amount", 0))
-	return total
-
-
-## Resistance granted by the ground a unit is standing on — the zone twin of
-## AuraSystem.resistance_bonus(), reading the same payload kind.
-func zone_resistance_bonus(unit: Node, damage_type: String) -> float:
-	var total := 0.0
-	if not "grid_position" in unit:
-		return total
-	for zone in zones_at(unit.grid_position):
-		for payload in zone.def.get("while_inside", []):
-			if payload.get("kind", "") != "resistance":
-				continue
-			if str(payload.get("type", "")) != damage_type:
-				continue
-			if Zone.reaches(payload, zone.def, zone.source, unit):
-				total += float(payload.get("amount", 0))
-	return total
-
-
 ## Every zone covering this tile.
 func zones_at(tile: Vector2i) -> Array[Dictionary]:
 	var found: Array[Dictionary] = []
@@ -3406,19 +3352,24 @@ func zones_at(tile: Vector2i) -> Array[Dictionary]:
 ## Advance every zone one round: fire `while_inside`, drift, expire.
 ##
 ## Called once per round rather than once per unit's turn, because a zone
-## belongs to the ground and not to anybody's initiative.
+## belongs to the ground and not to anybody's initiative. Only the effects
+## that happen fire here; a `while_inside` modify is read where it applies
+## (AuraSystem.contributions) and is skipped.
 func _tick_zones() -> void:
 	for i in range(active_zones.size() - 1, -1, -1):
 		var zone: Dictionary = active_zones[i]
 
-		for unit in all_units:
-			if not is_instance_valid(unit) or unit.is_dead or not "grid_position" in unit:
-				continue
-			if not (zone.tiles as Dictionary).has(unit.grid_position):
-				continue
-			for payload in zone.def.get("while_inside", []):
-				if Zone.reaches(payload, zone.def, zone.source, unit):
-					_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
+		var per_round: Array = []
+		for e in zone.def.get("while_inside", []):
+			if str(e.get("op", "")) != "modify":
+				per_round.append(e)
+		if not per_round.is_empty():
+			for unit in all_units:
+				if not is_instance_valid(unit) or unit.is_dead or not "grid_position" in unit:
+					continue
+				if not (zone.tiles as Dictionary).has(unit.grid_position):
+					continue
+				_run_zone_effects(zone, unit, per_round)
 
 		if str(zone.def.get("drift", "")) == "random":
 			_drift_zone(zone)
@@ -3427,6 +3378,33 @@ func _tick_zones() -> void:
 		if zone.turns_left <= 0:
 			combat_log.emit("%s disperses." % zone.name)
 			active_zones.remove_at(i)
+
+
+## Run `effects` of `zone` on `unit`, who is standing in it.
+##
+## Each effect reaches the unit only if Zone.effect_reaches says so (its `to`,
+## or the zone's `affects`). They go through EffectResolver with the zone's
+## owner as the caster and the unit's tile — a zone tile — as the position.
+## Returns the resolver's log.
+func _run_zone_effects(zone: Dictionary, unit: Node, effects: Array) -> Array[Dictionary]:
+	var reaching: Array = []
+	for e in effects:
+		if Zone.effect_reaches(e, zone.def, zone.source, unit):
+			reaching.append(e)
+	var source: Node = zone.source if zone.source != null and is_instance_valid(zone.source) else null
+	return _resolve_area_effects(source, unit, {"id": zone.id, "name": zone.name},
+		reaching, 1.0, "zone")
+
+
+## Fire `turn_start_inside` or `turn_end_inside` for every zone the unit is
+## standing in, at the start or end of its own turn.
+func _zones_turn_trigger(unit: Node, trigger: String) -> void:
+	if not is_instance_valid(unit) or unit.is_dead or not "grid_position" in unit:
+		return
+	for zone in zones_at(unit.grid_position):
+		var effects: Array = zone.def.get(trigger, [])
+		if not effects.is_empty():
+			_run_zone_effects(zone, unit, effects)
 
 
 ## Move a whole zone one tile in a random direction, keeping its shape.
@@ -3469,9 +3447,7 @@ func _zones_check_entry(unit: Node) -> void:
 				combat_log.emit("%s spots the trap and steps around it."
 					% unit.unit_name)
 				continue
-			for payload in zone.def.get("on_enter", []):
-				if Zone.reaches(payload, zone.def, zone.source, unit):
-					_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
+			_run_zone_effects(zone, unit, zone.def.get("on_enter", []))
 			# A gate puts you out of its other end. Marked as having entered
 			# THAT end too, or the far side charges you for arriving.
 			if str(zone.def.get("pair", "")) == "gate" and zone.has("linked_to"):
@@ -3528,19 +3504,10 @@ func _zones_on_death(unit: Node) -> void:
 	for zone in active_zones:
 		if not (zone.tiles as Dictionary).has(unit.grid_position):
 			continue
-		for payload in zone.def.get("on_death_inside", []):
-			if not Zone.reaches(payload, zone.def, zone.source, unit):
-				continue
-			if payload.get("kind", "") != "raise":
-				_apply_aura_payload(zone.source, unit, zone, payload, 1.0)
-				continue
-			var owner: Node = zone.source if payload.get("for", "caster") == "caster" else unit
-			if owner == null or not is_instance_valid(owner):
-				continue
-			var risen: Dictionary = _spawn_summoned_unit(
-				owner, str(payload.get("summon", "Zombie")), unit.grid_position, 0)
-			if risen.get("success", false):
-				combat_log.emit("%s rises from the grave soil." % unit.unit_name)
+		# A `summon from: corpse` stands its creature on the fallen unit's tile.
+		for entry in _run_zone_effects(zone, unit, zone.def.get("on_death_inside", [])):
+			if entry.op == "summon" and entry.applied:
+				combat_log.emit("%s rises from the %s." % [unit.unit_name, str(zone.name).to_lower()])
 
 
 ## Raise the dead, at whatever tier the spell asked for.
@@ -3908,7 +3875,7 @@ func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Diction
 	# Ground that makes casting cheaper. `mana_cost_pct` is continuous — read
 	# where it applies, like every other zone and aura stat — so an Inscribed
 	# Circle discounts whoever is standing in it rather than whoever drew it.
-	var ground_mana_pct: int = get_continuous_stat_bonus(caster, "mana_cost_pct")
+	var ground_mana_pct: int = mana_cost_pct_of(caster)
 	if ground_mana_pct != 0:
 		mana_cost = maxi(1, int(mana_cost * (1.0 + float(ground_mana_pct) / 100.0)))
 
@@ -6983,14 +6950,15 @@ func _process_status_spread(unit: Node) -> void:
 				break  # Spread to one unit per tick
 
 
-## Fire the per-turn payloads of every aura this unit emits.
+## Fire the per-turn effects of every aura this unit emits.
 ##
 ## Called once per unit per turn. The unit's own auras tick on its own turn,
 ## which is what keeps a two-emitter fight from healing anyone twice per round.
 ##
-## Only per-turn payloads resolve here. `stat`, `damage_taken_pct` and `max_hp`
-## are continuous: they are read where they apply, so that stepping out of an
-## aura removes them with no bookkeeping. See AuraSystem.
+## Only the effects that happen resolve here (status, heal, damage). An aura's
+## `modify` effects are read-time: they are added up where the number is read,
+## so that stepping out of an aura removes them with no bookkeeping. See
+## AuraSystem.
 ##
 ## Reactive effects are not auras and stay where they are: the lightning
 ## retaliation on Storm_Lord and Lightning_Form fires when someone attacks, and
@@ -7003,93 +6971,77 @@ func _process_auras(unit: Node) -> void:
 		return
 
 	for aura in AuraSystem.emitted_by(unit):
+		var effects: Array = AuraSystem.per_turn_effects(aura)
+		if effects.is_empty():
+			continue
 		for target in all_units:
 			if not is_instance_valid(target) or not "grid_position" in target:
 				continue
 			var dist: int = _grid_distance(unit.grid_position, target.grid_position)
 			if not AuraSystem.reaches(aura, unit, target, dist):
 				continue
-			var mult: float = AuraSystem.sign_for(aura, unit, target)
-			for payload in aura["payloads"]:
-				_apply_aura_payload(unit, target, aura, payload, mult)
+			_resolve_area_effects(unit, target, aura, effects,
+				AuraSystem.sign_for(aura, unit, target), "aura")
 
 
-## Resolve one payload of one aura onto one unit inside it.
+## Resolve the effects of one aura or zone (`area`: its id, name and, for a
+## status-carried aura, `status_entry`) on one unit inside it, through
+## EffectResolver, and show what happened.
 ##
-## Unknown kinds warn rather than pass silently. A payload nothing resolves is
-## indistinguishable from an aura that works until someone plays the character,
-## and that is the bug this whole refactor exists to make impossible.
-func _apply_aura_payload(source: Node, target: Node, aura: Dictionary, payload: Dictionary, mult: float) -> void:
-	var kind: String = payload.get("kind", "")
-	match kind:
-		"grant_status":
-			var status_name: String = payload.get("status", "")
-			if status_name == "" or target.has_status(status_name):
-				return
-			# A standing field that charmed everyone beside it every single turn
-			# would end fights on its own, so a payload may fire on a roll.
-			# The owner's Ritual raises that chance like any other status roll.
-			var chance: float = float(payload.get("chance", 1.0))
-			if chance < 1.0 and randf() > ritual_chance(source, chance):
-				return
-
-			# Or on a saving throw, which is the better answer when the effect
-			# is something a person could see through rather than dodge. The DC
-			# may fall each time a given target resists it: Shining Mirage wears
-			# out against anyone who keeps their head, and that has to be
-			# remembered per-target, not per-aura.
-			var save_spec: Dictionary = payload.get("save", {})
-			if not save_spec.is_empty():
-				var aura_id: String = aura.get("id", "")
-				var passes: int = int(target.aura_save_passes.get(aura_id, 0)) \
-					if "aura_save_passes" in target else 0
-				var dc: int = int(save_spec.get("dc", 12)) \
-					- passes * int(save_spec.get("dc_drop_per_pass", 0)) \
-					+ status_save_dc_bonus(source)
-				var roll: Dictionary = SaveSystem.roll(
-					target, save_spec.get("attribute", "focus"), maxi(1, dc))
-				if roll.success:
-					if "aura_save_passes" in target:
-						target.aura_save_passes[aura_id] = passes + 1
-					return
-
-			# The aura's owner is the source where there is one (a ground
-			# zone has none, and passes null), so a burning or poisoning aura
-			# scales with its owner's burning_damage_pct / poison_damage_pct.
-			_apply_status_effect(target, status_name, int(payload.get("duration", 2)), 0, source)
-			status_effect_triggered.emit(source, aura["name"], 0, "aura")
-
-		"heal":
-			var amount: int = int(float(payload.get("amount", 0)) * mult)
-			if amount <= 0 or target.current_hp >= target.max_hp:
-				return
-			target.heal(amount)
-			unit_healed.emit(target, amount)
-			status_effect_triggered.emit(source, aura["name"], amount, "aura")
-
-		"damage":
-			var amount: int = int(float(payload.get("amount", 0)) * mult)
-			if amount <= 0:
-				return
-			apply_damage(target, amount, payload.get("element", "physical"))
-			status_effect_triggered.emit(source, aura["name"], amount, "aura")
-
-		"stat", "damage_taken_pct", "max_hp":
-			pass  # continuous — read at the point they apply, never applied here
-
-		_:
-			# Zones share this function and carry no `source_kind`, so every
-			# key here is read with a default — a diagnostic that crashes is
-			# worse than the thing it was diagnosing.
-			push_warning("AuraSystem: aura '%s' (%s '%s') — %s"
-				% [aura.get("id", "?"), aura.get("source_kind", "zone"),
-					aura.get("source_id", "?"),
-					AuraSystem.explain_unknown_kind(kind)])
+## The context: `source` (the emitter, or the zone's owner, maybe null) is the
+## caster, `target` the recipient and its tile the position, the area the
+## container. The damage names no dealer, as an aura's never has. A heal on a
+## unit already at full HP is skipped, so no "+0" floats up. For a unit on the
+## far side of an `invert_for_enemies` aura (`sign_mult` -1) a heal or damage
+## does nothing, as a negative amount always did.
+##
+## Effects resolve one at a time so each popup can say what that one did (a
+## zone's popups use the "aura" colour, as they always have); they share one
+## context, so one save is rolled per recipient.
+func _resolve_area_effects(source: Node, target: Node, area: Dictionary, effects: Array,
+		sign_mult: float, kind: String) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if effects.is_empty() or target == null or not is_instance_valid(target):
+		return out
+	var ctx := EffectContext.new()
+	ctx.caster = source
+	ctx.target = target
+	ctx.area_units = [target]
+	ctx.target_pos = target.grid_position
+	ctx.container_kind = kind
+	ctx.container_id = str(area.get("id", ""))
+	ctx.status_entry = area.get("status_entry", {})
+	ctx.anonymous_damage = true
+	var name: String = str(area.get("name", ctx.container_id))
+	for e in effects:
+		var op: String = str(e.get("op", ""))
+		if op in ["heal", "damage"] and sign_mult < 0.0:
+			continue
+		if op == "heal" and target.current_hp >= target.max_hp:
+			continue
+		var hp_before: int = target.current_hp
+		var log: Array[Dictionary] = EffectResolver.resolve([e], ctx)
+		out.append_array(log)
+		for entry in log:
+			match op:
+				"heal":
+					var healed: int = target.current_hp - hp_before
+					if healed > 0:
+						unit_healed.emit(target, healed)
+						status_effect_triggered.emit(source, name, healed, "aura")
+				"damage":
+					if entry.applied:
+						status_effect_triggered.emit(source, name, int(entry.amount), "aura")
+				"status":
+					# Landed or resisted: either way the field reached them.
+					if entry.applied or entry.reason == "resisted":
+						status_effect_triggered.emit(source, name, 0, "aura")
+	return out
 
 
 ## Recompute every unit's aura-granted max HP.
 ##
-## max_hp is the one payload that cannot be computed on demand, because
+## stat.max_hp is the one number that cannot only be read on demand, because
 ## current_hp has to be clamped when the bonus goes away. So it is stored — and
 ## applied as a DELTA against what this function set last time, which makes a
 ## repeated call a no-op instead of a doubling. That distinction is the whole
@@ -7100,7 +7052,9 @@ func _refresh_aura_max_hp() -> void:
 			continue
 		if not "grid_position" in unit or not "aura_max_hp" in unit:
 			continue
-		var want: int = AuraSystem.max_hp_bonus(unit, all_units, _aura_distance)
+		# Every fortify / drain on stat.max_hp: the auras and zones reaching
+		# the unit and any hold a status placed (ValuePaths.flat_sum).
+		var want: int = int(round(ValuePaths.flat_sum(unit, "stat.max_hp")))
 		var delta: int = want - unit.aura_max_hp
 		if delta == 0:
 			continue
@@ -10163,21 +10117,18 @@ func _unit_is_unarmored(unit: Node, allow_light: bool = false) -> bool:
 ##
 ## Named for perks alone until auras joined it; the shape was always "what does
 ## this unit get right now, from everything around it".
+## The percentage change to `unit`'s spell costs from stat.mana_cost_pct: an
+## Inscribed Circle under it, or anything else holding that value.
+func mana_cost_pct_of(unit: Node) -> int:
+	return int(round(ValuePaths.apply_to(unit, "stat.mana_cost_pct", 0.0)))
+
+
 func get_continuous_stat_bonus(unit: Node, stat: String) -> int:
 	var total := 0
 	var char_data = unit.character_data if "character_data" in unit else {}
 
-	# --- Auras projected by any unit on the field, including this one ---
-	total += int(round(AuraSystem.stat_bonus(unit, stat, all_units, _aura_distance)))
-	# Percentage auras (Shield Wall: +25% Armor, adjacent allies +10%) are a
-	# share of this unit's own sheet value — equipment, skills, perks.
-	var aura_pct: float = AuraSystem.stat_pct_bonus(unit, stat, all_units, _aura_distance)
-	if aura_pct != 0.0:
-		var sheet_value: float = float(char_data.get("derived", {}).get(stat, 0))
-		total += int(round(sheet_value * aura_pct / 100.0))
-
-	# --- And the ground underfoot, which uses the same payload vocabulary ---
-	total += int(round(_zone_stat_bonus(unit, stat)))
+	# Auras and zones are not added here any more: their modifies are
+	# read-time and reach the getters through ValuePaths (AuraSystem.contributions).
 
 	# --- Equipment-based bonuses (apply regardless of whether the unit has perks) ---
 	match stat:

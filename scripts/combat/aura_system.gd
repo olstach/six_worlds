@@ -28,44 +28,31 @@ class_name AuraSystem
 ##   spells     spell.aura        = "..."  — applied through its carrier status,
 ##                                  which is what gives a spell aura a duration
 ##
-## TWO KINDS OF PAYLOAD, AND THE DIFFERENCE MATTERS.
+## WHAT AN AURA DOES is a list of effects in the shared effect language, under
+## `while_inside` (EffectVocab.validate_aura checks it). Two kinds, and the
+## difference matters:
 ##
-## Continuous payloads (`stat`, `damage_taken_pct`) are computed ON DEMAND every
-## time the stat is read, and never stored. Storage is what let
-## mana_cost_reduction reach -500 in this codebase: a value recomputed each turn
-## and added to itself. A unit that walks out of an aura loses it because the
-## next read simply does not find it, with nothing to remember and nothing to
-## reset.
+## A `modify` is READ-TIME. It is never applied and never stored as a hold: it
+## is added up by contributions() every time the number is read, by
+## ValuePaths.flat_sum / apply_scaling (the stat getters) and by
+## Resistance._gather. Storage is what let mana_cost_reduction reach -500 in
+## this codebase: a value recomputed each turn and added to itself. A unit that
+## walks out of an aura loses it because the next read simply does not find
+## it, with nothing to remember, so movement and death need no bookkeeping.
+## In a breakdown each one is labelled "aura:<emitter instance id>:<aura id>".
 ##
-## Per-turn payloads (`heal`, `damage`, `grant_status`) fire once per turn and
-## are inherently safe. `max_hp` is the awkward third case: it must be stored,
-## because current_hp has to be clamped when it drops. It is applied as a DELTA
-## against the last value this system set, which makes a repeated refresh a
+## Every other effect (status, heal, damage) fires once per turn on the
+## emitter's turn, through EffectResolver (CombatManager._process_auras).
+## `stat.max_hp` is the awkward case: it is read like any modify, but
+## CombatManager._refresh_aura_max_hp stores the result as a DELTA on the unit,
+## because current_hp has to be clamped when it drops. A repeated refresh is a
 ## no-op rather than a doubling.
-
-# ── Vocabulary ───────────────────────────────────────────────────────────────
-#
-# Same rule as CombatStats, for the same reason: a payload kind that nothing
-# resolves is a silent no-op, and silent no-ops in data are this project's most
-# expensive recurring bug. Every kind here is annotated with its consumer.
-
-## What an aura can do to a unit inside it.
-const PAYLOAD_KINDS: Array[String] = [
-	"stat",              # continuous — AuraSystem.stat_bonus(), via CombatUnit getters
-	"stat_pct",          # continuous — AuraSystem.stat_pct_bonus(): a % of the unit's OWN sheet value
-	"grant_status",      # per turn  — CombatManager._process_auras()
-	"heal",              # per turn  — CombatManager._process_auras()
-	"damage",            # per turn  — CombatManager._process_auras()
-	"max_hp",            # stored    — CombatManager._refresh_aura_max_hp()
-	"damage_taken_pct",  # continuous — CombatManager.apply_damage()
-	"resistance",        # continuous — Resistance.total(), by damage type or affliction
-]
+##
+## Zones (zones.json) are the same idea anchored to tiles; their read-time
+## modifies are added up here too, labelled "zone:<zone id>".
 
 ## Who an aura reaches. `self_included` adds the emitter on top of any of these.
 const AFFECTS: Array[String] = ["allies", "enemies", "all", "self"]
-
-## Damage filters a `damage_taken_pct` payload may narrow itself to.
-const DAMAGE_FILTERS: Array[String] = ["magic", "physical"]
 
 const DATA_PATH := "res://resources/data/auras.json"
 
@@ -111,22 +98,11 @@ static func reload() -> void:
 	_definitions = {}
 
 
-static func is_payload_kind(kind: String) -> bool:
-	return kind in PAYLOAD_KINDS
-
-
-## One-line explanation of why a payload will not do what its author expects,
-## for error messages that are fixable from the log line alone.
-static func explain_unknown_kind(kind: String) -> String:
-	return ("'%s' is not in AuraSystem.PAYLOAD_KINDS, so nothing resolves it; "
-		+ "the aura would be collected and then silently dropped") % kind
-
-
 # ── Collection: what does this unit emit? ────────────────────────────────────
 
 ## Every aura `unit` is currently projecting, from all four sources.
 ##
-## Returns instances, not definitions: each carries the resolved `payloads` with
+## Returns instances, not definitions: each carries the resolved `effects` with
 ## any per-source magnitude override already applied, so a caller never has to
 ## know whether an aura came from a robe or a mantra.
 static func emitted_by(unit: Node) -> Array[Dictionary]:
@@ -163,7 +139,9 @@ static func emitted_by(unit: Node) -> Array[Dictionary]:
 			# around it and dazzles whoever closes to melee, and those reach
 			# different teams at different radii, so they cannot be one aura.
 			for aura_id in _aura_ids_of(def):
-				var inst := _instance(aura_id, "status", status_name, def.get("aura_value", null))
+				# The status entry rides along, so an effect can borrow the
+				# value the spell put on it ({"from": "status.value"}).
+				var inst := _instance(aura_id, "status", status_name, null, effect)
 				if not inst.is_empty():
 					out.append(inst)
 
@@ -188,22 +166,27 @@ static func emitted_by(unit: Node) -> Array[Dictionary]:
 
 
 ## Build one aura instance, applying a magnitude override if the source gave one.
-static func _instance(aura_id: String, source_kind: String, source_id: String, magnitude) -> Dictionary:
+##
+## `magnitude` is an item's or perk's `aura_value`: a SIGNED number that
+## replaces the flat numbers of the aura's effects — a fortify/drain amount
+## (its sign picks the mode, so a Khatvanga's -4 drains 4), a pct_of value, a
+## heal or damage amount. Auras whose effects want different magnitudes from
+## one another should be separate definitions rather than overridden ones.
+## `status_entry` is the carrier status's entry, when a status emits it.
+static func _instance(aura_id: String, source_kind: String, source_id: String, magnitude,
+		status_entry: Dictionary = {}) -> Dictionary:
 	var def: Dictionary = get_definition(aura_id)
 	if def.is_empty():
 		push_warning("AuraSystem: %s '%s' declares unknown aura '%s'"
 			% [source_kind, source_id, aura_id])
 		return {}
 
-	var payloads: Array = []
-	for p in def.get("payloads", []):
-		var copy: Dictionary = (p as Dictionary).duplicate()
-		# An override replaces the amount on every numeric payload. Auras whose
-		# payloads want different magnitudes from one another should be separate
-		# definitions rather than overridden ones.
-		if magnitude != null and copy.has("amount"):
-			copy["amount"] = magnitude
-		payloads.append(copy)
+	var effects: Array = []
+	for e in def.get("while_inside", []):
+		var copy: Dictionary = (e as Dictionary).duplicate(true)
+		if magnitude != null:
+			_override(copy, float(magnitude))
+		effects.append(copy)
 
 	return {
 		"id": aura_id,
@@ -212,10 +195,27 @@ static func _instance(aura_id: String, source_kind: String, source_id: String, m
 		"affects": def.get("affects", "allies"),
 		"self_included": bool(def.get("self_included", false)),
 		"invert_for_enemies": bool(def.get("invert_for_enemies", false)),
-		"payloads": payloads,
+		"effects": effects,
+		# Only the value: a stack count would multiply the aura's numbers,
+		# which no aura has ever done.
+		"status_entry": {"value": status_entry.get("value", 0)} if not status_entry.is_empty() else {},
 		"source_kind": source_kind,
 		"source_id": source_id,
 	}
+
+
+## Apply an `aura_value` override to one effect (see _instance).
+static func _override(effect: Dictionary, magnitude: float) -> void:
+	var op: String = str(effect.get("op", ""))
+	var amount = effect.get("amount", null)
+	if op == "modify" and str(effect.get("mode", "")) in ["fortify", "drain"]:
+		effect["mode"] = "drain" if magnitude < 0.0 else "fortify"
+		if amount is Dictionary and amount.has("pct_of"):
+			amount["value"] = absf(magnitude)
+		else:
+			effect["amount"] = absf(magnitude)
+	elif op in ["heal", "damage"] and (amount is int or amount is float):
+		effect["amount"] = magnitude
 
 
 ## The auras a definition declares. `aura` may name one or list several.
@@ -290,102 +290,108 @@ static func sign_for(aura: Dictionary, source: Node, target: Node) -> float:
 	return 1.0 if same_team else -1.0
 
 
-# ── Continuous payloads ──────────────────────────────────────────────────────
+# ── Read-time modifies: what auras and zones add to a number ─────────────────
 
-## Total aura bonus to `stat` for `unit`, summed over every aura reaching it.
+## Every read-time `modify` reaching `unit` from an aura or a zone, as
+##   {value, mode, amount, label, pct}
+## `amount` is already signed for `invert_for_enemies` (a multiply inverts as
+## 2 - factor, so 0.8 becomes 1.2). `pct` is true when the amount is a
+## percentage of the unit's own sheet value (pct_of), so flat_total can round
+## those together, as they always were.
 ##
-## Computed fresh on every call and never stored, which is what makes walking
-## out of an aura work with no bookkeeping at all.
-static func stat_bonus(unit: Node, stat: String, units: Array, distance_fn: Callable) -> float:
-	var total := 0.0
-	for other in units:
-		for aura in emitted_by(other):
-			var dist: int = distance_fn.call(other, unit)
+## The ONE place the reach rules for read-time numbers live: ValuePaths and
+## Resistance both ask here. Computed fresh on every call and never stored.
+static func contributions(unit: Node) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if unit == null or not is_instance_valid(unit) or not "grid_position" in unit:
+		return out
+	if CombatManager == null:
+		return out
+	for other in CombatManager.all_units:
+		if other == null or not is_instance_valid(other) or not "grid_position" in other:
+			continue
+		var auras: Array[Dictionary] = emitted_by(other)
+		if auras.is_empty():
+			continue
+		var dist: int = CombatManager._aura_distance(other, unit)
+		for aura in auras:
 			if not reaches(aura, other, unit, dist):
 				continue
-			var mult := sign_for(aura, other, unit)
-			for p in aura["payloads"]:
-				if p.get("kind", "") == "stat" and p.get("stat", "") == stat:
-					total += float(p.get("amount", 0)) * mult
-	return total
-
-
-## Total PERCENTAGE bonus to `stat` for `unit` from every `stat_pct` aura
-## reaching it. The caller turns it into points against the unit's own sheet
-## value (CombatManager.get_continuous_stat_bonus) — "+10% Armor" means a
-## tenth of THAT unit's Armor, which a flat `stat` payload cannot say.
-## Shield Wall is the first user.
-static func stat_pct_bonus(unit: Node, stat: String, units: Array, distance_fn: Callable) -> float:
-	var total := 0.0
-	for other in units:
-		for aura in emitted_by(other):
-			var dist: int = distance_fn.call(other, unit)
-			if not reaches(aura, other, unit, dist):
+			var sign_mult: float = sign_for(aura, other, unit)
+			var label: String = "aura:%d:%s" % [other.get_instance_id(), aura.id]
+			for e in aura.effects:
+				if str(e.get("op", "")) == "modify":
+					out.append(_contribution(e, unit, aura.status_entry, sign_mult, label))
+	for zone in CombatManager.zones_at(unit.grid_position):
+		for e in zone.def.get("while_inside", []):
+			if str(e.get("op", "")) != "modify":
 				continue
-			var mult := sign_for(aura, other, unit)
-			for p in aura["payloads"]:
-				if p.get("kind", "") == "stat_pct" and p.get("stat", "") == stat:
-					total += float(p.get("amount", 0)) * mult
-	return total
+			if Zone.effect_reaches(e, zone.def, zone.source, unit):
+				out.append(_contribution(e, unit, {}, 1.0, "zone:%s" % zone.id))
+	return out
 
 
-## Resistance to `damage_type` granted to `unit` by every `resistance` aura
-## reaching it, as a percentage to add to the unit's own.
-##
-## The payload names what it protects against in its `type` field, and that may
-## be a damage type or an affliction — Immune System guards against poison,
-## bleed and disease, which are three things that happen to you rather than
-## three things that hit you, and `Resistance` reads both through the same
-## call.
-static func resistance_bonus(unit: Node, damage_type: String, units: Array,
-		distance_fn: Callable) -> float:
-	var total := 0.0
-	for other in units:
-		for aura in emitted_by(other):
-			var dist: int = distance_fn.call(other, unit)
-			if not reaches(aura, other, unit, dist):
-				continue
-			var mult := sign_for(aura, other, unit)
-			for p in aura["payloads"]:
-				if p.get("kind", "") != "resistance":
-					continue
-				if str(p.get("type", "")) != damage_type:
-					continue
-				total += float(p.get("amount", 0)) * mult
-	return total
+## One effect as a contribution: its number worked out for `unit`.
+static func _contribution(e: Dictionary, unit: Node, status_entry: Dictionary,
+		sign_mult: float, label: String) -> Dictionary:
+	var mode: String = str(e.get("mode", "fortify"))
+	var spec = e.get("amount", 0)
+	var pct: bool = false
+	var amount: float = 0.0
+	if spec is Dictionary and spec.has("pct_of"):
+		# The recipient's SHEET value, never its getter: the getter is what
+		# is being worked out, and asking it would ask this function again.
+		var stat: String = str(spec["pct_of"]).trim_prefix("target.")
+		var sheet: float = 0.0
+		if "character_data" in unit:
+			sheet = float(unit.character_data.get("derived", {}).get(stat, 0))
+		amount = sheet * float(spec.get("value", 0)) / 100.0
+		pct = true
+	elif spec is Dictionary and spec.has("from"):
+		var ctx := EffectContext.new()
+		ctx.status_entry = status_entry
+		amount = EffectResolver.borrow(spec, ctx, unit)
+	else:
+		amount = float(spec)
+	if mode == "multiply":
+		if sign_mult < 0.0:
+			amount = 2.0 - amount
+	else:
+		amount *= sign_mult
+	return {"value": str(e.get("value", "")), "mode": mode, "amount": amount,
+		"label": label, "pct": pct}
 
 
-## Multiplier on incoming damage of `damage_kind` ("magic" or "physical") for
-## `unit`, from every `damage_taken_pct` aura reaching it. 1.0 means untouched.
-static func damage_taken_multiplier(unit: Node, damage_kind: String, units: Array, distance_fn: Callable) -> float:
-	var mult := 1.0
-	for other in units:
-		for aura in emitted_by(other):
-			var dist: int = distance_fn.call(other, unit)
-			if not reaches(aura, other, unit, dist):
-				continue
-			var sign_mult := sign_for(aura, other, unit)
-			for p in aura["payloads"]:
-				if p.get("kind", "") != "damage_taken_pct":
-					continue
-				var only: String = p.get("only", "")
-				if only != "" and only != damage_kind:
-					continue
-				mult *= 1.0 + (float(p.get("amount", 0)) * sign_mult / 100.0)
-	return maxf(0.0, mult)
+## The fortify-minus-drain total auras and zones give `unit` on `value`
+## ("stat.armor"). Percentages of the sheet are summed first and rounded once.
+static func flat_total(unit: Node, value: String) -> float:
+	var flat: float = 0.0
+	var pct: float = 0.0
+	for c in contributions(unit):
+		if c.value != value or not c.mode in ["fortify", "drain"]:
+			continue
+		var signed: float = float(c.amount) if c.mode == "fortify" else -float(c.amount)
+		if c.pct:
+			pct += signed
+		else:
+			flat += signed
+	return flat + roundf(pct)
 
 
-## Total `max_hp` granted to `unit` by auras reaching it. Stored by the caller
-## as a delta — see CombatManager._refresh_aura_max_hp().
-static func max_hp_bonus(unit: Node, units: Array, distance_fn: Callable) -> int:
-	var total := 0
-	for other in units:
-		for aura in emitted_by(other):
-			var dist: int = distance_fn.call(other, unit)
-			if not reaches(aura, other, unit, dist):
-				continue
-			var mult := sign_for(aura, other, unit)
-			for p in aura["payloads"]:
-				if p.get("kind", "") == "max_hp":
-					total += int(float(p.get("amount", 0)) * mult)
-	return total
+## The product of the multiplies auras and zones put on `value`; 1.0 for none.
+static func factor(unit: Node, value: String) -> float:
+	var f: float = 1.0
+	for c in contributions(unit):
+		if c.value == value and c.mode == "multiply":
+			f *= float(c.amount)
+	return f
+
+
+## The effects of an aura that fire on the emitter's turn (everything but the
+## read-time modifies).
+static func per_turn_effects(aura: Dictionary) -> Array:
+	var out: Array = []
+	for e in aura.get("effects", []):
+		if str(e.get("op", "")) != "modify":
+			out.append(e)
+	return out

@@ -1324,70 +1324,16 @@ for _gd in glob.glob(os.path.join(ROOT, "scripts/**/*.gd"), recursive=True):
 
 # ── Zones ───────────────────────────────────────────────────────────────────
 #
-# Zones share the aura payload vocabulary on purpose, so the checks are the
-# same ones: a trigger nothing fires, a payload kind nothing resolves, and a
-# status that does not exist are all silent no-ops.
-_zone_src = open(os.path.join(ROOT, "scripts/combat/zone.gd"), encoding="utf-8").read()
-_zone_triggers = _gd_list(_zone_src, "TRIGGERS")
-_zone_affects = _gd_list(_zone_src, "AFFECTS")
-_zone_drifts = set(re.findall(r'"(\w*)"', re.search(
-    r"const DRIFTS[^=]*=\s*\[(.*?)\]", _zone_src, re.S).group(1))) \
-    if re.search(r"const DRIFTS", _zone_src) else set()
-
+# A zone's effect lists are the shared effect language (stage 2b, Task 8), so
+# check_zone() — the mirror of EffectVocab.validate_zone — catches a trigger
+# nothing fires, an op nothing performs, a status or summon that does not exist
+# and a read-time modify that could never work.
+from effect_check import check_aura, check_zone  # noqa: E402
 _zones = load("resources/data/zones.json")["zones"]
 _zone_ids = {k for k in _zones if not k.startswith("_")}
-# Zones use the aura payload vocabulary — read from the same source, so the
-# two cannot drift — plus `raise`, which summons rather than modifying a unit.
-_aura_src_for_zones = open(os.path.join(ROOT, "scripts/combat/aura_system.gd"),
-    encoding="utf-8").read()
-# `stat_pct` is aura-only: CombatManager._zone_stat_bonus reads flat `stat`
-# payloads and nothing reads a percentage off the ground.
-_zone_payload_kinds = (_gd_list(_aura_src_for_zones, "PAYLOAD_KINDS") - {"stat_pct"}) | {"raise"}
-
 for _zid in sorted(_zone_ids):
-    _zdef = _zones[_zid]
-    if _zdef.get("affects", "all") not in _zone_affects:
-        err("data->code", f"zone '{_zid}' affects '{_zdef.get('affects')}', "
-            "which Zone.reaches() does not recognise")
-    _zone_pairs = set(re.findall(r'"(\w*)"', re.search(
-        r"const PAIR_ROLES[^=]*=\s*\[(.*?)\]", _zone_src, re.S).group(1))) \
-        if re.search(r"const PAIR_ROLES", _zone_src) else set()
-    if _zone_pairs and str(_zdef.get("pair", "")) not in _zone_pairs:
-        err("data->code", f"zone '{_zid}' declares pair role "
-            f"'{_zdef.get('pair')}', which is not in Zone.PAIR_ROLES")
-    if _zone_drifts and str(_zdef.get("drift", "")) not in _zone_drifts:
-        err("data->code", f"zone '{_zid}' drifts '{_zdef.get('drift')}', "
-            "which is not in Zone.DRIFTS")
-    _has_payloads = False
-    for _key in _zdef:
-        if _key.startswith("_") or _key in ("name", "affects", "drift", "pair", "trap"):
-            continue
-        if _key not in _zone_triggers:
-            err("data->code", f"zone '{_zid}' has trigger '{_key}', which is "
-                "not in Zone.TRIGGERS — it would never fire")
-            continue
-        for _pl in _zdef[_key]:
-            _has_payloads = True
-            if _pl.get("kind") not in _zone_payload_kinds:
-                err("data->code", f"zone '{_zid}' {_key} payload kind "
-                    f"'{_pl.get('kind')}' is resolved by nothing")
-            if _pl.get("affects", "all") not in _zone_affects:
-                err("data->code", f"zone '{_zid}' {_key} payload affects "
-                    f"'{_pl.get('affects')}', which is not recognised")
-            if _pl.get("status") and _pl["status"] not in _status_names:
-                err("data->code", f"zone '{_zid}' grants status "
-                    f"'{_pl['status']}', which does not exist")
-            if _pl.get("kind") == "resistance":
-                _zrt = str(_pl.get("type", ""))
-                if _zrt not in _damage_types and _zrt not in _other_res:
-                    err("data->code", f"zone '{_zid}' grants resistance to "
-                        f"'{_zrt}', which is neither a damage type nor an affliction")
-            if _pl.get("summon") and _pl["summon"] not in _summon_templates:
-                err("data->code", f"zone '{_zid}' raises '{_pl['summon']}', "
-                    "and no summon template by that name exists")
-    if not _has_payloads:
-        err("data->code", f"zone '{_zid}' has no payloads under any trigger — "
-            "it would sit on the ground doing nothing")
+    for _m in check_zone(_zones[_zid], f"zone '{_zid}'"):
+        err("data->code", _m)
 
 # Every zone a spell names must exist, and every zone must be reachable.
 _named_zones = set()
@@ -1424,38 +1370,16 @@ for _zid in sorted(_zone_ids - _named_zones):
 # Four kinds of source may declare an aura, and all four name it the same way.
 # Two things can go wrong and neither shows up at runtime: a source names an
 # aura that does not exist (it is collected, warned about once, and dropped), or
-# a definition uses a payload kind nothing resolves (it is collected and
-# silently ignored). Both are the write-with-no-reader bug in a new costume.
+# a definition uses an effect nothing performs. Both are the write-with-no-reader
+# bug in a new costume.
 _auras = load("resources/data/auras.json")["auras"]
 _aura_ids = {k for k in _auras if not k.startswith("_")}
 
-# The vocabulary lives in aura_system.gd and is read from there, never restated
-# here — a second copy of a vocabulary is how the original bug got in.
-_kinds_src = open(os.path.join(ROOT, "scripts/combat/aura_system.gd"), encoding="utf-8").read()
-_m = re.search(r"const PAYLOAD_KINDS[^=]*=\s*\[(.*?)\]", _kinds_src, re.S)
-_payload_kinds = set(re.findall(r'"([^"]+)"', _m.group(1))) if _m else set()
-if not _payload_kinds:
-    err("data->code", "could not read AuraSystem.PAYLOAD_KINDS — aura payloads unchecked")
-
-for _aid, _adef in _auras.items():
-    if _aid.startswith("_"):
-        continue
-    for _pl in _adef.get("payloads", []):
-        _kind = str(_pl.get("kind", ""))
-        if _kind not in _payload_kinds:
-            err("data->code", f"aura '{_aid}' has payload kind '{_kind}', "
-                f"which is not in AuraSystem.PAYLOAD_KINDS — nothing resolves it")
-        if _kind == "resistance":
-            # The `type` a resistance payload guards against has to be
-            # something that can actually arrive, or the aura protects against
-            # nothing and says so nowhere.
-            _rt = str(_pl.get("type", ""))
-            if _rt not in _damage_types and _rt not in _other_res:
-                err("data->code", f"aura '{_aid}' grants resistance to '{_rt}', "
-                    "which is neither a damage type nor an affliction")
-    if _adef.get("affects", "allies") not in ("allies", "enemies", "all", "self"):
-        err("data->code", f"aura '{_aid}' affects '{_adef.get('affects')}', "
-            "which AuraSystem.reaches() does not recognise — it will reach nobody")
+# What an aura does is the shared effect language now, checked by
+# check_aura() — the mirror of EffectVocab.validate_aura.
+for _aid in sorted(_aura_ids):
+    for _m in check_aura(_auras[_aid], f"aura '{_aid}'"):
+        err("data->code", _m)
 
 # ── item types and item status names ────────────────────────────────────────
 # ItemSystem only treats an item as equippable / consumable / stackable through

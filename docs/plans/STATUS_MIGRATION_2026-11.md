@@ -516,3 +516,99 @@ was built.
 - `tools/verify_reactions.gd`: every assertion unchanged; the vocabulary check
   reads triggers through `validate_status`, the reach check
   `CombatManager.trigger_reach`, the fired count `CombatManager.trigger_uses`.
+
+## Task 8: auras and zones as effect lists
+
+`tools/migrate_auras_zones.py` (re-runnable) rewrote every payload in
+`auras.json` and `zones.json` as an effect, and moved the one status
+`aura_value` onto its aura. Numbers are unchanged:
+`aura_numbers_match_baseline` compares every aura and zone against
+`tools/fixtures/aura_baseline.json`, captured before the migration
+(`tools/capture_aura_baseline.tscn`, measured by `tools/aura_measure.gd`).
+
+### Payload kind by kind
+
+| Old payload | Effect now | Read / fired by |
+|---|---|---|
+| `stat {stat, amount}` | `modify stat.<stat>` fortify / drain (sign picks the mode) | read-time, `ValuePaths.flat_sum` via `AuraSystem.contributions` |
+| `stat_pct {stat, amount}` (Shield Wall) | `modify stat.armor` fortify, amount `{pct_of: target.armor, value}` | read-time; the recipient's SHEET value, percentages rounded together as before |
+| `max_hp` | `modify stat.max_hp` fortify (new stat) | `CombatManager._refresh_aura_max_hp` reads `ValuePaths.flat_sum(unit, "stat.max_hp")` and stores the delta |
+| `damage_taken_pct {amount, only}` | `modify stat.magic_damage_taken` / `stat.physical_damage_taken` multiply `1 + amount/100` (new stats; one per kind when no `only`) | `apply_damage` step 4, `ValuePaths.apply_to(unit, path, 1.0)`; multiplies compose as the old payloads did |
+| `resistance {type, amount}` | `modify resist.<type>` fortify | `Resistance._gather` (damage) and `Resistance.resists_affliction` (onset); `resist.bleed` / `resist.disease` are valid now (`Resistance.AFFLICTIONS`) |
+| `stat mana_cost_pct` (Inscribed Circle) | `modify stat.mana_cost_pct` drain (new stat) | `CombatManager.mana_cost_pct_of`, in `cast_spell` |
+| `grant_status {status, duration, chance, save}` | `status apply` + `if: [{target_lacks: <status>}]`, chance x100, save `{stat, dc, dc_drop_per_pass}` | per turn (aura) / per round, on_enter ... (zone), through `EffectResolver` |
+| `heal`, `damage {element}` | `heal`, `damage {type}` | the same |
+| `raise {summon, for}` | `summon as <summon>, from: corpse` | `on_death_inside`; `from: corpse` stands it on the dead unit's tile and refuses a living one |
+| zone payload `affects` | effect `to`: `allies_in_area` / `enemies_in_area` / `all_in_area` (judged by the owner's team); hoisted to the zone's `affects` when every payload of a zone named the same audience (Grave Soil, Black Ice, Snare, Open Door, Fog of War, Gravity Well) | `Zone.effect_reaches` |
+| Soothing_Presence `aura_value: 5` | the aura's heal is `{from: status.value, default: 5}`; the key left the status and `LEGACY_STATUS_FIELDS` | `ctx.status_entry` is the emitting status's entry |
+| item / perk `aura_value` (Khatvanga -2 .. -8) | stays on the item: a signed override of the aura's flat numbers (negative drains) | `AuraSystem._override` |
+
+New in the language: `save {stat, dc, dc_drop_per_pass}` (a fixed DC plus the
+applier's status-chance bonus, dropping per pass, passes kept on the
+recipient by container id), `summon from: corpse`, `Zone` triggers
+`turn_start_inside` / `turn_end_inside` (fired from `_start_current_turn` /
+`end_turn`; no zone uses them yet), `EffectVocab.validate_aura` /
+`validate_zone` (and `check_aura` / `check_zone` in `effect_check.py`).
+
+Deleted: `AuraSystem.PAYLOAD_KINDS`, `DAMAGE_FILTERS`, `is_payload_kind`,
+`explain_unknown_kind`, `stat_bonus`, `stat_pct_bonus`, `resistance_bonus`,
+`damage_taken_multiplier`, `max_hp_bonus`; `CombatManager._apply_aura_payload`,
+`_zone_damage_taken_multiplier`, `_zone_stat_bonus`, `zone_resistance_bonus`;
+`Zone.reaches` (now `effect_reaches`); the aura and zone parts of
+`get_continuous_stat_bonus`.
+
+### Read-time, not stored
+
+Auras hold nothing. `AuraSystem.contributions(unit)` finds every read-time
+modify reaching the unit from an aura (`reaches` / `sign_for` / distance, as
+before) or a zone under it, and is the one place the reach rule lives:
+`ValuePaths.flat_sum` / `apply_scaling` (so every stat getter) and
+`Resistance._gather` / `resists_affliction` all ask it. Breakdown labels are
+`aura:<emitter instance id>:<aura id>` and `zone:<zone id>`.
+
+### Behaviour that changed (no number changed)
+
+- **Immune System's affliction chance works.** `resists_affliction` read only
+  the unit's own resistances, so the aura's 15 never stopped a bleed, poison
+  or disease from landing. It now reads `resist.<affliction>` holds and aura /
+  zone modifies (no status holds one today).
+- **Each aura is its own resistance contribution.** All auras used to be one
+  summed contribution "aura" (and the ground one "ground"); two 60% auras
+  would have summed to a single 120 "declaration" and absorbed. Now each is
+  separate, so only a single aura of 100+ declares immunity. No data reaches
+  either case.
+- **An aura's or zone's heal clears no lasting damage** (as a status's heal
+  does not); the payload heal never did.
+- **Shield Wall's tooltip** reads "+25% of own armor" (it read "no effect":
+  the old wording knew no `stat_pct`). Other aura lines read as before.
+
+### Unbuilt / still open
+
+- Trap Maker's `payload_scale` (written on the placed snare by
+  `_resolve_place_trap`, read by nothing before or after) — Unbuilt.
+- Legacy status keys outside Task 8, still open: `grants_movement_ability`,
+  `grants_travel_speed_pct`, `grants_concealment`, `damage_increase_pct`,
+  `special` (no aura or zone reads them).
+- `EffectResolver._do_damage` refuses damage below 1. Every zone's damage is
+  8 or more and the old applier also skipped amounts of 0, so nothing relies
+  on it.
+
+### Tests
+
+- `tools/verify_effects.gd`: `aura_numbers_match_baseline`,
+  `zone_effects_resolve`, `grave_soil_raises`, `aura_breakdown_label`,
+  `aura_affliction_resistance`, `aura_zone_validation`.
+- `tools/test_effect_vocab.py`: the new stats, affliction resists, fixed-DC
+  save, `summon from`, aura and zone shapes, live data.
+- `verify_spells` `zones_reuse_the_aura_payloads` now runs `validate_zone` /
+  `validate_aura` over all data (stronger than the old kind check);
+  `grave_soil_raises_what_dies_on_it` marks the foe dead before
+  `_zones_on_death`, as `apply_damage` does. `verify_resistance` hand-written
+  probe zones and auras are written as effects; assertions unchanged.
+- `verify_combat_procs` `ritual_reaches_auras_retaliation_and_perk_procs`:
+  the source scan no longer looks for `ritual_chance(source, chance)` and
+  `status_save_dc_bonus(source)` (the old aura applier is gone); it checks
+  the same fact where it lives now — the resolver's fixed-DC save adds
+  `status_save_dc_bonus(ctx.caster)` and `_resolve_area_effects` makes the
+  emitter / owner the caster. The behavioural `ritual_chance` asserts are
+  unchanged.

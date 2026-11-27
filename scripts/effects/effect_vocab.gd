@@ -76,10 +76,21 @@ const RESOURCES: Array[String] = ["hp", "mana", "stamina", "temp_hp"]
 ## save_bonus, which SaveSystem reads instead). Keys from CombatStats.DERIVED
 ## join this list when a later stage reads them through ValuePaths. A literal
 ## on purpose, so the Python mirror can read it.
+##
+## Stage 2b Task 8 added four that auras and zones needed, each with its reader:
+##   max_hp                 CombatManager._refresh_aura_max_hp (stored as a delta)
+##   magic_damage_taken     apply_damage step 4: a multiplier on magic damage taken
+##   physical_damage_taken  the same for everything else (base 1, use multiply)
+##   mana_cost_pct          CombatManager.mana_cost_pct_of: % change to a spell's cost
 const STATS: Array[String] = [
 	"initiative", "movement", "accuracy", "dodge",
 	"damage", "armor", "crit_chance", "spellpower",
+	"max_hp", "magic_damage_taken", "physical_damage_taken", "mana_cost_pct",
 ]
+
+## Stats read as a plain number of points added to something else, never as a
+## total a getter can scale: only fortify and drain mean anything on them.
+const FLAT_ONLY_STATS: Array[String] = ["max_hp", "mana_cost_pct"]
 
 ## Extra resist names beyond the damage types in damage_types.json. Each names
 ## a group of types, and Resistance decides which hits it reaches:
@@ -89,6 +100,18 @@ const STATS: Array[String] = [
 ## `resist.physical` also reaches the three physical subtypes; that is
 ## DamageType.scope_covers(), not a group here.
 const RESIST_GROUPS: Array[String] = ["all_elemental", "all", "magic"]
+## `resist.<affliction>` (Resistance.AFFLICTIONS: bleed, poison, disease) is a
+## resistance to CATCHING it, read by Resistance.resists_affliction. Poison is
+## also a damage type, so resist.poison reduces poison damage as well.
+
+## Where a `summon` may stand its creature. `corpse`: on the tile of the unit
+## the effect is aimed at, which must be dead (Grave Soil's raise).
+const SUMMON_FROM: Array[String] = ["corpse"]
+
+## The fields of a `save`: {stat, tier} builds the DC from the caster's Focus;
+## {stat, dc} is a fixed DC (plus the applier's status-chance bonus), which may
+## drop by `dc_drop_per_pass` each time that recipient passes it.
+const SAVE_FIELDS: Array[String] = ["stat", "tier", "dc", "dc_drop_per_pass"]
 
 ## The `to` field: who an effect hits, relative to its container.
 ## `source` is whoever set a status trigger off (the attacker, the mover).
@@ -272,13 +295,14 @@ const STATUS_FIELDS: Array[String] = [
 
 ## Old fields a few statuses still carry, outside stage 2b's scope: each is
 ## read by its own code (Glass_Globe's `special`, the map's movement and
-## travel keys, an aura's `aura_value`) and moves with the stage that owns it
+## travel keys) and moves with the stage that owns it
 ## (stage 3 for `special`, stage 5 for the world keys). Nothing new should be
 ## added here. The fields stage 2b removed (effects, damage_per_turn,
 ## retaliation, reaction, save_type, the *_on_expire keys ...) are NOT here,
-## so validate_status rejects them.
+## so validate_status rejects them; nor is `aura_value`, which Task 8 turned
+## into a {"from": "status.value"} on the aura's own effects.
 const LEGACY_STATUS_FIELDS: Array[String] = [
-	"affliction", "special", "default_duration_range", "aura_value",
+	"affliction", "special", "default_duration_range",
 	"damage_increase_pct", "grants_travel_speed_pct", "grants_concealment",
 	"grants_movement_ability", "_comment", "_note",
 ]
@@ -307,7 +331,7 @@ const OP_FIELDS: Dictionary = {
 	"status": ["action", "status", "duration", "stacks", "select", "count"],
 	"move": ["mode", "tiles", "blocked_damage", "variance", "direction"],
 	"kill": ["immune"],
-	"summon": ["as", "count", "owner"],
+	"summon": ["as", "count", "owner", "from"],
 	"zone": ["zone", "aoe", "duration"],
 	"resurrect": ["tier", "hp_pct", "scope"],
 	"attack": ["target", "power_pct"],
@@ -564,6 +588,145 @@ static func validate_list(effects: Array, where: String, intercepting: bool = fa
 	return errs
 
 
+# ── Auras and zones ──────────────────────────────────────────────────────────
+#
+# An aura (auras.json) or a zone (zones.json) holds effects in lists named for
+# WHEN they happen. In `while_inside`, a `modify` is READ-TIME: it is never
+# applied, it is added up wherever the number is used (AuraSystem.contributions,
+# from ValuePaths and Resistance), so walking out ends it with nothing to undo.
+# That is why a read-time modify cannot roll (no chance, save or if: a number
+# read fifty times a turn cannot roll fifty times) and reads only numbers that
+# cannot loop back into the getter asking (a plain number, status.value or
+# status.stacks, or a pct_of the recipient's own SHEET value).
+
+## The keys an aura definition may have ("_" keys are comments).
+const AURA_FIELDS: Array[String] = [
+	"name", "radius", "affects", "self_included", "invert_for_enemies", "while_inside",
+]
+
+## The keys a zone definition may have. The last five are its effect lists.
+const ZONE_FIELDS: Array[String] = [
+	"name", "affects", "trap", "pair", "drift",
+	"while_inside", "on_enter", "turn_start_inside", "turn_end_inside", "on_death_inside",
+]
+
+## What a read-time modify may change, and how.
+const READ_TIME_NAMESPACES: Array[String] = ["stat", "resist"]
+const READ_TIME_MODES: Array[String] = ["fortify", "drain", "multiply"]
+
+## Ops a `while_inside` list may fire each turn (aura) or each round (zone).
+const PER_TURN_OPS: Array[String] = ["status", "heal", "damage"]
+
+## The `to` a zone effect may carry, judged by the zone owner's team. An aura's
+## effects carry none: whom they reach is the aura's `affects` and radius.
+const ZONE_SELECTORS: Array[String] = ["allies_in_area", "enemies_in_area", "all_in_area"]
+
+## The borrowed values a read-time modify may use.
+const READ_TIME_BORROWS: Array[String] = ["status.value", "status.stacks"]
+
+
+## Validate one auras.json definition. Empty means valid.
+static func validate_aura(def: Dictionary, where: String) -> Array[String]:
+	var errs: Array[String] = []
+	for key in def:
+		if not String(key).begins_with("_") and not key in AURA_FIELDS:
+			errs.append("%s: unknown aura field '%s' (approved: %s)" % [where, key, ", ".join(AURA_FIELDS)])
+	if def.has("affects") and not def["affects"] in AuraSystem.AFFECTS:
+		errs.append("%s: aura affects '%s' unknown (%s)" % [where, def["affects"], ", ".join(AuraSystem.AFFECTS)])
+	if def.has("radius") and not _is_number(def["radius"]):
+		errs.append("%s: aura radius must be a number" % where)
+	var effects = def.get("while_inside", [])
+	if typeof(effects) != TYPE_ARRAY or effects.is_empty():
+		errs.append("%s: an aura needs a non-empty 'while_inside' list of effects" % where)
+		return errs
+	for i in effects.size():
+		var label := "%s.while_inside[%d]" % [where, i]
+		var e = effects[i]
+		if typeof(e) == TYPE_DICTIONARY and e.has("to"):
+			errs.append("%s: an aura's effect has no 'to'; the aura's affects and radius decide" % label)
+		_validate_inside_effect(e, label, errs)
+	return errs
+
+
+## Validate one zones.json definition. Empty means valid.
+static func validate_zone(def: Dictionary, where: String) -> Array[String]:
+	var errs: Array[String] = []
+	var lists: int = 0
+	for key in def:
+		if not String(key).begins_with("_") and not key in ZONE_FIELDS:
+			errs.append("%s: unknown zone field '%s' (approved: %s)" % [where, key, ", ".join(ZONE_FIELDS)])
+	if def.has("affects") and not def["affects"] in Zone.AFFECTS:
+		errs.append("%s: zone affects '%s' unknown (%s)" % [where, def["affects"], ", ".join(Zone.AFFECTS)])
+	if def.has("drift") and not def["drift"] in Zone.DRIFTS:
+		errs.append("%s: zone drift '%s' unknown" % [where, def["drift"]])
+	if def.has("pair") and not def["pair"] in Zone.PAIR_ROLES:
+		errs.append("%s: zone pair '%s' unknown" % [where, def["pair"]])
+	for trigger in Zone.TRIGGERS:
+		if not def.has(trigger):
+			continue
+		var effects = def[trigger]
+		if typeof(effects) != TYPE_ARRAY:
+			errs.append("%s.%s must be a list of effects" % [where, trigger])
+			continue
+		lists += effects.size()
+		for i in effects.size():
+			var label := "%s.%s[%d]" % [where, trigger, i]
+			var e = effects[i]
+			if typeof(e) != TYPE_DICTIONARY:
+				errs.append("%s: an effect must be an object" % label)
+				continue
+			var op: String = str(e.get("op", ""))
+			if e.has("to") and not e["to"] in ZONE_SELECTORS:
+				errs.append("%s: a zone effect's 'to' is one of %s" % [label, ", ".join(ZONE_SELECTORS)])
+			if op in EffectResolver.POSITION_OPS and e.has("to"):
+				errs.append("%s: a %s happens once at the tile; give the zone an 'affects' instead of a 'to'" % [label, op])
+			if op == "summon" and e.get("from", "") == "corpse" and trigger != "on_death_inside":
+				errs.append("%s: summon from 'corpse' only means something in on_death_inside" % label)
+			if trigger == "while_inside":
+				_validate_inside_effect(e, label, errs)
+				continue
+			errs.append_array(validate(e, label))
+			# Outside while_inside nobody would release a hold.
+			if op == "modify" and str(e.get("mode", "")) in ["fortify", "drain", "set", "multiply"]:
+				errs.append("%s: a lasting modify in %s would never be released; put it in while_inside" % [label, trigger])
+	if lists == 0:
+		errs.append("%s: a zone with no effects under any trigger does nothing" % where)
+	return errs
+
+
+## One effect of a `while_inside` list: a read-time modify, or a per-turn op.
+static func _validate_inside_effect(e, label: String, errs: Array[String]) -> void:
+	if typeof(e) != TYPE_DICTIONARY:
+		errs.append("%s: an effect must be an object" % label)
+		return
+	var op: String = str(e.get("op", ""))
+	if op != "modify":
+		if not op in PER_TURN_OPS:
+			errs.append("%s: while_inside fires %s each turn; '%s' is not one of them"
+				% [label, ", ".join(PER_TURN_OPS), op])
+			return
+		errs.append_array(validate(e, label))
+		return
+	errs.append_array(validate(e, label))
+	var ns: String = String(e.get("value", "")).get_slice(".", 0)
+	if not ns in READ_TIME_NAMESPACES:
+		errs.append("%s: a while_inside modify is read where the number is used, so it changes %s. values only"
+			% [label, "/".join(READ_TIME_NAMESPACES)])
+	if not str(e.get("mode", "")) in READ_TIME_MODES:
+		errs.append("%s: a while_inside modify adds or multiplies (%s)" % [label, ", ".join(READ_TIME_MODES)])
+	for k in ["chance", "save", "on_save", "if", "scale", "bonus_vs", "cleared_by"]:
+		if e.has(k):
+			errs.append("%s: '%s' cannot work on a number that is read, not applied" % [label, k])
+	var m = e.get("amount", 0)
+	if typeof(m) == TYPE_DICTIONARY:
+		if m.has("from") and not str(m["from"]) in READ_TIME_BORROWS:
+			errs.append("%s: a while_inside modify may borrow only %s" % [label, ", ".join(READ_TIME_BORROWS)])
+		elif m.has("pct_of") and not str(m["pct_of"]).begins_with("target."):
+			errs.append("%s: a while_inside pct_of reads the recipient's own sheet (target.<stat>)" % label)
+		elif not m.has("from") and not m.has("pct_of"):
+			errs.append("%s: a while_inside modify's amount is a number, a status borrow or a pct_of" % label)
+
+
 ## True when `path` is "<namespace>.<name>" with both parts approved.
 static func is_value_path(path: String) -> bool:
 	return _value_path_error(path).is_empty()
@@ -602,13 +765,26 @@ static func _validate_shared(effect: Dictionary, where: String, errs: Array[Stri
 	if effect.has("save"):
 		var s = effect["save"]
 		if typeof(s) != TYPE_DICTIONARY:
-			errs.append("%s: 'save' must be {stat, tier}" % where)
+			errs.append("%s: 'save' must be {stat, tier} or {stat, dc}" % where)
 		else:
+			for k in s:
+				if not k in SAVE_FIELDS:
+					errs.append("%s: unknown save field '%s' (approved: %s)" % [where, k, ", ".join(SAVE_FIELDS)])
 			if not String(s.get("stat", "")).to_lower() in SaveSystem.ATTRIBUTES:
 				errs.append("%s: save stat '%s' is not an attribute" % [where, s.get("stat", "")])
-			if not SaveSystem.TIERS.has(s.get("tier", "")):
-				errs.append("%s: save tier '%s' unknown (known: %s)"
-					% [where, s.get("tier", ""), ", ".join(SaveSystem.TIERS.keys())])
+			if s.has("dc"):
+				if s.has("tier"):
+					errs.append("%s: a save has a 'tier' or a 'dc', not both" % where)
+				if not _is_number(s["dc"]):
+					errs.append("%s: save dc must be a number" % where)
+				if s.has("dc_drop_per_pass") and not _is_number(s["dc_drop_per_pass"]):
+					errs.append("%s: save dc_drop_per_pass must be a number" % where)
+			else:
+				if s.has("dc_drop_per_pass"):
+					errs.append("%s: dc_drop_per_pass needs a fixed 'dc'" % where)
+				if not SaveSystem.TIERS.has(s.get("tier", "")):
+					errs.append("%s: save tier '%s' unknown (known: %s)"
+						% [where, s.get("tier", ""), ", ".join(SaveSystem.TIERS.keys())])
 	if effect.has("on_save"):
 		if not effect["on_save"] in ["fail", "pass"]:
 			errs.append("%s: 'on_save' must be \"fail\" or \"pass\"" % where)
@@ -742,6 +918,8 @@ static func _validate_op(op: String, effect: Dictionary, where: String, errs: Ar
 				errs.append("%s: summon count must be a number" % where)
 			if effect.has("owner") and not effect["owner"] in SUMMON_OWNERS:
 				errs.append("%s: summon owner '%s' unknown (%s)" % [where, effect["owner"], ", ".join(SUMMON_OWNERS)])
+			if effect.has("from") and not effect["from"] in SUMMON_FROM:
+				errs.append("%s: summon from '%s' unknown (%s)" % [where, effect["from"], ", ".join(SUMMON_FROM)])
 		"attack":
 			if not effect.get("target", "source") in ATTACK_TARGETS:
 				errs.append("%s: attack target '%s' unknown (%s)"
@@ -778,6 +956,10 @@ static func _validate_modify(effect: Dictionary, where: String, errs: Array[Stri
 			if not mode in MODES_BY_NAMESPACE[ns]:
 				errs.append("%s: mode '%s' is not allowed on %s. values (allowed: %s)"
 					% [where, mode, ns, ", ".join(MODES_BY_NAMESPACE[ns])])
+			elif ns == "stat" and String(effect["value"]).get_slice(".", 1) in FLAT_ONLY_STATS \
+					and not mode in ["fortify", "drain"]:
+				errs.append("%s: %s is a number of points; only fortify and drain change it"
+					% [where, effect["value"]])
 	_validate_magnitude(effect, "amount", false, where, errs)
 
 
@@ -922,8 +1104,8 @@ static func _value_path_error(path: String) -> String:
 			if not name in skills:
 				return "unknown skill '%s' in '%s'" % [name, path]
 		"resist":
-			if not (name in RESIST_GROUPS or DamageType.exists(name)):
-				return "unknown resist '%s' in '%s' (a damage type, or %s)" % [name, path, ", ".join(RESIST_GROUPS)]
+			if not (name in RESIST_GROUPS or DamageType.exists(name) or name in Resistance.AFFLICTIONS):
+				return "unknown resist '%s' in '%s' (a damage type, an affliction, or %s)" % [name, path, ", ".join(RESIST_GROUPS)]
 	return ""
 
 

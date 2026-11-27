@@ -2,18 +2,13 @@ class_name Zone
 ## An area that does something to whoever is in it — anchored to the ground
 ## rather than to a body.
 ##
-## A ZONE IS AN AURA WITH A PLACE INSTEAD OF A BODY. That is the whole design,
-## and it is why this file is short. `AuraSystem` already answers "what does an
-## area do to whoever is inside it": grant a status, heal, damage, shift a stat,
-## change damage taken, on a chance or behind a saving throw. Every one of those
-## payloads is equally meaningful attached to a set of tiles, so zones reuse the
-## same vocabulary and CombatManager applies them through the same function.
-##
-## Growing a second payload list would have been the mistake. This codebase has
-## spent weeks finding places where one idea was written twice and the copies
-## drifted — `statuses_removed` read by length in combat and by name on the map,
-## five separate aura implementations, two tables of terrain keyed on bare
-## integers. One payload vocabulary with two anchors is the alternative.
+## A ZONE IS AN AURA WITH A PLACE INSTEAD OF A BODY. What it does is written
+## in the shared effect language (the same as auras, spells and statuses), in
+## lists named for when they happen, and CombatManager runs them through
+## EffectResolver with the zone's owner as the caster and the zone tile as the
+## position. A `modify` in `while_inside` is read-time, exactly like an aura's:
+## AuraSystem.contributions() adds it up wherever the number is read.
+## EffectVocab.validate_zone checks every definition.
 ##
 ## WHAT A ZONE HAS THAT AN AURA DOES NOT.
 ##
@@ -25,15 +20,17 @@ class_name Zone
 ##     answer "who just walked in" and "who died here".
 ##   * Drift. A tornado is a zone that will not stay put.
 
-## When a zone's payloads fire.
+## When a zone's effects happen.
 const TRIGGERS: Array[String] = [
-	"while_inside",     # each round, to everyone standing in it
-	"on_enter",         # once, to a unit that steps in
-	"on_death_inside",  # when a unit dies on its ground
+	"while_inside",       # modifies: read while standing in it; the rest each round
+	"on_enter",           # once, to a unit that steps in
+	"turn_start_inside",  # at the start of the turn of a unit standing in it
+	"turn_end_inside",    # at the end of the turn of a unit standing in it
+	"on_death_inside",    # when a unit dies on its ground
 ]
 
-## Who a zone or one of its payloads reaches. Same words as an aura's, because
-## it is the same question.
+## Who a zone reaches (its `affects`). An effect's own `to` overrides it — see
+## effect_reaches().
 const AFFECTS: Array[String] = ["allies", "enemies", "all"]
 
 ## How a zone moves, if it moves.
@@ -104,18 +101,27 @@ static func explain_unknown_trigger(name: String) -> String:
 		+ "sit on the ground doing nothing") % name
 
 
-## Does this payload reach `unit`, given who placed the zone?
+## The `affects` word a zone effect's `to` stands for.
+const _AFFECTS_FOR_TO: Dictionary = {
+	"allies_in_area": "allies", "enemies_in_area": "enemies", "all_in_area": "all",
+}
+
+
+## Does this effect reach `unit`, given who placed the zone?
 ##
-## The `affects` on a payload wins over the zone's, because a zone often wants
-## both at once — the vajra mandala shelters allies standing in it and hurts
-## enemies that step into it, which is one zone with two audiences.
-static func reaches(payload: Dictionary, zone: Dictionary, source: Node,
+## The effect's own `to` wins over the zone's `affects`, because a zone often
+## wants both at once — the vajra mandala shelters allies standing in it and
+## hurts enemies that step into it, which is one zone with two audiences.
+## Allies and enemies are judged by the owner's team; a zone with no owner has
+## no allies, so "enemies" reaches everyone.
+static func effect_reaches(effect: Dictionary, zone: Dictionary, source: Node,
 		unit: Node) -> bool:
 	if unit == null or not is_instance_valid(unit):
 		return false
-	var who: String = str(payload.get("affects", zone.get("affects", "all")))
+	var who: String = str(_AFFECTS_FOR_TO.get(str(effect.get("to", "")),
+		zone.get("affects", "all")))
 	if who == "all":
 		return true
-	var same_team: bool = source != null and ("team" in source) and ("team" in unit) \
-		and source.team == unit.team
+	var same_team: bool = source != null and is_instance_valid(source) \
+		and ("team" in source) and ("team" in unit) and source.team == unit.team
 	return same_team if who == "allies" else not same_team

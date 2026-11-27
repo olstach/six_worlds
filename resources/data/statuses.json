@@ -2151,8 +2151,7 @@
 			"dispel_methods": [
 				"dispel"
 			],
-			"aura": "soothing_presence",
-			"aura_value": 5
+			"aura": "soothing_presence"
 		},
 		{
 			"name": "Pacified",

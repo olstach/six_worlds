@@ -307,13 +307,14 @@ static func _do_damage(effect: Dictionary, ctx: EffectContext, unit: Node, m: fl
 
 ## Heal HP (CombatUnit.heal applies healing_pct), then let the heal clear any
 ## persistent damage whose cleared_by accepts this school and level. A
-## status's heal over time is not a spell's heal, so it clears nothing.
+## status's heal over time, or an aura's or zone's heal, is not a spell's
+## heal, so it clears nothing.
 static func _do_heal(ctx: EffectContext, unit: Node, m: float) -> Dictionary:
 	if not unit.has_method("heal"):
 		push_error("EffectResolver: %s cannot be healed" % unit)
 		return _entry("heal", unit, false, "cannot be healed", 0.0)
 	unit.heal(int(m))
-	if ValuePaths.is_party_unit(unit) and ctx.container_kind != "status":
+	if ValuePaths.is_party_unit(unit) and not ctx.container_kind in ["status", "aura", "zone"]:
 		_clear_damage(unit, "heal", {"school": ctx.all_schools(), "level": ctx.level})
 	return _entry("heal", unit, true, "", m)
 
@@ -458,9 +459,15 @@ static func _no_position(op: String, what: String) -> Dictionary:
 
 ## Summon `count` of template `as` for the caster at the context's position
 ## (the spawner finds the nearest free tile when it is taken). Power is ctx.power.
+## `from: corpse` stands it on the tile of the unit the effect is aimed at
+## (ctx.target), which must be dead: Grave Soil raising what fell on it.
 static func _do_summon(effect: Dictionary, ctx: EffectContext) -> Dictionary:
 	var what: String = str(effect["as"])
 	var at: Vector2i = ctx.position()
+	if str(effect.get("from", "")) == "corpse":
+		if ctx.target == null or _alive(ctx.target):
+			return _placed_entry("summon", what, false, "no corpse to raise", 0.0)
+		at = ctx.target.grid_position
 	if at == EffectContext.NO_POS:
 		return _no_position("summon", what)
 	# Whose side it fights on, and whose Summoning scales it.
@@ -585,11 +592,29 @@ static func _condition_met(cond, ctx: EffectContext, unit: Node) -> bool:
 
 ## The save against `unit` for this container, rolling it the first time.
 ## The DC is built on the caster's Focus, as spell saves are by default.
+##
+## A save with a fixed `dc` (an aura's or zone's) uses that number plus the
+## caster's status-chance bonus (CombatManager.status_save_dc_bonus), minus
+## `dc_drop_per_pass` for every time this recipient has passed this container's
+## save before. The passes are remembered on the recipient, in
+## `aura_save_passes` keyed by the container id, so Shining Mirage wears out
+## against whoever keeps their head and against nobody else.
 static func _save_roll(save: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
 	var key: int = unit.get_instance_id()
 	if not ctx.save_result.has(key):
-		var dc: int = SaveSystem.dc_for(ctx.caster, "focus", str(save.get("tier", "normal")))
-		ctx.save_result[key] = SaveSystem.roll(unit, str(save.get("stat", "")), dc)
+		var stat: String = str(save.get("stat", ""))
+		if save.has("dc"):
+			var passes: int = int(unit.aura_save_passes.get(ctx.container_id, 0)) \
+				if "aura_save_passes" in unit else 0
+			var dc: int = int(save["dc"]) - passes * int(save.get("dc_drop_per_pass", 0)) \
+				+ CombatManager.status_save_dc_bonus(ctx.caster)
+			var roll: Dictionary = SaveSystem.roll(unit, stat, maxi(1, dc))
+			if roll.success and "aura_save_passes" in unit:
+				unit.aura_save_passes[ctx.container_id] = passes + 1
+			ctx.save_result[key] = roll
+		else:
+			var dc: int = SaveSystem.dc_for(ctx.caster, "focus", str(save.get("tier", "normal")))
+			ctx.save_result[key] = SaveSystem.roll(unit, stat, dc)
 	return ctx.save_result[key]
 
 

@@ -75,7 +75,7 @@ TRIGGER_WORDS = {"expire": "when it runs out", "turn_start": "at the start of it
                  "ally_threatened": "when an ally is threatened"}
 PERIODIC_WORDS = {"turn_start": "at the start of each turn",
                   "turn_end": "at the end of each turn"}
-STAT_WORDS = {"crit_chance": "crit chance"}
+STAT_WORDS = {"crit_chance": "crit chance", "max_hp": "max HP"}
 IMMUNITY = 100       # Resistance.DECLARED_IMMUNITY
 
 

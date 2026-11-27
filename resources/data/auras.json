@@ -1,7 +1,7 @@
 {
-  "_comment": "Aura definitions. An aura is a field around a unit that affects other units by proximity. Any source may declare one with an `aura` key naming an id here: an item (passive_aura), a status (aura), a perk (aura), or a spell/active skill (aura, which applies its carrier status). Sources may override `magnitude` per instance — a graded item line does this to scale one aura across five consecrations. Resolution lives in scripts/combat/aura_system.gd; the vocabulary of payload kinds is enforced there, so a misspelled kind fails loudly instead of being silently skipped.",
-  "_comment_radius": "Radius is in grid tiles, Chebyshev distance, and never includes the emitter unless `affects` is 'self' or 'all'.",
-  "_comment_affects": "allies | enemies | all | self. `invert_for_enemies` flips the sign of every numeric payload for units on the other team, which is how one declaration expresses 'helps my side, hurts theirs'.",
+  "_comment": "Aura definitions. An aura is a field around a unit that affects other units by proximity. Any source may declare one with an `aura` key naming an id here: an item (passive_aura), a status (aura), a perk (aura), or a spell/active skill (aura, which applies its carrier status). What it does is a list of effects in the shared effect language, under `while_inside`: a `modify` is READ wherever the number is used (ValuePaths, Resistance), so walking out of the aura ends it with nothing to undo; every other effect fires once on the emitter's turn, through EffectResolver. An item may override the aura's flat numbers with `aura_value` (signed: a negative one drains). A status's own value reaches an effect through {\"from\": \"status.value\"}. Resolution lives in scripts/combat/aura_system.gd; EffectVocab.validate_aura checks every definition.",
+  "_comment_radius": "Radius is in grid tiles, Chebyshev distance, and never includes the emitter unless `affects` is 'self' or `self_included` is true.",
+  "_comment_affects": "allies | enemies | all | self. `invert_for_enemies` flips the sign of every number for units on the other team (a multiply of 0.8 becomes 1.2), which is how one declaration expresses 'helps my side, hurts theirs'. The aura's effects carry no `to` of their own: who they reach is the aura's question.",
   "auras": {
     "_comment_immune_system": "A `resistance` payload names what it guards against in `type`, which may be a damage type or an affliction. Immune System guards against three afflictions — things that happen to you rather than things that hit you — so its 15 reads as a 15% chance not to catch them, through Resistance.resists_affliction().",
     "immune_system": {
@@ -9,20 +9,23 @@
       "radius": 2,
       "affects": "allies",
       "self_included": true,
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "resistance",
-          "type": "poison",
+          "op": "modify",
+          "value": "resist.poison",
+          "mode": "fortify",
           "amount": 15
         },
         {
-          "kind": "resistance",
-          "type": "bleed",
+          "op": "modify",
+          "value": "resist.bleed",
+          "mode": "fortify",
           "amount": 15
         },
         {
-          "kind": "resistance",
-          "type": "disease",
+          "op": "modify",
+          "value": "resist.disease",
+          "mode": "fortify",
           "amount": 15
         }
       ]
@@ -31,16 +34,28 @@
       "name": "Favorable Wind",
       "radius": 2,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Hasted",
-          "duration": 2
+          "duration": 2,
+          "if": [
+            {
+              "target_lacks": "Hasted"
+            }
+          ]
         },
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Precision",
-          "duration": 2
+          "duration": 2,
+          "if": [
+            {
+              "target_lacks": "Precision"
+            }
+          ]
         }
       ]
     },
@@ -48,11 +63,17 @@
       "name": "Aura of Blessing",
       "radius": 2,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Blessed",
-          "duration": 2
+          "duration": 2,
+          "if": [
+            {
+              "target_lacks": "Blessed"
+            }
+          ]
         }
       ]
     },
@@ -60,10 +81,13 @@
       "name": "Soothing Presence",
       "radius": 2,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "heal",
-          "amount": 5
+          "op": "heal",
+          "amount": {
+            "from": "status.value",
+            "default": 5
+          }
         }
       ]
     },
@@ -72,11 +96,12 @@
       "radius": 2,
       "affects": "allies",
       "self_included": true,
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "damage_taken_pct",
-          "amount": -25,
-          "only": "magic"
+          "op": "modify",
+          "value": "stat.magic_damage_taken",
+          "mode": "multiply",
+          "amount": 0.75
         }
       ]
     },
@@ -84,36 +109,38 @@
       "name": "Light of the Sun",
       "radius": 2,
       "affects": "enemies",
-      "payloads": [
+      "_comment": "Solar_Form declared this effect string for months with no consumer anywhere. Dazzling nearby enemies is the reading the status description already implied.",
+      "while_inside": [
         {
-          "kind": "stat",
-          "stat": "accuracy",
-          "amount": -10
+          "op": "modify",
+          "value": "stat.accuracy",
+          "mode": "drain",
+          "amount": 10
         }
-      ],
-      "_comment": "Solar_Form declared this effect string for months with no consumer anywhere. Dazzling nearby enemies is the reading the status description already implied."
+      ]
     },
     "initiative_debuff": {
       "name": "Weight of the Khatvanga",
       "radius": 1,
       "affects": "enemies",
-      "payloads": [
+      "_comment": "Khatvanga items override the magnitude per consecration grade, -2 through -8.",
+      "while_inside": [
         {
-          "kind": "stat",
-          "stat": "initiative",
-          "amount": -3
+          "op": "modify",
+          "value": "stat.initiative",
+          "mode": "drain",
+          "amount": 3
         }
-      ],
-      "_comment": "Khatvanga items override the magnitude per consecration grade, -2 through -8."
+      ]
     },
     "healing_regeneration": {
       "name": "Healing Presence",
       "radius": 2,
       "affects": "allies",
       "self_included": true,
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "heal",
+          "op": "heal",
           "amount": 3
         }
       ]
@@ -123,9 +150,11 @@
       "radius": 1,
       "affects": "allies",
       "self_included": true,
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "max_hp",
+          "op": "modify",
+          "value": "stat.max_hp",
+          "mode": "fortify",
           "amount": 10
         }
       ]
@@ -135,20 +164,23 @@
       "radius": 2,
       "affects": "all",
       "invert_for_enemies": true,
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "stat",
-          "stat": "armor",
+          "op": "modify",
+          "value": "stat.armor",
+          "mode": "fortify",
           "amount": 10
         },
         {
-          "kind": "stat",
-          "stat": "dodge",
+          "op": "modify",
+          "value": "stat.dodge",
+          "mode": "fortify",
           "amount": 10
         },
         {
-          "kind": "stat",
-          "stat": "crit_chance",
+          "op": "modify",
+          "value": "stat.crit_chance",
+          "mode": "fortify",
           "amount": 10
         }
       ]
@@ -158,23 +190,24 @@
       "radius": 99,
       "affects": "allies",
       "self_included": true,
-      "payloads": [
+      "_comment": "Party-wide rather than proximity-based, hence the radius. The air damage and stun chance this perk also grants stay in the on-hit path; only the standing bonus is an aura.",
+      "while_inside": [
         {
-          "kind": "stat",
-          "stat": "accuracy",
+          "op": "modify",
+          "value": "stat.accuracy",
+          "mode": "fortify",
           "amount": 5
         }
-      ],
-      "_comment": "Party-wide rather than proximity-based, hence the radius. The air damage and stun chance this perk also grants stay in the on-hit path; only the standing bonus is an aura."
+      ]
     },
     "radiance": {
       "name": "Radiance",
       "radius": 2,
       "affects": "allies",
       "self_included": true,
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "heal",
+          "op": "heal",
           "amount": 4
         }
       ]
@@ -183,48 +216,69 @@
       "name": "Radiant Glare",
       "radius": 1,
       "affects": "enemies",
-      "payloads": [
+      "_comment": "The melee half of Radiance. Separate from the healing half because they reach different teams at different radii, which one aura cannot do.",
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Stunned",
           "duration": 1,
-          "chance": 0.35
+          "if": [
+            {
+              "target_lacks": "Stunned"
+            }
+          ],
+          "chance": 35
         }
-      ],
-      "_comment": "The melee half of Radiance. Separate from the healing half because they reach different teams at different radii, which one aura cannot do."
+      ]
     },
     "radiant_visage": {
       "name": "Radiant Visage",
       "radius": 2,
       "affects": "allies",
       "self_included": true,
-      "payloads": [
+      "_comment": "The spell described +2 AWR and +2 CON. Those are attributes, and an aura moves stats — so it grants what they would have bought: the initiative from Awareness and the health from Constitution.",
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Mental_Immunity",
-          "duration": 2
+          "duration": 2,
+          "if": [
+            {
+              "target_lacks": "Mental_Immunity"
+            }
+          ]
         },
         {
-          "kind": "stat",
-          "stat": "initiative",
+          "op": "modify",
+          "value": "stat.initiative",
+          "mode": "fortify",
           "amount": 2
         },
         {
-          "kind": "max_hp",
+          "op": "modify",
+          "value": "stat.max_hp",
+          "mode": "fortify",
           "amount": 10
         }
-      ],
-      "_comment": "The spell described +2 AWR and +2 CON. Those are attributes, and an aura moves stats — so it grants what they would have bought: the initiative from Awareness and the health from Constitution."
+      ]
     },
     "singing_birds": {
       "name": "Singing Birds",
       "radius": 2,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Encouraged",
-          "duration": 2
+          "duration": 2,
+          "if": [
+            {
+              "target_lacks": "Encouraged"
+            }
+          ]
         }
       ]
     },
@@ -232,11 +286,17 @@
       "name": "Guiding Light",
       "radius": 2,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Inspired",
-          "duration": 2
+          "duration": 2,
+          "if": [
+            {
+              "target_lacks": "Inspired"
+            }
+          ]
         }
       ]
     },
@@ -244,9 +304,9 @@
       "name": "Apsara's Grace",
       "radius": 2,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "heal",
+          "op": "heal",
           "amount": 6
         }
       ]
@@ -255,12 +315,18 @@
       "name": "Apsara's Charm",
       "radius": 1,
       "affects": "enemies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Charmed",
           "duration": 1,
-          "chance": 0.25
+          "if": [
+            {
+              "target_lacks": "Charmed"
+            }
+          ],
+          "chance": 25
         }
       ]
     },
@@ -268,15 +334,21 @@
       "name": "Gandharva Song",
       "radius": 3,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "heal",
+          "op": "heal",
           "amount": 5
         },
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Blessed",
-          "duration": 2
+          "duration": 2,
+          "if": [
+            {
+              "target_lacks": "Blessed"
+            }
+          ]
         }
       ]
     },
@@ -284,30 +356,40 @@
       "name": "Shining Mirage",
       "radius": 99,
       "affects": "enemies",
-      "payloads": [
+      "_comment": "Battlefield-wide, and resistible. Each enemy who makes the save sees a little further through it, so the DC they personally face drops by 2 every time — the mirage wears out against anyone who keeps their head.",
+      "while_inside": [
         {
-          "kind": "grant_status",
+          "op": "status",
+          "action": "apply",
           "status": "Confused",
           "duration": 1,
+          "if": [
+            {
+              "target_lacks": "Confused"
+            }
+          ],
           "save": {
-            "attribute": "focus",
+            "stat": "focus",
             "dc": 14,
             "dc_drop_per_pass": 2
           }
         }
-      ],
-      "_comment": "Battlefield-wide, and resistible. Each enemy who makes the save sees a little further through it, so the DC they personally face drops by 2 every time — the mirage wears out against anyone who keeps their head."
+      ]
     },
-    "_comment_shield_wall": "Shield Wall is two auras on one status (Shield_Wall), because the wall and its cover want different amounts. `stat_pct` is a percentage of the receiving unit's OWN sheet value - +25% of your Armor, +10% of each adjacent ally's - which a flat `stat` payload cannot express.",
+    "_comment_shield_wall": "Shield Wall is two auras on one status (Shield_Wall), because the wall and its cover want different amounts. The amount is {pct_of: target.armor, value: 25}: a percentage of the receiving unit's OWN sheet Armor - +25% of your Armor, +10% of each adjacent ally's - which a flat number cannot express.",
     "shield_wall": {
       "name": "Shield Wall",
       "radius": 0,
       "affects": "self",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "stat_pct",
-          "stat": "armor",
-          "amount": 25
+          "op": "modify",
+          "value": "stat.armor",
+          "mode": "fortify",
+          "amount": {
+            "pct_of": "target.armor",
+            "value": 25
+          }
         }
       ]
     },
@@ -315,13 +397,18 @@
       "name": "Shield Wall (cover)",
       "radius": 1,
       "affects": "allies",
-      "payloads": [
+      "while_inside": [
         {
-          "kind": "stat_pct",
-          "stat": "armor",
-          "amount": 10
+          "op": "modify",
+          "value": "stat.armor",
+          "mode": "fortify",
+          "amount": {
+            "pct_of": "target.armor",
+            "value": 10
+          }
         }
       ]
     }
-  }
+  },
+  "_comment_immune_system": "Immune System guards against three afflictions — things that happen to you rather than things that hit you — with `resist.poison`, `resist.bleed` and `resist.disease`. Its 15 reads as a 15% chance not to catch them (Resistance.resists_affliction) and, for poison, 15% off poison damage too (Resistance.total)."
 }

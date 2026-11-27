@@ -4,7 +4,7 @@
 # so the two validators are held to one standard.
 import json, os, sys, unittest
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from effect_check import check_effect, check_effects, check_status, OPS_PY, MODES_PY, FLAGS as FLAGS_PY
+from effect_check import check_effect, check_effects, check_status, check_aura, check_zone, OPS_PY, MODES_PY, FLAGS as FLAGS_PY
 
 VALID = [
     {"op": "damage", "amount": 20, "type": "fire"},
@@ -179,6 +179,85 @@ class EffectVocabTests(unittest.TestCase):
                     "damage_increase_per_turn"]:
             d = dict(STATUS_MINIMAL, **{key: 1})
             self.assertNotEqual(check_status(d, "t"), [], key)
+
+    # ── Auras and zones as effects (Task 8) ─────────────────────────────────
+    def test_new_stats_and_affliction_resists(self):
+        for v in ["stat.max_hp", "stat.mana_cost_pct", "resist.bleed", "resist.disease"]:
+            self.assertEqual(check_effect({"op": "modify", "value": v, "mode": "fortify",
+                                           "amount": 10}, "t"), [], v)
+        for v in ["stat.magic_damage_taken", "stat.physical_damage_taken"]:
+            self.assertEqual(check_effect({"op": "modify", "value": v, "mode": "multiply",
+                                           "amount": 0.75}, "t"), [], v)
+        for v in ["stat.max_hp", "stat.mana_cost_pct"]:
+            self.assertNotEqual(check_effect({"op": "modify", "value": v, "mode": "multiply",
+                                              "amount": 2}, "t"), [], v)
+
+    def test_fixed_dc_save_and_summon_from(self):
+        ok = {"op": "status", "action": "apply", "status": "Confused",
+              "save": {"stat": "focus", "dc": 14, "dc_drop_per_pass": 2}}
+        self.assertEqual(check_effect(ok, "t"), [])
+        for bad in [{"stat": "focus", "dc": 14, "tier": "hard"},
+                    {"stat": "focus", "tier": "hard", "dc_drop_per_pass": 2},
+                    {"stat": "focus", "dc": "high"}, {"stat": "focus", "dc": 3, "bonus": 1}]:
+            self.assertNotEqual(check_effect(dict(ok, save=bad), "t"), [], bad)
+        self.assertEqual(check_effect({"op": "summon", "as": "Zombie", "from": "corpse"}, "t"), [])
+        self.assertNotEqual(check_effect({"op": "summon", "as": "Zombie", "from": "grave"}, "t"), [])
+
+    def test_aura_shape(self):
+        ok = {"name": "A", "radius": 1, "affects": "allies", "while_inside": [
+            {"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 3},
+            {"op": "modify", "value": "stat.armor", "mode": "fortify",
+             "amount": {"pct_of": "target.armor", "value": 10}},
+            {"op": "heal", "amount": {"from": "status.value", "default": 5}}]}
+        self.assertEqual(check_aura(ok, "a"), [])
+        bad = {
+            "to": [{"op": "heal", "amount": 3, "to": "caster"}],
+            "chance on modify": [{"op": "modify", "value": "stat.dodge", "mode": "fortify",
+                                  "amount": 3, "chance": 50}],
+            "set": [{"op": "modify", "value": "stat.dodge", "mode": "set", "amount": 3}],
+            "attribute": [{"op": "modify", "value": "attribute.focus", "mode": "fortify", "amount": 3}],
+            "getter borrow": [{"op": "modify", "value": "stat.dodge", "mode": "fortify",
+                               "amount": {"from": "target.stat.dodge"}}],
+            "move": [{"op": "move", "mode": "push"}],
+            "empty": [],
+        }
+        for label, effects in bad.items():
+            self.assertNotEqual(check_aura(dict(ok, while_inside=effects), "a"), [], label)
+        self.assertNotEqual(check_aura(dict(ok, payloads=[]), "a"), [])
+
+    def test_zone_shape(self):
+        ok = {"name": "Z", "affects": "enemies",
+              "turn_start_inside": [{"op": "damage", "amount": 7, "type": "piercing"}],
+              "on_enter": [{"op": "status", "action": "apply", "status": "Slowed", "duration": 2,
+                            "to": "all_in_area"}],
+              "on_death_inside": [{"op": "summon", "as": "Zombie", "from": "corpse"}]}
+        self.assertEqual(check_zone(ok, "z"), [])
+        bad = {
+            "lasting modify on enter": {"on_enter": [{"op": "modify", "value": "stat.dodge",
+                                                      "mode": "fortify", "amount": 3}]},
+            "summon with to": {"on_death_inside": [{"op": "summon", "as": "Zombie",
+                                                    "from": "corpse", "to": "enemies_in_area"}]},
+            "corpse outside death": {"on_enter": [{"op": "summon", "as": "Zombie", "from": "corpse"}]},
+            "old payload": {"on_enter": [{"kind": "damage", "amount": 3, "element": "fire"}]},
+            "bad to": {"on_enter": [{"op": "damage", "amount": 3, "type": "fire", "to": "party"}]},
+            "unknown trigger": {"on_exit": []},
+        }
+        for label, extra in bad.items():
+            d = {"name": "Z", "affects": "all"}
+            d.update(extra)
+            self.assertNotEqual(check_zone(d, "z"), [], label)
+        self.assertNotEqual(check_zone({"name": "Z", "affects": "all"}, "z"), [])
+
+    def test_live_auras_and_zones_validate(self):
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        auras = json.load(open(os.path.join(root, "resources/data/auras.json")))["auras"]
+        zones = json.load(open(os.path.join(root, "resources/data/zones.json")))["zones"]
+        for k, v in auras.items():
+            if not k.startswith("_"):
+                self.assertEqual(check_aura(v, k), [], k)
+        for k, v in zones.items():
+            if not k.startswith("_"):
+                self.assertEqual(check_zone(v, k), [], k)
 
 
 STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",

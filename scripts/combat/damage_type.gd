@@ -35,7 +35,7 @@ const CATEGORIES: Array[String] = [
 ## Names a `resist.<name>` effect hold may use (a status's `while_active`
 ## modify, once `grants_resistance` / `grants_vulnerability`) that name a group
 ## of types rather than one. Only effects take these — a unit's own
-## `resistances` block and aura payloads name one type each. EffectVocab's
+## `resistances` block names one type each. EffectVocab's
 ## RESIST_GROUPS lists them for the validator; Resistance.hold_covers() asks
 ## scope_covers() below.
 ##

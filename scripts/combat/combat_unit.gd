@@ -138,12 +138,14 @@ var next_summon_empowered: bool = false
 # distinction ever needed to be. See AuraSystem.
 var intrinsic_auras: Array[String] = []
 
-# How many times this unit has resisted each aura, by aura id. Shining Mirage
+# How many times this unit has passed each fixed-DC save, by the id of the aura
+# or zone that asked it (EffectResolver._save_roll). Shining Mirage
 # lowers its own DC against anyone who keeps seeing through it, so the count
 # has to live on the person doing the seeing.
 var aura_save_passes: Dictionary = {}
 
-# max HP currently granted by auras. Stored, unlike every other aura payload,
+# max HP currently granted by stat.max_hp (auras, zones, holds). Stored, unlike
+# every other read-time number,
 # because current_hp must be clamped when the bonus goes away; kept as a running
 # total so refreshes apply a delta and cannot double up.
 var aura_max_hp: int = 0

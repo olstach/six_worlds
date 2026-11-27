@@ -174,8 +174,7 @@ func _check_ritual_reaches_auras_retaliation_and_perk_procs() -> void:
 		_fail("a certain effect stopped being certain")
 	var f := FileAccess.open("res://scripts/autoload/combat_manager.gd", FileAccess.READ)
 	var src := f.get_as_text() if f != null else ""
-	for needle in ["ritual_chance(source, chance)", "status_save_dc_bonus(source)",
-			"ritual_chance(defender, 0.25)", "ritual_chance(attacker, 0.15)",
+	for needle in ["ritual_chance(defender, 0.25)", "ritual_chance(attacker, 0.15)",
 			"ritual_chance(attacker, 0.20)"]:
 		if not src.contains(needle):
 			_fail("combat_manager.gd no longer contains '%s' — a status roll "
@@ -190,6 +189,17 @@ func _check_ritual_reaches_auras_retaliation_and_perk_procs() -> void:
 	if not resolver_src.contains("CombatManager.effective_status_chance(caster_data, float(effect[\"chance\"]))"):
 		_fail("effect_resolver.gd no longer puts an effect's chance through "
 			+ "effective_status_chance — retaliation's status roll has slipped out from under Ritual")
+	# Auras and zones are effect lists now (stage 2b Task 8). Their status
+	# chance is the effect's `chance`, through effective_status_chance above,
+	# and their fixed-DC save adds status_save_dc_bonus of the caster — which
+	# _resolve_area_effects makes the aura's emitter or the zone's owner, as
+	# ritual_chance(source, ...) and status_save_dc_bonus(source) were.
+	if not resolver_src.contains("+ CombatManager.status_save_dc_bonus(ctx.caster)"):
+		_fail("effect_resolver.gd's fixed-DC save no longer adds status_save_dc_bonus "
+			+ "— an aura's save has slipped out from under Ritual")
+	if not src.contains("ctx.caster = source\n\tctx.target = target\n\tctx.area_units = [target]"):
+		_fail("_resolve_area_effects no longer makes the aura's emitter / zone's owner "
+			+ "the caster, so its rolls would not read their Ritual")
 	if not src.contains("if not str(trigger.get(\"on\", \"\")) in _SELF_TRIGGERS:\n\t\tctx.caster = unit"):
 		_fail("a reacting status trigger no longer makes its carrier the caster, so a "
 			+ "retaliation would roll on the applier's Ritual instead of the defender's")

@@ -124,6 +124,16 @@ SAVE_WHEN = _gd_list(_vocab_src, "SAVE_WHEN")
 SPREAD_TO = _gd_list(_vocab_src, "SPREAD_TO")
 SPREAD_WHEN = _gd_list(_vocab_src, "SPREAD_WHEN")
 BUILT_IN_CREATURE_TAGS = _gd_list(_vocab_src, "BUILT_IN_CREATURE_TAGS")
+FLAT_ONLY_STATS = _gd_list(_vocab_src, "FLAT_ONLY_STATS")
+SUMMON_FROM = _gd_list(_vocab_src, "SUMMON_FROM")
+SAVE_FIELDS = _gd_list(_vocab_src, "SAVE_FIELDS")
+AURA_FIELDS = _gd_list(_vocab_src, "AURA_FIELDS")
+ZONE_FIELDS = _gd_list(_vocab_src, "ZONE_FIELDS")
+READ_TIME_NAMESPACES = _gd_list(_vocab_src, "READ_TIME_NAMESPACES")
+READ_TIME_MODES = _gd_list(_vocab_src, "READ_TIME_MODES")
+PER_TURN_OPS = _gd_list(_vocab_src, "PER_TURN_OPS")
+ZONE_SELECTORS = _gd_list(_vocab_src, "ZONE_SELECTORS")
+READ_TIME_BORROWS = _gd_list(_vocab_src, "READ_TIME_BORROWS")
 
 # Lists EffectVocab borrows from other classes.
 _cs_src = _read("scripts/combat/combat_stats.gd")
@@ -140,6 +150,14 @@ _res_src = _read("scripts/combat/resurrection.gd")
 RESURRECT_TIERS = _gd_list(_res_src, "TIERS")
 RESURRECT_SCOPES = _gd_list(_res_src, "SCOPES")
 MAGIC_SCHOOLS = _gd_list(_read("scripts/autoload/perk_system.gd"), "MAGIC_SCHOOLS")
+AFFLICTIONS = _gd_list(_read("scripts/combat/resistance.gd"), "AFFLICTIONS")   # Resistance.AFFLICTIONS
+AURA_AFFECTS = _gd_list(_read("scripts/combat/aura_system.gd"), "AFFECTS")    # AuraSystem.AFFECTS
+_zone_src = _read("scripts/combat/zone.gd")
+ZONE_TRIGGERS = _gd_list(_zone_src, "TRIGGERS")                                # Zone.TRIGGERS
+ZONE_AFFECTS = _gd_list(_zone_src, "AFFECTS")
+ZONE_DRIFTS = _gd_list(_zone_src, "DRIFTS")
+ZONE_PAIR_ROLES = _gd_list(_zone_src, "PAIR_ROLES")
+POSITION_OPS = _gd_list(_read("scripts/effects/effect_resolver.gd"), "POSITION_OPS")
 
 
 # ── Name lookups GDScript does through autoloads, here done from the JSON ───
@@ -424,13 +442,26 @@ def _validate_shared(effect, where, errs):
     if "save" in effect:
         s = effect["save"]
         if not isinstance(s, dict):
-            errs.append(f"{where}: 'save' must be {{stat, tier}}")
+            errs.append(f"{where}: 'save' must be {{stat, tier}} or {{stat, dc}}")
         else:
+            for k in s:
+                if k not in SAVE_FIELDS:
+                    errs.append(f"{where}: unknown save field '{k}' (approved: {_j(SAVE_FIELDS)})")
             if str(s.get("stat", "")).lower() not in SAVE_ATTRIBUTES:
                 errs.append(f"{where}: save stat '{s.get('stat', '')}' is not an attribute")
-            if s.get("tier", "") not in SAVE_TIERS:
-                errs.append(f"{where}: save tier '{s.get('tier', '')}' unknown "
-                            f"(known: {_j(SAVE_TIERS)})")
+            if "dc" in s:
+                if "tier" in s:
+                    errs.append(f"{where}: a save has a 'tier' or a 'dc', not both")
+                if not _is_number(s["dc"]):
+                    errs.append(f"{where}: save dc must be a number")
+                if "dc_drop_per_pass" in s and not _is_number(s["dc_drop_per_pass"]):
+                    errs.append(f"{where}: save dc_drop_per_pass must be a number")
+            else:
+                if "dc_drop_per_pass" in s:
+                    errs.append(f"{where}: dc_drop_per_pass needs a fixed 'dc'")
+                if s.get("tier", "") not in SAVE_TIERS:
+                    errs.append(f"{where}: save tier '{s.get('tier', '')}' unknown "
+                                f"(known: {_j(SAVE_TIERS)})")
     if "on_save" in effect:
         if effect["on_save"] not in ["fail", "pass"]:
             errs.append(f"{where}: 'on_save' must be \"fail\" or \"pass\"")
@@ -567,6 +598,8 @@ def _validate_op(op, effect, where, errs):
             errs.append(f"{where}: summon count must be a number")
         if "owner" in effect and effect["owner"] not in SUMMON_OWNERS:
             errs.append(f"{where}: summon owner '{effect['owner']}' unknown ({_j(SUMMON_OWNERS)})")
+        if "from" in effect and effect["from"] not in SUMMON_FROM:
+            errs.append(f"{where}: summon from '{effect['from']}' unknown ({_j(SUMMON_FROM)})")
     elif op == "attack":
         if effect.get("target", "source") not in ATTACK_TARGETS:
             errs.append(f"{where}: attack target '{effect.get('target', '')}' unknown ({_j(ATTACK_TARGETS)})")
@@ -602,6 +635,10 @@ def _validate_modify(effect, where, errs):
             if mode not in MODES_BY_NAMESPACE[ns]:
                 errs.append(f"{where}: mode '{mode}' is not allowed on {ns}. values "
                             f"(allowed: {_j(MODES_BY_NAMESPACE[ns])})")
+            elif ns == "stat" and str(effect["value"]).split(".")[1] in FLAT_ONLY_STATS \
+                    and mode not in ("fortify", "drain"):
+                errs.append(f"{where}: {effect['value']} is a number of points; only fortify "
+                            "and drain change it")
     _validate_magnitude(effect, "amount", False, where, errs)
 
 
@@ -743,8 +780,9 @@ def _value_path_error(path):
         if name not in SKILL_IDS:
             return f"unknown skill '{name}' in '{path}'"
     elif ns == "resist":
-        if not (name in RESIST_GROUPS or name in DAMAGE_TYPES):
-            return f"unknown resist '{name}' in '{path}' (a damage type, or {_j(RESIST_GROUPS)})"
+        if not (name in RESIST_GROUPS or name in DAMAGE_TYPES or name in AFFLICTIONS):
+            return (f"unknown resist '{name}' in '{path}' (a damage type, an affliction, "
+                    f"or {_j(RESIST_GROUPS)})")
     return ""
 
 
@@ -790,3 +828,106 @@ def _condition_error(cond):
             return f"target_lacks '{arg}' is neither a status nor a status tag"
         return f"unknown condition form '{key}' (approved: {_j(CONDITION_KEYS)})"
     return f"a condition is a name or a one-key object, got {cond}"
+
+
+# ── Auras and zones (stage 2b, Task 8) ──────────────────────────────────────
+# Mirrors EffectVocab.validate_aura / validate_zone / _validate_inside_effect.
+
+def _check_inside_effect(e, label, errs):
+    """One effect of a while_inside list: a read-time modify or a per-turn op."""
+    if not isinstance(e, dict):
+        errs.append(f"{label}: an effect must be an object")
+        return
+    op = str(e.get("op", ""))
+    if op != "modify":
+        if op not in PER_TURN_OPS:
+            errs.append(f"{label}: while_inside fires {_j(PER_TURN_OPS)} each turn; "
+                        f"'{op}' is not one of them")
+            return
+        errs.extend(check_effect(e, label))
+        return
+    errs.extend(check_effect(e, label))
+    if str(e.get("value", "")).split(".")[0] not in READ_TIME_NAMESPACES:
+        errs.append(f"{label}: a while_inside modify is read where the number is used, so "
+                    f"it changes {'/'.join(READ_TIME_NAMESPACES)}. values only")
+    if str(e.get("mode", "")) not in READ_TIME_MODES:
+        errs.append(f"{label}: a while_inside modify adds or multiplies ({_j(READ_TIME_MODES)})")
+    for k in ("chance", "save", "on_save", "if", "scale", "bonus_vs", "cleared_by"):
+        if k in e:
+            errs.append(f"{label}: '{k}' cannot work on a number that is read, not applied")
+    m = e.get("amount", 0)
+    if isinstance(m, dict):
+        if "from" in m and str(m["from"]) not in READ_TIME_BORROWS:
+            errs.append(f"{label}: a while_inside modify may borrow only {_j(READ_TIME_BORROWS)}")
+        elif "pct_of" in m and not str(m["pct_of"]).startswith("target."):
+            errs.append(f"{label}: a while_inside pct_of reads the recipient's own sheet (target.<stat>)")
+        elif "from" not in m and "pct_of" not in m:
+            errs.append(f"{label}: a while_inside modify's amount is a number, a status borrow or a pct_of")
+
+
+def check_aura(d, where):
+    """Validate one auras.json definition; returns error strings."""
+    errs = []
+    for k in d:
+        if not str(k).startswith("_") and k not in AURA_FIELDS:
+            errs.append(f"{where}: unknown aura field '{k}' (approved: {_j(AURA_FIELDS)})")
+    if "affects" in d and d["affects"] not in AURA_AFFECTS:
+        errs.append(f"{where}: aura affects '{d['affects']}' unknown ({_j(AURA_AFFECTS)})")
+    if "radius" in d and not _is_number(d["radius"]):
+        errs.append(f"{where}: aura radius must be a number")
+    effects = d.get("while_inside", [])
+    if not isinstance(effects, list) or not effects:
+        errs.append(f"{where}: an aura needs a non-empty 'while_inside' list of effects")
+        return errs
+    for i, e in enumerate(effects):
+        label = f"{where}.while_inside[{i}]"
+        if isinstance(e, dict) and "to" in e:
+            errs.append(f"{label}: an aura's effect has no 'to'; the aura's affects and radius decide")
+        _check_inside_effect(e, label, errs)
+    return errs
+
+
+def check_zone(d, where):
+    """Validate one zones.json definition; returns error strings."""
+    errs = []
+    count = 0
+    for k in d:
+        if not str(k).startswith("_") and k not in ZONE_FIELDS:
+            errs.append(f"{where}: unknown zone field '{k}' (approved: {_j(ZONE_FIELDS)})")
+    if "affects" in d and d["affects"] not in ZONE_AFFECTS:
+        errs.append(f"{where}: zone affects '{d['affects']}' unknown ({_j(ZONE_AFFECTS)})")
+    if "drift" in d and d["drift"] not in ZONE_DRIFTS:
+        errs.append(f"{where}: zone drift '{d['drift']}' unknown")
+    if "pair" in d and d["pair"] not in ZONE_PAIR_ROLES:
+        errs.append(f"{where}: zone pair '{d['pair']}' unknown")
+    for trigger in ZONE_TRIGGERS:
+        if trigger not in d:
+            continue
+        effects = d[trigger]
+        if not isinstance(effects, list):
+            errs.append(f"{where}.{trigger} must be a list of effects")
+            continue
+        count += len(effects)
+        for i, e in enumerate(effects):
+            label = f"{where}.{trigger}[{i}]"
+            if not isinstance(e, dict):
+                errs.append(f"{label}: an effect must be an object")
+                continue
+            op = str(e.get("op", ""))
+            if "to" in e and e["to"] not in ZONE_SELECTORS:
+                errs.append(f"{label}: a zone effect's 'to' is one of {_j(ZONE_SELECTORS)}")
+            if op in POSITION_OPS and "to" in e:
+                errs.append(f"{label}: a {op} happens once at the tile; give the zone an "
+                            "'affects' instead of a 'to'")
+            if op == "summon" and e.get("from", "") == "corpse" and trigger != "on_death_inside":
+                errs.append(f"{label}: summon from 'corpse' only means something in on_death_inside")
+            if trigger == "while_inside":
+                _check_inside_effect(e, label, errs)
+                continue
+            errs.extend(check_effect(e, label))
+            if op == "modify" and str(e.get("mode", "")) in ("fortify", "drain", "set", "multiply"):
+                errs.append(f"{label}: a lasting modify in {trigger} would never be released; "
+                            "put it in while_inside")
+    if count == 0:
+        errs.append(f"{where}: a zone with no effects under any trigger does nothing")
+    return errs

@@ -1692,6 +1692,9 @@ func _check_grave_soil_raises_what_dies_on_it() -> void:
 	if foe.current_hp < hp_before:
 		_fail("grave soil hurt someone merely standing on it")
 
+	# _zones_on_death runs after apply_damage has marked the unit dead; the
+	# raise (`summon from: corpse`) needs a corpse.
+	foe.is_dead = true
 	CombatManager._zones_on_death(foe)
 	if CombatManager.all_units.size() <= before_units:
 		_fail("an enemy died on grave soil and nothing rose")
@@ -1748,22 +1751,16 @@ func _check_a_zone_expires() -> void:
 	_done()
 
 
-## The claim the design rests on: zones and auras share one payload
-## vocabulary. If a kind works in an aura it must work in a zone, because it is
-## the same function applying it.
+## The claim the design rests on: zones and auras share one vocabulary. Both
+## are the shared effect language now (stage 2b Task 8), so every zone and
+## every aura must pass its validator, EffectVocab.validate_zone /
+## validate_aura — a kind that works in an aura works in a zone because both
+## go through EffectResolver.
 func _check_zones_reuse_the_aura_payloads() -> void:
 	for zone_id in Zone.definitions():
-		var def: Dictionary = Zone.get_definition(zone_id)
-		for trigger in Zone.TRIGGERS:
-			for payload in def.get(trigger, []):
-				var kind: String = str(payload.get("kind", ""))
-				# `raise` is the one zone-only kind: it summons rather than
-				# modifying whoever is standing there.
-				if kind == "raise":
-					continue
-				if not AuraSystem.is_payload_kind(kind):
-					_fail("zone '%s' %s uses payload kind '%s', which is not in "
-						% [zone_id, trigger, kind]
-						+ "AuraSystem.PAYLOAD_KINDS — the two vocabularies have "
-						+ "drifted apart")
+		for msg in EffectVocab.validate_zone(Zone.get_definition(zone_id), "zone %s" % zone_id):
+			_fail(msg)
+	for aura_id in AuraSystem.definitions():
+		for msg in EffectVocab.validate_aura(AuraSystem.get_definition(aura_id), "aura %s" % aura_id):
+			_fail(msg)
 	_done()

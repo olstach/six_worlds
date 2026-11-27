@@ -568,6 +568,7 @@ const STAT_WORDS: Dictionary = {
 	"initiative": "initiative", "movement": "movement", "accuracy": "accuracy",
 	"dodge": "dodge", "damage": "damage", "armor": "armor",
 	"crit_chance": "crit chance", "spellpower": "spellpower",
+	"max_hp": "max HP",
 }
 
 
@@ -695,8 +696,8 @@ static func _status_aura_lines(def: Dictionary) -> Array[String]:
 			who += " and self"
 		var reach: String = "the whole battlefield" if radius >= 20 else "within %d" % radius
 		var effects: Array[String] = []
-		for payload in adef.get("payloads", []):
-			var text: String = _aura_payload_text(payload)
+		for effect in adef.get("while_inside", []):
+			var text: String = _aura_effect_text(effect)
 			if text != "":
 				effects.append(text)
 		lines.append("Aura: %s (%s %s): %s" % [str(adef.get("name", aura_id)), who, reach,
@@ -704,36 +705,47 @@ static func _status_aura_lines(def: Dictionary) -> Array[String]:
 	return lines
 
 
-## Words for one aura payload — the kinds AuraSystem.PAYLOAD_KINDS lists.
-static func _aura_payload_text(payload: Dictionary) -> String:
-	var amount = payload.get("amount", 0)
-	match str(payload.get("kind", "")):
-		"grant_status":
-			var sname: String = str(payload.get("status", "")).replace("_", " ")
+## Words for one effect of an aura's `while_inside` list. A borrowed amount
+## ({"from": "status.value", "default": 5}) is shown as its default, the number
+## the aura gives when no spell set one.
+static func _aura_effect_text(effect: Dictionary) -> String:
+	var amount = effect.get("amount", 0)
+	if amount is Dictionary and amount.has("from"):
+		amount = amount.get("default", 0)
+	match str(effect.get("op", "")):
+		"status":
+			var sname: String = str(effect.get("status", "")).replace("_", " ")
 			var text: String = sname
-			var chance: float = float(payload.get("chance", 1.0))
-			if chance < 1.0:
-				text = "%d%% chance of %s" % [roundi(chance * 100.0), sname]
-			var save_spec: Dictionary = payload.get("save", {})
+			if effect.has("chance") and float(effect["chance"]) < 100.0:
+				text = "%d%% chance of %s" % [roundi(float(effect["chance"])), sname]
+			var save_spec: Dictionary = effect.get("save", {})
 			if not save_spec.is_empty():
-				text += " (%s save DC %d)" % [str(save_spec.get("attribute", "focus")).capitalize(),
+				text += " (%s save DC %d)" % [str(save_spec.get("stat", "focus")).capitalize(),
 					int(save_spec.get("dc", 12))]
 			return text + " each turn"
 		"heal":
 			return "heals %d each turn" % int(amount)
 		"damage":
 			return "%d %s damage each turn" % [int(amount),
-				DamageType.display_name(str(payload.get("element", "physical"))).to_lower()]
-		"stat":
-			return "%+d %s" % [int(amount), str(payload.get("stat", "")).replace("_", " ")]
-		"max_hp":
-			return "%+d max HP" % int(amount)
-		"damage_taken_pct":
-			var only: String = str(payload.get("only", ""))
-			return "%+d%% %sdamage taken" % [int(amount), (only + " ") if only != "" else ""]
-		"resistance":
-			return "%+d%% %s resistance" % [int(amount),
-				DamageType.display_name(str(payload.get("type", ""))).to_lower()]
+				DamageType.display_name(str(effect.get("type", "physical"))).to_lower()]
+		"modify":
+			var value: String = str(effect.get("value", ""))
+			var name: String = value.get_slice(".", 1)
+			var mode: String = str(effect.get("mode", "fortify"))
+			if mode == "multiply":
+				# stat.magic_damage_taken x0.75 reads "-25% magic damage taken".
+				var pct: int = roundi((float(amount) - 1.0) * 100.0)
+				return "%+d%% %s" % [pct, name.replace("_", " ")]
+			var sign_mult: int = -1 if mode == "drain" else 1
+			if amount is Dictionary and amount.has("pct_of"):
+				return "%+d%% of own %s" % [sign_mult * int(amount.get("value", 0)),
+					str(amount["pct_of"]).trim_prefix("target.").replace("_", " ")]
+			var n: int = sign_mult * int(amount)
+			if value.begins_with("resist."):
+				return "%+d%% %s resistance" % [n, _resist_name(name)]
+			if name == "max_hp":
+				return "%+d max HP" % n
+			return "%+d %s" % [n, name.replace("_", " ")]
 	return ""
 
 

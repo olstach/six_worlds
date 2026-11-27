@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 90
+const EXPECTED_CHECKS: int = 96
 
 var grid: CombatGrid
 
@@ -142,6 +142,14 @@ func _ready() -> void:
 	_check_status_op_reports_resisted()
 	_check_multi_school_cleared_by()
 	_check_breakdown_lists_holds()
+
+	# Stage 2b, Task 8: auras and zones are effect lists; auras are read-time.
+	_check_aura_numbers_match_baseline()
+	_check_zone_effects_resolve()
+	_check_grave_soil_raises()
+	_check_aura_breakdown_label()
+	_check_aura_affliction_resistance()
+	_check_aura_zone_validation()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -2782,4 +2790,218 @@ func _check_breakdown_lists_holds() -> void:
 	if not found:
 		_fail("breakdown does not list the hold by status name: %s" % [Resistance.breakdown(u, "fire")])
 	_cleanup([u])
+	_done()
+
+
+# ── Stage 2b, Task 8: auras and zones as effects ────────────────────────────
+
+const AuraMeasure = preload("res://tools/aura_measure.gd")
+const AURA_BASELINE_PATH: String = "res://tools/fixtures/aura_baseline.json"
+
+
+## Every aura and zone changes exactly what it did before the migration
+## (tools/fixtures/aura_baseline.json): the stat getters, every resistance,
+## max HP, damage taken and the mana-cost percentage, on the units it reaches
+## and on the ones it does not. Real data, measured the same way (aura_measure.gd).
+func _check_aura_numbers_match_baseline() -> void:
+	var baseline: Dictionary = _read_fixture(AURA_BASELINE_PATH)
+	var now: Dictionary = AuraMeasure.measure_all(self, grid)
+	for section in ["auras", "zones"]:
+		var was: Dictionary = baseline.get(section, {})
+		var is_now: Dictionary = now.get(section, {})
+		for row in is_now:
+			if not was.has(row):
+				_fail("%s %s is not in the aura baseline (added after it was captured?)" % [section, row])
+		for row in was:
+			if not is_now.has(row):
+				_fail("%s %s was in the baseline and is gone" % [section, row])
+				continue
+			for place in was[row]:
+				var a: Dictionary = was[row][place]
+				var b: Dictionary = is_now[row].get(place, {})
+				if not _same_changes(a, b):
+					_fail("%s %s at %s: was %s, now %s" % [section, row, place,
+						_changes_text(a), _changes_text(b)])
+	_done()
+
+
+## A zone written only in effects, by hand: it damages whoever starts a turn
+## in it (turn_start_inside) and slows whoever steps in (on_enter), through
+## EffectResolver with the zone's owner as caster.
+func _check_zone_effects_resolve() -> void:
+	CombatManager.active_zones.clear()
+	var owner := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(9, 9), CombatManager.Team.ENEMY)
+	var def: Dictionary = {"name": "Probe Brambles", "affects": "enemies",
+		"turn_start_inside": [{"op": "damage", "amount": 7, "type": "piercing"}],
+		"on_enter": [{"op": "status", "action": "apply", "status": "Slowed", "duration": 2}]}
+	var errs: Array[String] = EffectVocab.validate_zone(def, "probe")
+	if not errs.is_empty():
+		_fail("a hand-written effect zone does not validate: %s" % [errs])
+	CombatManager.active_zones.append({"id": "_probe_brambles", "name": "Probe Brambles",
+		"def": def, "tiles": {Vector2i(10, 9): true}, "source": owner,
+		"turns_left": 5, "entered": {}})
+
+	# Not inside yet: its turn start does nothing.
+	CombatManager._zones_turn_trigger(foe, "turn_start_inside")
+	if foe.current_hp != 100:
+		_fail("a zone hurt someone standing off it (hp %d)" % foe.current_hp)
+
+	# Step in: on_enter slows, once.
+	grid.unit_positions.erase(foe.grid_position)
+	foe.grid_position = Vector2i(10, 9)
+	grid.unit_positions[foe.grid_position] = foe
+	CombatManager._zones_check_entry(foe)
+	if not foe.has_status("Slowed"):
+		_fail("on_enter did not apply Slowed to the unit stepping in")
+
+	# Start a turn inside: turn_start_inside damages.
+	var before: int = foe.current_hp
+	CombatManager._zones_turn_trigger(foe, "turn_start_inside")
+	if foe.current_hp >= before:
+		_fail("turn_start_inside did no damage (hp %d -> %d)" % [before, foe.current_hp])
+	# And the owner's ally is not who `affects: enemies` reaches.
+	var friend := _make_unit(Vector2i(10, 9), CombatManager.Team.PLAYER)
+	CombatManager._zones_turn_trigger(friend, "turn_start_inside")
+	if friend.current_hp != 100:
+		_fail("an enemies-only zone hurt the owner's ally")
+	CombatManager.active_zones.clear()
+	_cleanup([owner, foe, friend])
+	_done()
+
+
+## Grave Soil still raises a zombie for the caster from an enemy that dies on
+## it — through `summon from: corpse` — and not from the caster's own side.
+func _check_grave_soil_raises() -> void:
+	CombatManager.active_zones.clear()
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(12, 8), CombatManager.Team.ENEMY)
+	var friend := _make_unit(Vector2i(13, 8), CombatManager.Team.PLAYER)
+	CombatManager.place_zone("grave_soil", [Vector2i(12, 8), Vector2i(13, 8)], caster, 9)
+
+	var count: int = CombatManager.all_units.size()
+	foe.is_dead = true
+	CombatManager._zones_on_death(foe)
+	if CombatManager.all_units.size() != count + 1:
+		_fail("an enemy died on grave soil and %d rose" % (CombatManager.all_units.size() - count))
+	else:
+		var risen: Node = CombatManager.all_units[CombatManager.all_units.size() - 1]
+		if risen.team != caster.team:
+			_fail("the zombie fights for the wrong side")
+		if risen.grid_position.distance_to(Vector2(12, 8)) > 2.0:
+			_fail("the zombie rose at %s, not at the corpse" % [risen.grid_position])
+		_cleanup([risen])
+
+	count = CombatManager.all_units.size()
+	friend.is_dead = true
+	CombatManager._zones_on_death(friend)
+	if CombatManager.all_units.size() != count:
+		_fail("the caster's own ally rose from grave soil")
+		_cleanup([CombatManager.all_units[CombatManager.all_units.size() - 1]])
+
+	# A living unit is no corpse: the op refuses it.
+	var ctx := EffectContext.new()
+	ctx.caster = caster
+	ctx.target = caster
+	var log := EffectResolver.resolve([{"op": "summon", "as": "Zombie", "from": "corpse"}], ctx)
+	if log[0].applied:
+		_fail("summon from corpse raised something from a living unit")
+	CombatManager.active_zones.clear()
+	_cleanup([caster, foe, friend])
+	_done()
+
+
+## Resistance.breakdown() lists an aura's part under
+## "aura:<emitter instance id>:<aura id>".
+func _check_aura_breakdown_label() -> void:
+	var medic := _make_unit(Vector2i(5, 5))
+	var near := _make_unit(Vector2i(6, 5))
+	medic.character_data["perks"] = ["immune_system"]
+	var want: String = "aura:%d:immune_system" % medic.get_instance_id()
+	var found: bool = false
+	for part in Resistance.breakdown(near, "poison"):
+		if str(part.source) == want and is_equal_approx(float(part.amount), 15.0):
+			found = true
+	if not found:
+		_fail("breakdown does not list %s +15: %s" % [want, Resistance.breakdown(near, "poison")])
+	_cleanup([medic, near])
+	_done()
+
+
+## Immune System's 15 is a 15% chance not to catch an affliction, read by
+## Resistance.resists_affliction from the aura (and from holds).
+func _check_aura_affliction_resistance() -> void:
+	var medic := _make_unit(Vector2i(5, 5))
+	var near := _make_unit(Vector2i(6, 5))
+	var far := _make_unit(Vector2i(30, 20))
+	medic.character_data["perks"] = ["immune_system"]
+	seed(811)
+	var near_hits: int = 0
+	var far_hits: int = 0
+	for i in 2000:
+		if Resistance.resists_affliction(near, "bleed"):
+			near_hits += 1
+		if Resistance.resists_affliction(far, "bleed"):
+			far_hits += 1
+	randomize()
+	if near_hits < 200 or near_hits > 400:
+		_fail("Immune System resisted bleed %d times in 2000 (wanted about 300)" % near_hits)
+	if far_hits != 0:
+		_fail("a unit outside Immune System resisted bleed %d times" % far_hits)
+	# A status hold on resist.bleed counts the same way.
+	ValuePaths.add_hold(far, "resist.bleed", "set", 100, "t_bleed")
+	var hits: int = 0
+	for i in 200:
+		if Resistance.resists_affliction(far, "bleed"):
+			hits += 1
+	if hits < 170:
+		_fail("a resist.bleed set 100 hold resisted only %d of 200" % hits)
+	_cleanup([medic, near, far])
+	_done()
+
+
+## validate_aura / validate_zone refuse what could not work.
+func _check_aura_zone_validation() -> void:
+	var ok_aura: Dictionary = {"name": "A", "radius": 1, "affects": "allies", "while_inside": [
+		{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 3}]}
+	if not EffectVocab.validate_aura(ok_aura, "a").is_empty():
+		_fail("a plain aura is refused: %s" % [EffectVocab.validate_aura(ok_aura, "a")])
+	var bad_auras: Dictionary = {
+		"to on an aura effect": [{"op": "heal", "amount": 3, "to": "caster"}],
+		"chance on a read-time modify": [{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 3, "chance": 50}],
+		"set on a read-time modify": [{"op": "modify", "value": "stat.dodge", "mode": "set", "amount": 3}],
+		"attribute read-time modify": [{"op": "modify", "value": "attribute.focus", "mode": "fortify", "amount": 3}],
+		"borrow from a getter": [{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": {"from": "target.stat.dodge"}}],
+		"move each turn": [{"op": "move", "mode": "push"}],
+		"multiply max_hp": [{"op": "modify", "value": "stat.max_hp", "mode": "multiply", "amount": 2}],
+	}
+	for label in bad_auras:
+		var d: Dictionary = ok_aura.duplicate(true)
+		d["while_inside"] = bad_auras[label]
+		if EffectVocab.validate_aura(d, "a").is_empty():
+			_fail("validate_aura accepted %s" % label)
+	var unknown: Dictionary = ok_aura.duplicate(true)
+	unknown["payloads"] = []
+	if EffectVocab.validate_aura(unknown, "a").is_empty():
+		_fail("validate_aura accepted the old `payloads` key")
+	var bad_zones: Dictionary = {
+		"lasting modify on enter": {"on_enter": [{"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 3}]},
+		"summon with to": {"on_death_inside": [{"op": "summon", "as": "Zombie", "from": "corpse", "to": "enemies_in_area"}]},
+		"corpse outside death": {"on_enter": [{"op": "summon", "as": "Zombie", "from": "corpse"}]},
+		"no effects": {},
+		"old payload": {"on_enter": [{"kind": "damage", "amount": 3, "element": "fire"}]},
+		"bad to": {"on_enter": [{"op": "damage", "amount": 3, "type": "fire", "to": "party"}]},
+	}
+	for label in bad_zones:
+		var z: Dictionary = {"name": "Z", "affects": "all"}
+		z.merge(bad_zones[label])
+		if EffectVocab.validate_zone(z, "z").is_empty():
+			_fail("validate_zone accepted %s" % label)
+	# The fixed-DC save: valid with dc, refused with dc and tier both.
+	if not EffectVocab.validate({"op": "status", "action": "apply", "status": "Confused",
+			"save": {"stat": "focus", "dc": 14, "dc_drop_per_pass": 2}}, "s").is_empty():
+		_fail("a fixed-dc save is refused")
+	if EffectVocab.validate({"op": "status", "action": "apply", "status": "Confused",
+			"save": {"stat": "focus", "dc": 14, "tier": "hard"}}, "s").is_empty():
+		_fail("a save with both dc and tier is accepted")
 	_done()

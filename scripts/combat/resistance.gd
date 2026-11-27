@@ -114,10 +114,29 @@ static func hold_covers(name: String, damage_type: String) -> bool:
 ## Stone Body's "+25% resistance to bleed" meant this all along, and was read
 ## by nothing: PerkSystem wrote `bleed` into derived.resistances and no code
 ## ever asked.
+##
+## The chance is the unit's own resistance plus every fortify / drain on
+## exactly `resist.<affliction>`: the holds a status places and the read-time
+## modifies of the auras and zones reaching it (Immune System's 15). A `set`
+## hold replaces the total. Only the exact name counts: `resist.all` is about
+## damage, not about catching things.
 static func resists_affliction(unit: Node, affliction: String) -> bool:
 	if unit == null or not "character_data" in unit:
 		return false
+	var value: String = "resist." + affliction
 	var pct: float = float(_own_resistances(unit).get(affliction, 0.0))
+	var has_set: bool = false
+	var set_to: float = 0.0
+	for hold in ValuePaths.holds_on(unit, value):
+		match str(hold.mode):
+			"fortify": pct += float(hold.amount)
+			"drain": pct -= float(hold.amount)
+			"set":
+				has_set = true
+				set_to = float(hold.amount)   # the last one added wins
+	pct += AuraSystem.flat_total(unit, value)
+	if has_set:
+		pct = set_to
 	if pct <= 0.0:
 		return false
 	return randf() < clampf(pct / 100.0, 0.0, AFFLICTION_CAP)
@@ -297,17 +316,20 @@ static func _gather(unit: Node, damage_type: String) -> Dictionary:
 		if mantra != 0.0:
 			_add(acc, mantra, "mantra")
 
-	# 4. Auras and the ground underfoot. A `resistance` payload is continuous
-	#    like `stat` and `damage_taken_pct`: it has to be READ where it applies,
-	#    which is here, or it does nothing at all.
-	if CombatManager != null and "grid_position" in unit:
-		var from_auras: float = AuraSystem.resistance_bonus(
-			unit, damage_type, CombatManager.all_units, CombatManager._aura_distance)
-		if from_auras != 0.0:
-			_add(acc, from_auras, "aura")
-		var from_ground: float = CombatManager.zone_resistance_bonus(unit, damage_type)
-		if from_ground != 0.0:
-			_add(acc, from_ground, "ground")
+	# 4. Auras and the ground underfoot. Their `resist.` modifies are
+	#    read-time (AuraSystem.contributions, the one place their reach is
+	#    worked out): each one reaching this unit is its own contribution,
+	#    labelled "aura:<emitter instance id>:<aura id>" or "zone:<zone id>".
+	for c in AuraSystem.contributions(unit):
+		var path: String = str(c.value)
+		if not path.begins_with("resist.") \
+				or not hold_covers(path.trim_prefix("resist."), damage_type):
+			continue
+		match str(c.mode):
+			"fortify":
+				_add(acc, float(c.amount), str(c.label))
+			"drain":
+				_add(acc, -float(c.amount), str(c.label))
 
 	return acc
 

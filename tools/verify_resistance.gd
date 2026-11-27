@@ -467,8 +467,8 @@ func _check_bombs_auras_and_brands_name_their_source() -> void:
 	# 2. An aura's grant_status, from a unit that owns the aura.
 	var aura: Dictionary = {"id": "_probe", "name": "Probe Aura",
 		"source_kind": "test", "source_id": "probe"}
-	CombatManager._apply_aura_payload(thrower, victim, aura,
-		{"kind": "grant_status", "status": "Poisoned", "duration": 2}, 1.0)
+	CombatManager._resolve_area_effects(thrower, victim, aura,
+		[{"op": "status", "action": "apply", "status": "Poisoned", "duration": 2}], 1.0, "aura")
 	if _source_of(victim, "Poisoned") != thrower:
 		_fail("an aura's granted Poisoned does not name the aura's owner as source")
 	_clear_statuses(victim)
@@ -888,7 +888,7 @@ func _check_every_damage_source_respects_resistance() -> void:
 	CombatManager.active_zones.clear()
 	CombatManager._status_effects["_probe_fire_zone"] = {}
 	var zone_def: Dictionary = {"name": "Probe Fire", "affects": "all",
-		"while_inside": [{"kind": "damage", "amount": 40, "element": "fire"}]}
+		"while_inside": [{"op": "damage", "amount": 40, "type": "fire"}]}
 	CombatManager.active_zones.append({
 		"id": "_probe_fire", "name": "Probe Fire", "def": zone_def,
 		"tiles": {immune.grid_position: true, bare.grid_position: true},
@@ -909,9 +909,9 @@ func _check_every_damage_source_respects_resistance() -> void:
 	bare.current_hp = bare.max_hp
 	var aura: Dictionary = {"id": "_probe", "name": "Probe Aura",
 		"source_kind": "test", "source_id": "probe"}
-	var payload: Dictionary = {"kind": "damage", "amount": 40, "element": "fire"}
-	CombatManager._apply_aura_payload(null, immune, aura, payload, 1.0)
-	CombatManager._apply_aura_payload(null, bare, aura, payload, 1.0)
+	var payload: Array = [{"op": "damage", "amount": 40, "type": "fire"}]
+	CombatManager._resolve_area_effects(null, immune, aura, payload, 1.0, "aura")
+	CombatManager._resolve_area_effects(null, bare, aura, payload, 1.0, "aura")
 	if immune.current_hp < immune.max_hp:
 		_fail("a fire-immune unit took %d from a fire aura"
 			% (immune.max_hp - immune.current_hp))
@@ -1143,7 +1143,7 @@ func _check_the_ground_can_grant_resistance() -> void:
 	CombatManager.active_zones.clear()
 	var unit := _make_unit(Vector2i(14, 9))
 	var zone_def: Dictionary = {"name": "Probe Ward", "affects": "all",
-		"while_inside": [{"kind": "resistance", "type": "poison", "amount": 40}]}
+		"while_inside": [{"op": "modify", "value": "resist.poison", "mode": "fortify", "amount": 40}]}
 	CombatManager.active_zones.append({
 		"id": "_probe_ward", "name": "Probe Ward", "def": zone_def,
 		"tiles": {Vector2i(14, 9): true}, "source": null,

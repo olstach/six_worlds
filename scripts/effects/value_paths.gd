@@ -10,8 +10,8 @@ extends RefCounted
 ## Holds live in `unit.effect_holds` (an Array[Dictionary] on CombatUnit). The
 ## stat getters pass their finished number through apply_to(), which is where
 ## holds take effect (get_attack_damage splits it into flat_sum() and
-## apply_scaling() around its damage_pct). With no holds, apply_to() returns
-## its input unchanged. Resistance reads `resist.` holds itself: a fortify or
+## apply_scaling() around its damage_pct). With no holds and no aura or zone
+## reaching the unit, apply_to() returns its input unchanged. Resistance reads `resist.` holds itself: a fortify or
 ## drain is one contribution in Resistance._gather(), a set is applied last.
 ##
 ## ORDER OF APPLICATION in apply_to():
@@ -87,11 +87,12 @@ static func release_all_combat(unit: Node) -> void:
 	if unit == null or not "effect_holds" in unit:
 		return
 	# Note every attribute. / skill. value that had holds, so its "effects"
-	# key can be erased below.
+	# key can be erased below, and stat.max_hp, whose stored bonus must go too.
 	var touched: Array[String] = []
 	for hold in unit.effect_holds:
 		var v: String = str(hold.value)
-		if (v.begins_with("attribute.") or v.begins_with("skill.")) and not v in touched:
+		if (v.begins_with("attribute.") or v.begins_with("skill.") or v == "stat.max_hp") \
+				and not v in touched:
 			touched.append(v)
 	unit.effect_holds.clear()
 	# The holds that carried persistent damage are gone: let the entries count.
@@ -105,8 +106,12 @@ static func release_all_combat(unit: Node) -> void:
 
 ## `base` after every hold on `value` has been applied (see the order above).
 ## Called from hot getters, so the no-holds case returns at once.
+## Auras and zones count here too, without storing anything: flat_sum() and
+## apply_scaling() add what AuraSystem.contributions() finds reaching the unit
+## right now (their read-time modifies), so a unit that walks out of an aura
+## simply stops finding it.
 static func apply_to(unit: Node, value: String, base: float) -> float:
-	if unit == null or not "effect_holds" in unit or unit.effect_holds.is_empty():
+	if unit == null:
 		return base
 	return apply_scaling(unit, value, base + flat_sum(unit, value))
 
@@ -115,10 +120,13 @@ static func apply_to(unit: Node, value: String, base: float) -> float:
 ## For a getter that must add the flat part BEFORE a multiplier of its own —
 ## get_attack_damage() adds it before the fire-affinity damage_pct, as the
 ## status damage bonuses always were — and then calls apply_scaling().
+## Includes the auras' and zones' fortify / drain on `value` (AuraSystem.flat_total).
 static func flat_sum(unit: Node, value: String) -> float:
-	if unit == null or not "effect_holds" in unit:
+	if unit == null:
 		return 0.0
-	var sum: float = 0.0
+	var sum: float = AuraSystem.flat_total(unit, value)
+	if not "effect_holds" in unit:
+		return sum
 	for hold in unit.effect_holds:
 		if hold.value != value:
 			continue
@@ -130,10 +138,14 @@ static func flat_sum(unit: Node, value: String) -> float:
 
 ## Steps 2 and 3 alone: `base` times every multiply on `value`, then the
 ## last-added `set` if there is one. Fortify and drain are NOT applied here.
+## The auras' and zones' multiplies count with the holds' (AuraSystem.factor);
+## a `set` hold still replaces everything.
 static func apply_scaling(unit: Node, value: String, base: float) -> float:
-	if unit == null or not "effect_holds" in unit or unit.effect_holds.is_empty():
+	if unit == null:
 		return base
-	var factor: float = 1.0
+	var factor: float = AuraSystem.factor(unit, value)
+	if not "effect_holds" in unit or unit.effect_holds.is_empty():
+		return base * factor
 	var has_set: bool = false
 	var set_to: float = 0.0
 	for hold in unit.effect_holds:
@@ -293,6 +305,10 @@ static func _after_change(unit: Node, values: Array) -> void:
 			changed = true
 	if changed:
 		refresh_character(unit)
+	# Max HP is stored on the unit as a delta (CombatManager._refresh_aura_max_hp),
+	# so a hold on stat.max_hp has to ask for that refresh to be felt.
+	if "stat.max_hp" in done and CombatManager != null:
+		CombatManager._refresh_aura_max_hp()
 
 
 # ── Persistent damage ────────────────────────────────────────────────────────
