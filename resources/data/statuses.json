@@ -459,7 +459,7 @@
 						{
 							"op": "summon",
 							"as": "Fungal_Spawn",
-							"owner": "target"
+							"owner": "caster"
 						}
 					]
 				}
@@ -3690,7 +3690,7 @@
 					"op": "modify",
 					"value": "stat.accuracy",
 					"mode": "drain",
-					"amount": 40
+					"amount": 50
 				}
 			],
 			"dispellable": true,

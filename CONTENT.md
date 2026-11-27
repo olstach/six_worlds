@@ -7173,7 +7173,7 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
   - desc: (empty)
 - **Range_Debuff** `Range_Debuff` — negative · spellpower
   - desc: (empty)
-- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — negative · spellpower · −40 accuracy
+- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — negative · spellpower · −50 accuracy
   - desc: (empty)
 - **Ranged_Damage_Debuff_50** `Ranged_Damage_Debuff_50` — negative · spellpower · −10 damage
   - desc: (empty)

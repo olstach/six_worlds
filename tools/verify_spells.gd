@@ -1258,7 +1258,10 @@ func _check_a_status_can_hatch_a_creature_on_expiry() -> void:
 					hatches = str(e.get("as", ""))
 	if hatches != "Fungal_Spawn":
 		_fail("Infected's expire trigger summons '%s'" % hatches)
-	CombatManager._apply_status_effect(victim, "Infected", 3)
+	# Infected only ever comes from a spell, so it has a caster, and the
+	# spawn fights for that caster (owner ruling 2026-11-27).
+	var infector := _make_unit(Vector2i(1, 1), 0)
+	CombatManager._apply_status_effect(victim, "Infected", 3, 0, infector)
 	for entry in victim.status_effects.duplicate():
 		if str(entry.get("status", "")) == "Infected":
 			CombatManager._end_status(victim, entry, "expired")
@@ -1269,9 +1272,9 @@ func _check_a_status_can_hatch_a_creature_on_expiry() -> void:
 	else:
 		# Clean up whatever hatched.
 		for unit in CombatManager.all_units.duplicate():
-			if unit != victim and is_instance_valid(unit):
+			if unit != victim and unit != infector and is_instance_valid(unit):
 				_cleanup([unit])
-	_cleanup([victim])
+	_cleanup([victim, infector])
 	_done()
 
 

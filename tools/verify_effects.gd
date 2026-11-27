@@ -2201,6 +2201,8 @@ const STATUS_CHANGED_NUMBERS: Dictionary = {
 	"Slowed": {"party": {"movement": -1.0}, "enemy": {"movement": -3.0}},
 	"Movement_Debuff": {"party": {"movement": -1.0}, "enemy": {"movement": -3.0}},
 	"Slowed_After_Escape": {"party": {"movement": -1.0}, "enemy": {"movement": -3.0}},
+	# Owner ruling 2026-11-27: the _50 in the name was right and the 40 wrong.
+	"Ranged_Attack_Debuff_50": {"party": {"accuracy": -50.0}, "enemy": {"accuracy": -50.0}},
 }
 
 ## The words CombatUnit._get_status_stat_bonus turned into numbers. That table
@@ -2577,12 +2579,20 @@ func _check_expire_summon() -> void:
 	if def.has("summon_on_expire") or not summons:
 		_fail("Infected has no expire trigger that summons Fungal_Spawn: %s" % [def])
 	var victim := _make_unit(Vector2i(8, 8), 1)
-	var before: int = CombatManager.all_units.size()
-	CombatManager._apply_status_effect(victim, "Infected", 1)
+	# Whoever infected the victim owns what hatches (owner ruling 2026-11-27):
+	# the spawn fights for the caster, not for the body it burst from.
+	var infector := _make_unit(Vector2i(2, 2), 0)
+	var before_units: Array = CombatManager.all_units.duplicate()
+	var before: int = before_units.size()
+	CombatManager._apply_status_effect(victim, "Infected", 1, 0, infector)
 	CombatManager._process_status_effects(victim)
 	var after_expiry: int = CombatManager.all_units.size()
 	if after_expiry != before + 1:
 		_fail("Infected expired and %d units appeared, wanted 1" % (after_expiry - before))
+	for unit in CombatManager.all_units:
+		if not unit in before_units and unit.team != infector.team:
+			_fail("the Fungal Spawn fights for team %d; the infector is team %d"
+				% [unit.team, infector.team])
 	victim.current_hp = victim.max_hp
 	CombatManager._apply_status_effect(victim, "Infected", 3)
 	CombatManager._end_status(victim, _entry_of(victim, "Infected"), "dispelled")
@@ -2592,7 +2602,7 @@ func _check_expire_summon() -> void:
 		if unit != victim and is_instance_valid(unit) and unit.unit_name != "Probe0" \
 				and unit.unit_name != "Probe1":
 			_cleanup([unit])
-	_cleanup([victim])
+	_cleanup([victim, infector])
 	_done()
 
 

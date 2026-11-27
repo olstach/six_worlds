@@ -16006,7 +16006,7 @@
     "Statuses › negative › Mindmucked": "- **Mindmucked** `Mindmucked` — negative · spellpower · −8 initiative · −13 spellpower\n  - desc: Mind clouded with filth — major penalty to Awareness and Focus.",
     "Statuses › negative › Movement_Debuff": "- **Movement_Debuff** `Movement_Debuff` — negative · spellpower · movement halved\n  - desc: (empty)",
     "Statuses › negative › Range_Debuff": "- **Range_Debuff** `Range_Debuff` — negative · spellpower\n  - desc: (empty)",
-    "Statuses › negative › Ranged_Attack_Debuff_50": "- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — negative · spellpower · −40 accuracy\n  - desc: (empty)",
+    "Statuses › negative › Ranged_Attack_Debuff_50": "- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — negative · spellpower · −50 accuracy\n  - desc: (empty)",
     "Statuses › negative › Ranged_Damage_Debuff_50": "- **Ranged_Damage_Debuff_50** `Ranged_Damage_Debuff_50` — negative · spellpower · −10 damage\n  - desc: (empty)",
     "Statuses › negative › Rotting": "- **Rotting** `Rotting` — negative · spellpower · −3 initiative · −5 accuracy · −5 dodge · −5 damage · −5 armor · −5 spellpower · 50 black damage (or the spell's value) at the start of each turn\n  - desc: (empty)",
     "Statuses › negative › Slippery_Terrain": "- **Slippery_Terrain** `Slippery_Terrain` — negative · spellpower · may fall prone when moving\n  - desc: (empty)",

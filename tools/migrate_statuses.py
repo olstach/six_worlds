@@ -541,7 +541,9 @@ def _behaviour(s):
     if "bleed_on_expire" in effects:
         expire.append({"op": "status", "action": "apply", "status": "Bleeding", "duration": 3})
     if s.get("summon_on_expire"):
-        expire.append({"op": "summon", "as": s["summon_on_expire"], "owner": "target"})
+        # Owner ruling 2026-11-27: what hatches fights for whoever applied the
+        # status, not for the body it bursts from (the old code's choice).
+        expire.append({"op": "summon", "as": s["summon_on_expire"], "owner": "caster"})
     used.update(EXPIRE_WORDS)
     if expire:
         triggers.append({"on": "expire", "effects": expire})
