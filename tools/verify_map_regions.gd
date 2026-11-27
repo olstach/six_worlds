@@ -19,7 +19,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 24
+const EXPECTED_CHECKS: int = 25
 
 const T_ROAD := 1
 const T_FOREST := 2
@@ -52,6 +52,7 @@ func _ready() -> void:
 	_check_a_swamp_has_swamp_in_it()
 	_check_nowhere_is_paved_by_accident()
 	_check_the_map_manager_can_say_where_you_are()
+	_check_a_saved_map_still_knows_where_you_are()
 
 	# Settlements: the map has places now, not only ground.
 	_check_every_realm_is_settled()
@@ -316,6 +317,29 @@ func _check_the_map_manager_can_say_where_you_are() -> void:
 		_fail("no subregion has a name to show the player")
 	_done()
 
+
+## A save goes through JSON, which writes a Vector2i as the text "(16, 15)".
+## Subregion seeds came back as that text, so every get_subregion_at after a
+## load failed its typed assignment — about 125 SCRIPT ERRORs per load, and
+## every tile name, biome and mob weighting quietly gone until the next map.
+func _check_a_saved_map_still_knows_where_you_are() -> void:
+	MapManager._apply_map_data(_maps["animal"])
+	var sub: Dictionary = MapManager.subregions[0]
+	var seed_pos: Vector2i = sub.get("seed", Vector2i.ZERO)
+	# The same trip SaveManager makes: stringify to disk, parse back.
+	var text: String = JSON.stringify(MapManager.get_save_data())
+	var parsed: Variant = JSON.parse_string(text)
+	MapManager.load_save_data(parsed)
+	var found: Dictionary = MapManager.get_subregion_at(seed_pos)
+	if str(found.get("id", "")) != str(sub.get("id", "")):
+		_fail("after a save and load, the seed %s no longer resolves to "
+			% [seed_pos] + "subregion %s (got '%s')"
+			% [sub.get("id", ""), found.get("id", "")])
+	var restored: Variant = MapManager.subregions[0].get("seed")
+	if not restored is Vector2i:
+		_fail("a loaded subregion seed is a %s, not a Vector2i"
+			% type_string(typeof(restored)))
+	_done()
 
 ## Every zone should look like the thing it says it is. This is the check that
 ## would have caught the animal realm outright: its "vast open ocean" was 30%

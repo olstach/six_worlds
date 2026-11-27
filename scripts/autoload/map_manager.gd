@@ -562,9 +562,15 @@ func _apply_map_data(data: Dictionary) -> void:
 	for region_id in region_data:
 		regions[region_id] = region_data[region_id]
 
-	# And the subregions inside them
+	# And the subregions inside them. A saved game passed through JSON, which
+	# writes a Vector2i seed as the text "(16, 15)", so turn it back into a
+	# Vector2i here — get_subregion_at reads it as one, and a String there is a
+	# script error on every lookup.
 	for sub in data.get("subregions", []):
-		subregions.append(sub)
+		var restored: Dictionary = (sub as Dictionary).duplicate()
+		if restored.has("seed"):
+			restored["seed"] = _to_vector2i(restored["seed"])
+		subregions.append(restored)
 	for settlement in data.get("settlements", []):
 		settlements.append(settlement)
 
@@ -2228,6 +2234,26 @@ func get_save_data() -> Dictionary:
 		"searched_tiles": _serialize_positions(searched_tiles.keys()),
 		"visited_maps": visited_maps.duplicate(true)
 	}
+
+
+## A position in whichever shape it arrived: a Vector2i from the generator,
+## the text "(x, y)" that JSON writes for one, an [x, y] array or {x, y}.
+## Anything unreadable becomes (0, 0) rather than a script error.
+static func _to_vector2i(value: Variant) -> Vector2i:
+	if value is Vector2i:
+		return value
+	if value is Vector2:
+		return Vector2i(value)
+	if value is String:
+		var parts: PackedStringArray = (value as String).strip_edges() \
+			.trim_prefix("(").trim_suffix(")").split(",")
+		if parts.size() == 2:
+			return Vector2i(int(parts[0].strip_edges()), int(parts[1].strip_edges()))
+	if value is Array and (value as Array).size() == 2:
+		return Vector2i(int(value[0]), int(value[1]))
+	if value is Dictionary:
+		return Vector2i(int(value.get("x", 0)), int(value.get("y", 0)))
+	return Vector2i.ZERO
 
 
 ## Load save data — restores full map state directly (no regeneration).
