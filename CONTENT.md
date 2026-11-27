@@ -7037,320 +7037,320 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Control `control`
 
-- **Frozen** `Frozen` — negative · turns 1 · skip_turn, breaks_concentration
+- **Frozen** `Frozen` — negative · turns 1 · physical resistance −50% · skips next turn · breaks concentration
   - desc: (empty)
-- **Rooted** `Rooted` — negative · spellpower · cannot_move
+- **Rooted** `Rooted` — negative · spellpower · cannot move
   - desc: (empty)
-- **Slowed** `Slowed` — negative · spellpower
+- **Slowed** `Slowed` — negative · spellpower · movement halved
   - desc: (empty)
-- **Petrified** `Petrified` — negative · spellpower · skip_turn, cannot_act, breaks_concentration
+- **Petrified** `Petrified` — negative · spellpower · immune to physical · skips next turn · cannot act · breaks concentration
   - desc: (empty)
-- **Silenced** `Silenced` — negative · spellpower · cannot_cast
+- **Silenced** `Silenced` — negative · spellpower · cannot cast spells
   - desc: (empty)
-- **Confused** `Confused` — negative · spellpower · random_movement, random_target, breaks_concentration
+- **Confused** `Confused` — negative · spellpower · moves randomly · attacks random targets · breaks concentration
   - desc: (empty)
-- **Feared** `Feared` — negative · turns 2 · flee_from_source, breaks_concentration, counts_as_demoralized
+- **Feared** `Feared` — negative · turns 2 · flees from whoever caused it · breaks concentration · counts as demoralized
   - desc: (empty)
-- **Prone** `Prone` — negative · instant · skip_next_action
+- **Prone** `Prone` — negative · instant · −10 armor · loses 1 action
   - desc: (empty)
-- **Held** `Held` — negative · until_save · cannot_move, cannot_act, breaks_concentration
+- **Held** `Held` — negative · until_save · cannot move · cannot act · breaks concentration
   - desc: (empty)
-- **Drowning** `Drowning` — negative · spellpower · cannot_move
+- **Drowning** `Drowning` — negative · spellpower · cannot move
   - desc: (empty)
-- **Swarmed** `Swarmed` — negative · spellpower · focus_save_on_damage, 1 physical per turn
+- **Swarmed** `Swarmed` — negative · spellpower · 1 physical damage (or the spell's value) at the start of each turn · focus save on each hit, or lose actions
   - desc: (empty)
-- **Forgetful** `Forgetful` — negative · turns 1 · cannot_attack, cannot_cast
+- **Forgetful** `Forgetful` — negative · turns 1 · cannot attack · cannot cast spells
   - desc: (empty)
-- **Charmed** `Charmed` — negative · spellpower · treats_caster_as_ally, will_not_attack_caster, breaks_concentration, breaks_on_damage_from_source
+- **Charmed** `Charmed` — negative · spellpower · treats the caster as an ally · will not attack the caster · breaks concentration · ends if the one who caused it hurts it
   - desc: (empty)
-- **Berserk** `Berserk` — negative · spellpower · attacks_closest_creature, ignores_allegiance, breaks_concentration
+- **Berserk** `Berserk` — negative · spellpower · attacks the closest creature · ignores who is friend or foe · breaks concentration
   - desc: (empty)
-- **Blinded** `Blinded` — negative · spellpower · cannot_use_ranged
+- **Blinded** `Blinded` — negative · spellpower · −40 accuracy · cannot use ranged attacks
   - desc: (empty)
-- **Dominated** `Dominated` — negative · permanent · controlled_by_caster, breaks_concentration
+- **Dominated** `Dominated` — negative · permanent · controlled by the caster · breaks concentration
   - desc: (empty)
-- **Stunned** `Stunned` — negative · turns 1 · skip_turn, cannot_act, breaks_concentration, save constitution
+- **Stunned** `Stunned` — negative · turns 1 · skips next turn · cannot act · breaks concentration · save constitution
   - desc: (empty)
-- **Suffocating** `Suffocating` — negative · spellpower · cannot_cast, 30 physical per turn
+- **Suffocating** `Suffocating` — negative · spellpower · 30 physical damage (or the spell's value) at the start of each turn · cannot cast spells
   - desc: (empty)
-- **Shadow_Pinned** `Shadow_Pinned` — negative · spellpower · rooted, damage_on_move_attempt
+- **Shadow_Pinned** `Shadow_Pinned` — negative · spellpower · rooted in place · takes damage when it tries to move
   - desc: (empty)
-- **Wrathfully_Bound** `Wrathfully_Bound` — negative · spellpower · 25 space per turn
+- **Wrathfully_Bound** `Wrathfully_Bound` — negative · spellpower · 25 space damage (or the spell's value) at the start of each turn
   - desc: (empty)
-- **Chaotic** `Chaotic` — negative · spellpower · random_movement, breaks_concentration
+- **Chaotic** `Chaotic` — negative · spellpower · moves randomly · breaks concentration
   - desc: (empty)
-- **Paralyzed** `Paralyzed` — negative · spellpower · cannot_move, cannot_act, breaks_concentration
+- **Paralyzed** `Paralyzed` — negative · spellpower · cannot move · cannot act · breaks concentration
   - desc: (empty)
-- **Pacified** `Pacified` — negative · spellpower · disengaged_from_combat, will_not_attack
+- **Pacified** `Pacified` — negative · spellpower · is out of the fight · will not attack
   - desc: (empty)
-- **Caged** `Caged` — negative · spellpower · cannot_move, cannot_be_targeted
+- **Caged** `Caged` — negative · spellpower · cannot move · cannot be targeted
   - desc: (empty)
-- **Entangled** `Entangled` — negative · spellpower · cannot_move
+- **Entangled** `Entangled` — negative · spellpower · −15 dodge · cannot move
   - desc: (empty)
-- **Grounded** `Grounded` — negative · spellpower · loses_flight
+- **Grounded** `Grounded` — negative · spellpower · cannot fly
   - desc: (empty)
-- **Immobilized** `Immobilized` — negative · spellpower · cannot_move, cannot_act, breaks_concentration
+- **Immobilized** `Immobilized` — negative · spellpower · cannot move · cannot act · breaks concentration
   - desc: (empty)
-- **Lured** `Lured` — negative · turns 2 · forced_movement_toward_target
+- **Lured** `Lured` — negative · turns 2 · is drawn toward its target
   - desc: (empty)
 - **Pushed** `Pushed` — negative · instant
   - desc: (empty)
-- **Slowed_After_Escape** `Slowed_After_Escape` — negative · turns 2
+- **Slowed_After_Escape** `Slowed_After_Escape` — negative · turns 2 · movement halved
   - desc: (empty)
-- **Trapped** `Trapped` — negative · spellpower · cannot_move
+- **Trapped** `Trapped` — negative · spellpower · −10 armor · cannot move
   - desc: (empty)
-- **Grappled** `Grappled` — negative · turns 99 · cannot_move
+- **Grappled** `Grappled` — negative · turns 99 · −15 dodge · cannot move
   - desc: Held in a grapple — cannot move; attackers get +30% accuracy.
-- **Taunt** `Taunt` — negative · turns 2 · must_attack_taunter
+- **Taunt** `Taunt` — negative · turns 2 · must attack whoever taunted it
   - desc: Compelled to target the unit that applied this taunt.
-- **Disarmed** `Disarmed` — negative · turns 2 · cannot_make_weapon_attacks
+- **Disarmed** `Disarmed` — negative · turns 2 · cannot make weapon attacks
   - desc: Weapon torn from grasp — cannot make weapon attacks. Can still cast spells and move.
-- **Pinned** `Pinned` — negative · turns 1 · cannot_move
+- **Pinned** `Pinned` — negative · turns 1 · cannot move
   - desc: (empty)
-- **Subjugated** `Subjugated` — negative · turns 3 · cannot_move, cannot_attack
+- **Subjugated** `Subjugated` — negative · turns 3 · cannot move · cannot attack
   - desc: (empty)
-- **Dazed** `Dazed` — negative · turns 1
+- **Dazed** `Dazed` — negative · turns 1 · −5 initiative · −10 accuracy
   - desc: (empty)
-- **Knocked_Down** `Knocked_Down` — negative · turns 1 · skip_next_action
+- **Knocked_Down** `Knocked_Down` — negative · turns 1 · −10 armor · loses 1 action
   - desc: (empty)
-- **Anchored** `Anchored` — negative · spellpower · prevents_teleportation
+- **Anchored** `Anchored` — negative · spellpower · cannot teleport
   - desc: Pinned to this plane. Cannot blink, teleport, swap or be scattered — though a shove still works, because being nailed to the world does not make you heavy.
-- **Time_Stopped** `Time_Stopped` — negative · turns 1 · skip_turn, cannot_act
+- **Time_Stopped** `Time_Stopped` — negative · turns 1 · skips next turn · cannot act
   - desc: Held outside the moment. Not stunned, not held — simply not yet. Nothing shakes this off, because there is no time in which to do so.
 
 ## Elemental fire `elemental.fire`
 
-- **Burning** `Burning` — negative · turns 3 · 5 fire per turn
+- **Burning** `Burning` — negative · turns 3 · 5 fire damage (or the spell's value) at the start of each turn · spreads 15% a turn
   - desc: (empty)
-- **Boiling_Blood** `Boiling_Blood` — negative · spellpower · 15 physical per turn
+- **Boiling_Blood** `Boiling_Blood` — negative · spellpower · 15 physical damage (or the spell's value) at the start of each turn
   - desc: (empty)
 
 ## Poison `poison`
 
-- **Poisoned** `Poisoned` — negative · turns 5 · 3 poison per turn
+- **Poisoned** `Poisoned` — negative · turns 5 · 3 poison damage (or the spell's value) at the start of each turn
   - desc: (empty)
-- **Festering** `Festering` — negative · spellpower · 5 poison per turn
+- **Festering** `Festering` — negative · spellpower · 5 poison damage (or the spell's value) at the start of each turn, 5 more for each turn it has lasted
   - desc: (empty)
 
 ## Wound `wound`
 
-- **Bleeding** `Bleeding` — negative · turns 3 · 3 physical per turn
+- **Bleeding** `Bleeding` — negative · turns 3 · 3 physical damage (or the spell's value) at the start of each turn
   - desc: (empty)
 
 ## Negative `negative`
 
-- **Soaked** `Soaked` — negative · turns 1
+- **Soaked** `Soaked` — negative · turns 1 · lightning resistance −25%
   - desc: (empty)
-- **Infected** `Infected` — negative · turns 3 · on expire
+- **Infected** `Infected` — negative · turns 3 · when it runs out: 20 physical damage, Bleeding (3 turns), a Fungal Spawn emerges
   - desc: (empty)
-- **Doomed** `Doomed` — negative · turns · on expire
+- **Doomed** `Doomed` — negative · turns · when it runs out: it dies (black damage)
   - desc: (empty)
-- **Fire_Vulnerable** `Fire_Vulnerable` — negative · spellpower
+- **Fire_Vulnerable** `Fire_Vulnerable` — negative · spellpower · fire resistance −50%
   - desc: (empty)
-- **Water_Vulnerable_25** `Water_Vulnerable_25` — negative · spellpower
+- **Water_Vulnerable_25** `Water_Vulnerable_25` — negative · spellpower · ice resistance −25%
   - desc: (empty)
-- **Water_Vulnerable_50** `Water_Vulnerable_50` — negative · spellpower
+- **Water_Vulnerable_50** `Water_Vulnerable_50` — negative · spellpower · ice resistance −50%
   - desc: (empty)
-- **Gloomy** `Gloomy` — negative · spellpower · counts_as_demoralized
+- **Gloomy** `Gloomy` — negative · spellpower · −1 movement · −10 armor · counts as demoralized
   - desc: (empty)
-- **Cursed** `Cursed` — negative · spellpower
+- **Cursed** `Cursed` — negative · spellpower · −10 accuracy · −10 armor
   - desc: (empty)
-- **Suffering** `Suffering` — negative · spellpower
+- **Suffering** `Suffering` — negative · spellpower · −5 initiative · −1 movement · −10 armor
   - desc: (empty)
-- **Rotting** `Rotting` — negative · spellpower · 50 black per turn
+- **Rotting** `Rotting` — negative · spellpower · −3 initiative · −5 accuracy · −5 dodge · −5 damage · −5 armor · −5 spellpower · 50 black damage (or the spell's value) at the start of each turn
   - desc: (empty)
-- **Armor_Debuff_50** `Armor_Debuff_50` — negative · spellpower
+- **Armor_Debuff_50** `Armor_Debuff_50` — negative · spellpower · −20 armor
   - desc: (empty)
-- **Armor_Reduced** `Armor_Reduced` — negative · spellpower
+- **Armor_Reduced** `Armor_Reduced` — negative · spellpower · −10 armor
   - desc: (empty)
-- **Damage_Debuff** `Damage_Debuff` — negative · spellpower
+- **Damage_Debuff** `Damage_Debuff` — negative · spellpower · −5 damage
   - desc: (empty)
-- **Dodge_Debuff** `Dodge_Debuff` — negative · spellpower
+- **Dodge_Debuff** `Dodge_Debuff` — negative · spellpower · −15 dodge
   - desc: (empty)
-- **Melee_Attack_Debuff_50** `Melee_Attack_Debuff_50` — negative · spellpower
+- **Melee_Attack_Debuff_50** `Melee_Attack_Debuff_50` — negative · spellpower · −40 accuracy
   - desc: (empty)
-- **Movement_Debuff** `Movement_Debuff` — negative · spellpower
+- **Movement_Debuff** `Movement_Debuff` — negative · spellpower · movement halved
   - desc: (empty)
 - **Range_Debuff** `Range_Debuff` — negative · spellpower
   - desc: (empty)
-- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — negative · spellpower
+- **Ranged_Attack_Debuff_50** `Ranged_Attack_Debuff_50` — negative · spellpower · −40 accuracy
   - desc: (empty)
-- **Ranged_Damage_Debuff_50** `Ranged_Damage_Debuff_50` — negative · spellpower
+- **Ranged_Damage_Debuff_50** `Ranged_Damage_Debuff_50` — negative · spellpower · −10 damage
   - desc: (empty)
-- **Slippery_Terrain** `Slippery_Terrain` — negative · spellpower · prone_chance_on_movement
+- **Slippery_Terrain** `Slippery_Terrain` — negative · spellpower · may fall prone when moving
   - desc: (empty)
-- **Soul_Burning** `Soul_Burning` — negative · spellpower · 20 black per turn
+- **Soul_Burning** `Soul_Burning` — negative · spellpower · 20 black damage (or the spell's value) at the start of each turn
   - desc: (empty)
-- **Water_Vulnerable** `Water_Vulnerable` — negative · spellpower
+- **Water_Vulnerable** `Water_Vulnerable` — negative · spellpower · ice resistance −50%
   - desc: (empty)
-- **Force_Miss** `Force_Miss` — negative · turns 1 · next_attack_misses
+- **Force_Miss** `Force_Miss` — negative · turns 1 · its next attack misses
   - desc: The next attack made by this unit automatically misses.
-- **Demoralized** `Demoralized` — negative · turns 3 · counts_as_demoralized
+- **Demoralized** `Demoralized` — negative · turns 3 · −10 accuracy · −10 armor · counts as demoralized
   - desc: Spirit broken — -10 accuracy and -10 armor.
-- **Mindmucked** `Mindmucked` — negative · spellpower
+- **Mindmucked** `Mindmucked` — negative · spellpower · −8 initiative · −13 spellpower
   - desc: Mind clouded with filth — major penalty to Awareness and Focus.
-- **Constitution_Minus_2** `Constitution_Minus_2` — negative · spellpower
+- **Constitution_Minus_2** `Constitution_Minus_2` — negative · spellpower · −2 Constitution
   - desc: -2 Constitution.
-- **Focus_Minus_2** `Focus_Minus_2` — negative · spellpower
+- **Focus_Minus_2** `Focus_Minus_2` — negative · spellpower · −2 Focus
   - desc: -2 Focus.
-- **Initiative_Debuff** `Initiative_Debuff` — negative · spellpower
+- **Initiative_Debuff** `Initiative_Debuff` — negative · spellpower · −5 initiative
   - desc: Reduced initiative, acts later in turn order.
-- **Fire_Vulnerable_50** `Fire_Vulnerable_50` — negative · spellpower
+- **Fire_Vulnerable_50** `Fire_Vulnerable_50` — negative · spellpower · fire resistance −50%
   - desc: 50% extra damage from fire attacks.
-- **Marked_for_Death** `Marked_for_Death` — negative · spellpower · damage_taken_increase, crit_vulnerability
+- **Marked_for_Death** `Marked_for_Death` — negative · spellpower · takes more damage · vulnerable to critical hits
   - desc: Marked target takes 25% more damage and is more vulnerable to critical hits.
-- **Weakened** `Weakened` — negative · turns 2
+- **Weakened** `Weakened` — negative · turns 2 · −10 accuracy · −5 damage
   - desc: (empty)
-- **Disoriented** `Disoriented` — negative · turns 1
+- **Disoriented** `Disoriented` — negative · turns 1 · −3 initiative · −5 accuracy · −5 dodge · −5 damage · −5 armor · −5 spellpower
   - desc: Ears ringing, footing uncertain. Everything is a little harder for a moment.
 
 ## Positive `positive`
 
-- **Blessed** `Blessed` — positive · spellpower
+- **Blessed** `Blessed` — positive · spellpower · +10 accuracy · +10 armor
   - desc: (empty)
-- **Hasted** `Hasted` — positive · spellpower
+- **Hasted** `Hasted` — positive · spellpower · +5 initiative · +2 movement
   - desc: (empty)
-- **Regenerating** `Regenerating` — positive · spellpower · heals 10 per turn
+- **Regenerating** `Regenerating` — positive · spellpower · heals 10 HP at the start of each turn
   - desc: (empty)
-- **Bloodlust** `Bloodlust` — positive · spellpower
+- **Bloodlust** `Bloodlust` — positive · spellpower · +5 damage
   - desc: (empty)
-- **Fireshield** `Fireshield` — positive · spellpower · on struck
+- **Fireshield** `Fireshield` — positive · spellpower · when struck in melee: 5 fire damage to the attacker (plus the spell's value)
   - desc: (empty)
-- **Fan_the_Flames** `Fan_the_Flames` — positive · spellpower · increase_burning_damage_dealt
+- **Fan_the_Flames** `Fan_the_Flames` — positive · spellpower · burning damage it deals is increased
   - desc: (empty)
-- **Electrified_Weapon** `Electrified_Weapon` — positive · spellpower · stun_chance_on_hit, on hit
+- **Electrified_Weapon** `Electrified_Weapon` — positive · spellpower · when it hits: 20% of the damage dealt as lightning damage (at least 1) to the unit it hit · its hits may stun
   - desc: (empty)
-- **Levitating** `Levitating` — positive · spellpower · immune_to_ground_effects, immune_to_terrain_hazards
+- **Levitating** `Levitating` — positive · spellpower · immune to ground effects · immune to terrain hazards
   - desc: (empty)
-- **Precision** `Precision` — positive · spellpower
+- **Precision** `Precision` — positive · spellpower · +10 accuracy · +8 crit chance
   - desc: (empty)
-- **Air_Shield** `Air_Shield` — positive · spellpower · ranged_damage_reduction
+- **Air_Shield** `Air_Shield` — positive · spellpower · takes less damage from ranged attacks
   - desc: (empty)
-- **Flying** `Flying` — positive · spellpower · grants_flight, immune_to_ground_effects, immune_to_melee_unless_flyer
+- **Flying** `Flying` — positive · spellpower · can fly · immune to ground effects · immune to melee, except from flyers
   - desc: (empty)
-- **Blessed_Shot** `Blessed_Shot` — positive · turns 1 · next_ranged_guaranteed_hit
+- **Blessed_Shot** `Blessed_Shot` — positive · turns 1 · +15 damage · +10 crit chance · its next ranged attack always hits
   - desc: (empty)
-- **Poison_Skin** `Poison_Skin` — positive · spellpower · on struck
+- **Poison_Skin** `Poison_Skin` — positive · spellpower · when struck in melee: Poisoned (3 turns) on the attacker, unless already Poisoned
   - desc: (empty)
-- **Chameleon** `Chameleon` — positive · spellpower · stealth_bonus
+- **Chameleon** `Chameleon` — positive · spellpower · harder to spot
   - desc: (empty)
-- **Blurred** `Blurred` — positive · spellpower · attacks_have_miss_chance
+- **Blurred** `Blurred` — positive · spellpower · +15 dodge · its attacks may miss
   - desc: (empty)
-- **Mirror_Images** `Mirror_Images` — positive · spellpower · copies_absorb_attacks
+- **Mirror_Images** `Mirror_Images` — positive · spellpower · its copies absorb attacks
   - desc: (empty)
-- **Magic_Shield** `Magic_Shield` — positive · spellpower · spell_damage_reduction
+- **Magic_Shield** `Magic_Shield` — positive · spellpower · takes less damage from spells
   - desc: (empty)
-- **Magic_Mirror** `Magic_Mirror` — positive · spellpower · on incoming_spell
+- **Magic_Mirror** `Magic_Mirror` — positive · spellpower · when targeted by a spell (50% chance): it is turned back on whoever sent it
   - desc: (empty)
-- **Phasing** `Phasing` — positive · spellpower
+- **Phasing** `Phasing` — positive · spellpower · physical resistance +50%
   - desc: (empty)
-- **Shimmering** `Shimmering` — positive · spellpower
+- **Shimmering** `Shimmering` — positive · spellpower · +5 dodge
   - desc: (empty)
-- **Encouraged** `Encouraged` — positive · spellpower
+- **Encouraged** `Encouraged` — positive · spellpower · +5 initiative
   - desc: (empty)
 - **Friendly** `Friendly` — positive · spellpower
   - desc: (empty)
-- **Mirthful** `Mirthful` — positive · spellpower
+- **Mirthful** `Mirthful` — positive · spellpower · +5 initiative · +2 movement · +5 damage
   - desc: (empty)
-- **Praying** `Praying` — positive · spellpower
+- **Praying** `Praying` — positive · spellpower · +10 armor · magic damage resistance +15%
   - desc: (empty)
-- **Divinely_Inspired** `Divinely_Inspired` — positive · spellpower
+- **Divinely_Inspired** `Divinely_Inspired` — positive · spellpower · +8 damage · +8 spellpower
   - desc: (empty)
-- **Divine_Champion** `Divine_Champion` — positive · spellpower
+- **Divine_Champion** `Divine_Champion` — positive · spellpower · +8 initiative · +8 accuracy · +8 dodge · +8 damage · +8 armor · +5 crit chance · +8 spellpower
   - desc: (empty)
-- **Lifelink** `Lifelink` — positive · spellpower · lifesteals_on_hit
+- **Lifelink** `Lifelink` — positive · spellpower · heals from the damage it deals
   - desc: (empty)
-- **Pain_Mirror** `Pain_Mirror` — positive · spellpower · on struck
+- **Pain_Mirror** `Pain_Mirror` — positive · spellpower · when struck: reflects 50% of the damage taken as physical damage to the attacker
   - desc: (empty)
-- **Ancestral_Guidance** `Ancestral_Guidance` — positive · spellpower
+- **Ancestral_Guidance** `Ancestral_Guidance` — positive · spellpower · +3 spellpower
   - desc: (empty)
-- **Ancestral_Vengeance** `Ancestral_Vengeance` — positive · spellpower · attack_damage_buff_when_ally_dies
+- **Ancestral_Vengeance** `Ancestral_Vengeance` — positive · spellpower · hits harder when an ally dies
   - desc: (empty)
-- **Karmic_Bond** `Karmic_Bond` — positive · spellpower · share_healing_75_percent
+- **Karmic_Bond** `Karmic_Bond` — positive · spellpower · shares 75% of healing with its bond
   - desc: (empty)
-- **Eternal_Vow** `Eternal_Vow` — positive · spellpower · return_on_death_next_turn
+- **Eternal_Vow** `Eternal_Vow` — positive · spellpower · returns next turn if it dies
   - desc: (empty)
-- **Ancestors_Blessing** `Ancestors_Blessing` — positive · spellpower · death_resistance
+- **Ancestors_Blessing** `Ancestors_Blessing` — positive · spellpower · +3 initiative · +5 accuracy · +5 dodge · +3 damage · +5 armor · +3 crit chance · +3 spellpower · resists death
   - desc: (empty)
-- **Blood_Hunger** `Blood_Hunger` — positive · spellpower · lifesteals_on_hit
+- **Blood_Hunger** `Blood_Hunger` — positive · spellpower · heals from the damage it deals
   - desc: (empty)
-- **Shadow_Cloaked** `Shadow_Cloaked` — positive · spellpower · stealth_bonus
+- **Shadow_Cloaked** `Shadow_Cloaked` — positive · spellpower · +15 dodge · harder to spot
   - desc: (empty)
-- **Armored_Minor** `Armored_Minor` — positive · spellpower
+- **Armored_Minor** `Armored_Minor` — positive · spellpower · physical resistance +25%
   - desc: (empty)
-- **Armored_Major** `Armored_Major` — positive · spellpower
+- **Armored_Major** `Armored_Major` — positive · spellpower · physical resistance +50%
   - desc: (empty)
-- **Armored_Supreme** `Armored_Supreme` — positive · spellpower
+- **Armored_Supreme** `Armored_Supreme` — positive · spellpower · physical resistance +75%
   - desc: (empty)
-- **Awareness_Buff** `Awareness_Buff` — positive · spellpower
+- **Awareness_Buff** `Awareness_Buff` — positive · spellpower · +3 spellpower
   - desc: (empty)
-- **Burning_Weapon** `Burning_Weapon` — positive · spellpower · on hit
+- **Burning_Weapon** `Burning_Weapon` — positive · spellpower · when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit
   - desc: (empty)
-- **Constitution_Buff** `Constitution_Buff` — positive · spellpower
+- **Constitution_Buff** `Constitution_Buff` — positive · spellpower · +2 Constitution
   - desc: (empty)
-- **Extra_Action** `Extra_Action` — positive · turns 1 · grants_extra_action
+- **Extra_Action** `Extra_Action` — positive · turns 1 · grants an extra action
   - desc: (empty)
-- **Focus_Buff_Major** `Focus_Buff_Major` — positive · spellpower
+- **Focus_Buff_Major** `Focus_Buff_Major` — positive · spellpower · +8 spellpower
   - desc: (empty)
-- **Fortified** `Fortified` — positive · spellpower
+- **Fortified** `Fortified` — positive · spellpower · +10 armor · physical resistance +25%
   - desc: (empty)
-- **Golden_Defense** `Golden_Defense` — positive · spellpower · spell_damage_reduction
+- **Golden_Defense** `Golden_Defense` — positive · spellpower · physical resistance +50% · takes less damage from spells
   - desc: (empty)
-- **Initiative_Buff** `Initiative_Buff` — positive · spellpower
+- **Initiative_Buff** `Initiative_Buff` — positive · spellpower · +5 initiative
   - desc: (empty)
-- **Keen_Weapon** `Keen_Weapon` — positive · spellpower
+- **Keen_Weapon** `Keen_Weapon` — positive · spellpower · +10 accuracy · +10 crit chance
   - desc: (empty)
-- **Lucky** `Lucky` — positive · spellpower
+- **Lucky** `Lucky` — positive · spellpower · +15 crit chance
   - desc: (empty)
-- **Major_Dodge** `Major_Dodge` — positive · spellpower
+- **Major_Dodge** `Major_Dodge` — positive · spellpower · +30 dodge
   - desc: (empty)
-- **Phase_Wind** `Phase_Wind` — positive · spellpower · can_move_through_enemies
+- **Phase_Wind** `Phase_Wind` — positive · spellpower · +15 dodge · can move through enemies
   - desc: (empty)
-- **Strength_Buff** `Strength_Buff` — positive · spellpower
+- **Strength_Buff** `Strength_Buff` — positive · spellpower · +3 damage
   - desc: (empty)
-- **Tongues_of_Fire** `Tongues_of_Fire` — positive · spellpower · on struck, on hit
+- **Tongues_of_Fire** `Tongues_of_Fire` — positive · spellpower · when struck in melee: 5 fire damage to the attacker (plus the spell's value) · when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit
   - desc: (empty)
-- **Water_Walking** `Water_Walking` — positive · spellpower · immune_to_water_terrain
+- **Water_Walking** `Water_Walking` — positive · spellpower · immune to water terrain
   - desc: (empty)
-- **Yaksha_Strength** `Yaksha_Strength` — positive · spellpower
+- **Yaksha_Strength** `Yaksha_Strength` — positive · spellpower · +13 damage
   - desc: (empty)
-- **Crystal_Diadem** `Crystal_Diadem` — positive · spellpower
+- **Crystal_Diadem** `Crystal_Diadem` — positive · spellpower · +8 initiative · +13 spellpower
   - desc: Crown of living crystal: major Focus and Awareness bonus. 50% chance to shatter and be lost whenever the wearer takes damage.
-- **Strength_Plus_2** `Strength_Plus_2` — positive · spellpower
+- **Strength_Plus_2** `Strength_Plus_2` — positive · spellpower · +2 Strength
   - desc: +2 Strength.
-- **Finesse_Plus_2** `Finesse_Plus_2` — positive · spellpower
+- **Finesse_Plus_2** `Finesse_Plus_2` — positive · spellpower · +2 Finesse
   - desc: +2 Finesse.
-- **Focus_Plus_3** `Focus_Plus_3` — positive · spellpower
+- **Focus_Plus_3** `Focus_Plus_3` — positive · spellpower · +3 Focus
   - desc: +3 Focus.
-- **Awareness_Plus_3** `Awareness_Plus_3` — positive · spellpower
+- **Awareness_Plus_3** `Awareness_Plus_3` — positive · spellpower · +3 Awareness
   - desc: +3 Awareness.
-- **Cleansed** `Cleansed` — positive · turns 1 · remove_all_debuffs, immune:negative
+- **Cleansed** `Cleansed` — positive · turns 1 · removes every debuff when applied · immune to negative
   - desc: All debuffs removed. Immune to new debuffs for 1 turn.
-- **Mental_Immunity** `Mental_Immunity` — positive · spellpower · immune:Charmed, immune:Dominated, immune:Feared, immune:Confused, immune:Chaotic
+- **Mental_Immunity** `Mental_Immunity` — positive · spellpower · immune to Charmed · immune to Dominated · immune to Feared · immune to Confused · immune to Chaotic
   - desc: Immune to charm, fear, and confusion effects.
-- **Rainbow_Cloak** `Rainbow_Cloak` — positive · spellpower
+- **Rainbow_Cloak** `Rainbow_Cloak` — positive · spellpower · +15 dodge · magic damage resistance +15%
   - desc: Shimmering cloak of prismatic light grants resistance to all elements and a dodge bonus.
-- **Strengthened** `Strengthened` — positive · turns 2
+- **Strengthened** `Strengthened` — positive · turns 2 · +5 damage
   - desc: (empty)
-- **Hastened** `Hastened` — positive · turns 2
+- **Hastened** `Hastened` — positive · turns 2 · +5 initiative · +2 movement
   - desc: (empty)
-- **Shielded** `Shielded` — positive · turns 2
+- **Shielded** `Shielded` — positive · turns 2 · +10 armor
   - desc: (empty)
-- **Inspired** `Inspired` — positive · turns 2
+- **Inspired** `Inspired` — positive · turns 2 · +10 accuracy
   - desc: (empty)
-- **Dodge_Buff** `Dodge_Buff` — positive · turns 1
+- **Dodge_Buff** `Dodge_Buff` — positive · turns 1 · +15 dodge
   - desc: (empty)
-- **Rage** `Rage` — positive · turns 2
+- **Rage** `Rage` — positive · turns 2 · +5 damage · −10 armor
   - desc: (empty)
-- **Invincible** `Invincible` — positive · turns 3 · hp_cannot_drop_below_1
+- **Invincible** `Invincible` — positive · turns 3 · hP cannot drop below 1
   - desc: (empty)
-- **Resolute** `Resolute` — positive · turns 3 · immune:Charmed, immune:Dominated, immune:Feared, immune:Confused, immune:Chaotic
+- **Resolute** `Resolute` — positive · turns 3 · immune to Charmed · immune to Dominated · immune to Feared · immune to Confused · immune to Chaotic
   - desc: (empty)
-- **Riposte_Ready** `Riposte_Ready` — positive · turns 1 · riposte_next_sword_attack
+- **Riposte_Ready** `Riposte_Ready` — positive · turns 1 · ripostes its next sword attack
   - desc: (empty)
-- **Reflect** `Reflect` — positive · turns 3 · on incoming_attack
+- **Reflect** `Reflect` — positive · turns 3 · when attacked (60% chance): it is turned back on whoever sent it
   - desc: (empty)
-- **Inner_Flame** `Inner_Flame` — positive · spellpower · on struck
+- **Inner_Flame** `Inner_Flame` — positive · spellpower · fire resistance +25% · ice resistance +25% · when struck in melee: Burning (3 turns) on the attacker, unless already Burning
   - desc: Inner heat. Fire and water both find less purchase, and whoever strikes you in close catches light.
 - **Lava_Walking** `Lava_Walking` — positive · spellpower
   - desc: The ground runs molten and does not care. Fire has no mobility magic of its own; this is the whole of it.
@@ -7365,59 +7365,59 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Stealth `stealth`
 
-- **Invisible** `Invisible` — positive · spellpower · cannot_be_targeted, attack_breaks_invisibility, grants_stealth
+- **Invisible** `Invisible` — positive · spellpower · cannot be targeted · breaks on attacking · hidden from sight
   - desc: (empty)
 
 ## Blessing `blessing`
 
-- **Death_Immunity** `Death_Immunity` — positive · turns 3 · cannot_die, hp_cannot_drop_below_1
+- **Death_Immunity** `Death_Immunity` — positive · turns 3 · cannot die · hP cannot drop below 1
   - desc: (empty)
-- **Physical_Resist_50** `Physical_Resist_50` — positive · spellpower
+- **Physical_Resist_50** `Physical_Resist_50` — positive · spellpower · physical resistance +50%
   - desc: (empty)
-- **Air_Immune** `Air_Immune` — positive · spellpower
+- **Air_Immune** `Air_Immune` — positive · spellpower · immune to lightning
   - desc: (empty)
-- **Invulnerable** `Invulnerable` — positive · turns 3
+- **Invulnerable** `Invulnerable` — positive · turns 3 · immune to all damage
   - desc: (empty)
-- **Fire_Immune** `Fire_Immune` — positive · spellpower
+- **Fire_Immune** `Fire_Immune` — positive · spellpower · immune to fire
   - desc: (empty)
-- **Fire_Resistance_25** `Fire_Resistance_25` — positive · spellpower
+- **Fire_Resistance_25** `Fire_Resistance_25` — positive · spellpower · fire resistance +25%
   - desc: (empty)
-- **Physical_Immune** `Physical_Immune` — positive · spellpower
+- **Physical_Immune** `Physical_Immune` — positive · spellpower · immune to physical
   - desc: (empty)
-- **Water_Immune** `Water_Immune` — positive · spellpower
+- **Water_Immune** `Water_Immune` — positive · spellpower · immune to ice
   - desc: (empty)
 
 ## Shield `shield`
 
-- **Sanctuary** `Sanctuary` — positive · spellpower · cannot_be_targeted, cannot_target_enemies, breaks_on_offensive_action
+- **Sanctuary** `Sanctuary` — positive · spellpower · cannot be targeted · cannot target enemies · breaks on any offensive action
   - desc: (empty)
-- **Mantric_Armor** `Mantric_Armor` — positive · until_destroyed · hp_shield
+- **Mantric_Armor** `Mantric_Armor` — positive · until_destroyed · magic damage resistance +25% · damage is taken from a shield first
   - desc: (empty)
-- **Glass_Globe** `Glass_Globe` — positive · spellpower
+- **Glass_Globe** `Glass_Globe` — positive · spellpower · +5 armor
   - desc: Encased in a globe of conjured glass. Shatters on any damage received, dealing slashing AoE + guaranteed bleed to all within 2 tiles.
 
 ## Transformation `transformation`
 
-- **Smoke_Form** `Smoke_Form` — positive · spellpower · can_move_through_enemies
+- **Smoke_Form** `Smoke_Form` — positive · spellpower · +25 dodge · ice resistance −25% · can move through enemies
   - desc: (empty)
-- **Storm_Lord** `Storm_Lord` — positive · spellpower · grants_flight, immune_to_ranged, on struck
+- **Storm_Lord** `Storm_Lord` — positive · spellpower · when struck in melee: 8 lightning damage to the attacker (plus the spell's value) · can fly · immune to ranged attacks
   - desc: (empty)
-- **Lightning_Form** `Lightning_Form` — positive · spellpower · grants_flight, on struck
+- **Lightning_Form** `Lightning_Form` — positive · spellpower · immune to lightning · physical resistance +50% · ice resistance −50% · when struck in melee: 10 lightning damage to the attacker (plus the spell's value), 30% chance of Stunned (1 turn) on the attacker, unless already Stunned · can fly
   - desc: (empty)
-- **Thin_Air** `Thin_Air` — positive · spellpower · cannot_deal_physical
+- **Thin_Air** `Thin_Air` — positive · spellpower · +4 movement · immune to physical · cannot deal physical damage
   - desc: (empty)
-- **Solar_Form** `Solar_Form` — positive · spellpower · on hit
+- **Solar_Form** `Solar_Form` — positive · spellpower · immune to fire · ice resistance −50% · when it hits: 20% of the damage dealt as fire damage (at least 1) to the unit it hit
   - desc: (empty)
 
 ## Aura `aura`
 
-- **Magnetizing_Aura** `Magnetizing_Aura` — positive · spellpower · charm_chance_on_enemy_melee_approach
+- **Magnetizing_Aura** `Magnetizing_Aura` — positive · spellpower · may charm enemies that approach in melee
   - desc: (empty)
 - **Favorable_Wind** `Favorable_Wind` — positive · spellpower
   - desc: (empty)
 - **Shield_Wall** `Shield_Wall` — positive · turns 1
   - desc: (empty)
-- **Soothing_Presence** `Soothing_Presence` — positive · spellpower · heals 5 per turn
+- **Soothing_Presence** `Soothing_Presence` — positive · spellpower · heals 5 HP at the start of each turn
   - desc: (empty)
 - **Aura_of_Blessing** `Aura_of_Blessing` — positive · spellpower
   - desc: (empty)
@@ -7432,24 +7432,24 @@ Every birth can take the 33 universal backgrounds (and most some shared ones); t
 
 ## Disease `disease`
 
-- **Diseased** `Diseased` — negative · spellpower · 10 poison per turn
+- **Diseased** `Diseased` — negative · spellpower · 10 poison damage (or the spell's value) at the start of each turn · spreads 30% a turn
   - desc: (empty)
 
 ## Stance `stance`
 
-- **Counterstance** `Counterstance` — positive · turns 1 · on attacked_in_melee
+- **Counterstance** `Counterstance` — positive · turns 1 · when attacked in melee (up to 3 times a turn, once per attacker): makes a free attack against the attacker
   - desc: Blade held ready. The first blow each attacker throws is answered.
-- **Guarding_The_Gap** `Guarding_The_Gap` — positive · turns 1 · on ally_threatened
+- **Guarding_The_Gap** `Guarding_The_Gap` — positive · turns 1 · when an ally is threatened (within 1 tile, up to 3 times a turn): makes a free attack against the threatening enemy
   - desc: Standing over someone. Whoever comes for them comes past you first.
-- **Set_For_Charge** `Set_For_Charge` — positive · turns 1 · on enemy_enters_reach
+- **Set_For_Charge** `Set_For_Charge` — positive · turns 1 · when an enemy comes within reach (within 2 tiles, once a turn): makes a free attack against the enemy that came close at 200% power
   - desc: Butt of the spear in the dirt. Whatever runs onto it runs onto it hard.
-- **Kill_Zone** `Kill_Zone` — positive · turns 1 · on enemy_enters_reach
+- **Kill_Zone** `Kill_Zone` — positive · turns 1 · when an enemy comes within reach (within weapon reach, up to 3 times a turn): makes a free attack against the enemy that came close
   - desc: Ground you have already decided about. Three shots, and then you are reloading.
-- **Heavenly_Counterflow** `Heavenly_Counterflow` — positive · turns 1 · on attacked_in_melee
+- **Heavenly_Counterflow** `Heavenly_Counterflow` — positive · turns 1 · when attacked in melee (once a turn): the attack misses, makes a free attack against the attacker at 130% power, moves itself 2 tiles (scatter)
   - desc: The blow arrives and finds nobody there. You are already elsewhere, and already answering.
-- **None_Shall_Pass** `None_Shall_Pass` — positive · turns 1 · on enemy_enters_reach
+- **None_Shall_Pass** `None_Shall_Pass` — positive · turns 1 · when an enemy comes within reach (within 2 tiles, up to 3 times a turn): makes a free attack against the enemy that came close, Slowed (1 turn) on the enemy that came close
   - desc: The reach of a spear, declared as a rule rather than a threat.
-- **Guarding** `Guarding` — positive · turns 1
+- **Guarding** `Guarding` — positive · turns 1 · physical resistance +25%
   - desc: Standing in front of somebody. Harder to put down for it.
 
 # Traits

@@ -19,41 +19,112 @@ class_name TooltipText
 
 ## A status says what it does as effects (spec §4.4): `while_active`
 ## modifies, `periodic` ticks, `triggers`, a `save`, a `spread`. Each line here
-## is worded from those effects themselves, so the tooltip can only say what
-## the game does. (Stage 2b Task 7 words the rest of the effect language.)
+## is worded from those effects themselves (the describe_* functions below),
+## so the tooltip can only say what the game does.
 
-## Readable wording for a status's `flags` (the yes/no rules it switches on).
-## A flag not listed falls back to its name with underscores turned to spaces.
+## Readable wording for a status's `flags` (the yes/no rules it switches on),
+## one entry for EVERY name in EffectVocab.FLAGS (verify_tooltips'
+## every_flag_has_words fails on a flag without one). `immune:<x>` is worded
+## by describe_flags() itself. tools/content/sections/statuses.py reads this
+## same dictionary for CONTENT.md, so a wording is changed here, once.
 const FLAG_LABELS: Dictionary = {
-	"skip_turn": "Skips next turn",
-	"skip_next_action": "Loses 1 action",
-	"cannot_move": "Cannot move",
+	"attack_breaks_invisibility": "Breaks on attacking",
+	"attack_damage_buff_when_ally_dies": "Hits harder when an ally dies",
+	"attacks_closest_creature": "Attacks the closest creature",
+	"attacks_have_miss_chance": "Its attacks may miss",
+	"breaks_concentration": "Breaks concentration",
+	"breaks_on_damage_from_source": "Ends if the one who caused it hurts it",
+	"breaks_on_offensive_action": "Breaks on any offensive action",
+	"can_move_through_enemies": "Can move through enemies",
 	"cannot_act": "Cannot act",
-	"cannot_cast": "Cannot cast spells",
 	"cannot_attack": "Cannot attack",
 	"cannot_be_targeted": "Cannot be targeted",
+	"cannot_cast": "Cannot cast spells",
+	"cannot_deal_physical": "Cannot deal physical damage",
 	"cannot_die": "Cannot die",
+	"cannot_make_weapon_attacks": "Cannot make weapon attacks",
+	"cannot_move": "Cannot move",
+	"cannot_target_enemies": "Cannot target enemies",
+	"cannot_use_ranged": "Cannot use ranged attacks",
+	"charm_chance_on_enemy_melee_approach": "May charm enemies that approach in melee",
+	"controlled_by_caster": "Controlled by the caster",
+	"copies_absorb_attacks": "Its copies absorb attacks",
+	"counts_as_demoralized": "Counts as demoralized",
+	"crit_vulnerability": "Vulnerable to critical hits",
+	"damage_on_move_attempt": "Takes damage when it tries to move",
+	"damage_taken_increase": "Takes more damage",
+	"death_resistance": "Resists death",
+	"disengaged_from_combat": "Is out of the fight",
+	"flee_from_source": "Flees from whoever caused it",
+	"focus_save_on_damage": "Focus save on each hit, or lose actions",
+	"forced_movement_toward_target": "Is drawn toward its target",
+	"grants_extra_action": "Grants an extra action",
+	"grants_flight": "Can fly",
+	"grants_stealth": "Hidden from sight",
 	"hp_cannot_drop_below_1": "HP cannot drop below 1",
+	"hp_shield": "Damage is taken from a shield first",
+	"ignores_allegiance": "Ignores who is friend or foe",
+	"immune_to_ground_effects": "Immune to ground effects",
+	"immune_to_melee_unless_flyer": "Immune to melee, except from flyers",
+	"immune_to_ranged": "Immune to ranged attacks",
+	"immune_to_terrain_hazards": "Immune to terrain hazards",
+	"immune_to_water_terrain": "Immune to water terrain",
+	"increase_burning_damage_dealt": "Burning damage it deals is increased",
+	"lifesteals_on_hit": "Heals from the damage it deals",
+	"loses_flight": "Cannot fly",
+	"must_attack_taunter": "Must attack whoever taunted it",
+	"next_attack_misses": "Its next attack misses",
+	"next_ranged_guaranteed_hit": "Its next ranged attack always hits",
+	"prevents_teleportation": "Cannot teleport",
+	"prone_chance_on_movement": "May fall prone when moving",
 	"random_movement": "Moves randomly",
 	"random_target": "Attacks random targets",
-	"flee_from_source": "Flees from whoever caused it",
-	"attack_breaks_invisibility": "Breaks on attacking",
-	"breaks_on_offensive_action": "Breaks on any offensive action",
+	"ranged_damage_reduction": "Takes less damage from ranged attacks",
+	"remove_all_debuffs": "Removes every debuff when applied",
+	"return_on_death_next_turn": "Returns next turn if it dies",
+	"riposte_next_sword_attack": "Ripostes its next sword attack",
+	"rooted": "Rooted in place",
+	"share_healing_75_percent": "Shares 75% of healing with its bond",
+	"skip_next_action": "Loses 1 action",
+	"skip_turn": "Skips next turn",
+	"spell_damage_reduction": "Takes less damage from spells",
+	"stealth_bonus": "Harder to spot",
+	"stun_chance_on_hit": "Its hits may stun",
 	"treats_caster_as_ally": "Treats the caster as an ally",
+	"will_not_attack": "Will not attack",
 	"will_not_attack_caster": "Will not attack the caster",
-	"focus_save_on_damage": "Focus save on each hit, or lose actions",
-	"immune_to_ground_effects": "Immune to ground effects",
 }
-
-## Flags that are rules for the game's own bookkeeping, not something a status
-## tells the player: they added no line to the old tooltips and add none now.
-const _FLAGS_NOT_SHOWN: Array[String] = [
-	"breaks_concentration", "breaks_on_damage_from_source", "grants_stealth",
-	"lifesteals_on_hit", "counts_as_demoralized",
-]
 
 ## The word the header shows for each polarity.
 const POLARITY_WORDS: Dictionary = {"positive": "buff", "negative": "debuff"}
+
+## How a trigger's `on` reads, as the start of its line. A `struck` or
+## `attacked_in_melee` with reach 1 reads "in melee" (see _when_words).
+const TRIGGER_WORDS: Dictionary = {
+	"expire": "When it runs out",
+	"turn_start": "At the start of its turn",
+	"turn_end": "At the end of its turn",
+	"struck": "When struck",
+	"hit": "When it hits",
+	"attacked_in_melee": "When attacked in melee",
+	"incoming_attack": "When attacked",
+	"incoming_spell": "When targeted by a spell",
+	"enemy_enters_reach": "When an enemy comes within reach",
+	"ally_threatened": "When an ally is threatened",
+}
+
+## Who `to: "source"` is, by what set the trigger off.
+const SOURCE_WORDS: Dictionary = {
+	"struck": "the attacker", "attacked_in_melee": "the attacker",
+	"incoming_attack": "the attacker", "incoming_spell": "the caster",
+	"hit": "the unit it hit", "enemy_enters_reach": "the enemy that came close",
+	"ally_threatened": "the threatening enemy",
+}
+
+## What a `periodic` effect's `when` reads as.
+const PERIODIC_WORDS: Dictionary = {
+	"turn_start": "at the start of each turn", "turn_end": "at the end of each turn",
+}
 
 
 ## Full tooltip for ONE status on a unit.
@@ -151,80 +222,346 @@ static func _status_duration_line(entry: Dictionary, def: Dictionary) -> String:
 	return ""
 
 
-## One readable line per periodic tick, per hit trigger and per flag. Damage
-## over time is given its number as the tick works it out: the entry's `value`
-## (what the spell gave it) wins over the status's own default.
+## The bullets under a status's header, every one worded by a describe_*
+## function from the status's own fields: what it holds while on, what it does
+## each turn, and the yes/no rules it switches on. (What it does when
+## something happens to it is _status_trigger_lines.)
 static func _status_effect_bullets(entry: Dictionary, def: Dictionary) -> Array[String]:
 	var bullets: Array[String] = []
-	for effect in def.get("periodic", {}).get("effects", []):
-		var line: String = _periodic_bullet(effect, entry)
-		if line != "" and not line in bullets:
-			bullets.append(line)
-	for trigger in def.get("triggers", []):
-		if typeof(trigger) == TYPE_DICTIONARY and str(trigger.get("on", "")) == "hit":
-			for effect in trigger.get("effects", []):
-				var line: String = _hit_bullet(effect)
-				if line != "" and not line in bullets:
-					bullets.append(line)
-	# The yes/no rules it switches on, from `flags`.
-	for flag in def.get("flags", []):
-		var line: String = _flag_label(str(flag))
-		if line != "" and not line in bullets:
-			bullets.append(line)
-	# What it holds while it is on: stats, attributes and resistances, one
-	# line per `while_active` modify, worded from the effect itself.
-	for effect in def.get("while_active", []):
-		if typeof(effect) == TYPE_DICTIONARY and str(effect.get("op", "")) == "modify":
-			var text: String = _modify_bullet(effect)
-			if text != "" and not text in bullets:
-				bullets.append(text)
+	var groups: Array[PackedStringArray] = [
+		describe_effects(def.get("while_active", []), entry),
+		describe_periodic(def.get("periodic", {}), entry),
+		describe_flags(def.get("flags", [])),
+	]
+	for group in groups:
+		for line in group:
+			if not line in bullets:
+				bullets.append(line)
 	return bullets
 
 
-## How much a status's effect amounts to for this entry, worked out as the
-## game works it out (EffectResolver.magnitude, reading the entry's value).
-static func _amount_for(effect: Dictionary, entry: Dictionary) -> int:
-	var ctx := EffectContext.new()
-	ctx.status_entry = entry
-	return int(EffectResolver.magnitude(effect.get("amount", 0), ctx, null))
+# ============================================
+# THE EFFECT LANGUAGE IN WORDS
+# ============================================
+#
+# describe_effects, describe_flags, describe_periodic and describe_triggers
+# turn the shared effect language (scripts/effects/effect_vocab.gd) into
+# sentences. A status's tooltip is built from nothing else, and a spell's will
+# be too (stage 3). tools/content/sections/statuses.py is a Python port of the
+# parts statuses.json uses, for the CONTENT.md context line: change a wording
+# here and change it there.
+
+## One sentence per effect, in the order given. `entry` is the live status
+## entry (its `value` and `stacks` are what a borrowed magnitude reads); pass
+## {} to describe in the abstract, which says where a number is a default.
+## `on` is the trigger the effects answer, so `to: "source"` can be named
+## ("the attacker") and event.damage read as damage taken or dealt.
+##   {"op": "damage", "amount": 5, "type": "fire"}   ->  "5 fire damage"
+##   a lasting modify                                ->  "+15 dodge"
+static func describe_effects(effects: Array, entry: Dictionary = {}, on: String = "") -> PackedStringArray:
+	var out := PackedStringArray()
+	for effect in effects:
+		if typeof(effect) != TYPE_DICTIONARY:
+			continue
+		var text: String = _effect_sentence(effect, entry, on, "")
+		if text != "":
+			out.append(text)
+	return out
 
 
-## "5 fire damage each turn", "10 HP healed each turn".
-static func _periodic_bullet(effect: Dictionary, entry: Dictionary) -> String:
-	if typeof(effect) != TYPE_DICTIONARY:
+## One line per flag, from FLAG_LABELS. `immune:<word>` reads "Immune to
+## <word>". A flag with no entry reads as its id with underscores replaced
+## (verify_tooltips fails on any such flag, so this is only a net).
+static func describe_flags(flags: Array) -> PackedStringArray:
+	var out := PackedStringArray()
+	for flag in flags:
+		var id: String = str(flag)
+		var text: String
+		if id.begins_with(EffectVocab.IMMUNE_FLAG_PREFIX):
+			text = "Immune to " + id.trim_prefix(EffectVocab.IMMUNE_FLAG_PREFIX).replace("_", " ")
+		else:
+			text = str(FLAG_LABELS.get(id, id.replace("_", " ").capitalize()))
+		if not text in out:
+			out.append(text)
+	return out
+
+
+## A status's `periodic` {when, effects}: each effect with when it happens.
+##   "5 fire damage at the start of each turn"
+static func describe_periodic(periodic: Dictionary, entry: Dictionary = {}) -> PackedStringArray:
+	var out := PackedStringArray()
+	var when_words: String = str(PERIODIC_WORDS.get(str(periodic.get("when", "turn_start")),
+		"at the start of each turn"))
+	for effect in periodic.get("effects", []):
+		if typeof(effect) != TYPE_DICTIONARY:
+			continue
+		var text: String = _effect_sentence(effect, entry, "", when_words)
+		if text != "":
+			out.append(text)
+	return out
+
+
+## A status's `triggers`, one line each: "When struck in melee: 10 lightning
+## damage to the attacker, 30% chance of Stunned (1 turn) on the attacker".
+## Limits, reach and chance sit in brackets after the "when".
+static func describe_triggers(triggers: Array, entry: Dictionary = {}) -> PackedStringArray:
+	var out := PackedStringArray()
+	for trigger in triggers:
+		if typeof(trigger) != TYPE_DICTIONARY:
+			continue
+		var on: String = str(trigger.get("on", ""))
+		var parts := describe_effects(trigger.get("effects", []), entry, on)
+		if parts.is_empty():
+			continue
+		var line: String = _when_words(trigger) + _trigger_brackets(trigger) + ": " + ", ".join(parts)
+		out.append(line)
+	return out
+
+
+## "When struck in melee": a `struck` with reach 1 only answers melee.
+static func _when_words(trigger: Dictionary) -> String:
+	var on: String = str(trigger.get("on", ""))
+	if on == "struck" and typeof(trigger.get("reach", null)) in [TYPE_INT, TYPE_FLOAT] \
+			and int(trigger["reach"]) == 1:
+		return "When struck in melee"
+	return str(TRIGGER_WORDS.get(on, on.replace("_", " ").capitalize()))
+
+
+## " (50% chance, within 2 tiles, up to 3 times a turn, once per attacker)".
+static func _trigger_brackets(trigger: Dictionary) -> String:
+	var bits: Array[String] = []
+	if trigger.has("chance"):
+		bits.append("%d%% chance" % roundi(float(trigger["chance"])))
+	var on: String = str(trigger.get("on", ""))
+	var reach = trigger.get("reach", null)
+	# Reach 1 on a `struck` is already said as "in melee".
+	if reach != null and not (on == "struck" and typeof(reach) != TYPE_STRING and int(reach) == 1):
+		if str(reach) == "weapon":
+			bits.append("within weapon reach")
+		else:
+			bits.append("within %d tile%s" % [int(reach), "" if int(reach) == 1 else "s"])
+	var limit: Dictionary = trigger.get("limit", {})
+	if not limit.is_empty():
+		var count: int = int(limit.get("count", 1))
+		var times: String = "once" if count == 1 else "up to %d times" % count
+		var text: String = "%s a turn" % times
+		if bool(limit.get("once_per_source", false)):
+			text += ", once per attacker"
+		bits.append(text)
+	if bits.is_empty():
 		return ""
-	var amount: int = _amount_for(effect, entry)
-	match str(effect.get("op", "")):
+	return " (" + ", ".join(bits) + ")"
+
+
+## One effect as a sentence. `when_words` ("at the start of each turn") goes
+## right after what it does, ahead of any growth clause.
+static func _effect_sentence(effect: Dictionary, entry: Dictionary, on: String, when_words: String) -> String:
+	var op: String = str(effect.get("op", ""))
+	var text: String = ""
+	var note: String = _borrow_note(effect.get("amount", null), entry)
+	var who: String = _source_words(effect, on)
+	# The `note` ("or the spell's value") goes after who it hits, so it reads
+	# "10 lightning damage to the attacker (plus the spell's value)".
+	match op:
 		"damage":
-			var kind: String = DamageType.display_name(str(effect.get("type", "physical"))).to_lower()
-			if amount > 0:
-				return "%d %s damage each turn" % [amount, kind]
-			return "%s damage each turn" % kind
+			var amount = effect.get("amount", 0)
+			var kind: String = _damage_kind_words(effect.get("type", "physical"))
+			if typeof(amount) == TYPE_DICTIONARY and str(amount.get("from", "")) == "event.damage":
+				var taken: String = "taken" if on in ["struck", "attacked_in_melee", "incoming_attack", "incoming_spell"] else "dealt"
+				var share: String = "%d%% of the damage %s as %s damage" % [int(amount.get("pct", 100)), taken, kind]
+				text = ("reflects " + share) if taken == "taken" else share
+				if amount.has("min"):
+					text += " (at least %d)" % int(amount["min"])
+			elif typeof(amount) == TYPE_DICTIONARY and str(amount.get("pct_of", "")) == "target.max_hp":
+				text = "%d%% of max HP as %s damage" % [int(amount.get("value", 0)), kind]
+				if float(amount.get("value", 0)) >= 100.0:
+					text = "it dies (%s damage)" % kind
+			else:
+				text = "%s %s damage" % [_amount_words(amount, entry), kind]
+				if who == "":
+					text += note
+			if who != "":
+				text += " to " + who
+				if not (typeof(amount) == TYPE_DICTIONARY and str(amount.get("from", "")) == "event.damage"):
+					text += note
 		"heal":
-			return "%d HP healed each turn" % amount
-	return ""
-
-
-## "Hits deal 20% more as fire damage": a `hit` trigger's damage.
-static func _hit_bullet(effect: Dictionary) -> String:
-	if typeof(effect) != TYPE_DICTIONARY or str(effect.get("op", "")) != "damage":
+			var amount = effect.get("amount", 0)
+			if typeof(amount) == TYPE_STRING and str(amount) == "full":
+				text = "heals to full HP"
+			else:
+				text = "heals %s HP" % _amount_words(amount, entry)
+				if who == "":
+					text += note
+			if who != "":
+				text += " for " + who
+				text += note
+		"modify":
+			text = _modify_sentence(effect, entry, note)
+		"status":
+			text = _status_sentence(effect, who)
+		"attack":
+			text = "makes a free attack against " + (who if who != "" else "the other unit")
+			if effect.has("power_pct"):
+				text += " at %d%% power" % int(effect["power_pct"])
+		"negate":
+			text = "the attack misses"
+		"reflect":
+			text = "it is turned back on whoever sent it"
+		"move":
+			var tiles: int = int(effect.get("tiles", 1))
+			var mover: String = "moves itself" if str(effect.get("to", "")) == "caster" \
+				else "moves " + (who if who != "" else "the target")
+			text = "%s %d tile%s (%s)" % [mover, tiles, "" if tiles == 1 else "s",
+				str(effect.get("mode", "")).replace("_", " ")]
+		"summon":
+			var count: int = int(effect.get("count", 1))
+			var what: String = str(effect.get("as", "")).replace("_", " ")
+			text = ("a %s emerges" % what) if count == 1 else ("%d %s emerge" % [count, what])
+		"kill":
+			text = "kills it outright"
+		"zone":
+			text = "lays a %s zone" % str(effect.get("zone", "")).replace("_", " ")
+		"resurrect":
+			text = "raises the fallen"
+	if text == "":
 		return ""
-	var amount = effect.get("amount", 0)
-	var kind: String = DamageType.display_name(str(effect.get("type", "physical"))).to_lower()
-	if typeof(amount) == TYPE_DICTIONARY and str(amount.get("from", "")) == "event.damage":
-		return "Hits deal %d%% more as %s damage" % [int(amount.get("pct", 100)), kind]
-	return "Hits deal %d more %s damage" % [int(amount) if typeof(amount) != TYPE_DICTIONARY else 0, kind]
+	if when_words != "":
+		text += " " + when_words
+	# Growth: a scale per turn the status has lasted, or per something else.
+	var scale: Dictionary = effect.get("scale", {})
+	if not scale.is_empty():
+		var per: String = str(scale.get("per", ""))
+		if per == "turn_active":
+			text += ", %s more for each turn it has lasted" % _num(float(scale.get("amount", 0)))
+		elif per != "":
+			text += ", more with %s" % per.replace("_", " ")
+	# A chance on a non-status effect; a status words its own (see below).
+	if effect.has("chance") and op != "status" and float(effect["chance"]) < 100.0:
+		text += " (%d%% chance)" % roundi(float(effect["chance"]))
+	return text
 
 
-## One flag as a line, or "" for a flag that is not shown. `immune:<word>`
-## reads "Immune to <word>".
-static func _flag_label(flag: String) -> String:
-	if flag in _FLAGS_NOT_SHOWN:
+## "Stunned (1 turn)", "30% chance of Stunned (1 turn) on the attacker, unless
+## already Stunned", "removes Burning".
+static func _status_sentence(effect: Dictionary, who: String) -> String:
+	var action: String = str(effect.get("action", ""))
+	if action != "apply":
+		var verbs: Dictionary = {"remove": "removes", "steal": "steals", "transfer": "transfers",
+			"convert": "converts"}
+		var names: Array = effect.get("select", {}).get("names", [])
+		var what: String = ", ".join(PackedStringArray(names)).replace("_", " ") if not names.is_empty() else "statuses"
+		return "%s %s" % [str(verbs.get(action, action)), what]
+	var give: String = str(effect.get("status", "")).replace("_", " ")
+	var duration = effect.get("duration", 1)
+	var turns_text: String
+	if typeof(duration) in [TYPE_INT, TYPE_FLOAT]:
+		turns_text = "%d turn%s" % [int(duration), "" if int(duration) == 1 else "s"]
+	elif str(duration) == "combat":
+		turns_text = "the whole fight"
+	else:
+		turns_text = "the spell's duration"
+	var text: String = "%s (%s)" % [give, turns_text]
+	if effect.has("chance") and float(effect["chance"]) < 100.0:
+		text = "%d%% chance of %s" % [roundi(float(effect["chance"])), text]
+	if who != "":
+		text += " on " + who
+	for condition in effect.get("if", []):
+		if typeof(condition) == TYPE_DICTIONARY and condition.has("target_lacks"):
+			text += ", unless already %s" % str(condition["target_lacks"]).replace("_", " ")
+	return text
+
+
+## "the attacker" for `to: "source"` in a trigger; "" when the effect names no
+## other unit (it acts on the container's own carrier).
+static func _source_words(effect: Dictionary, on: String) -> String:
+	# An `attack` names its victim with `target`; every other op uses `to`.
+	var other: String = str(effect.get("target", "")) if str(effect.get("op", "")) == "attack" \
+		else str(effect.get("to", ""))
+	if other != "source":
 		return ""
-	if flag.begins_with(EffectVocab.IMMUNE_FLAG_PREFIX):
-		return "Immune to " + flag.trim_prefix(EffectVocab.IMMUNE_FLAG_PREFIX)
-	return str(FLAG_LABELS.get(flag, flag.replace("_", " ").capitalize()))
+	return str(SOURCE_WORDS.get(on, "the other unit"))
 
+
+## "fire", or "fire and black" for a split.
+static func _damage_kind_words(type) -> String:
+	if typeof(type) == TYPE_DICTIONARY:
+		var names: Array[String] = []
+		for part in type:
+			names.append(DamageType.display_name(str(part)).to_lower())
+		return " and ".join(names)
+	return DamageType.display_name(str(type)).to_lower()
+
+
+## "5", "2.5".
+static func _num(value: float) -> String:
+	if is_equal_approx(value, roundf(value)):
+		return str(int(roundf(value)))
+	return "%.1f" % value
+
+
+## A magnitude in words. A number reads as itself; {min,max} as "3 to 5". A
+## borrowed value ({from, pct?, default?, add?}) reads as the number it works
+## out to for this entry (the entry's `value` when it has one, else the
+## default, else just `add`), or as what it borrows from.
+static func _amount_words(amount, entry: Dictionary = {}) -> String:
+	match typeof(amount):
+		TYPE_INT, TYPE_FLOAT:
+			return _num(float(amount))
+		TYPE_STRING:
+			return str(amount)
+		TYPE_DICTIONARY:
+			if amount.has("min") and amount.has("max") and not amount.has("from"):
+				return "%s to %s" % [_num(float(amount["min"])), _num(float(amount["max"]))]
+			if amount.has("base"):
+				var base: String = _num(float(amount["base"]))
+				if amount.has("per_spellpower"):
+					base += " (+%s per spellpower)" % _num(float(amount["per_spellpower"]))
+				return base
+			if amount.has("from"):
+				return _borrowed_words(amount, entry)
+	return "?"
+
+
+## The number a borrowed magnitude works out to, or what it is borrowed from.
+static func _borrowed_words(amount: Dictionary, entry: Dictionary) -> String:
+	var from: String = str(amount["from"])
+	if from == "status.value" or from == "status.stacks":
+		# Worked out as the game works it out. In the abstract (no live entry)
+		# the status's own default stands in for the spell's value.
+		var ctx := EffectContext.new()
+		ctx.status_entry = entry
+		var spec: Dictionary = amount.duplicate()
+		return _num(float(EffectResolver.magnitude(spec, ctx, null)))
+	if from == "event.damage":
+		return "%d%% of the damage" % int(amount.get("pct", 100))
+	# caster.skill.leadership, target.attribute.focus ...: "50% of the caster's Leadership".
+	var who: String = from.get_slice(".", 0)
+	var path: String = from.substr(who.length() + 1)
+	var shown: String = path.get_slice(".", path.get_slice_count(".") - 1).replace("_", " ").capitalize()
+	var pct: int = int(amount.get("pct", 100))
+	var text: String = "%d%% of the %s's %s" % [pct, who, shown]
+	if amount.has("add"):
+		text += " + " + _num(float(amount["add"]))
+	return text
+
+
+## A short note after a sentence, saying where its number comes from, when
+## that is not already plain: "(or the spell's value)" for a default, "(plus
+## the spell's value)" for an `add`. Empty with a live entry, which has its
+## own number.
+static func _borrow_note(amount, entry: Dictionary) -> String:
+	if typeof(amount) != TYPE_DICTIONARY or str(amount.get("from", "")) != "status.value" \
+			or not entry.is_empty():
+		return ""
+	if amount.has("default"):
+		return " (or the spell's value)"
+	if amount.has("add"):
+		return " (plus the spell's value)"
+	return " (the spell's value)"
+
+
+## A real minus sign, for "−10 armor" (the hyphen reads as a dash).
+const MINUS: String = "\u2212"
 
 ## Readable names for the `stat.` values a status may hold.
 const STAT_WORDS: Dictionary = {
@@ -234,93 +571,112 @@ const STAT_WORDS: Dictionary = {
 }
 
 
-## One line for one lasting modify: "+10 accuracy", "-2 Focus",
-## "Movement halved", "+25% fire resistance", "Immune to all damage".
-static func _modify_bullet(effect: Dictionary) -> String:
+## A `modify` as a sentence. A lasting one reads as what it holds ("+10
+## accuracy", "-2 Focus", "Movement halved", "Fire resistance +25%", "Immune
+## to all damage"); an instant resource change as a verb ("restores 5 HP").
+static func _modify_sentence(effect: Dictionary, entry: Dictionary, note: String) -> String:
 	var value: String = str(effect.get("value", ""))
 	var mode: String = str(effect.get("mode", ""))
 	var amount_raw = effect.get("amount", 0)
-	if not (amount_raw is int or amount_raw is float):
-		return ""   # a formula amount: worded in Task 7
-	var amount: float = float(amount_raw)
-	var signed: float = -amount if mode == "drain" else amount
 	var ns: String = value.get_slice(".", 0)
 	var name: String = value.get_slice(".", 1)
+	var shown: String = _amount_words(amount_raw, entry)
+	var is_number: bool = amount_raw is int or amount_raw is float
+	var amount: float = float(amount_raw) if is_number else 0.0
+	# Instant changes to a resource.
+	if ns == "resource":
+		var pool: String = {"hp": "HP", "mana": "mana", "stamina": "stamina",
+			"temp_hp": "temporary HP"}.get(name, name)
+		match mode:
+			"restore":
+				return "restores %s %s%s" % [shown, pool, note]
+			"drain":
+				return "drains %s %s%s" % [shown, pool, note]
+			"absorb":
+				return "takes %s %s from the target%s" % [shown, pool, note]
+	var plus_minus: String = MINUS if mode == "drain" else "+"
+	var signed_text: String = plus_minus + shown
+	if is_number and is_equal_approx(amount, roundf(amount)):
+		signed_text = ("%+d" % int(-amount if mode == "drain" else amount)).replace("-", MINUS)
 	match ns:
 		"resist":
-			if mode == "fortify" or mode == "drain":
-				return _resistance_bullet(name, signed)
-			if mode == "set":
-				return "%s resistance set to %d%%" % [DamageType.display_name(name), int(amount)]
+			var what: String = _resist_name(name)
+			if mode == "set" and is_number:
+				if amount >= Resistance.DECLARED_IMMUNITY:
+					return "Immune to %s" % what
+				return "%s resistance set to %d%%" % [what.capitalize(), int(amount)]
+			if is_number and mode == "fortify" and amount >= Resistance.DECLARED_IMMUNITY:
+				return "Immune to %s" % what
+			return "%s resistance %s%%%s" % [what.capitalize(), signed_text, note]
 		"stat":
 			var word: String = str(STAT_WORDS.get(name, name.replace("_", " ")))
 			match mode:
 				"fortify", "drain":
-					return "%+d %s" % [int(signed), word]
+					return "%s %s%s" % [signed_text, word, note]
 				"multiply":
-					if is_equal_approx(amount, 0.5):
+					if is_number and is_equal_approx(amount, 0.5):
 						return "%s halved" % word.capitalize()
-					return "%s x%s" % [word.capitalize(), str(amount)]
+					return "%s x%s" % [word.capitalize(), shown]
 				"set":
-					return "%s set to %d" % [word.capitalize(), int(amount)]
+					return "%s set to %s" % [word.capitalize(), shown]
 		"attribute", "skill":
-			if mode == "fortify" or mode == "drain":
-				return "%+d %s" % [int(signed), name.replace("_", " ").capitalize()]
+			var label: String = name.replace("_", " ").capitalize()
+			match mode:
+				"fortify", "drain":
+					return "%s %s%s" % [signed_text, label, note]
+				"damage":
+					var until: String = describe_cleared_by(effect.get("cleared_by", []), value)
+					return "%s%s %s (until %s)" % [MINUS, shown, label, until]
 	return ""
 
 
-## The lines for a status's `struck` and `expire` triggers:
-##   "Hits back at melee attackers: 10 lightning damage, 30% chance of Stunned (1 turn)"
-##   "When it runs out: 20 physical damage, Bleeding (3 turns), a Fungal Spawn emerges"
-## (`hit` triggers are bullets, see _hit_bullet; the stances' reactions are
-## worded in Task 7.)
+## "fire", "all damage", "magic damage": what a `resist.<name>` covers.
+static func _resist_name(key: String) -> String:
+	match key:
+		"all":
+			return "all damage"
+		"magic":
+			return "magic damage"
+	return DamageType.display_name(key).to_lower()
+
+
+## What clears lasting damage, from a `cleared_by` list: "full rest or White
+## magic 5". An empty list is the default, a full rest or a restore of the value.
+static func describe_cleared_by(cleared_by: Array, value: String = "") -> String:
+	var clauses: Array = cleared_by
+	if clauses.is_empty():
+		clauses = [{"rest": "full"}, {"restore": value}]
+	var parts: Array[String] = []
+	for clause in clauses:
+		if typeof(clause) != TYPE_DICTIONARY:
+			continue
+		for kind in clause:
+			var want = clause[kind]
+			match str(kind):
+				"rest":
+					parts.append(("%s rest" % str(want)))
+				"heal":
+					var rule: Dictionary = want if typeof(want) == TYPE_DICTIONARY else {}
+					var school: String = str(rule.get("school", "")).trim_suffix("_magic").capitalize()
+					var text: String = (school + " magic") if school != "" else "healing"
+					if int(rule.get("min_level", 0)) > 0:
+						text += " %d" % int(rule["min_level"])
+					parts.append(text)
+				"restore":
+					parts.append("a restore")
+				"cleanse":
+					var rule: Dictionary = want if typeof(want) == TYPE_DICTIONARY else {}
+					parts.append("a cleanse of %s" % str(rule.get("category", "its cause")))
+	return " or ".join(parts)
+
+
+## The lines for a status's triggers, each with the unit-reaction wording of
+## describe_triggers (kept as a function of its own for status()).
 static func _status_trigger_lines(entry: Dictionary, def: Dictionary) -> Array[String]:
 	var lines: Array[String] = []
-	for trigger in def.get("triggers", []):
-		if typeof(trigger) != TYPE_DICTIONARY:
-			continue
-		var parts: Array[String] = []
-		for effect in trigger.get("effects", []):
-			var text: String = _trigger_effect_text(effect, entry)
-			if text != "":
-				parts.append(text)
-		if parts.is_empty():
-			continue
-		match str(trigger.get("on", "")):
-			"struck":
-				var who: String = "melee attackers" if int(trigger.get("reach", 0)) == 1 else "any attacker"
-				lines.append("Hits back at %s: %s" % [who, ", ".join(parts)])
-			"expire":
-				lines.append("When it runs out: " + ", ".join(parts))
+	for line in describe_triggers(def.get("triggers", []), entry):
+		lines.append(line)
 	return lines
-
-
-## One trigger effect in words, or "".
-static func _trigger_effect_text(effect: Dictionary, entry: Dictionary) -> String:
-	if typeof(effect) != TYPE_DICTIONARY:
-		return ""
-	match str(effect.get("op", "")):
-		"damage":
-			var kind: String = DamageType.display_name(str(effect.get("type", "physical"))).to_lower()
-			var amount = effect.get("amount", 0)
-			if typeof(amount) == TYPE_DICTIONARY and str(amount.get("from", "")) == "event.damage":
-				return "reflects %d%% of the damage taken as %s" % [int(amount.get("pct", 100)), kind]
-			if typeof(amount) == TYPE_DICTIONARY and str(amount.get("pct_of", "")) == "target.max_hp" \
-					and float(amount.get("value", 0)) >= 100.0:
-				return "it dies (%s damage)" % kind
-			return "%d %s damage" % [_amount_for(effect, entry), kind]
-		"status":
-			if str(effect.get("action", "")) != "apply":
-				return ""
-			var give: String = str(effect.get("status", "")).replace("_", " ")
-			var turns: int = int(effect.get("duration", 1))
-			var text: String = "%s (%d turn%s)" % [give, turns, "" if turns == 1 else "s"]
-			if effect.has("chance") and float(effect["chance"]) < 100.0:
-				text = "%d%% chance of %s" % [roundi(float(effect["chance"])), text]
-			return text
-		"summon":
-			return "a %s emerges" % str(effect.get("as", "")).replace("_", " ")
-	return ""
 
 
 ## One line per aura the status emits, read from auras.json through
@@ -395,21 +751,29 @@ static func _status_spread_line(spread: Dictionary) -> String:
 	return "Can spread to %s (%d%% chance each turn)" % [where, roundi(chance)]
 
 
-## One tooltip line for a status's resistance key: "Immune to fire",
-## "+25% physical resistance", "-50% ice resistance". `key` may be a scope —
-## `all` reads as "all damage", `magic` as "magic damage".
-static func _resistance_bullet(key: String, amount: float) -> String:
-	var what: String
-	match key:
-		"all":
-			what = "all damage"
-		"magic":
-			what = "magic damage"
-		_:
-			what = DamageType.display_name(key).to_lower()
-	if amount >= Resistance.DECLARED_IMMUNITY:
-		return "Immune to %s" % what
-	return "%+d%% %s resistance" % [int(amount), what]
+# ============================================
+# LASTING DAMAGE (party screen)
+# ============================================
+
+## One line listing a character's lasting damage (`damaged_values`) and what
+## clears it: "Focus −2 (until full rest or White magic 5)". Entries on the
+## same value with the same cure are added together. Returns "" when the
+## character has none, so the party screen shows no line at all.
+static func lasting_damage_line(character: Dictionary) -> String:
+	var parts: Array[String] = []
+	var totals: Dictionary = {}   # "label|until" -> amount, in first-seen order
+	for entry in character.get("damaged_values", []):
+		if typeof(entry) != TYPE_DICTIONARY:
+			continue
+		var value: String = str(entry.get("value", ""))
+		var label: String = value.get_slice(".", 1).replace("_", " ").capitalize()
+		var until: String = describe_cleared_by(entry.get("cleared_by", []), value)
+		var key: String = "%s|%s" % [label, until]
+		totals[key] = float(totals.get(key, 0.0)) + float(entry.get("amount", 0))
+	for key in totals:
+		parts.append("%s %s%s (until %s)" % [str(key).get_slice("|", 0), MINUS,
+			_num(float(totals[key])), str(key).get_slice("|", 1)])
+	return "; ".join(parts)
 
 
 # ============================================

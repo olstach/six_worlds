@@ -3236,6 +3236,17 @@ func _create_party_card(character: Dictionary) -> PanelContainer:
 	var current_stamina: int = derived.get("current_stamina", max_stamina)
 	bars_row.add_child(_create_stat_bar("ST", current_stamina, max_stamina, Color(0.9, 0.75, 0.2)))
 
+	# Lasting damage (a curse that lowered Focus, say) and what clears it. A
+	# character with none gets no line at all.
+	var lasting: String = TooltipText.lasting_damage_line(character)
+	if lasting != "":
+		var lasting_label := Label.new()
+		lasting_label.name = "LastingDamage"
+		lasting_label.text = lasting
+		lasting_label.add_theme_font_size_override("font_size", 11)
+		lasting_label.add_theme_color_override("font_color", Color(0.85, 0.5, 0.4))
+		vbox.add_child(lasting_label)
+
 	# Action buttons row
 	var btn_row := HBoxContainer.new()
 	btn_row.add_theme_constant_override("separation", 8)

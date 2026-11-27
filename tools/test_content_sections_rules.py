@@ -1,5 +1,5 @@
 # tools/test_content_sections_rules.py -- Task 5c: skills, perks, spells, statuses
-import json, os, shutil, sys, tempfile, unittest
+import json, os, re, shutil, sys, tempfile, unittest
 from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from content import jsonio, mdformat, sync
@@ -106,6 +106,40 @@ class RulesRoundTrip(unittest.TestCase):
         self.assertEqual(statuses.group_of({"categories": ["magical"],
                                             "polarity": "negative"}), "negative")
         self.assertEqual(statuses.group_of({"polarity": "positive"}), "positive")
+
+    def test_status_context_line_is_worded_from_the_fields(self):
+        """Task 7: the line is built from the new fields, as the tooltip words
+        them (a stat buff, a control with flags, damage over time, a
+        retaliation and two statuses named for a number)."""
+        rows = {s["name"]: s for s in
+                jsonio.DataSet.load(ROOT).get(statuses.FILE)["statuses"]}
+        ctx = {n: statuses._context(rows[n]) for n in
+               ["Hasted", "Stunned", "Burning", "Lightning_Form",
+                "Finesse_Plus_2", "Fire_Resistance_25", "Armor_Debuff_50"]}
+        self.assertEqual(ctx["Hasted"],
+                         "positive \u00b7 spellpower \u00b7 +5 initiative \u00b7 +2 movement")
+        self.assertEqual(ctx["Armor_Debuff_50"],
+                         "negative \u00b7 spellpower \u00b7 \u221220 armor")
+        for want in ["negative \u00b7 turns 1", "cannot act", "skips next turn",
+                     "save constitution"]:
+            self.assertIn(want, ctx["Stunned"])
+        self.assertIn("5 fire damage (or the spell's value) at the start of each turn",
+                      ctx["Burning"])
+        self.assertIn("when struck in melee: 10 lightning damage"
+                      " to the attacker (plus the spell's value), 30% chance of Stunned (1 turn) on the attacker",
+                      ctx["Lightning_Form"])
+        self.assertIn("immune to lightning", ctx["Lightning_Form"])
+        self.assertIn("+2 Finesse", ctx["Finesse_Plus_2"])
+        self.assertIn("fire resistance +25%", ctx["Fire_Resistance_25"])
+
+    def test_every_status_has_a_context_line_and_every_flag_words(self):
+        rows = jsonio.DataSet.load(ROOT).get(statuses.FILE)["statuses"]
+        for s in rows:
+            self.assertTrue(statuses._context(s), s["name"])
+        vocab = (ROOT / "scripts/effects/effect_vocab.gd").read_text(encoding="utf-8")
+        block = vocab.split("const FLAGS: Array[String] = [", 1)[1].split("]", 1)[0]
+        for flag in re.findall(r'"([a-z_0-9]+)"', block):
+            self.assertIn(flag, statuses.FLAG_LABELS, flag)
 
     def test_statuses_cover_every_status(self):
         ds = jsonio.DataSet.load(ROOT)

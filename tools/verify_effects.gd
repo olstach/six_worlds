@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 87
+const EXPECTED_CHECKS: int = 90
 
 var grid: CombatGrid
 
@@ -137,6 +137,11 @@ func _ready() -> void:
 	_check_borrowed_value()
 	_check_no_legacy_status_keys()
 	_check_behaviour_numbers_match_today()
+
+	# Stage 2b, Task 7: the stage-1 carry-overs.
+	_check_status_op_reports_resisted()
+	_check_multi_school_cleared_by()
+	_check_breakdown_lists_holds()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -2709,4 +2714,72 @@ func _check_behaviour_numbers_match_today() -> void:
 			or str(save.get("when", "")) != "turn_start":
 		_fail("Stunned's save is %s" % [save])
 	_cleanup([u, smith, mirror, healer, doomed])
+	_done()
+
+
+# ── Stage 2b Task 7: carry-overs from stage 1 ────────────────────────────────
+
+## The `status` op says applied:false, with a reason, when the status was
+## resisted or there was nothing to remove (it used to say true either way).
+func _check_status_op_reports_resisted() -> void:
+	var ward := _with_test_status({"polarity": "positive", "flags": ["immune:control"]})
+	var hold := _with_test_status({"polarity": "negative", "categories": ["control"]})
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(5, 5))
+	var apply: Array = [{"op": "status", "action": "apply", "status": hold, "duration": 2}]
+	var landed: Array[Dictionary] = EffectResolver.resolve(apply, _ctx(caster, u))
+	if landed.size() != 1 or not landed[0].applied or not u.has_status(hold):
+		_fail("an unresisted status should log applied:true, got %s" % [landed])
+	u.status_effects.clear()
+	CombatManager._apply_status_effect(u, ward, 3)
+	var blocked: Array[Dictionary] = EffectResolver.resolve(apply, _ctx(caster, u))
+	if blocked.size() != 1 or blocked[0].applied or str(blocked[0].reason) != "resisted":
+		_fail("a resisted status should log applied:false 'resisted', got %s" % [blocked])
+	if u.has_status(hold):
+		_fail("the status was supposed to be resisted")
+	var removed: Array[Dictionary] = EffectResolver.resolve([{"op": "status", "action": "remove",
+		"select": {"names": ["__no_such_status__"]}}], _ctx(caster, u))
+	if removed.size() != 1 or removed[0].applied or str(removed[0].reason) == "":
+		_fail("removing nothing should log applied:false with a reason, got %s" % [removed])
+	_cleanup([caster, u])
+	_done()
+
+
+## A spell with several schools keeps all of them, and a heal clears damage
+## whose `cleared_by` names ANY of them (it used to test only the first).
+func _check_multi_school_cleared_by() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	_join_party(u)
+	var spell := {"level": 3, "schools": ["White", "Water"]}
+	var ctx := EffectContext.for_spell(caster, u, "test_heal", spell)
+	if ctx.school != "white" or ",".join(ctx.schools) != "white,water":
+		_fail("for_spell kept schools %s (first %s), wanted white and water" % [ctx.schools, ctx.school])
+	u.character_data["damaged_values"] = [
+		{"value": "skill.swords", "amount": 1, "source": "a",
+			"cleared_by": [{"heal": {"school": "water", "min_level": 2}}]},
+		{"value": "skill.maces", "amount": 1, "source": "b",
+			"cleared_by": [{"heal": {"school": "fire", "min_level": 1}}]}]
+	EffectResolver.resolve([{"op": "heal", "amount": 5}], ctx)
+	var left: Array = u.character_data.get("damaged_values", [])
+	if left.size() != 1 or str(left[0].source) != "b":
+		_fail("a White+Water heal should clear the water entry only, left %s" % [left])
+	_leave_party(u)
+	_cleanup([caster, u])
+	_done()
+
+
+## Resistance.breakdown() lists the holds a status places, by the status's name.
+func _check_breakdown_lists_holds() -> void:
+	var warded := _with_test_status({"polarity": "positive", "while_active": [
+		{"op": "modify", "value": "resist.fire", "mode": "fortify", "amount": 25}]})
+	var u := _make_unit(Vector2i(5, 5))
+	CombatManager._apply_status_effect(u, warded, 3)
+	var found: bool = false
+	for part in Resistance.breakdown(u, "fire"):
+		if str(part.source) == warded and is_equal_approx(float(part.amount), 25.0):
+			found = true
+	if not found:
+		_fail("breakdown does not list the hold by status name: %s" % [Resistance.breakdown(u, "fire")])
+	_cleanup([u])
 	_done()

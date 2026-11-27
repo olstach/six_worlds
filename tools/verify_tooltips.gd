@@ -15,7 +15,7 @@ extends Node
 
 var failures: int = 0
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 15
+const EXPECTED_CHECKS: int = 18
 
 
 func _ready() -> void:
@@ -35,6 +35,10 @@ func _ready() -> void:
 	_check_set_bonus_text_matches_the_stats_added()
 	_check_popups_are_centred_over_the_unit()
 	_check_a_critical_main_hit_says_crit()
+	# Stage 2b Task 7: every status line is worded from the new fields.
+	_check_status_tooltip_from_fields()
+	_check_every_flag_has_words()
+	_check_party_line_lists_lasting_damage()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway"
@@ -129,7 +133,7 @@ func _check_non_ritual_items_say_nothing() -> void:
 func _check_a_status_tooltip_reads_its_definition() -> void:
 	var text: String = TooltipText.status("Burning", {"status": "Burning", "duration": 2, "value": 0})
 	_sample("Burning, 2 turns left", text)
-	for want in ["Burning (debuff)", "2 turns remaining", "5 fire damage each turn", "Cured by:"]:
+	for want in ["Burning (debuff)", "2 turns remaining", "5 fire damage at the start of each turn", "Cured by:"]:
 		if not want in text:
 			_fail("the Burning tooltip does not say '%s'" % want)
 	var stunned: String = TooltipText.status("Stunned", {"status": "Stunned", "duration": 1})
@@ -301,11 +305,11 @@ func _check_hazard_text_and_rule_share_one_table() -> void:
 func _check_status_tooltip_names_retaliation_aura_spread() -> void:
 	var lightning: String = TooltipText.status("Lightning_Form", {"status": "Lightning_Form", "duration": 2})
 	_sample("Lightning Form (retaliation)", lightning)
-	for want in ["Hits back at melee attackers", "10 lightning damage", "30% chance of Stunned"]:
+	for want in ["When struck in melee", "10 lightning damage", "30% chance of Stunned"]:
 		if not want in lightning:
 			_fail("the Lightning Form tooltip does not say '%s'" % want)
 	var mirror: String = TooltipText.status("Pain_Mirror", {"status": "Pain_Mirror", "duration": 2})
-	if not "any attacker" in mirror or not "reflects 50%" in mirror:
+	if not "When struck: reflects 50%" in mirror:
 		_fail("the Pain Mirror tooltip does not explain its reflection: %s" % mirror)
 	var soothing: String = TooltipText.status("Soothing_Presence", {"status": "Soothing_Presence", "duration": 2})
 	_sample("Soothing Presence (aura)", soothing)
@@ -319,7 +323,7 @@ func _check_status_tooltip_names_retaliation_aura_spread() -> void:
 	for sname in CombatManager._status_effects:
 		var def: Dictionary = CombatManager._status_effects[sname]
 		var text: String = TooltipText.status(sname, {"status": sname, "duration": 2}, def)
-		if _has_trigger(def, "struck") and not "Hits back" in text:
+		if _has_trigger(def, "struck") and not "When struck" in text:
 			_fail("%s declares retaliation but its tooltip does not say so" % sname)
 		if def.has("aura") and not "Aura:" in text:
 			_fail("%s declares an aura but its tooltip does not say so" % sname)
@@ -529,3 +533,78 @@ func _has_trigger(def: Dictionary, on: String) -> bool:
 		if str(t.get("on", "")) == on:
 			return true
 	return false
+
+
+## Stage 2b Task 7: the status tooltip is built from the status's fields
+## (describe_effects / describe_flags / describe_periodic / describe_triggers),
+## one example of each kind, and every status builds a non-empty tooltip.
+func _check_status_tooltip_from_fields() -> void:
+	var cases: Dictionary = {
+		# a stat buff
+		"Hasted": ["+5 initiative", "+2 movement"],
+		# a control with flags
+		"Stunned": ["Cannot act", "Skips next turn", "Save: Constitution"],
+		# damage over time
+		"Burning": ["5 fire damage at the start of each turn"],
+		# a retaliation
+		"Lightning_Form": ["When struck in melee", "10 lightning damage to the attacker",
+			"30% chance of Stunned (1 turn) on the attacker", "Immune to lightning",
+			"Physical resistance +50%"],
+		# statuses named for a number (spec section 7)
+		"Finesse_Plus_2": ["+2 Finesse"],
+		"Fire_Resistance_25": ["Fire resistance +25%"],
+	}
+	for sname in cases:
+		var text: String = TooltipText.status(sname, {"status": sname, "duration": 2})
+		_sample("%s (from fields)" % sname, text)
+		for want in cases[sname]:
+			if not want in text:
+				_fail("the %s tooltip does not say '%s'" % [sname, want])
+	# In the abstract (no live entry) a borrowed number says where it comes from.
+	var abstract: String = TooltipText.status("Burning")
+	if not "5 fire damage (or the spell's value) at the start of each turn" in abstract:
+		_fail("an abstract Burning should say its 5 is a default: %s" % abstract)
+	for sname in CombatManager._status_effects:
+		if TooltipText.status(sname, {"status": sname, "duration": 2}).strip_edges() == "":
+			_fail("%s has an empty tooltip" % sname)
+	# The helpers are reusable on their own, for spells in stage 3.
+	var lines: PackedStringArray = TooltipText.describe_effects([
+		{"op": "damage", "amount": 3, "type": "piercing", "to": "source"}], {}, "struck")
+	if lines.size() != 1 or lines[0] != "3 piercing damage to the attacker":
+		_fail("describe_effects words a struck retaliation as %s" % [lines])
+	var flags: PackedStringArray = TooltipText.describe_flags(["cannot_move", "immune:Charmed"])
+	if flags != PackedStringArray(["Cannot move", "Immune to Charmed"]):
+		_fail("describe_flags gave %s" % [flags])
+	_done()
+
+
+## Every name in EffectVocab.FLAGS has its own words in TooltipText.FLAG_LABELS,
+## and the words are not empty.
+func _check_every_flag_has_words() -> void:
+	for flag in EffectVocab.FLAGS:
+		if not TooltipText.FLAG_LABELS.has(flag):
+			_fail("flag '%s' has no words in TooltipText.FLAG_LABELS" % flag)
+		elif str(TooltipText.FLAG_LABELS[flag]).strip_edges() == "":
+			_fail("flag '%s' has empty words" % flag)
+	for flag in TooltipText.FLAG_LABELS:
+		if not flag in EffectVocab.FLAGS:
+			_fail("FLAG_LABELS has '%s', which is not a flag" % flag)
+	_done()
+
+
+## The party screen's line for lasting damage, from a scratch character (never
+## a save): what was lost and what clears it, and no line when nothing is lost.
+func _check_party_line_lists_lasting_damage() -> void:
+	var scratch: Dictionary = CharacterSystem.create_blank_character()
+	if TooltipText.lasting_damage_line(scratch) != "":
+		_fail("a character with no lasting damage should get no line")
+	scratch["damaged_values"] = [
+		{"value": "attribute.focus", "amount": 2, "source": "curse",
+			"cleared_by": [{"rest": "full"}, {"heal": {"school": "white", "min_level": 5}}]},
+		{"value": "skill.swords", "amount": 1, "source": "wound", "cleared_by": []}]
+	var line: String = TooltipText.lasting_damage_line(scratch)
+	_sample("party screen line", line)
+	for want in ["Focus \u22122 (until full rest or White magic 5)", "Swords \u22121 (until full rest or a restore)"]:
+		if not want in line:
+			_fail("the party line '%s' does not say '%s'" % [line, want])
+	_done()

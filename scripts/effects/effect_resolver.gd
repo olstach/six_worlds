@@ -314,7 +314,7 @@ static func _do_heal(ctx: EffectContext, unit: Node, m: float) -> Dictionary:
 		return _entry("heal", unit, false, "cannot be healed", 0.0)
 	unit.heal(int(m))
 	if ValuePaths.is_party_unit(unit) and ctx.container_kind != "status":
-		_clear_damage(unit, "heal", {"school": ctx.school, "level": ctx.level})
+		_clear_damage(unit, "heal", {"school": ctx.all_schools(), "level": ctx.level})
 	return _entry("heal", unit, true, "", m)
 
 
@@ -376,8 +376,15 @@ static func _do_status(effect: Dictionary, ctx: EffectContext, unit: Node) -> Di
 		else:
 			duration = CombatManager._calculate_status_duration(ctx.caster,
 				{"duration": effect.get("duration", "spellpower")}, ctx.power)
+		# _apply_status_effect answers false when the status was resisted (an
+		# immunity, a talisman, gear, an affliction resistance). The log must
+		# say so, or a spell's report claims a status that never landed.
+		var landed: bool = false
 		for i in maxi(1, int(effect.get("stacks", 1))):
-			CombatManager._apply_status_effect(unit, str(effect["status"]), duration, 0, ctx.caster)
+			if CombatManager._apply_status_effect(unit, str(effect["status"]), duration, 0, ctx.caster):
+				landed = true
+		if not landed:
+			return _entry("status", unit, false, "resisted", 0.0)
 		return _entry("status", unit, true, "", float(duration))
 	# Any other action: today's status_ops shape is {op, select, from, to, on}.
 	# The recipient plays "target", so `on` and `from` default to it.
@@ -387,7 +394,14 @@ static func _do_status(effect: Dictionary, ctx: EffectContext, unit: Node) -> Di
 		op_spec.erase(shared)
 	var result: Dictionary = {"effects_applied": []}
 	CombatManager._apply_status_op(ctx.caster, unit, op_spec, result)
-	return _entry("status", unit, true, "", float(result.effects_applied.size()))
+	# Each op reports how much it did: `removed` for a remove, `count` for the
+	# rest. Nothing done means nothing matched, which the log must not call applied.
+	var done: int = 0
+	for logged in result.effects_applied:
+		done += int(logged.get("removed", logged.get("count", 0)))
+	if done <= 0:
+		return _entry("status", unit, false, "nothing to remove", 0.0)
+	return _entry("status", unit, true, "", float(done))
 
 
 ## Forced movement through CombatManager: push and pull via _apply_push (as a

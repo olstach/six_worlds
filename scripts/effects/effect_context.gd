@@ -37,8 +37,12 @@ var source_categories: Array = []
 var power: int = 0
 ## The spell's level; a heal passes it to clear_damage ({"heal": {min_level}}).
 var level: int = 0
-## The spell's school ("white", "fire" ...), lower case.
+## The spell's FIRST school ("white", "fire" ...), lower case.
 var school: String = ""
+## Every school the spell is tagged with, lower case. A multi-school heal
+## (White + Water) clears damage whose `cleared_by` names any of them. Empty
+## means "just `school`"; use all_schools() to read it.
+var schools: Array[String] = []
 
 ## Save rolls already made for this container, one per recipient, keyed by the
 ## recipient's instance id. Empty until the first effect with a `save` rolls.
@@ -87,6 +91,16 @@ func position() -> Vector2i:
 	return NO_POS
 
 
+## Every school of the container: `schools`, or [school] when only that was set.
+func all_schools() -> Array[String]:
+	if not schools.is_empty():
+		return schools
+	var only: Array[String] = []
+	if school != "":
+		only.append(school)
+	return only
+
+
 ## The save roll already made against `unit`, or {} if none has been rolled.
 ## A roll is SaveSystem.roll()'s dictionary: {success, roll, total, dc, margin}.
 func save_for(unit: Node) -> Dictionary:
@@ -108,6 +122,9 @@ static func for_spell(caster: Node, target: Node, spell_id: String, spell: Dicti
 	ctx.level = int(spell.get("level", 0))
 	var schools: Array = spell.get("schools", [])
 	ctx.school = String(schools[0]).to_lower() if not schools.is_empty() else ""
+	# Keep them all: a heal tagged White + Water clears either school's damage.
+	for each_school in schools:
+		ctx.schools.append(String(each_school).to_lower())
 	if caster != null and caster.has_method("get_spellpower"):
 		ctx.power = CombatManager._calculate_spell_bonus(caster, spell)
 	return ctx

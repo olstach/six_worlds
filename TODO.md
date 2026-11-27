@@ -2436,7 +2436,23 @@ Moving content onto one shared effect language. The design is at
   - [ ] **Stage 2b, statuses and auras/zones.** Next: move statuses and
         auras/zones onto the resolver, carrying the seven extensions in spec
         10.3.
-  - **Carried into stage 2b** (things stage 1 found and left alone):
+  - **Carried from stage 1** (stage 2b task 7 ticked these; the rest move to stage 3):
+    - [x] ~~`Resistance.breakdown()` does not list effect holds.~~ *Done:
+      the holds were already listed by source name (the status's name) when
+      statuses moved over; `breakdown_lists_holds` in `verify_effects` now
+      keeps it that way.*
+    - [x] ~~The `status` op logs `applied: true` even when the status was
+      resisted or there was nothing to remove.~~ *Done 2026-11-27.*
+      `CombatManager._apply_status_effect` now answers whether the status
+      landed, and `EffectResolver._do_status` logs `applied: false` with the
+      reason `resisted` or `nothing to remove`.
+    - [x] ~~A party-screen line showing lasting damage.~~ *Done 2026-11-27.*
+      Each party card lists `damaged_values` with what clears it
+      (`Focus −2 (until full rest or White magic 5)`); no damage, no line.
+    - [x] ~~`EffectContext.for_spell` keeps only the first school.~~ *Done
+      2026-11-27.* It keeps all of them (`schools`, with `all_schools()`),
+      and a heal clears damage whose `cleared_by` names any one.
+  - **Carried into stage 3** (things stage 1 found and left alone):
     - Ritual's `status_save_dc_bonus` is not applied to resolver saves, and
       the save has no `dc_stat` (spells default to Focus, skills to Strength).
     - `kill` does not give the kill reward, so a spell's `on_kill` would be
@@ -2444,20 +2460,12 @@ Moving content onto one shared effect language. The design is at
       the old spell code finishes off.
     - Nothing sets `target_pos` yet, so ground-aimed spells must set it
       when they move over.
-    - `Resistance.breakdown()` does not list effect holds, so tooltips will
-      not show them.
-    - The `status` op logs `applied: true` even when the status was resisted
-      or there was nothing to remove.
     - A lasting-damage entry marked `held` would survive into a save made
       mid-combat. If mid-fight saving is added, loading must clear the flag.
     - Push slams from the `move` op are always physical damage; spells use
       their own damage type.
     - Zone `aoe` and `duration` shapes are not validated yet.
-    - A party-screen line showing lasting damage belongs to stage 2 (spec
-      section 4.2).
     - A damage-type split truncates each part, losing up to 1 point.
-    - `EffectContext.for_spell` keeps only the first school, so a multi-school
-      heal matches `cleared_by` on one school only.
 - [ ] **Perk normalization**: the ~175 hard-coded `has_perk` branches and the
       ~101 `combat_data` active perks, moved onto the same vocabulary. Olaf asks
       for this once effect normalization is finished; not before.

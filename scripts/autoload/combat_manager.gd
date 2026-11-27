@@ -5329,7 +5329,7 @@ func _check_talisman_status_immunity(unit: Node, status: String) -> bool:
 ## How a second application behaves is the status's `stacking.mode`: refresh
 ## (the longer duration wins), stack (one entry counts up) or independent (a
 ## new entry beside the old one, e.g. Burning).
-func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0, source: Node = null) -> void:
+func _apply_status_effect(unit: Node, status: String, duration: int, value: int = 0, source: Node = null) -> bool:
 	if not "status_effects" in unit:
 		unit.set("status_effects", [])
 
@@ -5339,13 +5339,13 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	if _check_talisman_status_immunity(unit, status):
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
-		return
+		return false
 
 	# --- Character perk immunity/resistance checks ---
 	if _check_perk_status_immunity(unit, status, source):
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
-		return
+		return false
 
 	# --- Equipment that simply says no ---
 	#
@@ -5358,7 +5358,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			% [unit.unit_name, status.replace("_", " ")])
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
-		return
+		return false
 
 	# --- Affliction resistance: a chance not to catch it at all ---
 	#
@@ -5373,7 +5373,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 		combat_log.emit("%s shrugs off the %s." % [unit.unit_name, affliction])
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
-		return
+		return false
 
 	# --- An `immune:<name | category | polarity>` flag on something it carries ---
 	#
@@ -5382,7 +5382,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	if StatusRules.immune_to(unit, status, def):
 		if unit.has_method("show_resisted_text"):
 			unit.show_resisted_text()
-		return
+		return false
 
 	# Kindled (Fire 1): Burning effects applied by the caster last 1 extra turn
 	if status == "Burning" and source != null and "character_data" in source:
@@ -5419,7 +5419,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 			_refresh_status_holds(unit, stacked)
 		if unit.has_method("_update_visuals"):
 			unit._update_visuals()
-		return
+		return true
 	if unit.has_status(status):
 		if stacking_mode != "independent":
 			# refresh: keep the longer duration
@@ -5433,7 +5433,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 					# Hard CC breaks concentration even on a refresh
 					if StatusRules.def_has_flag(def, "breaks_concentration"):
 						_interrupt_mantras(unit, "%s's concentration is broken by %s!" % [unit.unit_name, status])
-					return
+					return true
 
 	# The new entry. `id` names it wherever it leaves a mark (the holds its
 	# while_active places), `turns_active` counts the turns it has been on.
@@ -5476,6 +5476,7 @@ func _apply_status_effect(unit: Node, status: String, duration: int, value: int 
 	# Update visuals to show new status icon
 	if unit.has_method("_update_visuals"):
 		unit._update_visuals()
+	return true
 
 
 # ── The status container: one way in, one way out ───────────────────────────
