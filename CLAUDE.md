@@ -133,8 +133,10 @@ both are kept current; this section is only a summary.**
 - Character trait/quirk lists live in `character["traits"]` (traits.json);
   the old QuirkSystem/quirks.json are gone
 - Statuses, auras and zones in `statuses.json`/`auras.json`/`zones.json` are
-  effect lists (`while_active`, `periodic`, `triggers`, `stacking`, `upkeep`),
-  validated by `EffectVocab`, mirrored in `tools/effect_check.py`; see spec
+  effect lists, validated by `EffectVocab`, mirrored in `tools/effect_check.py`.
+  A status has `while_active`, `periodic`, `triggers`, `stacking` and `upkeep`;
+  an aura has `while_inside`; a zone has `while_inside`, `on_enter`,
+  `turn_start_inside`, `turn_end_inside` and `on_death_inside`. See spec
   `docs/superpowers/specs/2026-11-25-effect-normalization-design.md` 10.5
 - The crafting skill is `smithing` in code/data; races use `birth`
   terminology in UI code

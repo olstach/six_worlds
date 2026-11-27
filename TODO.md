@@ -2461,6 +2461,28 @@ Moving content onto one shared effect language. The design is at
         they bypass `cast_spell`.
       - `turn_start_inside` and `turn_end_inside` are built but no zone uses
         them, and `turn_end_inside` does not run on the skip_turn path.
+      - A `reflect` drops the trigger's other, non-intercept effects (the
+        `pending` ones). No status pairs `reflect` with another effect today
+        (Reflect and Magic_Mirror are reflect-only); run them after the
+        reflection when one does.
+      - A negative `aura_value` on a heal or damage aura would heal or hurt by
+        a negative amount. No item or perk gives one (the negatives are all
+        `initiative_debuff`, a modify); clamp it when stage 3 touches items.
+      - **Needs Olaf's ruling (changes numbers):** Risen Dead and the
+        Necromancer's raise halve `derived.max_hp`, but
+        `CombatUnit.init_as_enemy` reads the top-level `max_hp` that
+        EnemySystem copies, so the risen come back at full HP, not half. This
+        predates 2b. The fix is for `init_as_enemy` to read
+        `derived.max_hp`/`max_mana` and drop the top-level copies.
+      - Measure what reading a value costs: every getter runs
+        `AuraSystem.contributions()` twice (each walks every unit's gear,
+        statuses and perks), and affinity is now read through it for five
+        elements on every `update_derived_stats`, enemies included. Time one
+        AI turn of a 10-unit fight with an aura carrier; if slow, memoize
+        `emitted_by` per unit per turn or per status change.
+      - Map statuses (`overworld_statuses`) get ids only on load, and the id
+        counter restarts each launch. Nothing reads them yet, but carrying
+        map statuses into a fight must give them fresh `status:<n>` ids.
   - **Carried from stage 1** (stage 2b task 7 ticked these; the rest move to stage 3):
     - [x] ~~`Resistance.breakdown()` does not list effect holds.~~ *Done:
       the holds were already listed by source name (the status's name) when
@@ -2482,7 +2504,8 @@ Moving content onto one shared effect language. The design is at
       not moved: spell `duration` formulas, `casts`-style triggers authored
       in spells, and dispel moving onto `categories` (retiring `dispellable`
       and `dispel_methods`) are stage 3's.
-    - Ritual's `status_save_dc_bonus` is not applied to resolver saves, and
+    - Ritual's `status_save_dc_bonus` is not applied to tier-based resolver
+      saves (the fixed-`dc` saves of auras and zones add it), and
       the save has no `dc_stat` (spells default to Focus, skills to Strength).
     - `kill` does not give the kill reward, so a spell's `on_kill` would be
       lost when spells move over. It also skips bleeding-out units, which

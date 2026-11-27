@@ -392,9 +392,6 @@ func get_all_perk_ids() -> Array[String]:
 	return out
 
 
-## Every skill id known to the game, from skills.json.
-## Used when spending XP outside an archetype's priorities, so a character can
-## pick up something its build would never have chosen.
 ## The skill ids of one element ("fire" -> the seven fire skills), from
 ## skills.json. Used by the group value path `skills.element.<element>`.
 func get_skills_in_element(element: String) -> Array[String]:
@@ -414,6 +411,9 @@ func get_skills_in_category(category: String) -> Array[String]:
 	return out
 
 
+## Every skill id known to the game, from skills.json.
+## Used when spending XP outside an archetype's priorities, so a character can
+## pick up something its build would never have chosen.
 func get_all_skill_ids() -> Array[String]:
 	var out: Array[String] = []
 	for skill_id in _skill_elements:

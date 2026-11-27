@@ -651,7 +651,16 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
   stage 2b the old `*_on_expire` keys ran on any removal (cleansing Doomed
   killed, removing Infected burst); the rule is pinned in the doc comment on
   `CombatManager._end_status`.
-- Stack mode keeps one entry whose holds are multiplied by `stacks`.
+- Stack mode keeps one entry with a `stacks` count. Every magnitude resolved
+  in that status's context is multiplied by `stacks`
+  (`EffectResolver._scaled_magnitude`): its holds, and its `periodic` ticks
+  and trigger effects too.
+- `while_active` holds only `modify` effects on the carrier (no `to`, or
+  `to: "target"`), in a lasting mode, and never on `resource.` or `pressure.`
+  (those act once). No two of its effects may hold the same value, counting
+  group members (`attributes.all` and `attribute.strength` overlap): they
+  share the status's id, and one hold replaces another of the same source on
+  the same value. `validate_status` refuses all of these.
 - Building states: `stacking.grow {on, by, if?}`. The owner's trigger `on`
   adds `by` stacks up to `max`, and the holds are re-resolved. The first
   application is already 1 stack, so after three fire casts a state is at 4. `grow` needs
@@ -660,10 +669,29 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
   before `periodic`. The whole cost is checked first and taken only if it can
   be paid. If not, the status ends with reason `upkeep` (so its comedown, an
   `expire` trigger, runs). HP upkeep never takes a unit below 1.
+  An upkeep ending is an expiry in every way: `_on_status_expired` runs (the
+  Invisible stealth rule), and whatever its `expire` triggers apply is skipped
+  by that turn's ticks and countdown (`born_of_upkeep` in
+  `_process_status_effects`), so a comedown lasts as long as one fired by a
+  duration running out.
+- A unit that is bleeding out, or a decoy, only has its durations counted
+  down (`_tick_durations_only`): it pays no upkeep and runs no `turn_start`
+  triggers, so a state with upkeep stays up for free while its owner is down.
+- A dead carrier keeps its statuses and their holds until the fight ends (the
+  Task 3 ruling). The `death` reason in `STATUS_END_REASONS` is reserved; no
+  code ends a status with it yet.
 - The comedown needs no field: it is an `expire` trigger.
   `mantra_state_example` in `tools/verify_effects.gd` is the worked case.
 - The `magical` category mirrors `dispellable`.
 - Borrowed values gained `event.damage`, `add`, `round` and `min`.
+- A status's, aura's or zone's damage below 1 does nothing
+  (`EffectResolver.NO_ZERO_DAMAGE_KINDS`); a spell's still reaches
+  `apply_damage`, as in stage 1.
+- `to: "source"` names nobody once the source is dead.
+- A placed `move` (scatter, teleport ...) takes its `tiles` as its range.
+- `stat.magic_damage_taken` and `stat.physical_damage_taken` take `multiply`
+  only. A modify of `affinity.<el>` may not borrow or `pct_of` that same
+  affinity (it would read itself without end).
 - Pressure effects are refused for enemy-allegiance sheets. This is interim
   until stage 5.
 
@@ -682,6 +710,8 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
   `EffectResolver.recipients` (effect_resolver.gd) drops units that are not
   `_alive`; `CombatUnit.is_alive()` is false while bleeding out. An effect
   with no `to` hits `ctx.target` directly and is not filtered there.
+- A zone may not change `stat.max_hp`: placing, drifting or ending a zone
+  does not call `_refresh_aura_max_hp`, so `validate_zone` refuses it.
 
 **Tooling**
 

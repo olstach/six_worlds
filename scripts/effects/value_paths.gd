@@ -211,15 +211,6 @@ static func apply_scaling(unit: Node, value: String, base: float) -> float:
 	return base * factor
 
 
-## True when `unit` has a `set` hold on `value`. Resistance uses this to know a
-## declared number may cross the usual cap.
-static func has_set(unit: Node, value: String) -> bool:
-	for hold in holds_on(unit, value):
-		if hold.mode == "set":
-			return true
-	return false
-
-
 ## A copy of every hold on `value`, oldest first.
 static func holds_on(unit: Node, value: String) -> Array[Dictionary]:
 	var out: Array[Dictionary] = []
