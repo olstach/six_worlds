@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 96
+const EXPECTED_CHECKS: int = 100
 
 var grid: CombatGrid
 
@@ -150,6 +150,12 @@ func _ready() -> void:
 	_check_aura_breakdown_label()
 	_check_aura_affliction_resistance()
 	_check_aura_zone_validation()
+
+	# Stage 2b, Task 9: group targets, affinity and pressure as values.
+	_check_group_skill_hold()
+	_check_group_attributes_all()
+	_check_affinity_hold()
+	_check_pressure_modify()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -3004,4 +3010,132 @@ func _check_aura_zone_validation() -> void:
 	if EffectVocab.validate({"op": "status", "action": "apply", "status": "Confused",
 			"save": {"stat": "focus", "dc": 14, "tier": "hard"}}, "s").is_empty():
 		_fail("a save with both dc and tier is accepted")
+	_done()
+
+
+# ── Stage 2b, Task 9: group targets, affinity and pressure as values ─────────
+
+## fortify skills.element.fire 2 lifts each of the seven fire skills by 2, and
+## one release (one source id) lets them all go.
+func _check_group_skill_hold() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var ch: Dictionary = u.character_data
+	var fire: Array = PerkSystem.get_skills_in_element("fire")
+	if fire.size() != 7:
+		_fail("expected 7 fire skills, found %d" % fire.size())
+	var before: Dictionary = {}
+	for skill_id in fire:
+		before[skill_id] = CharacterSystem.get_effective_skill_level(ch, skill_id)
+	ValuePaths.add_hold(u, "skills.element.fire", "fortify", 2, "grp")
+	for skill_id in fire:
+		if CharacterSystem.get_effective_skill_level(ch, skill_id) != before[skill_id] + 2:
+			_fail("skills.element.fire +2 missed %s" % skill_id)
+	if CharacterSystem.get_effective_skill_level(ch, "swords") != 0:
+		_fail("a fire group hold leaked onto swords")
+	ValuePaths.release(u, "grp")
+	for skill_id in fire:
+		if CharacterSystem.get_effective_skill_level(ch, skill_id) != before[skill_id]:
+			_fail("one release did not remove the hold on %s" % skill_id)
+	if not u.effect_holds.is_empty():
+		_fail("holds left after releasing a group: %s" % [u.effect_holds])
+	# A category group reaches every skill of the category, and only those.
+	ValuePaths.add_hold(u, "skills.combat", "fortify", 1, "grp2")
+	if CharacterSystem.get_effective_skill_level(ch, "swords") != 1 \
+			or CharacterSystem.get_effective_skill_level(ch, "fire_magic") != 0:
+		_fail("skills.combat should lift swords and leave fire magic alone")
+	ValuePaths.release(u, "grp2")
+	_cleanup([u])
+	_done()
+
+
+## attributes.all moves all seven attributes together and releases together.
+func _check_group_attributes_all() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var ch: Dictionary = u.character_data
+	var before: Dictionary = {}
+	for attr in EffectVocab.ATTRIBUTES:
+		before[attr] = CharacterSystem.get_effective_attribute(ch, attr)
+	ValuePaths.add_hold(u, "attributes.all", "fortify", 3, "all")
+	for attr in EffectVocab.ATTRIBUTES:
+		if CharacterSystem.get_effective_attribute(ch, attr) != before[attr] + 3:
+			_fail("attributes.all +3 missed %s" % attr)
+	ValuePaths.release(u, "all")
+	for attr in EffectVocab.ATTRIBUTES:
+		if CharacterSystem.get_effective_attribute(ch, attr) != before[attr]:
+			_fail("release left %s changed" % attr)
+	if ch.has("attribute_bonuses"):
+		_fail("attribute_bonuses left behind after releasing attributes.all")
+	_cleanup([u])
+	_done()
+
+
+## affinity.earth +3 raises the earth total by 3 and touches no skill; set and
+## multiply work; the bought-level read (perk eligibility) ignores it.
+func _check_affinity_hold() -> void:
+	var u := _make_unit(Vector2i(5, 5))
+	var ch: Dictionary = u.character_data
+	var base: int = PerkSystem.calculate_element_affinity(ch, "earth")
+	var skills_before: Dictionary = ch["skills"].duplicate(true)
+	var other: int = PerkSystem.calculate_element_affinity(ch, "fire")
+	ValuePaths.add_hold(u, "affinity.earth", "fortify", 3, "aff")
+	if PerkSystem.calculate_element_affinity(ch, "earth") != base + 3:
+		_fail("affinity.earth +3: got %d, wanted %d"
+			% [PerkSystem.calculate_element_affinity(ch, "earth"), base + 3])
+	if PerkSystem.calculate_element_affinity(ch, "fire") != other:
+		_fail("an earth hold moved fire affinity")
+	if str(ch["skills"]) != str(skills_before):
+		_fail("affinity hold touched the skills")
+	for skill_id in PerkSystem.get_skills_in_element("earth"):
+		if ch.get("skill_bonuses", {}).get(skill_id, {}).has("effects"):
+			_fail("affinity hold wrote a skill bonus on %s" % skill_id)
+	if PerkSystem.calculate_element_affinity(ch, "earth", false) != base:
+		_fail("perk eligibility (bought levels) must ignore a temporary affinity hold")
+	ValuePaths.add_hold(u, "affinity.earth", "set", 12, "aff_set")
+	if PerkSystem.calculate_element_affinity(ch, "earth") != 12:
+		_fail("affinity.earth set 12 not applied")
+	ValuePaths.release(u, "aff_set")
+	ValuePaths.release(u, "aff")
+	if PerkSystem.calculate_element_affinity(ch, "earth") != base:
+		_fail("release did not restore earth affinity")
+	_cleanup([u])
+	_done()
+
+
+## pressure.fire fortify 5 raises a party unit's fire pressure; drain relieves
+## it; a character with no psychology state is refused without an error.
+func _check_pressure_modify() -> void:
+	var party := _make_unit(Vector2i(5, 5))
+	var foe := _make_unit(Vector2i(6, 5), CombatManager.Team.ENEMY)
+	foe.character_data["allegiance"] = "enemy"
+	var ctx := _ctx(party, party)
+	var mult: float = PsychologySystem._intensity_multiplier(party.character_data, "fire")
+	var before: float = float(party.character_data["emotional_pressure"]["fire"])
+	var up := {"op": "modify", "value": "pressure.fire", "mode": "fortify", "amount": 5}
+	var entries := EffectResolver.resolve([up], ctx)
+	if _applied(entries) != 1:
+		_fail("pressure fortify on a party unit was refused: %s" % [entries])
+	var after: float = float(party.character_data["emotional_pressure"]["fire"])
+	if absf((after - before) - 5.0 * mult) > 0.001:
+		_fail("fire pressure moved %s, wanted %s" % [after - before, 5.0 * mult])
+	var down := {"op": "modify", "value": "pressure.fire", "mode": "drain", "amount": 5}
+	EffectResolver.resolve([down], ctx)
+	if absf(float(party.character_data["emotional_pressure"]["fire"]) - before) > 0.001:
+		_fail("drain did not undo the fortify")
+	# No hold is kept, so no hold_source is needed (ctx has none).
+	if not party.effect_holds.is_empty():
+		_fail("pressure is instant but left a hold")
+	# An enemy sheet is refused with a reason.
+	var foe_before: float = float(foe.character_data["emotional_pressure"]["fire"])
+	var refused := EffectResolver.resolve([up], _ctx(party, foe))
+	if _applied(refused) != 0 or str(refused[0].get("reason", "")).is_empty():
+		_fail("pressure on an enemy must be refused with a reason: %s" % [refused])
+	if float(foe.character_data["emotional_pressure"]["fire"]) != foe_before:
+		_fail("a refused pressure effect still moved the enemy")
+	# A sheet with no psychology state at all is refused too.
+	foe.character_data.erase("emotional_pressure")
+	foe.character_data.erase("allegiance")
+	var bare := EffectResolver.resolve([up], _ctx(party, foe))
+	if _applied(bare) != 0:
+		_fail("pressure on a sheet with no psychology state must be refused")
+	_cleanup([party, foe])
 	_done()

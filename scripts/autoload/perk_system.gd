@@ -17,6 +17,7 @@ var _base_bonuses: Dictionary = {}     # skill_id -> base bonus table
 
 # Skill metadata loaded from skills.json
 var _skill_elements: Dictionary = {}   # skill_id -> element name
+var _skill_categories: Dictionary = {} # skill_id -> category (combat / magic / general)
 
 # Skill categories for special requirement checks
 const WEAPON_SKILLS: Array[String] = [
@@ -76,6 +77,7 @@ func _load_skills_data() -> void:
 		var skill_data = skills[skill_id]
 		var element = skill_data.get("element", "")
 		_skill_elements[skill_id] = element
+		_skill_categories[skill_id] = skill_data.get("category", "")
 
 		if not _element_skills.has(element):
 			_element_skills[element] = []
@@ -393,6 +395,25 @@ func get_all_perk_ids() -> Array[String]:
 ## Every skill id known to the game, from skills.json.
 ## Used when spending XP outside an archetype's priorities, so a character can
 ## pick up something its build would never have chosen.
+## The skill ids of one element ("fire" -> the seven fire skills), from
+## skills.json. Used by the group value path `skills.element.<element>`.
+func get_skills_in_element(element: String) -> Array[String]:
+	var out: Array[String] = []
+	for skill_id in _element_skills.get(element, []):
+		out.append(String(skill_id))
+	return out
+
+
+## The skill ids of one skills.json category ("magic", "combat", "general").
+## Used by the group value paths `skills.magic`, `skills.combat`, `skills.general`.
+func get_skills_in_category(category: String) -> Array[String]:
+	var out: Array[String] = []
+	for skill_id in get_all_skill_ids():
+		if str(_skill_categories.get(skill_id, "")) == category:
+			out.append(skill_id)
+	return out
+
+
 func get_all_skill_ids() -> Array[String]:
 	var out: Array[String] = []
 	for skill_id in _skill_elements:
@@ -653,6 +674,14 @@ func calculate_element_affinity(character: Dictionary, element: String,
 	## Calculate total affinity for an element.
 	## Includes skill levels in that element plus innate racial affinity bonus.
 	##
+	## AFFINITY AS A VALUE: an `affinity.<element>` hold (fortify, drain, set,
+	## multiply) is applied last, to the effective total, through
+	## ValuePaths.apply_to on the combat unit carrying this character. Holds
+	## live on the unit like `stat.` holds, so today they exist only while that
+	## unit is in a fight (persistent and world holds do not exist yet; when
+	## they do, this is the one place that reads them). The bought total
+	## (effective = false) never sees a hold: perks are not given for a boost.
+	##
 	## effective = true (the default, and what the affinity BONUSES use) adds
 	## each skill's EFFECTIVE level, so a +4 Fire magic hold is +4 Fire
 	## affinity. Levels are counted from 0, the same as the old raw reads: a
@@ -675,6 +704,11 @@ func calculate_element_affinity(character: Dictionary, element: String,
 	# Add innate racial affinity (e.g. Red Devil has fire: 5 from birth)
 	var racial = character.get("racial_affinity_bonuses", {})
 	total += racial.get(element, 0)
+
+	if effective:
+		var holder: Node = ValuePaths.unit_of(character)
+		if holder != null:
+			total = maxi(0, int(round(ValuePaths.apply_to(holder, "affinity." + element, float(total)))))
 
 	return total
 

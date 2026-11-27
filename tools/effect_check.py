@@ -83,6 +83,9 @@ MODES_PY = _gd_list(_vocab_src, "MODES")
 MODES_BY_NAMESPACE = _gd_dict_of_lists(_vocab_src, "MODES_BY_NAMESPACE")
 NAMESPACES = _gd_list(_vocab_src, "NAMESPACES")
 ATTRIBUTES = _gd_list(_vocab_src, "ATTRIBUTES")
+SKILL_GROUP_CATEGORIES = _gd_list(_vocab_src, "SKILL_GROUP_CATEGORIES")
+UNREADABLE_NAMESPACES = _gd_list(_vocab_src, "UNREADABLE_NAMESPACES")
+
 RESOURCES = _gd_list(_vocab_src, "RESOURCES")
 STATS = _gd_list(_vocab_src, "STATS")
 RESIST_GROUPS = _gd_list(_vocab_src, "RESIST_GROUPS")
@@ -730,7 +733,11 @@ def borrow_source_error(source):
         return ""
     prefix = source.split(".")[0]
     if prefix in BORROW_UNIT_PREFIXES and source.count(".") == 2:
-        msg = _value_path_error(source[len(prefix) + 1:])
+        inner = source[len(prefix) + 1:]
+        if inner.split(".")[0] in UNREADABLE_NAMESPACES:
+            return (f"cannot borrow from '{source}': a number cannot be read from a "
+                    "group or from pressure")
+        msg = _value_path_error(inner)
         return "" if not msg else f"borrowed from '{source}': {msg}"
     return (f"cannot borrow from '{source}' ({_j(BORROW_SOURCES)}, or "
             f"{'/'.join(BORROW_UNIT_PREFIXES)}.<value path>)")
@@ -760,6 +767,11 @@ def _validate_damage_type(t, where, errs):
 def _value_path_error(path):
     """Empty string when `path` is a valid value path, otherwise the reason."""
     parts = path.split(".")
+    # The one 3-word path: skills.element.<element>.
+    if len(parts) == 3 and parts[0] == "skills" and parts[1] == "element":
+        if parts[2] in ELEMENTS:
+            return ""
+        return f"unknown element '{parts[2]}' in '{path}' (approved: {_j(ELEMENTS)})"
     if len(parts) != 2:
         return f"value path '{path}' must look like namespace.name"
     ns, name = parts
@@ -779,6 +791,16 @@ def _value_path_error(path):
             return f"skills.json is not loaded, so '{path}' cannot be checked"
         if name not in SKILL_IDS:
             return f"unknown skill '{name}' in '{path}'"
+    elif ns == "skills":
+        if name not in SKILL_GROUP_CATEGORIES:
+            return (f"unknown skill group '{name}' in '{path}' (approved: "
+                    f"skills.element.<element>, {_j(SKILL_GROUP_CATEGORIES)})")
+    elif ns == "attributes":
+        if name != "all":
+            return f"unknown attribute group '{name}' in '{path}' (approved: attributes.all)"
+    elif ns in ("affinity", "pressure"):
+        if name not in ELEMENTS:
+            return f"unknown element '{name}' in '{path}' (approved: {_j(ELEMENTS)})"
     elif ns == "resist":
         if not (name in RESIST_GROUPS or name in DAMAGE_TYPES or name in AFFLICTIONS):
             return (f"unknown resist '{name}' in '{path}' (a damage type, an affliction, "
@@ -794,6 +816,8 @@ def _pct_of_error(source):
             if key in DERIVED:
                 return ""
             return f"pct_of '{source}': '{key}' is not a derived stat"
+    if source.split(".")[0] in UNREADABLE_NAMESPACES:
+        return f"pct_of '{source}': a number cannot be read from a group or from pressure"
     return _value_path_error(source)
 
 

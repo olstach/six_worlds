@@ -19,6 +19,15 @@ extends RefCounted
 ##   2. times the product of every multiply
 ##   3. the LAST-ADDED `set` replaces the result, if any set exists
 ##
+## GROUP TARGETS (`skills.element.<element>`, `skills.magic|combat|general`,
+## `attributes.all`) are not values of their own: add_hold() expands one into a
+## hold per member, all under the same source id, so one release() removes the
+## lot. expand() lists the members.
+##
+## `affinity.<element>` is held on the unit like a stat and read by
+## PerkSystem.calculate_element_affinity (see there); `pressure.<element>` is
+## instant and has no hold at all (EffectResolver pushes it to PsychologySystem).
+##
 ## Stage 1 wires `stat.`, `resist.`, `attribute.` and `skill.`. Holds take
 ## fortify and drain there; the persistent `damage` mode and its `restore` have
 ## their own homes, apply_damage_mode() and clear_damage(), further down.
@@ -46,6 +55,9 @@ static func add_hold(unit: Node, value: String, mode: String, amount: float,
 		push_error("ValuePaths.add_hold: unknown value path '%s'" % value)
 		return
 	var namespace_name: String = value.get_slice(".", 0)
+	if namespace_name == "pressure":
+		push_error("ValuePaths.add_hold: pressure is instant and keeps no hold")
+		return
 	var allowed: Array = EffectVocab.MODES_BY_NAMESPACE.get(namespace_name, [])
 	if not mode in allowed:
 		push_error("ValuePaths.add_hold: mode '%s' is not allowed for '%s' (allowed: %s)"
@@ -53,18 +65,55 @@ static func add_hold(unit: Node, value: String, mode: String, amount: float,
 		return
 	# `damage` and `restore` on attribute./skill. are not holds: they live on the
 	# character and are handled by apply_damage_mode() / clear_damage().
-	if mode in ["damage", "restore"] and namespace_name in ["attribute", "skill"]:
+	if mode in ["damage", "restore"] and namespace_name in ["attribute", "skill", "skills", "attributes"]:
 		push_error("ValuePaths.add_hold: mode '%s' on '%s' is not a hold; use apply_damage_mode() or clear_damage()"
 			% [mode, value])
 		return
 	if not "effect_holds" in unit:
 		push_error("ValuePaths.add_hold: %s has no effect_holds" % unit)
 		return
-	_remove(unit, value, source_id)
-	# Appended last, so a later `set` beats an earlier one.
-	unit.effect_holds.append({"value": value, "mode": mode, "amount": amount,
-		"source_id": source_id})
-	_after_change(unit, [value])
+	# A group is one hold per member under the one source id.
+	var members: Array[String] = expand(value)
+	for member in members:
+		_remove(unit, member, source_id)
+		# Appended last, so a later `set` beats an earlier one.
+		unit.effect_holds.append({"value": member, "mode": mode, "amount": amount,
+			"source_id": source_id})
+	_after_change(unit, members)
+
+
+## The values a path stands for: a group path lists its members
+## ("attributes.all" -> the seven "attribute.x"; "skills.element.fire" -> the
+## fire "skill.x"; "skills.magic" -> every magic-category skill), any other
+## path lists itself.
+static func expand(value: String) -> Array[String]:
+	var out: Array[String] = []
+	var parts: PackedStringArray = value.split(".")
+	if parts[0] == "attributes" and parts.size() == 2:
+		for attr in EffectVocab.ATTRIBUTES:
+			out.append("attribute." + attr)
+	elif parts[0] == "skills" and parts.size() == 3 and parts[1] == "element":
+		for skill_id in PerkSystem.get_skills_in_element(parts[2]):
+			out.append("skill." + skill_id)
+	elif parts[0] == "skills" and parts.size() == 2:
+		for skill_id in PerkSystem.get_skills_in_category(parts[1]):
+			out.append("skill." + skill_id)
+	else:
+		out.append(value)
+	return out
+
+
+## The combat unit whose sheet IS `character` (the very same dictionary), or
+## null when it is not in a fight. Holds live on units, so a reader that has
+## only a sheet (PerkSystem.calculate_element_affinity) finds its holder here.
+static func unit_of(character: Dictionary) -> Node:
+	if CombatManager == null:
+		return null
+	for unit in CombatManager.all_units:
+		if is_instance_valid(unit) and "character_data" in unit \
+				and is_same(unit.character_data, character):
+			return unit
+	return null
 
 
 ## Remove every hold that `source_id` placed, on any value.
@@ -91,7 +140,8 @@ static func release_all_combat(unit: Node) -> void:
 	var touched: Array[String] = []
 	for hold in unit.effect_holds:
 		var v: String = str(hold.value)
-		if (v.begins_with("attribute.") or v.begins_with("skill.") or v == "stat.max_hp") \
+		if (v.begins_with("attribute.") or v.begins_with("skill.") or v.begins_with("affinity.")
+				or v == "stat.max_hp") \
 				and not v in touched:
 			touched.append(v)
 	unit.effect_holds.clear()
@@ -302,6 +352,10 @@ static func _after_change(unit: Node, values: Array) -> void:
 			changed = true
 		elif v.begins_with("skill."):
 			_refresh_skill(unit, v.get_slice(".", 1))
+			changed = true
+		elif v.begins_with("affinity."):
+			# Nothing is written to the sheet: calculate_element_affinity reads
+			# the hold. The derived stats the affinity pays out must be redone.
 			changed = true
 	if changed:
 		refresh_character(unit)

@@ -259,6 +259,41 @@ class EffectVocabTests(unittest.TestCase):
             if not k.startswith("_"):
                 self.assertEqual(check_zone(v, k), [], k)
 
+    # ── Group targets, affinity and pressure (Task 9) ───────────────────────
+    def _mod(self, value, mode="fortify", amount=2):
+        return check_effect({"op": "modify", "value": value, "mode": mode, "amount": amount}, "t")
+
+    def test_group_targets(self):
+        for v in ["skills.element.fire", "skills.element.space", "skills.magic",
+                  "skills.combat", "skills.general", "attributes.all"]:
+            for mode in ("fortify", "drain", "damage"):
+                self.assertEqual(self._mod(v, mode), [], (v, mode))
+        for v in ["skills.element.plasma", "skills.element", "skills.element.fire.x",
+                  "skills.wizardry", "attributes.some", "attributes.strength",
+                  "attributes.all.x"]:
+            self.assertNotEqual(self._mod(v), [], v)
+        for mode in ("set", "multiply", "absorb"):
+            self.assertNotEqual(self._mod("skills.magic", mode), [], mode)
+
+    def test_affinity_value(self):
+        for el in ["earth", "fire", "water", "air", "space"]:
+            for mode in ("fortify", "drain", "set", "multiply"):
+                self.assertEqual(self._mod("affinity." + el, mode), [], (el, mode))
+        self.assertNotEqual(self._mod("affinity.plasma"), [])
+        self.assertNotEqual(self._mod("affinity.fire", "damage"), [])
+
+    def test_pressure_value(self):
+        for mode in ("fortify", "drain"):
+            self.assertEqual(self._mod("pressure.fire", mode, 5), [], mode)
+        self.assertNotEqual(self._mod("pressure.plasma"), [])
+        for mode in ("set", "multiply", "damage", "restore"):
+            self.assertNotEqual(self._mod("pressure.fire", mode), [], mode)
+
+    def test_groups_and_pressure_cannot_be_borrowed(self):
+        for src in ["skills.magic", "attributes.all", "pressure.fire"]:
+            e = {"op": "heal", "amount": {"pct_of": src, "value": 50}}
+            self.assertNotEqual(check_effect(e, "t"), [], src)
+
 
 STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",
                   "categories": ["control"], "scope": "combat",

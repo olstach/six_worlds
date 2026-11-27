@@ -326,6 +326,36 @@ static func _do_modify(effect: Dictionary, ctx: EffectContext, unit: Node, m: fl
 	var ns: String = value.get_slice(".", 0)
 	var name: String = value.get_slice(".", 1)
 
+	# Pressure is instant and has no hold: it goes straight to PsychologySystem.
+	if ns == "pressure":
+		return _do_pressure(unit, name, mode, m)
+
+	# A group target is its members, one after another, with the same effect.
+	# The entry reports the members' total.
+	if ns in ["skills", "attributes"]:
+		if mode in ["fortify", "drain"]:
+			# One hold call: add_hold itself expands the group under one source.
+			if ctx.hold_source.is_empty():
+				push_error("EffectResolver: '%s' %s needs ctx.hold_source (who releases the hold?)"
+					% [mode, value])
+				return _entry("modify", unit, false, "no hold_source for %s" % mode, 0.0)
+			ValuePaths.add_hold(unit, value, mode, m, ctx.hold_source)
+			return _entry("modify", unit, true, "", m)
+		var members: Array[String] = ValuePaths.expand(value)
+		var total: float = 0.0
+		var any_applied: bool = false
+		var reason: String = ""
+		for member in members:
+			var each: Dictionary = effect.duplicate()
+			each["value"] = member
+			var one: Dictionary = _do_modify(each, ctx, unit, m)
+			if bool(one.get("applied", false)):
+				any_applied = true
+				total += float(one.get("amount", 0.0))
+			else:
+				reason = str(one.get("reason", ""))
+		return _entry("modify", unit, any_applied, "" if any_applied else reason, total)
+
 	# Resources move at once and keep no hold.
 	if ns == "resource":
 		match mode:
@@ -359,6 +389,23 @@ static func _do_modify(effect: Dictionary, ctx: EffectContext, unit: Node, m: fl
 		return _entry("modify", unit, false, "no hold_source for %s" % mode, 0.0)
 	ValuePaths.add_hold(unit, value, mode, m, ctx.hold_source)
 	return _entry("modify", unit, true, "", m)
+
+
+## `pressure.<element>`: fortify adds emotional pressure, drain relieves it
+## (PsychologySystem.apply_pressure scales it by the character's affinity).
+## Only a sheet PsychologySystem keeps state for takes it: one with no
+## `emotional_pressure` is refused, and so is an enemy's (the sheet is the same
+## shape, so the state exists, but nothing ever runs psychology for it: no
+## drift, no crisis UI). Refusal is a reason in the log entry, never an error.
+static func _do_pressure(unit: Node, element: String, mode: String, m: float) -> Dictionary:
+	var sheet: Dictionary = unit.character_data if "character_data" in unit else {}
+	if not sheet.get("emotional_pressure", {}).has(element):
+		return _entry("modify", unit, false, "no psychology", 0.0)
+	if not CharacterSystem.receives_party_effects(sheet):
+		return _entry("modify", unit, false, "enemies have no psychology", 0.0)
+	var signed: float = m if mode == "fortify" else -m
+	PsychologySystem.apply_pressure(sheet, element, signed)
+	return _entry("modify", unit, true, "", signed)
 
 
 ## Apply a status (through CombatManager._apply_status_effect, which holds every
@@ -698,6 +745,8 @@ static func _read_value_path(path: String, unit: Node) -> float:
 			return float(CharacterSystem.get_effective_skill_level(unit.character_data, name))
 		"resist":
 			return Resistance.total(unit, name)
+		"affinity":
+			return float(PerkSystem.calculate_element_affinity(unit.character_data, name))
 	push_error("EffectResolver: cannot read value path '%s'" % path)
 	return 0.0
 

@@ -59,11 +59,25 @@ const MODES_BY_NAMESPACE: Dictionary = {
 	"skill": ["fortify", "drain", "damage", "restore"],
 	"stat": ["fortify", "drain", "set", "multiply"],
 	"resist": ["fortify", "drain", "set"],
+	# Group targets: one effect on many `skill.` / `attribute.` values.
+	"skills": ["fortify", "drain", "damage", "restore"],
+	"attributes": ["fortify", "drain", "damage", "restore"],
+	# Affinity is held on the unit like a stat; pressure is instant.
+	"affinity": ["fortify", "drain", "set", "multiply"],
+	"pressure": ["fortify", "drain"],
 }
+
+## The categories of skills.json a group path `skills.<category>` may name.
+const SKILL_GROUP_CATEGORIES: Array[String] = ["magic", "combat", "general"]
 
 ## The first word of a value path ("attribute.strength"). `propagation`,
 ## `spell`, `party` and `world` are added in later stages.
-const NAMESPACES: Array[String] = ["attribute", "skill", "resource", "stat", "resist"]
+const NAMESPACES: Array[String] = ["attribute", "skill", "resource", "stat", "resist",
+	"skills", "attributes", "affinity", "pressure"]
+
+## Namespaces a number is never READ from (a pct_of or a borrow): a group is
+## many values, and pressure is only ever pushed.
+const UNREADABLE_NAMESPACES: Array[String] = ["skills", "attributes", "pressure"]
 
 const ATTRIBUTES: Array[String] = [
 	"strength", "constitution", "finesse", "focus", "awareness", "charm", "luck",
@@ -1049,7 +1063,10 @@ static func borrow_source_error(source: String) -> String:
 		return ""
 	var prefix: String = source.get_slice(".", 0)
 	if prefix in BORROW_UNIT_PREFIXES and source.count(".") == 2:
-		var msg := _value_path_error(source.substr(prefix.length() + 1))
+		var inner: String = source.substr(prefix.length() + 1)
+		if inner.get_slice(".", 0) in UNREADABLE_NAMESPACES:
+			return "cannot borrow from '%s': a number cannot be read from a group or from pressure" % source
+		var msg := _value_path_error(inner)
 		return "" if msg.is_empty() else "borrowed from '%s': %s" % [source, msg]
 	return "cannot borrow from '%s' (%s, or %s.<value path>)" % [source,
 		", ".join(BORROW_SOURCES), "/".join(BORROW_UNIT_PREFIXES)]
@@ -1080,6 +1097,10 @@ static func _validate_damage_type(t, where: String, errs: Array[String]) -> void
 ## Empty string when `path` is a valid value path, otherwise the reason.
 static func _value_path_error(path: String) -> String:
 	var parts := path.split(".")
+	# The one 3-word path: skills.element.<element>.
+	if parts.size() == 3 and parts[0] == "skills" and parts[1] == "element":
+		return "" if parts[2] in ELEMENTS \
+			else "unknown element '%s' in '%s' (approved: %s)" % [parts[2], path, ", ".join(ELEMENTS)]
 	if parts.size() != 2:
 		return "value path '%s' must look like namespace.name" % path
 	var ns := parts[0]
@@ -1103,6 +1124,16 @@ static func _value_path_error(path: String) -> String:
 				return "skills.json is not loaded, so '%s' cannot be checked" % path
 			if not name in skills:
 				return "unknown skill '%s' in '%s'" % [name, path]
+		"skills":
+			if not name in SKILL_GROUP_CATEGORIES:
+				return "unknown skill group '%s' in '%s' (approved: skills.element.<element>, %s)" \
+					% [name, path, ", ".join(SKILL_GROUP_CATEGORIES)]
+		"attributes":
+			if name != "all":
+				return "unknown attribute group '%s' in '%s' (approved: attributes.all)" % [name, path]
+		"affinity", "pressure":
+			if not name in ELEMENTS:
+				return "unknown element '%s' in '%s' (approved: %s)" % [name, path, ", ".join(ELEMENTS)]
 		"resist":
 			if not (name in RESIST_GROUPS or DamageType.exists(name) or name in Resistance.AFFLICTIONS):
 				return "unknown resist '%s' in '%s' (a damage type, an affliction, or %s)" % [name, path, ", ".join(RESIST_GROUPS)]
@@ -1117,6 +1148,8 @@ static func _pct_of_error(source: String) -> String:
 			if key in CombatStats.DERIVED:
 				return ""
 			return "pct_of '%s': '%s' is not a derived stat" % [source, key]
+	if source.get_slice(".", 0) in UNREADABLE_NAMESPACES:
+		return "pct_of '%s': a number cannot be read from a group or from pressure" % source
 	return _value_path_error(source)
 
 
