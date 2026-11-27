@@ -653,7 +653,8 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
   `CombatManager._end_status`.
 - Stack mode keeps one entry whose holds are multiplied by `stacks`.
 - Building states: `stacking.grow {on, by, if?}`. The owner's trigger `on`
-  adds `by` stacks up to `max`, and the holds are re-resolved. `grow` needs
+  adds `by` stacks up to `max`, and the holds are re-resolved. The first
+  application is already 1 stack, so after three fire casts a state is at 4. `grow` needs
   mode `stack`; `on` is any built trigger except `expire`.
 - Upkeep: `upkeep {mana|stamina|hp: n, per: "turn"}`, paid at turn start
   before `periodic`. The whole cost is checked first and taken only if it can
@@ -661,8 +662,7 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
   `expire` trigger, runs). HP upkeep never takes a unit below 1.
 - The comedown needs no field: it is an `expire` trigger.
   `mantra_state_example` in `tools/verify_effects.gd` is the worked case.
-- The `magical` category mirrors `dispellable`. Status grouping uses the first
-  non-magical category.
+- The `magical` category mirrors `dispellable`.
 - Borrowed values gained `event.damage`, `add`, `round` and `min`.
 - Pressure effects are refused for enemy-allegiance sheets. This is interim
   until stage 5.
@@ -677,13 +677,22 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
   Their resistance is counted per source, so it cannot stack into immunity,
   and it goes through `hold_covers` (`resist.physical` covers slashing and the
   other physical types).
-- Zone effects that have a `to` skip bleeding-out units.
+- A zone or aura effect that names a `to` selector skips bleeding-out units.
+  `CombatManager._resolve_area_effects` sets `ctx.area_units = [target]`, and
+  `EffectResolver.recipients` (effect_resolver.gd) drops units that are not
+  `_alive`; `CombatUnit.is_alive()` is false while bleeding out. An effect
+  with no `to` hits `ctx.target` directly and is not filtered there.
 
 **Tooling**
 
+- CONTENT.md groups statuses under their first non-magical category (else
+  their polarity): `group_of` in
+  `tools/content/sections/statuses.py`, since `magical` says what a dispel may take, not what a status is.
 - The status wording parity fixture is `tools/fixtures/status_wording.json`.
   Regenerate it with
   `godot --headless --path . tools/verify_tooltips.tscn -- --write-wording`.
 - The vocabulary lists are mirrored in `tools/effect_check.py`; the new ones
   from Task 10 are `SPELL_SCHOOLS`, `UPKEEP_RESOURCES` and `UPKEEP_PER`.
+- Scroll casts (`CombatManager._use_scroll`) do not go through `cast_spell`,
+  so they do not fire `casts`; see TODO.md section 17.
 - Known gaps are listed in TODO.md section 17, "Found during 2b".

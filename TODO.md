@@ -2455,6 +2455,10 @@ Moving content onto one shared effect language. The design is at
         `grants_movement_ability`, `grants_travel_speed_pct`,
         `grants_concealment`, `damage_increase_pct` and `special`.
       - Trap Maker's `payload_scale` is unread.
+      - No real status uses `stacking.grow` or `upkeep` yet; only the test
+        statuses in `verify_effects` do.
+      - Scroll casts (`_use_scroll`) do not fire the `casts` trigger, because
+        they bypass `cast_spell`.
       - `turn_start_inside` and `turn_end_inside` are built but no zone uses
         them, and `turn_end_inside` does not run on the skip_turn path.
   - **Carried from stage 1** (stage 2b task 7 ticked these; the rest move to stage 3):

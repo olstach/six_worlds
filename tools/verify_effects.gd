@@ -3183,7 +3183,8 @@ func _check_mantra_state_example() -> void:
 	var entry := _entry_of(caster, state)
 	if int(entry.get("stacks", 0)) != 1:
 		_fail("a fresh state starts at 1 stack: %s" % [entry])
-	# Three fire spells: +3 stacks, so +4 effective Fire magic in all.
+	# Three fire spells: +3 stacks. The base stack counts too, so 4 stacks and
+	# +4 effective Fire magic in all.
 	for i in 3:
 		var cast: Dictionary = CombatManager.cast_spell(caster, "firebolt", foe.grid_position)
 		if not bool(cast.get("success", false)):
