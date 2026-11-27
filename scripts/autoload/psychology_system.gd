@@ -524,9 +524,7 @@ func _resolve_quirk_reactions(character: Dictionary, element: String, polarity: 
 				var amt: float = float(entry.get("amount", 0.0))
 				if not el in ELEMENTS or amt == 0.0:
 					continue
-				for member in CharacterSystem.get_party():
-					if member == character:
-						continue
+				for member in _witnesses_of(character):
 					apply_pressure(member, el, amt)
 
 
@@ -549,10 +547,34 @@ func _on_autonomous_event(character: Dictionary, element: String, polarity: Stri
 	if not element in fallout:
 		return
 	var entry: Dictionary = fallout[element]
-	for member in CharacterSystem.get_party():
-		if member == character:
-			continue
+	for member in _witnesses_of(character):
 		apply_pressure(member, entry.element, entry.amount)
+
+
+## Who sees `character` come apart: the rest of its own side. For the player's
+## characters that is the party; for anyone else (an enemy has emotions too),
+## the living units in the current fight who share its allegiance. Outside a
+## fight a non-player character has nobody around to unsettle.
+func _witnesses_of(character: Dictionary) -> Array[Dictionary]:
+	var out: Array[Dictionary] = []
+	if CharacterSystem.receives_party_effects(character):
+		for member in CharacterSystem.get_party():
+			# is_same: == compares two dictionaries by content, and two fresh
+			# sheets can match field for field.
+			if not is_same(member, character):
+				out.append(member)
+		return out
+	if not CombatManager.combat_active:
+		return out
+	var side: String = str(character.get("allegiance", ""))
+	for unit in CombatManager.all_units:
+		if not is_instance_valid(unit) or unit.is_dead or not "character_data" in unit:
+			continue
+		var sheet: Dictionary = unit.character_data
+		if is_same(sheet, character) or str(sheet.get("allegiance", CharacterSystem.PLAYER_ALLEGIANCE)) != side:
+			continue
+		out.append(sheet)
+	return out
 
 
 ## Drift all elemental pressures toward the character's emotional baseline.

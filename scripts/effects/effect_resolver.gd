@@ -409,8 +409,6 @@ static func _do_pressure(unit: Node, element: String, mode: String, m: float) ->
 	var sheet: Dictionary = unit.character_data if "character_data" in unit else {}
 	if not sheet.get("emotional_pressure", {}).has(element):
 		return _entry("modify", unit, false, "no psychology", 0.0)
-	if not CharacterSystem.receives_party_effects(sheet):
-		return _entry("modify", unit, false, "enemies have no psychology", 0.0)
 	var signed: float = m if mode == "fortify" else -m
 	PsychologySystem.apply_pressure(sheet, element, signed)
 	return _entry("modify", unit, true, "", signed)

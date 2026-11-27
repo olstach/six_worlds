@@ -3150,13 +3150,37 @@ func _check_pressure_modify() -> void:
 	# No hold is kept, so no hold_source is needed (ctx has none).
 	if not party.effect_holds.is_empty():
 		_fail("pressure is instant but left a hold")
-	# An enemy sheet is refused with a reason.
+	# An enemy feels it too (owner ruling 2026-11-27: every character runs on
+	# the same systems, emotions included).
+	var foe_mult: float = PsychologySystem._intensity_multiplier(foe.character_data, "fire")
 	var foe_before: float = float(foe.character_data["emotional_pressure"]["fire"])
-	var refused := EffectResolver.resolve([up], _ctx(party, foe))
-	if _applied(refused) != 0 or str(refused[0].get("reason", "")).is_empty():
-		_fail("pressure on an enemy must be refused with a reason: %s" % [refused])
-	if float(foe.character_data["emotional_pressure"]["fire"]) != foe_before:
-		_fail("a refused pressure effect still moved the enemy")
+	var felt := EffectResolver.resolve([up], _ctx(party, foe))
+	if _applied(felt) != 1:
+		_fail("pressure on an enemy was refused: %s" % [felt])
+	if absf(float(foe.character_data["emotional_pressure"]["fire"]) - foe_before
+			- 5.0 * foe_mult) > 0.001:
+		_fail("an enemy's fire pressure did not move by the effect")
+	# And an enemy's crisis unsettles the enemy's side, not the player's party.
+	# A dark fire crisis costs each witness 8 water pressure.
+	var friend := _make_unit(Vector2i(7, 5), CombatManager.Team.ENEMY)
+	friend.character_data["allegiance"] = "enemy"
+	var member: Dictionary = CharacterSystem.create_blank_character()
+	CharacterSystem.party.append(member)
+	var was_active: bool = CombatManager.combat_active
+	CombatManager.combat_active = true
+	var member_water: float = float(member["emotional_pressure"]["water"])
+	var friend_water: float = float(friend.character_data["emotional_pressure"]["water"])
+	foe.character_data["emotional_pressure"]["fire"] = 0.0
+	foe.character_data.erase("emotional_crisis_fired")
+	PsychologySystem.apply_pressure(foe.character_data, "fire", -200.0)
+	if float(member["emotional_pressure"]["water"]) != member_water:
+		_fail("an enemy's crisis moved a party member's water pressure")
+	if float(friend.character_data["emotional_pressure"]["water"]) >= friend_water:
+		_fail("an enemy's crisis did not unsettle the enemy beside it")
+	CombatManager.combat_active = was_active
+	CharacterSystem.party.erase(member)
+	foe.character_data["emotional_pressure"]["fire"] = 0.0
+	_cleanup([friend])
 	# A sheet with no psychology state at all is refused too.
 	foe.character_data.erase("emotional_pressure")
 	foe.character_data.erase("allegiance")
