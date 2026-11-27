@@ -1,0 +1,311 @@
+{
+	"_about": "What each aura and zone changed BEFORE the stage-2b Task 8 migration, read on the units it reaches (see tools/aura_measure.gd). Keys are the change (with minus without); a key that did not move is left out. Written by tools/capture_aura_baseline.gd; read by verify_effects.gd aura_numbers_match_baseline.",
+	"auras": {
+		"apsara_charm": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"apsara_grace": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"aura_of_blessing": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"avatar_of_the_storm": {
+			"ally_far": {
+				"accuracy": 5.0
+			},
+			"ally_near": {
+				"accuracy": 5.0
+			},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {
+				"accuracy": 5.0
+			}
+		},
+		"dampening_aura": {
+			"ally_far": {},
+			"ally_near": {
+				"taken.fire": -25.0
+			},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {
+				"taken.fire": -25.0
+			}
+		},
+		"favorable_wind": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"gandharva_song": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"guiding_light": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"healing_regeneration": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"immune_system": {
+			"ally_far": {},
+			"ally_near": {
+				"resist.bleed": 15.0,
+				"resist.disease": 15.0,
+				"resist.poison": 15.0
+			},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {
+				"resist.bleed": 15.0,
+				"resist.disease": 15.0,
+				"resist.poison": 15.0
+			}
+		},
+		"initiative_debuff": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {
+				"initiative": -3.0
+			},
+			"self": {}
+		},
+		"initiative_debuff@empowered_copper_khatvanga": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {
+				"initiative": -4.0
+			},
+			"self": {}
+		},
+		"initiative_debuff@legendary_bone_khatvanga": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {
+				"initiative": -8.0
+			},
+			"self": {}
+		},
+		"light_aura": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {
+				"accuracy": -10.0
+			},
+			"self": {}
+		},
+		"longlife_hp": {
+			"ally_far": {},
+			"ally_near": {
+				"max_hp": 10.0
+			},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {
+				"max_hp": 10.0
+			}
+		},
+		"radiance": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"radiance_glare": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"radiant_visage": {
+			"ally_far": {},
+			"ally_near": {
+				"initiative": 2.0,
+				"max_hp": 10.0
+			},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {
+				"initiative": 2.0,
+				"max_hp": 10.0
+			}
+		},
+		"shield_wall": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {
+				"armor": 5.0
+			}
+		},
+		"shield_wall_cover": {
+			"ally_far": {},
+			"ally_near": {
+				"armor": 2.0
+			},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"shining_mirage": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"singing_birds": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"soothing_presence": {
+			"ally_far": {},
+			"ally_near": {},
+			"enemy_far": {},
+			"enemy_near": {},
+			"self": {}
+		},
+		"summon_empowerment": {
+			"ally_far": {},
+			"ally_near": {
+				"armor": 10.0,
+				"crit_chance": 10.0,
+				"dodge": 10.0
+			},
+			"enemy_far": {},
+			"enemy_near": {
+				"armor": -10.0,
+				"crit_chance": -10.0,
+				"dodge": -10.0
+			},
+			"self": {}
+		}
+	},
+	"zones": {
+		"black_ice": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"caltrops": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"fog_of_war": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {
+				"accuracy": -20.0
+			},
+			"enemy_outside": {}
+		},
+		"grave_soil": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"gravity_well": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {
+				"dodge": -15.0,
+				"movement": -2.0
+			},
+			"enemy_outside": {}
+		},
+		"inscribed_circle": {
+			"ally_inside": {
+				"mana_cost_pct": -25.0
+			},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"mud": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"open_door": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"poison_cloud": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"shroud_of_darkness": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"snare_trap": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"tornado": {
+			"ally_inside": {},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		},
+		"vajra_mandala": {
+			"ally_inside": {
+				"spellpower": 3.0,
+				"taken.fire": -30.0
+			},
+			"ally_outside": {},
+			"enemy_inside": {},
+			"enemy_outside": {}
+		}
+	}
+}
