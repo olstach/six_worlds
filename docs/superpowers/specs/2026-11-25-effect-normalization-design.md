@@ -692,8 +692,11 @@ Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
 - `stat.magic_damage_taken` and `stat.physical_damage_taken` take `multiply`
   only. A modify of `affinity.<el>` may not borrow or `pct_of` that same
   affinity (it would read itself without end).
-- Pressure effects are refused for enemy-allegiance sheets. This is interim
-  until stage 5.
+- Pressure reaches every sheet with psychology state, enemies included (owner
+  ruling 2026-11-27); a crisis's fallout reaches the character's own side
+  (`PsychologySystem._witnesses_of`).
+- A free reaction attack can provoke another (two Counterstances); each unit
+  makes at most `CombatManager.REACTION_CHAIN_MAX` (2) in one exchange.
 
 **Resistance, auras and zones**
 

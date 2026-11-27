@@ -2441,12 +2441,23 @@ Moving content onto one shared effect language. The design is at
         building states, comedown, upkeep, pressure). What was built and where
         it differs from the design is spec 10.5.
     - **Found during 2b, for Olaf to decide:**
-      - Infected's Fungal Spawn fights for the infected carrier. This is
-        today's behaviour and is probably a bug.
-      - Two units both in Counterstance can counter each other back and forth
-        until a miss or a death. This was already true before stage 2b.
-      - `Ranged_Attack_Debuff_50` reads -40 accuracy, so its name and its
-        number disagree.
+      - [x] ~~Infected's Fungal Spawn fights for the infected carrier.~~
+        *Ruled 2026-11-27: it fights for whoever cast Infected (`owner:
+        caster`).*
+      - [x] ~~Two units both in Counterstance counter each other until a miss
+        or a death.~~ *Ruled 2026-11-27: two answers each per exchange, unless
+        a miss or a death comes first (`CombatManager.REACTION_CHAIN_MAX`).*
+      - [x] ~~`Ranged_Attack_Debuff_50` reads -40 accuracy.~~ *Ruled
+        2026-11-27: -50. Olaf: numbered status names might become tiers
+        ("minor / medium / major / great") while these are being tuned —
+        proposal pending.*
+      - [x] ~~Pressure effects refused for enemies.~~ *Ruled 2026-11-27:
+        enemies feel pressure (every character runs on the same systems), and
+        a crisis's fallout reaches the character's own side, not the player's
+        party.*
+      - [x] ~~About 125 `SCRIPT ERROR`s at `map_manager.gd` on every load.~~
+        *Fixed 2026-11-27: subregion seeds came back from JSON as text, so
+        every subregion lookup after a load failed and returned nothing.*
       - `Constitution_Buff` now raises Constitution, so max HP rises but
         current HP does not jump.
       - Immune System's 15% affliction resist now works (it was read by
@@ -2468,7 +2479,7 @@ Moving content onto one shared effect language. The design is at
       - A negative `aura_value` on a heal or damage aura would heal or hurt by
         a negative amount. No item or perk gives one (the negatives are all
         `initiative_debuff`, a modify); clamp it when stage 3 touches items.
-      - **Needs Olaf's ruling (changes numbers):** Risen Dead and the
+      - **Left as is for now (Olaf, 2026-11-27):** Risen Dead and the
         Necromancer's raise halve `derived.max_hp`, but
         `CombatUnit.init_as_enemy` reads the top-level `max_hp` that
         EnemySystem copies, so the risen come back at full HP, not half. This
