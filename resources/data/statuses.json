@@ -2387,8 +2387,7 @@
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			],
-			"notes": "Unbuilt: heal_50_percent_of_damage_dealt"
+			]
 		},
 		{
 			"name": "Pain_Mirror",
@@ -2637,8 +2636,7 @@
 			"dispellable": true,
 			"dispel_methods": [
 				"dispel"
-			],
-			"notes": "Unbuilt: lifesteal_on_attacks"
+			]
 		},
 		{
 			"name": "Cursed",

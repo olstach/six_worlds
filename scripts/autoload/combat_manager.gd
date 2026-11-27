@@ -1290,6 +1290,8 @@ func get_current_unit() -> Node:
 ## no auras. For units that are skipped for actions (bleeding out, decoys):
 ## their time still passes. Expiry callbacks still run, since a status that
 ## does something when it runs out (Doomed) runs out on the downed as well.
+## No upkeep is paid here and no turn_start trigger runs, so a state with an
+## upkeep stays up for free while its owner is down (spec 10.5).
 func _tick_durations_only(unit: Node) -> void:
 	if "status_effects" in unit:
 		for i in range(unit.status_effects.size() - 1, -1, -1):
@@ -5503,6 +5505,14 @@ func _status_entry_named(unit: Node, status_name: String) -> Dictionary:
 	return {}
 
 
+## True when `list` holds this very `entry` (by identity, not by content).
+func _has_same(list: Array, entry: Dictionary) -> bool:
+	for other in list:
+		if is_same(other, entry):
+			return true
+	return false
+
+
 ## The index of `entry` in unit.status_effects, by identity rather than by
 ## content, so two look-alike entries are never confused. -1 if it is gone.
 func _status_entry_index(unit: Node, entry: Dictionary) -> int:
@@ -5795,9 +5805,10 @@ func _announce_trigger(unit: Node, status_name: String, outcome: Dictionary) -> 
 ## `unit` that ticks at `when` ("turn_start" or "turn_end"). A list copy is
 ## walked, so an effect that removes a status cannot upset the loop; an entry
 ## that has gone by the time its turn comes is skipped.
-func _tick_status_effects_at(unit: Node, when: String) -> void:
+## Entries in `skip` (by identity) do not tick.
+func _tick_status_effects_at(unit: Node, when: String, skip: Array = []) -> void:
 	for entry in unit.status_effects.duplicate():
-		if _status_entry_index(unit, entry) == -1:
+		if _status_entry_index(unit, entry) == -1 or _has_same(skip, entry):
 			continue
 		var def: Dictionary = _status_effects.get(str(entry.get("status", "")), {})
 		var periodic: Dictionary = def.get("periodic", {})
@@ -5812,6 +5823,8 @@ func _tick_status_effects_at(unit: Node, when: String) -> void:
 ## reason `upkeep`, so its `expire` triggers (the comedown) run. HP upkeep
 ## never takes a unit below 1 HP: a unit that cannot pay it at 1 HP left loses
 ## the status instead of its life.
+## An upkeep ending IS an expiry: _on_status_expired runs (Invisible takes its
+## stealth with it) exactly as when a duration runs out.
 func _pay_upkeep(unit: Node) -> void:
 	for entry in unit.status_effects.duplicate():
 		if _status_entry_index(unit, entry) == -1:
@@ -5837,6 +5850,7 @@ func _pay_upkeep(unit: Node) -> void:
 						ResourceOps.current(unit, resource) - cost)
 		else:
 			combat_log.emit("%s can no longer keep up %s." % [unit.unit_name, status_name.replace("_", " ")])
+			_on_status_expired(unit, status_name, _status_effects.get(status_name, {}), entry)
 			_end_status(unit, entry, "upkeep")
 			if unit.has_method("show_status_expired"):
 				unit.show_status_expired(status_name)
@@ -5955,8 +5969,7 @@ func _remove_stacks(unit: Node, entry: Dictionary, count: int, reason: String) -
 
 ## A cleanse or dispel just took `status_name` off `unit`: undo any persistent
 ## `damage` the unit carries whose entry is {"cleanse": {"category": c}} for a
-## category of that status. A status with no `categories` (all of today's data
-## until stage 2b Task 4) clears nothing.
+## category of that status. A status with no `categories` clears nothing.
 func _clear_damage_for_removed(unit: Node, status_name: String) -> void:
 	var cats: Array = _status_effects.get(status_name, {}).get("categories", [])
 	if cats.is_empty() or not ValuePaths.is_party_unit(unit):
@@ -6169,20 +6182,29 @@ func _process_status_effects(unit: Node) -> bool:
 
 	# Upkeep comes first of all: a state that cannot be paid for ends before
 	# it can tick, and its comedown (an `expire` trigger) fires.
+	# What that comedown applies is new this turn, exactly like a comedown
+	# applied when a duration runs out further down (which comes after the
+	# ticks and the countdown): so whatever upkeep added is skipped by both,
+	# and the comedown lasts as long whichever way its state ended.
+	var before_upkeep: Array = unit.status_effects.duplicate()
 	_pay_upkeep(unit)
 	if unit.status_effects.is_empty():
 		return false
+	var born_of_upkeep: Array = []
+	for entry in unit.status_effects:
+		if not _has_same(before_upkeep, entry):
+			born_of_upkeep.append(entry)
 
 	# New-shape statuses first: `periodic` effects with when turn_start, and
 	# turn_start triggers. A periodic reads `turns_active` before this turn
 	# counts, so its first tick sees 0.
-	_tick_status_effects_at(unit, "turn_start")
+	_tick_status_effects_at(unit, "turn_start", born_of_upkeep)
 
 	# A copy of the list is walked: a tick above or below (a DoT that kills,
 	# a trigger that removes) may change the real one. An entry that has gone
 	# meanwhile is skipped.
 	for effect in unit.status_effects.duplicate():
-		if _status_entry_index(unit, effect) == -1:
+		if _status_entry_index(unit, effect) == -1 or _has_same(born_of_upkeep, effect):
 			continue
 		var status_name = effect.get("status", "")
 		var effect_def = _status_effects.get(status_name, {})

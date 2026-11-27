@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 103
+const EXPECTED_CHECKS: int = 108
 
 var grid: CombatGrid
 
@@ -161,6 +161,13 @@ func _ready() -> void:
 	_check_mantra_state_example()
 	_check_hp_upkeep_never_kills()
 	_check_building_state_validation()
+
+	# Stage 2b final review: the fix wave.
+	_check_final_review_validation()
+	_check_scatter_reads_tiles_as_range()
+	_check_zero_damage_reaches_spells_only()
+	_check_dead_source_gets_nothing()
+	_check_upkeep_end_is_an_expiry()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -2371,6 +2378,10 @@ const FLAG_FOR_WORD: Dictionary = {
 	"immune_to_fear": ["immune:Feared"],
 	"immune_to_confusion": ["immune:Confused", "immune:Chaotic"],
 	"debuff_immunity": ["immune:negative"],
+	# Each named the lifesteal Lifelink and Blood_Hunger always had (it was
+	# read by status name), so the flag is what the word meant.
+	"heal_50_percent_of_damage_dealt": ["lifesteals_on_hit"],
+	"lifesteal_on_attacks": ["lifesteals_on_hit"],
 }
 
 ## Statuses a hard-coded name list used to pick out, now carrying a flag.
@@ -2398,13 +2409,13 @@ const WORDS_LEFT_FOR_TASK_6: Array[String] = [
 ]
 
 ## Words nothing ever read. They are gone from the data, and the status says so
-## in its .
+## in its `notes`.
 const UNBUILT_WORDS: Array[String] = [
 	"can_move", "cannot_target_spells", "fire_damage_per_turn_internal",
 	"joins_party_permanently", "damage_increases_each_turn", "stat_penalties",
 	"illusory_copies", "cannot_teleport", "cannot_flee", "random_attacks",
-	"random_spellcasting", "relationship_bonus", "heal_50_percent_of_damage_dealt",
-	"linked_to_ally", "return_with_20_percent_hp", "lifesteal_on_attacks",
+	"random_spellcasting", "relationship_bonus",
+	"linked_to_ally", "return_with_20_percent_hp",
 	"cannot_fly", "knockback", "can_walk_on_water", "range_bonus", "range_penalty",
 ]
 
@@ -3286,4 +3297,151 @@ func _check_building_state_validation() -> void:
 			d["stacking"] = {"mode": "refresh"}
 		if EffectVocab.validate_status(d, "t").is_empty():
 			_fail("validate_status accepted: %s" % label)
+	_done()
+
+
+
+# ── Stage 2b final review: the fix wave ──────────────────────────────────────
+
+## What the validator now refuses: a while_active effect the container could
+## not release from the carrier (a `to` elsewhere, a resource or pressure, a
+## non-modify op), two holds of one status on one value, a fortify on a
+## multiplier stat, a zone's max HP, and an affinity that reads itself.
+func _check_final_review_validation() -> void:
+	var dodge := {"op": "modify", "value": "stat.dodge", "mode": "fortify", "amount": 2}
+	var ok := _minimal_status()
+	ok["while_active"] = [dodge, {"op": "modify", "value": "stat.damage", "mode": "fortify",
+		"amount": 1, "to": "target"}]
+	if not EffectVocab.validate_status(ok, "t").is_empty():
+		_fail("a plain while_active was refused: %s" % [EffectVocab.validate_status(ok, "t")])
+	var party_dodge: Dictionary = dodge.duplicate()
+	party_dodge["to"] = "party"
+	var bad := {
+		"to party": [party_dodge],
+		"resource drain": [{"op": "modify", "value": "resource.mana", "mode": "drain", "amount": 5}],
+		"pressure fortify": [{"op": "modify", "value": "pressure.fire", "mode": "fortify", "amount": 5}],
+		"non-modify op": [{"op": "damage", "amount": 5, "type": "fire"}],
+		"fortify and multiply on stat.damage": [
+			{"op": "modify", "value": "stat.damage", "mode": "fortify", "amount": 5},
+			{"op": "modify", "value": "stat.damage", "mode": "multiply", "amount": 1.2}],
+		"attributes.all and attribute.strength": [
+			{"op": "modify", "value": "attributes.all", "mode": "fortify", "amount": 2},
+			{"op": "modify", "value": "attribute.strength", "mode": "fortify", "amount": 3}],
+		"skills.magic and skills.element.fire": [
+			{"op": "modify", "value": "skills.magic", "mode": "fortify", "amount": 1},
+			{"op": "modify", "value": "skills.element.fire", "mode": "fortify", "amount": 1}],
+	}
+	for label in bad:
+		var d := _minimal_status()
+		d["while_active"] = bad[label]
+		if EffectVocab.validate_status(d, "t").is_empty():
+			_fail("validate_status accepted while_active %s" % label)
+	for mode in ["fortify", "drain", "set"]:
+		if EffectVocab.validate({"op": "modify", "value": "stat.magic_damage_taken", "mode": mode,
+				"amount": 0.2}, "t").is_empty():
+			_fail("a %s on stat.magic_damage_taken was accepted" % mode)
+	if not EffectVocab.validate({"op": "modify", "value": "stat.physical_damage_taken",
+			"mode": "multiply", "amount": 1.2}, "t").is_empty():
+		_fail("a multiply on stat.physical_damage_taken was refused")
+	if EffectVocab.validate_zone({"name": "Z", "affects": "allies", "while_inside": [
+			{"op": "modify", "value": "stat.max_hp", "mode": "fortify", "amount": 10}]}, "z").is_empty():
+		_fail("validate_zone accepted a stat.max_hp")
+	if EffectVocab.validate({"op": "modify", "value": "affinity.fire", "mode": "fortify",
+			"amount": {"from": "caster.affinity.fire"}}, "t").is_empty():
+		_fail("an affinity.fire that borrows affinity.fire was accepted")
+	_done()
+
+
+## A scatter's `tiles` is how far it may land (Heavenly Counterflow writes
+## tiles 2). With every tile at distance 1 taken, a 1-tile scatter has nowhere
+## to go; before the fix it ignored tiles and used the 2-tile default.
+func _check_scatter_reads_tiles_as_range() -> void:
+	var u := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var walls: Array = []
+	for dx in [-1, 0, 1]:
+		for dy in [-1, 0, 1]:
+			if dx != 0 or dy != 0:
+				walls.append(_make_unit(Vector2i(5 + dx, 5 + dy), CombatManager.Team.ENEMY))
+	var log := EffectResolver.resolve([{"op": "move", "mode": "scatter", "tiles": 1}], _ctx(u, u))
+	if u.grid_position != Vector2i(5, 5) or _applied(log) != 0:
+		_fail("a 1-tile scatter, hemmed in, moved to %s (%s)" % [u.grid_position, log])
+	_cleanup(walls + [u])
+	_done()
+
+
+## Stage 1 sent every spell's damage to apply_damage, even 0. Only a status's,
+## aura's or zone's damage (a reflection of a blow that did nothing) is dropped
+## below 1.
+func _check_zero_damage_reaches_spells_only() -> void:
+	var caster := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(5, 5), CombatManager.Team.ENEMY)
+	var spell_log := EffectResolver.resolve([{"op": "damage", "amount": 0, "type": "fire"}],
+		_ctx(caster, foe))
+	if _applied(spell_log) != 1:
+		_fail("a spell's 0 damage should reach apply_damage as in stage 1: %s" % [spell_log])
+	var ctx := _ctx(caster, foe)
+	ctx.container_kind = "status"
+	var status_log := EffectResolver.resolve([{"op": "damage", "amount": 0, "type": "fire"}], ctx)
+	if _applied(status_log) != 0:
+		_fail("a status's 0 damage should do nothing: %s" % [status_log])
+	if foe.current_hp != 100:
+		_fail("0 damage changed HP to %d" % foe.current_hp)
+	_cleanup([caster, foe])
+	_done()
+
+
+## `to: "source"` names nobody once the source is dead: None Shall Pass does
+## not slow a corpse, Fireshield does not burn one.
+func _check_dead_source_gets_nothing() -> void:
+	var carrier := _make_unit(Vector2i(2, 2), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(3, 2), CombatManager.Team.ENEMY)
+	foe.is_dead = true
+	var ctx := _ctx(carrier, carrier)
+	ctx.source = foe
+	EffectResolver.resolve([{"op": "status", "action": "apply", "status": "Slowed",
+		"duration": 2, "to": "source"}], ctx)
+	if foe.has_status("Slowed"):
+		_fail("a dead source was slowed")
+	foe.is_dead = false
+	EffectResolver.resolve([{"op": "status", "action": "apply", "status": "Slowed",
+		"duration": 2, "to": "source"}], ctx)
+	if not foe.has_status("Slowed"):
+		_fail("a living source was not slowed")
+	_cleanup([carrier, foe])
+	_done()
+
+
+## A state that ends because its upkeep cannot be paid ends as if it ran out:
+## the Invisible rule (stealth goes with it) runs, and its comedown lasts as
+## long as the comedown of a state whose duration ran out.
+func _check_upkeep_end_is_an_expiry() -> void:
+	var comedown := _with_test_status({"polarity": "negative"})
+	var trig := [{"on": "expire", "effects": [
+		{"op": "status", "action": "apply", "status": comedown, "duration": 2}]}]
+	var paid := _with_test_status({"polarity": "positive", "flags": ["grants_stealth"],
+		"upkeep": {"mana": 10, "per": "turn"}, "triggers": trig})
+	var timed := _with_test_status({"polarity": "positive", "triggers": trig})
+	var a := _make_unit(Vector2i(5, 5))
+	var b := _make_unit(Vector2i(7, 5))
+	# a: the state cannot be paid for.
+	a.max_mana = 100
+	a.current_mana = 5
+	CombatManager._apply_status_effect(a, paid, 9)
+	a.is_stealthed = true
+	CombatManager._process_status_effects(a)
+	if a.has_status(paid):
+		_fail("an unpaid upkeep should end the state")
+	if a.is_stealthed:
+		_fail("a grants_stealth state ended by upkeep left its carrier stealthed")
+	# b: the state runs out.
+	CombatManager._apply_status_effect(b, timed, 1)
+	CombatManager._process_status_effects(b)
+	if b.has_status(timed):
+		_fail("a 1-turn state should have run out")
+	var by_upkeep: int = int(_entry_of(a, comedown).get("duration", -1))
+	var by_expiry: int = int(_entry_of(b, comedown).get("duration", -1))
+	if by_upkeep != 2 or by_expiry != 2:
+		_fail("comedown duration: %d after upkeep, %d after expiry; wanted 2 both"
+			% [by_upkeep, by_expiry])
+	_cleanup([a, b])
 	_done()

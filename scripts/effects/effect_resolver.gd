@@ -175,7 +175,8 @@ static func recipients(selector: String, ctx: EffectContext) -> Array:
 				if unit != null and _alive(unit) and _same_team(unit, ctx.caster):
 					out.append(unit)
 		"source":
-			if ctx.source != null and is_instance_valid(ctx.source):
+			# A dead source is nobody to answer: no slowing or burning a corpse.
+			if ctx.source != null and is_instance_valid(ctx.source) and _alive(ctx.source):
 				out.append(ctx.source)
 		_:
 			push_error("EffectResolver.recipients: unknown selector '%s'" % selector)
@@ -284,10 +285,17 @@ static func _scaled_magnitude(effect: Dictionary, ctx: EffectContext, unit: Node
 
 # ── Ops ──────────────────────────────────────────────────────────────────────
 
+## The containers whose damage below 1 does nothing at all: a status (its
+## periodic ticks and its triggers, such as the reflection of a blow that did
+## no damage), an aura or a zone. A spell's damage always reaches apply_damage,
+## even 0, as it did in stage 1.
+const NO_ZERO_DAMAGE_KINDS: Array[String] = ["status", "aura", "zone"]
+
+
 ## Typed damage through CombatManager.apply_damage (resistance, absorption and
 ## on-hit reactions all live there). A split type hits once per part.
-## Nothing at all happens for an amount below 1 (a reflection of a blow that
-## did no damage), as no one ever applied zero damage on purpose.
+## In a NO_ZERO_DAMAGE_KINDS container nothing at all happens for an amount
+## below 1, as no status ever dealt zero damage on purpose.
 ## A status's own damage names no dealer (ctx.anonymous_damage), and a status
 ## tick gets its applier's damage-over-time bonuses (ctx.dot_tick).
 static func _do_damage(effect: Dictionary, ctx: EffectContext, unit: Node, m: float) -> Dictionary:
@@ -295,7 +303,7 @@ static func _do_damage(effect: Dictionary, ctx: EffectContext, unit: Node, m: fl
 	var dealer: Node = null if ctx.anonymous_damage else ctx.caster
 	if ctx.dot_tick and typeof(type) == TYPE_STRING:
 		m = float(CombatManager.status_tick_damage(ctx.caster, str(type), int(m)))
-	if int(m) <= 0:
+	if int(m) <= 0 and ctx.container_kind in NO_ZERO_DAMAGE_KINDS:
 		return _entry("damage", unit, false, "no damage", 0.0)
 	if typeof(type) == TYPE_DICTIONARY:
 		for part in type:
@@ -456,10 +464,15 @@ static func _do_status(effect: Dictionary, ctx: EffectContext, unit: Node) -> Di
 ## spell's `push` block), every other mode via reposition() aimed at the
 ## context's target tile. A blocked push slams the unit for its blocked_damage
 ## (physical), as cast_spell does.
+## A placed mode (scatter, teleport ...) reads how far it may go from `range`,
+## which a `move` effect has no field for, so its `tiles` is passed on as the
+## range (Heavenly Counterflow's scatter of 2 tiles).
 static func _do_move(effect: Dictionary, ctx: EffectContext, unit: Node) -> Dictionary:
 	var spec: Dictionary = effect.duplicate()
 	for shared in ["op", "to", "if", "chance", "save", "on_save"]:
 		spec.erase(shared)
+	if spec.has("tiles") and not spec.has("range") and not Repositioning.is_travelled(str(spec["mode"])):
+		spec["range"] = spec["tiles"]
 	var moved: Dictionary
 	if spec["mode"] in ["push", "pull"]:
 		moved = CombatManager._apply_push(ctx.caster, unit, spec)

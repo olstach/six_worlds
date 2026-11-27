@@ -206,7 +206,7 @@ numeric words of Task 4 are in their own section). "Was" and "Now" are
 | `forced_movement_toward_target` | Lured | `autoload/combat_manager.gd:1447`<br>`autoload/combat_manager.gd:1451` | `autoload/combat_manager.gd:1415`<br>`autoload/combat_manager.gd:1416` | flag `forced_movement_toward_target` |
 | `grants_extra_action` | Extra_Action | `autoload/combat_manager.gd:1414` | `autoload/combat_manager.gd:1384` | flag `grants_extra_action` |
 | `grants_flight` | Flying, Storm_Lord, Lightning_Form | `combat/combat_unit.gd:562` | `combat/combat_unit.gd:561` | flag `grants_flight` |
-| `heal_50_percent_of_damage_dealt` | Lifelink | none | none | unbuilt: removed (see below) |
+| `heal_50_percent_of_damage_dealt` | Lifelink | none | none | the lifesteal, read by status name: flag `lifesteals_on_hit` (its "Unbuilt" note was removed in the 2b final fix wave) |
 | `heal_per_turn` | Regenerating | `ui/tooltip_text.gd:31`<br>`ui/tooltip_text.gd:177`<br>`ui/tooltip_text.gd:178`<br>`autoload/combat_manager.gd:5979`<br>`autoload/combat_manager.gd:5982` | `ui/tooltip_text.gd:32`<br>`ui/tooltip_text.gd:188`<br>`ui/tooltip_text.gd:189`<br>`autoload/combat_manager.gd:5915`<br>`autoload/combat_manager.gd:5918` | stays in `effects` → Task 6 |
 | `hp_cannot_drop_below_1` | Death_Immunity, Invincible | `ui/tooltip_text.gd:42`<br>`autoload/combat_manager.gd:2970` | `ui/tooltip_text.gd:50`<br>`autoload/combat_manager.gd:2927` | flag `hp_cannot_drop_below_1` |
 | `hp_shield` | Mantric_Armor | `autoload/combat_manager.gd:2931` | `autoload/combat_manager.gd:2888` | flag `hp_shield` |
@@ -224,7 +224,7 @@ numeric words of Task 4 are in their own section). "Was" and "Now" are
 | `increase_burning_damage_dealt` | Fan_the_Flames | `autoload/combat_manager.gd:5973` | `autoload/combat_manager.gd:5909` | flag `increase_burning_damage_dealt` |
 | `joins_party_permanently` | Dominated | none | none | unbuilt: removed (see below) |
 | `knockback` | Pushed | none | none | unbuilt: removed (see below) |
-| `lifesteal_on_attacks` | Blood_Hunger | none | none | unbuilt: removed (see below) |
+| `lifesteal_on_attacks` | Blood_Hunger | none | none | the lifesteal, read by status name: flag `lifesteals_on_hit` (its "Unbuilt" note was removed in the 2b final fix wave) |
 | `linked_to_ally` | Karmic_Bond | none | none | unbuilt: removed (see below) |
 | `loses_flight` | Grounded | `combat/combat_unit.gd:564` | `combat/combat_unit.gd:563` | flag `loses_flight` |
 | `must_attack_taunter` | Taunt | `combat/combat_arena.gd:4011`<br>`combat/combat_arena.gd:4509` | `combat/combat_arena.gd:4011`<br>`combat/combat_arena.gd:4509` | flag `must_attack_taunter` |
