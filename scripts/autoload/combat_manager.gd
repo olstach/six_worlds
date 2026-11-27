@@ -3757,6 +3757,25 @@ func _can_cast_spell(unit: Node, spell: Dictionary, skills: Dictionary) -> Dicti
 
 ## Cast a spell
 func cast_spell(caster: Node, spell_id: String, target_pos: Vector2i) -> Dictionary:
+	var result: Dictionary = _cast_spell_resolve(caster, spell_id, target_pos)
+	# A cast that went through tells the caster's statuses (the `casts` trigger
+	# and `stacking.grow`), once it has resolved. The spell's schools ride along
+	# in lower case, for the `spell_school` condition.
+	if bool(result.get("success", false)) and is_instance_valid(caster):
+		var spell: Dictionary = result.get("spell", {})
+		var schools: Array = []
+		for school in spell.get("schools", []):
+			schools.append(str(school).to_lower())
+		var sub: String = str(spell.get("subschool", "")).to_lower()
+		if sub != "" and not sub in schools:
+			schools.append(sub)
+		_fire_status_event(caster, "casts", {"spell": spell, "schools": schools})
+	return result
+
+
+## cast_spell() without the announcement to the caster's statuses: everything
+## a cast does, and the many places it can end early.
+func _cast_spell_resolve(caster: Node, spell_id: String, target_pos: Vector2i) -> Dictionary:
 	if not can_act(1):
 		return {"success": false, "reason": "No actions remaining"}
 
@@ -5549,11 +5568,52 @@ func _refresh_status_holds(unit: Node, entry: Dictionary) -> void:
 func _fire_status_triggers(unit: Node, entry: Dictionary, event: String,
 		info: Dictionary = {}) -> Dictionary:
 	var outcome: Dictionary = {}
+	# A building state gains its stacks first, so the trigger below sees them.
+	_grow_status(unit, entry, event, info)
 	var triggers: Array = _status_effects.get(str(entry.get("status", "")), {}).get("triggers", [])
 	for i in triggers.size():
 		if typeof(triggers[i]) == TYPE_DICTIONARY and str(triggers[i].get("on", "")) == event:
 			outcome = _run_status_trigger(unit, entry, i, info)
 	return outcome
+
+
+## Tell every status on `unit` that `event` happened to it (a trigger on its
+## own account, such as `casts`). `info` is what happened. A list copy is
+## walked, as a trigger may end a status.
+func _fire_status_event(unit: Node, event: String, info: Dictionary = {}) -> void:
+	if unit == null or not "status_effects" in unit:
+		return
+	for entry in unit.status_effects.duplicate():
+		if _status_entry_index(unit, entry) != -1:
+			_fire_status_triggers(unit, entry, event, info)
+
+
+## A building state (`stacking.grow: {on, by, if?}`): when `event` is the
+## trigger it grows on, and its `if` conditions hold, the status gains `by`
+## stacks, up to `stacking.max`, and its holds are re-resolved at the new
+## count (see _refresh_status_holds). `info` is read by conditions such as
+## `spell_school`.
+func _grow_status(unit: Node, entry: Dictionary, event: String, info: Dictionary) -> void:
+	var stacking: Dictionary = _status_effects.get(str(entry.get("status", "")), {}).get("stacking", {})
+	var grow: Dictionary = stacking.get("grow", {})
+	if grow.is_empty() or str(grow.get("on", "")) != event or str(stacking.get("mode", "")) != "stack":
+		return
+	var ctx := _status_context(unit, entry)
+	ctx.caster = unit
+	ctx.event = info
+	for cond in grow.get("if", []):
+		if not EffectResolver._condition_met(cond, ctx, unit):
+			return
+	var cap: int = int(stacking.get("max", 0))
+	var was: int = int(entry.get("stacks", 1))
+	var now: int = was + int(grow.get("by", 1))
+	if cap > 0:
+		now = mini(now, cap)
+	if now != was:
+		entry["stacks"] = now
+		_refresh_status_holds(unit, entry)
+		if unit.has_method("_update_visuals"):
+			unit._update_visuals()
 
 
 ## The events in which a status trigger merely ticks or ends with its carrier;
@@ -5746,6 +5806,43 @@ func _tick_status_effects_at(unit: Node, when: String) -> void:
 		_fire_status_triggers(unit, entry, when)
 
 
+## Charge every status on `unit` its `upkeep` (mana, stamina or hp, once a
+## turn, at turn start). The whole cost is checked first and taken only if it
+## can be paid in full; if not, nothing is taken and the status ends with
+## reason `upkeep`, so its `expire` triggers (the comedown) run. HP upkeep
+## never takes a unit below 1 HP: a unit that cannot pay it at 1 HP left loses
+## the status instead of its life.
+func _pay_upkeep(unit: Node) -> void:
+	for entry in unit.status_effects.duplicate():
+		if _status_entry_index(unit, entry) == -1:
+			continue
+		var status_name: String = str(entry.get("status", ""))
+		var upkeep: Dictionary = _status_effects.get(status_name, {}).get("upkeep", {})
+		if upkeep.is_empty():
+			continue
+		var affordable := true
+		for resource in EffectVocab.UPKEEP_RESOURCES:
+			var cost: int = int(upkeep.get(resource, 0))
+			if cost <= 0:
+				continue
+			var have: int = ResourceOps.current(unit, resource)
+			# HP stays at 1 or more; the others may be spent to nothing.
+			if have - cost < (1 if resource == "hp" else 0):
+				affordable = false
+		if affordable:
+			for resource in EffectVocab.UPKEEP_RESOURCES:
+				var cost: int = int(upkeep.get(resource, 0))
+				if cost > 0:
+					ResourceOps.set_current(unit, resource,
+						ResourceOps.current(unit, resource) - cost)
+		else:
+			combat_log.emit("%s can no longer keep up %s." % [unit.unit_name, status_name.replace("_", " ")])
+			_end_status(unit, entry, "upkeep")
+			if unit.has_method("show_status_expired"):
+				unit.show_status_expired(status_name)
+			status_effect_expired.emit(unit, status_name)
+
+
 ## One tick of a status's `periodic` effects. The applier's damage-over-time
 ## bonuses apply to its damage (ctx.dot_tick, see status_tick_damage), and
 ## each tick is announced as the arena log expects: "damage" with what was
@@ -5809,6 +5906,14 @@ func _process_status_turn_end(unit: Node) -> void:
 ##      status is left, persistent damage it caused is cleared
 ## The entry is taken off FIRST, so an expire trigger that applies the same
 ## status again starts a fresh one instead of refreshing the dying one.
+##
+## THE PINNED RULE: `expire` triggers fire on `expired` and `upkeep`, and
+## never on dispelled, cleansed, removed, stolen, consumed, death or combat_end.
+## Task 6 found that this is NOT how the old `*_on_expire` keys behaved: the
+## old code ran them on any removal, so cleansing Doomed killed its carrier and
+## removing Infected made it burst. Those were accidents of one shared path;
+## the rule here is the intended one, and a comedown (a state's `expire`
+## trigger) relies on it: dispelling a state is not running out of it.
 ##
 ## Floating text and the status_effect_expired signal stay with the callers,
 ## which have always decided those for themselves. So does the Invisible rule
@@ -6061,6 +6166,12 @@ func _process_status_effects(unit: Node) -> bool:
 
 	var skip_turn = false
 	var effects_to_remove: Array = []
+
+	# Upkeep comes first of all: a state that cannot be paid for ends before
+	# it can tick, and its comedown (an `expire` trigger) fires.
+	_pay_upkeep(unit)
+	if unit.status_effects.is_empty():
+		return false
 
 	# New-shape statuses first: `periodic` effects with when turn_start, and
 	# turn_start triggers. A periodic reads `turns_active` before this turn

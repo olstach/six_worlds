@@ -152,7 +152,16 @@ const SCALE_STATUS_STACK_PREFIX: String = "status_stack:"
 const CONDITIONS: Array[String] = CombatStats.PERK_CONDITIONS
 ## `target_lacks` is the opposite of `target_has`: a retaliation that only
 ## stuns someone not already stunned.
-const CONDITION_KEYS: Array[String] = ["target_has", "target_is", "target_lacks"]
+const CONDITION_KEYS: Array[String] = ["target_has", "target_is", "target_lacks", "spell_school"]
+
+## The schools a `spell_school` condition may name (lower case; spells.json
+## writes them capitalised and the comparison ignores case). It is true when
+## the spell that set the trigger off carries that school, so it is only
+## meaningful in a `casts` trigger or a `stacking.grow` that grows on `casts`.
+const SPELL_SCHOOLS: Array[String] = [
+	"space", "air", "fire", "water", "earth",
+	"sorcery", "enchantment", "summoning", "white", "black",
+]
 
 ## Borrowed values (spec §10.3 extension 3): a magnitude may be read from
 ## somewhere else instead of written as a number,
@@ -263,6 +272,9 @@ const IMMUNE_FLAG_PREFIX: String = "immune:"
 ##   incoming_spell      an offensive spell is about to land on the carrier
 ##   enemy_enters_reach  an enemy moved into the carrier's reach
 ##   ally_threatened     an enemy moved next to an ally within the carrier's reach
+##   casts               the carrier cast a spell (after it resolved); the spell's
+##                       schools are what a `spell_school` condition reads. A
+##                       `casts` has no other unit, so `source` names nobody.
 ## In a trigger that answers something another unit did (all but expire,
 ## turn_start and turn_end) the carrier acts: it is the effects' caster, and
 ## `to: "source"` names the other unit (the attacker, the mover, or for `hit`
@@ -270,8 +282,15 @@ const IMMUNE_FLAG_PREFIX: String = "immune:"
 const STATUS_TRIGGERS: Array[String] = [
 	"expire", "turn_start", "turn_end", "struck", "hit",
 	"attacked_in_melee", "incoming_attack", "incoming_spell",
-	"enemy_enters_reach", "ally_threatened",
+	"enemy_enters_reach", "ally_threatened", "casts",
 ]
+
+## What `upkeep` may charge, and how often. A status with an upkeep costs its
+## carrier this much at the start of every turn, before `periodic` runs; one
+## that cannot pay ends (reason `upkeep`) and its `expire` triggers fire, which
+## is how a comedown is written. HP upkeep never takes a unit below 1.
+const UPKEEP_RESOURCES: Array[String] = ["mana", "stamina", "hp"]
+const UPKEEP_PER: Array[String] = ["turn"]
 
 ## Triggers that run BEFORE the attack or spell resolves. Only these may use
 ## INTERCEPT_OPS. Their other effects (a counter-attack, a step away) wait
@@ -435,13 +454,18 @@ static func validate_status(def: Dictionary, where: String) -> Array[String]:
 			errs.append("%s: 'stacking' must be {mode, max?}" % where)
 		else:
 			for k in st:
-				if not k in ["mode", "max"]:
+				if not k in ["mode", "max", "grow"]:
 					errs.append("%s: stacking has unknown key '%s'" % [where, k])
 			if not st.get("mode", null) in STACKING_MODES:
 				errs.append("%s: stacking mode '%s' unknown (%s)"
 					% [where, st.get("mode", null), ", ".join(STACKING_MODES)])
 			if st.has("max") and not _is_number(st["max"]):
 				errs.append("%s: stacking max must be a number" % where)
+			if st.has("grow"):
+				_validate_grow(st, where, errs)
+
+	if def.has("upkeep"):
+		_validate_upkeep(def["upkeep"], where, errs)
 
 	if def.has("flags"):
 		if typeof(def["flags"]) != TYPE_ARRAY:
@@ -530,6 +554,55 @@ static func validate_status(def: Dictionary, where: String) -> Array[String]:
 		_validate_cleared_by(def["cleared_by"], where, errs)
 
 	return errs
+
+
+## `stacking.grow`: {on, by, if?}. Each time the owner's trigger `on` fires,
+## the status gains `by` stacks (up to `max`). Only a `stack` status has stacks.
+static func _validate_grow(st: Dictionary, where: String, errs: Array[String]) -> void:
+	var g = st["grow"]
+	if typeof(g) != TYPE_DICTIONARY:
+		errs.append("%s: stacking grow must be {on, by, if?}" % where)
+		return
+	for k in g:
+		if not k in ["on", "by", "if"]:
+			errs.append("%s: stacking grow has unknown key '%s'" % [where, k])
+	if st.get("mode", null) != "stack":
+		errs.append("%s: only a stacking mode 'stack' can grow" % where)
+	if not g.get("on", null) in STATUS_TRIGGERS or g.get("on", null) == "expire":
+		errs.append("%s: stacking grow on '%s' unknown (%s, not expire)"
+			% [where, g.get("on", null), ", ".join(STATUS_TRIGGERS)])
+	if not (_is_number(g.get("by", null)) and g["by"] >= 1):
+		errs.append("%s: stacking grow by must be a number, 1 or more" % where)
+	if g.has("if"):
+		if typeof(g["if"]) != TYPE_ARRAY:
+			errs.append("%s: stacking grow 'if' must be a list of conditions" % where)
+		else:
+			for cond in g["if"]:
+				var msg := _condition_error(cond)
+				if not msg.is_empty():
+					errs.append("%s: grow %s" % [where, msg])
+
+
+## `upkeep`: {mana|stamina|hp: n, per: "turn"}, at least one cost.
+static func _validate_upkeep(u, where: String, errs: Array[String]) -> void:
+	if typeof(u) != TYPE_DICTIONARY:
+		errs.append("%s: 'upkeep' must be {mana|stamina|hp: n, per: \"turn\"}" % where)
+		return
+	var costs := 0
+	for k in u:
+		if k == "per":
+			if not u[k] in UPKEEP_PER:
+				errs.append("%s: upkeep per '%s' unknown (%s)" % [where, u[k], ", ".join(UPKEEP_PER)])
+		elif k in UPKEEP_RESOURCES:
+			costs += 1
+			if not (_is_number(u[k]) and u[k] > 0):
+				errs.append("%s: upkeep %s must be a number above 0" % [where, k])
+		else:
+			errs.append("%s: upkeep has unknown key '%s' (%s, per)" % [where, k, ", ".join(UPKEEP_RESOURCES)])
+	if costs == 0:
+		errs.append("%s: upkeep names no cost (%s)" % [where, ", ".join(UPKEEP_RESOURCES)])
+	if not u.has("per"):
+		errs.append("%s: upkeep needs per: \"turn\"" % where)
 
 
 ## One entry of a status's `triggers`.
@@ -1187,6 +1260,10 @@ static func _condition_error(cond) -> String:
 				if StatusOps.is_tag(arg) or _status_error(arg).is_empty():
 					return ""
 				return "target_lacks '%s' is neither a status nor a status tag" % arg
+			"spell_school":
+				if arg.to_lower() in SPELL_SCHOOLS:
+					return ""
+				return "spell_school '%s' is not a school (%s)" % [arg, ", ".join(SPELL_SCHOOLS)]
 		return "unknown condition form '%s' (approved: %s)" % [key, ", ".join(CONDITION_KEYS)]
 	return "a condition is a name or a one-key object, got %s" % [cond]
 

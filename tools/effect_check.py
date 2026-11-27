@@ -94,6 +94,9 @@ SHARED_FIELDS = _gd_list(_vocab_src, "SHARED_FIELDS")
 SCALE_PER = _gd_list(_vocab_src, "SCALE_PER")
 SCALE_STATUS_STACK_PREFIX = _gd_string(_vocab_src, "SCALE_STATUS_STACK_PREFIX")
 CONDITION_KEYS = _gd_list(_vocab_src, "CONDITION_KEYS")
+SPELL_SCHOOLS = _gd_list(_vocab_src, "SPELL_SCHOOLS")
+UPKEEP_RESOURCES = _gd_list(_vocab_src, "UPKEEP_RESOURCES")
+UPKEEP_PER = _gd_list(_vocab_src, "UPKEEP_PER")
 CLEARED_BY = _gd_list(_vocab_src, "CLEARED_BY")
 REST_KINDS = _gd_list(_vocab_src, "REST_KINDS")
 POLARITIES = _gd_list(_vocab_src, "POLARITIES")
@@ -292,12 +295,16 @@ def check_status(d, where):
             errs.append(f"{where}: 'stacking' must be {{mode, max?}}")
         else:
             for k in st:
-                if k not in ("mode", "max"):
+                if k not in ("mode", "max", "grow"):
                     errs.append(f"{where}: stacking has unknown key '{k}'")
             if st.get("mode") not in STACKING_MODES:
                 errs.append(f"{where}: stacking mode '{st.get('mode')}' unknown ({_j(STACKING_MODES)})")
             if "max" in st and not _is_number(st["max"]):
                 errs.append(f"{where}: stacking max must be a number")
+            if "grow" in st:
+                _validate_grow(st, where, errs)
+    if "upkeep" in d:
+        _validate_upkeep(d["upkeep"], where, errs)
     if "flags" in d:
         if not isinstance(d["flags"], list):
             errs.append(f"{where}: 'flags' must be a list")
@@ -373,6 +380,53 @@ def check_status(d, where):
     if "cleared_by" in d:
         _validate_cleared_by(d["cleared_by"], where, errs)
     return errs
+
+
+def _validate_grow(st, where, errs):
+    """`stacking.grow` (EffectVocab._validate_grow)."""
+    g = st["grow"]
+    if not isinstance(g, dict):
+        errs.append(f"{where}: stacking grow must be {{on, by, if?}}")
+        return
+    for k in g:
+        if k not in ("on", "by", "if"):
+            errs.append(f"{where}: stacking grow has unknown key '{k}'")
+    if st.get("mode") != "stack":
+        errs.append(f"{where}: only a stacking mode 'stack' can grow")
+    if g.get("on") not in STATUS_TRIGGERS or g.get("on") == "expire":
+        errs.append(f"{where}: stacking grow on '{g.get('on')}' unknown ({_j(STATUS_TRIGGERS)}, not expire)")
+    if not (_is_number(g.get("by")) and g["by"] >= 1):
+        errs.append(f"{where}: stacking grow by must be a number, 1 or more")
+    if "if" in g:
+        if not isinstance(g["if"], list):
+            errs.append(f"{where}: stacking grow 'if' must be a list of conditions")
+        else:
+            for cond in g["if"]:
+                msg = _condition_error(cond)
+                if msg:
+                    errs.append(f"{where}: grow {msg}")
+
+
+def _validate_upkeep(u, where, errs):
+    """`upkeep` (EffectVocab._validate_upkeep)."""
+    if not isinstance(u, dict):
+        errs.append(f"{where}: 'upkeep' must be {{mana|stamina|hp: n, per: \"turn\"}}")
+        return
+    costs = 0
+    for k, v in u.items():
+        if k == "per":
+            if v not in UPKEEP_PER:
+                errs.append(f"{where}: upkeep per '{v}' unknown ({_j(UPKEEP_PER)})")
+        elif k in UPKEEP_RESOURCES:
+            costs += 1
+            if not (_is_number(v) and v > 0):
+                errs.append(f"{where}: upkeep {k} must be a number above 0")
+        else:
+            errs.append(f"{where}: upkeep has unknown key '{k}' ({_j(UPKEEP_RESOURCES)}, per)")
+    if costs == 0:
+        errs.append(f"{where}: upkeep names no cost ({_j(UPKEEP_RESOURCES)})")
+    if "per" not in u:
+        errs.append(f"{where}: upkeep needs per: \"turn\"")
 
 
 def _validate_trigger(t, label, errs):
@@ -850,6 +904,10 @@ def _condition_error(cond):
             if arg in STATUS_TAGS or not _status_error(arg):
                 return ""
             return f"target_lacks '{arg}' is neither a status nor a status tag"
+        if key == "spell_school":
+            if arg.lower() in SPELL_SCHOOLS:
+                return ""
+            return f"spell_school '{arg}' is not a school ({_j(SPELL_SCHOOLS)})"
         return f"unknown condition form '{key}' (approved: {_j(CONDITION_KEYS)})"
     return f"a condition is a name or a one-key object, got {cond}"
 

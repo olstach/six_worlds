@@ -633,6 +633,10 @@ static func _condition_met(cond, ctx: EffectContext, unit: Node) -> bool:
 			return arg in unit_tags(unit)
 		"target_lacks":
 			return not _condition_met({"target_has": arg}, ctx, unit)
+		"spell_school":
+			# The spell that set a `casts` trigger off carries its schools in
+			# the event ("fire", "sorcery"...), lower case.
+			return arg.to_lower() in ctx.event.get("schools", [])
 	push_error("EffectResolver: unknown condition %s" % [cond])
 	return false
 

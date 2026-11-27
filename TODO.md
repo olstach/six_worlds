@@ -2433,9 +2433,30 @@ Moving content onto one shared effect language. The design is at
         logistics, smithing and so on does nothing.
       - Removing a curse trait now also counts persistent skill damage,
         because the purge reads the effective level.
-  - [ ] **Stage 2b, statuses and auras/zones.** Next: move statuses and
-        auras/zones onto the resolver, carrying the seven extensions in spec
-        10.3.
+  - [x] **Stage 2b, statuses and auras/zones (done 2026-11-27).** Enemies
+        use the one character sheet; statuses, auras and zones are effect
+        lists run by the resolver; the yes/no rules are flags; behaviour is
+        triggers, periodic effects and intercepts; and the seven extensions
+        of spec 10.3 are built (group targets, affinity, borrowed values,
+        building states, comedown, upkeep, pressure). What was built and where
+        it differs from the design is spec 10.5.
+    - **Found during 2b, for Olaf to decide:**
+      - Infected's Fungal Spawn fights for the infected carrier. This is
+        today's behaviour and is probably a bug.
+      - Two units both in Counterstance can counter each other back and forth
+        until a miss or a death. This was already true before stage 2b.
+      - `Ranged_Attack_Debuff_50` reads -40 accuracy, so its name and its
+        number disagree.
+      - `Constitution_Buff` now raises Constitution, so max HP rises but
+        current HP does not jump.
+      - Immune System's 15% affliction resist now works (it was read by
+        nothing before).
+      - Five legacy status keys are still unmigrated:
+        `grants_movement_ability`, `grants_travel_speed_pct`,
+        `grants_concealment`, `damage_increase_pct` and `special`.
+      - Trap Maker's `payload_scale` is unread.
+      - `turn_start_inside` and `turn_end_inside` are built but no zone uses
+        them, and `turn_end_inside` does not run on the skip_turn path.
   - **Carried from stage 1** (stage 2b task 7 ticked these; the rest move to stage 3):
     - [x] ~~`Resistance.breakdown()` does not list effect holds.~~ *Done:
       the holds were already listed by source name (the status's name) when
@@ -2452,7 +2473,11 @@ Moving content onto one shared effect language. The design is at
     - [x] ~~`EffectContext.for_spell` keeps only the first school.~~ *Done
       2026-11-27.* It keeps all of them (`schools`, with `all_schools()`),
       and a heal clears damage whose `cleared_by` names any one.
-  - **Carried into stage 3** (things stage 1 found and left alone):
+  - **Carried into stage 3** (things stage 1 and stage 2b found and left alone):
+    - Spells apply statuses through the `status` op, and the spell side has
+      not moved: spell `duration` formulas, `casts`-style triggers authored
+      in spells, and dispel moving onto `categories` (retiring `dispellable`
+      and `dispel_methods`) are stage 3's.
     - Ritual's `status_save_dc_bonus` is not applied to resolver saves, and
       the save has no `dc_stat` (spells default to Focus, skills to Strength).
     - `kill` does not give the kill reward, so a spell's `on_kill` would be

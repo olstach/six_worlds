@@ -294,6 +294,26 @@ class EffectVocabTests(unittest.TestCase):
             e = {"op": "heal", "amount": {"pct_of": src, "value": 50}}
             self.assertNotEqual(check_effect(e, "t"), [], src)
 
+    # ── Building states, comedown, upkeep (Stage 2b, Task 10) ───────────────
+    def test_building_state_and_upkeep(self):
+        good = dict(STATUS_MINIMAL, stacking={"mode": "stack", "max": 5, "grow": {
+            "on": "casts", "by": 1, "if": [{"spell_school": "Fire"}]}},
+            upkeep={"mana": 10, "per": "turn"},
+            triggers=[{"on": "casts", "if": [{"spell_school": "fire"}], "effects": []}])
+        self.assertEqual(check_status(good, "t"), [])
+        for label, patch in {
+            "grow on refresh": {"stacking": {"mode": "refresh", "grow": {"on": "casts", "by": 1}}},
+            "grow on expire": {"stacking": {"mode": "stack", "grow": {"on": "expire", "by": 1}}},
+            "grow by zero": {"stacking": {"mode": "stack", "grow": {"on": "casts", "by": 0}}},
+            "unknown school": {"stacking": {"mode": "stack", "grow": {"on": "casts", "by": 1,
+                "if": [{"spell_school": "plasma"}]}}},
+            "upkeep no cost": {"upkeep": {"per": "turn"}},
+            "upkeep luck": {"upkeep": {"luck": 1, "per": "turn"}},
+            "upkeep per week": {"upkeep": {"mana": 1, "per": "week"}},
+            "upkeep zero": {"upkeep": {"mana": 0, "per": "turn"}},
+        }.items():
+            self.assertNotEqual(check_status(dict(STATUS_MINIMAL, **patch), "t"), [], label)
+
 
 STATUS_MINIMAL = {"name": "Held", "icon": "x", "polarity": "negative",
                   "categories": ["control"], "scope": "combat",

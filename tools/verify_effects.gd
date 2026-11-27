@@ -12,7 +12,7 @@ var failures: int = 0
 ## which would then find no failures and report OK having verified nothing.
 ## Each check calls _done() as its last line; _ready() compares the count.
 var checks_run: int = 0
-const EXPECTED_CHECKS: int = 100
+const EXPECTED_CHECKS: int = 103
 
 var grid: CombatGrid
 
@@ -156,6 +156,11 @@ func _ready() -> void:
 	_check_group_attributes_all()
 	_check_affinity_hold()
 	_check_pressure_modify()
+
+	# Stage 2b, Task 10: building states, comedown, upkeep.
+	_check_mantra_state_example()
+	_check_hp_upkeep_never_kills()
+	_check_building_state_validation()
 
 	if checks_run != EXPECTED_CHECKS:
 		printerr("  FAIL: %d of %d checks completed — one aborted partway, "
@@ -3138,4 +3143,146 @@ func _check_pressure_modify() -> void:
 	if _applied(bare) != 0:
 		_fail("pressure on a sheet with no psychology state must be refused")
 	_cleanup([party, foe])
+	_done()
+
+
+# ── Stage 2b, Task 10: building states, comedown, upkeep ────────────────────
+
+## A state that builds as its owner casts fire spells, costs mana to keep up,
+## and leaves a drain behind when it runs out of that mana.
+func _mantra_defs() -> Dictionary:
+	var comedown := _with_test_status({"polarity": "negative",
+		"while_active": [{"op": "modify", "value": "attribute.focus", "mode": "drain", "amount": 2}]})
+	var state := _with_test_status({"polarity": "positive",
+		"stacking": {"mode": "stack", "max": 5,
+			"grow": {"on": "casts", "by": 1, "if": [{"spell_school": "fire"}]}},
+		"upkeep": {"mana": 10, "per": "turn"},
+		"while_active": [{"op": "modify", "value": "skill.fire_magic", "mode": "fortify", "amount": 1}],
+		"triggers": [{"on": "expire", "effects": [
+			{"op": "status", "action": "apply", "status": comedown, "duration": 2}]}]})
+	return {"state": state, "comedown": comedown}
+
+
+func _check_mantra_state_example() -> void:
+	var defs := _mantra_defs()
+	var state: String = defs.state
+	var comedown: String = defs.comedown
+	var caster := _make_unit(Vector2i(5, 5), CombatManager.Team.PLAYER)
+	var foe := _make_unit(Vector2i(7, 5), CombatManager.Team.ENEMY)
+	foe.max_hp = 5000
+	foe.current_hp = 5000
+	caster.character_data["skills"] = {"fire_magic": 3, "sorcery": 3}
+	CharacterSystem.update_derived_stats(caster.character_data)
+	caster.max_mana = 500
+	caster.current_mana = 500
+	caster.actions_remaining = 9
+	CombatManager.turn_order = [caster]
+	CombatManager.current_unit_index = 0
+	var sp_plain: int = caster.get_spellpower()
+	CombatManager._apply_status_effect(caster, state, 9)
+	var entry := _entry_of(caster, state)
+	if int(entry.get("stacks", 0)) != 1:
+		_fail("a fresh state starts at 1 stack: %s" % [entry])
+	# Three fire spells: +3 stacks, so +4 effective Fire magic in all.
+	for i in 3:
+		var cast: Dictionary = CombatManager.cast_spell(caster, "firebolt", foe.grid_position)
+		if not bool(cast.get("success", false)):
+			_fail("firebolt %d failed: %s" % [i, cast.get("reason", "?")])
+	if int(entry.get("stacks", 0)) != 4:
+		_fail("three fire casts should make 4 stacks, got %s" % entry.get("stacks"))
+	# An air spell must not grow it (the condition names the school).
+	CombatManager._fire_status_event(caster, "casts", {"schools": ["air", "sorcery"]})
+	if int(entry.get("stacks", 0)) != 4:
+		_fail("an air spell grew a state that wants fire")
+	# The spellpower is what the per-level formula says for +4 Fire magic.
+	var sp_state: int = caster.get_spellpower()
+	var held_skill: int = CharacterSystem.get_effective_skill_level(caster.character_data, "fire_magic")
+	if held_skill != 3 + 4:
+		_fail("effective Fire magic with 4 stacks: %d, wanted 7" % held_skill)
+	CombatManager._end_status(caster, entry, "removed")
+	if caster.get_spellpower() != sp_plain:
+		_fail("releasing the state should restore spellpower")
+	caster.character_data["skills"]["fire_magic"] = 7
+	CharacterSystem.update_derived_stats(caster.character_data)
+	if caster.get_spellpower() != sp_state:
+		_fail("spellpower via holds %d differs from the formula at Fire magic 7: %d"
+			% [sp_state, caster.get_spellpower()])
+	if sp_state <= sp_plain:
+		_fail("+4 Fire magic did not raise spellpower (%d -> %d)" % [sp_plain, sp_state])
+	caster.character_data["skills"]["fire_magic"] = 3
+	CharacterSystem.update_derived_stats(caster.character_data)
+
+	# Upkeep is paid at turn start, and the state stays while it can be.
+	CombatManager._apply_status_effect(caster, state, 9)
+	caster.current_mana = 100
+	CombatManager._process_status_effects(caster)
+	if caster.current_mana != 90 or not caster.has_status(state):
+		_fail("upkeep paid: mana %d (wanted 90), state on: %s" % [caster.current_mana, caster.has_status(state)])
+	# Short of mana, the state ends and its comedown follows.
+	caster.current_mana = 5
+	var focus: int = CharacterSystem.get_effective_attribute(caster.character_data, "focus")
+	CombatManager._process_status_effects(caster)
+	if caster.has_status(state):
+		_fail("a state that cannot pay its upkeep should end")
+	if not caster.has_status(comedown):
+		_fail("the comedown was not applied when upkeep failed")
+	elif CharacterSystem.get_effective_attribute(caster.character_data, "focus") != focus - 2:
+		_fail("the comedown should drain 2 Focus")
+	if caster.current_mana != 5:
+		_fail("an unpaid upkeep must take nothing, mana is %d" % caster.current_mana)
+	# Dispelling the state is not running out: no comedown.
+	CombatManager._end_status(caster, _entry_of(caster, comedown), "removed")
+	CombatManager._apply_status_effect(caster, state, 9)
+	CombatManager._end_status(caster, _entry_of(caster, state), "dispelled")
+	if caster.has_status(comedown):
+		_fail("dispelling the state applied its comedown")
+	CombatManager.turn_order = []
+	CombatManager.current_unit_index = 0
+	_cleanup([caster, foe])
+	_done()
+
+
+## HP upkeep never takes a unit below 1: the status ends instead.
+func _check_hp_upkeep_never_kills() -> void:
+	var name := _with_test_status({"polarity": "positive", "upkeep": {"hp": 10, "per": "turn"}})
+	var u := _make_unit(Vector2i(5, 5))
+	CombatManager._apply_status_effect(u, name, 9)
+	u.current_hp = 50
+	CombatManager._process_status_effects(u)
+	if u.current_hp != 40 or not u.has_status(name):
+		_fail("hp upkeep paid: hp %d state on %s" % [u.current_hp, u.has_status(name)])
+	u.current_hp = 10
+	CombatManager._process_status_effects(u)
+	if u.current_hp != 10 or u.has_status(name) or u.is_dead:
+		_fail("hp upkeep at 10 hp must end the status, not kill: hp %d" % u.current_hp)
+	_cleanup([u])
+	_done()
+
+
+func _check_building_state_validation() -> void:
+	var base := {"name": "S", "icon": "x", "polarity": "positive", "categories": ["blessing"],
+		"scope": "combat", "duration": {"kind": "turns", "base": 3},
+		"stacking": {"mode": "stack", "max": 5, "grow": {"on": "casts", "by": 1,
+			"if": [{"spell_school": "fire"}]}},
+		"upkeep": {"mana": 10, "per": "turn"}}
+	var errs := EffectVocab.validate_status(base, "t")
+	if not errs.is_empty():
+		_fail("a building state with upkeep should validate: %s" % [errs])
+	var bad := {
+		"grow on a refresh status": {"stacking": {"mode": "refresh", "grow": {"on": "casts", "by": 1}}},
+		"grow on unknown trigger": {"stacking": {"mode": "stack", "grow": {"on": "tuesday", "by": 1}}},
+		"grow by zero": {"stacking": {"mode": "stack", "grow": {"on": "casts", "by": 0}}},
+		"unknown school": {"stacking": {"mode": "stack", "grow": {"on": "casts", "by": 1,
+			"if": [{"spell_school": "plasma"}]}}},
+		"upkeep without a cost": {"upkeep": {"per": "turn"}},
+		"upkeep of luck": {"upkeep": {"luck": 1, "per": "turn"}},
+		"upkeep per fortnight": {"upkeep": {"mana": 1, "per": "fortnight"}},
+	}
+	for label in bad:
+		var d: Dictionary = base.duplicate(true)
+		d.merge(bad[label], true)
+		if label.begins_with("upkeep"):
+			d["stacking"] = {"mode": "refresh"}
+		if EffectVocab.validate_status(d, "t").is_empty():
+			_fail("validate_status accepted: %s" % label)
 	_done()

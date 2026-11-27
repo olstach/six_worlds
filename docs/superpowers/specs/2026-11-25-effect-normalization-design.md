@@ -633,3 +633,57 @@ Names and details that differ from, or fill in, 10.1 and 10.2:
 - Bonus-only skills (a hold on a skill the character never bought) count
   fully, in `get_effective_skills` and `CombatManager.apply_skill_mana_reduction`.
 - Known gaps are listed in TODO.md section 17, "Found during 2a".
+
+### 10.5 As built (stage 2b)
+
+Names and details that differ from, or fill in, 4.4, 4.6 and 10.3.
+
+**Statuses**
+
+- The status `save` is `{stat, dc, when}` with a fixed `dc`, not `tier`. This
+  keeps Stunned's DC 15.
+- Triggers: `casts` is built (the carrier cast a spell; it fires after the
+  cast resolved, with the spell's schools for the `spell_school` condition).
+  `ally_threatened` runs after resolution, not as an intercept; that is
+  today's behaviour.
+- `expire` triggers fire only on `expired` and `upkeep`, never on dispel,
+  cleanse, removal, theft, consumption, death or the end of combat. Before
+  stage 2b the old `*_on_expire` keys ran on any removal (cleansing Doomed
+  killed, removing Infected burst); the rule is pinned in the doc comment on
+  `CombatManager._end_status`.
+- Stack mode keeps one entry whose holds are multiplied by `stacks`.
+- Building states: `stacking.grow {on, by, if?}`. The owner's trigger `on`
+  adds `by` stacks up to `max`, and the holds are re-resolved. `grow` needs
+  mode `stack`; `on` is any built trigger except `expire`.
+- Upkeep: `upkeep {mana|stamina|hp: n, per: "turn"}`, paid at turn start
+  before `periodic`. The whole cost is checked first and taken only if it can
+  be paid. If not, the status ends with reason `upkeep` (so its comedown, an
+  `expire` trigger, runs). HP upkeep never takes a unit below 1.
+- The comedown needs no field: it is an `expire` trigger.
+  `mantra_state_example` in `tools/verify_effects.gd` is the worked case.
+- The `magical` category mirrors `dispellable`. Status grouping uses the first
+  non-magical category.
+- Borrowed values gained `event.damage`, `add`, `round` and `min`.
+- Pressure effects are refused for enemy-allegiance sheets. This is interim
+  until stage 5.
+
+**Resistance, auras and zones**
+
+- Resist holds are summed by `Resistance._gather`, not by ValuePaths. `set`
+  applies last, and across covering scopes the last-added `set` wins. A
+  fortify of 100 or more means immunity.
+- Auras and zones are read-time contributions through
+  `AuraSystem.contributions()`, called from both ValuePaths and Resistance.
+  Their resistance is counted per source, so it cannot stack into immunity,
+  and it goes through `hold_covers` (`resist.physical` covers slashing and the
+  other physical types).
+- Zone effects that have a `to` skip bleeding-out units.
+
+**Tooling**
+
+- The status wording parity fixture is `tools/fixtures/status_wording.json`.
+  Regenerate it with
+  `godot --headless --path . tools/verify_tooltips.tscn -- --write-wording`.
+- The vocabulary lists are mirrored in `tools/effect_check.py`; the new ones
+  from Task 10 are `SPELL_SCHOOLS`, `UPKEEP_RESOURCES` and `UPKEEP_PER`.
+- Known gaps are listed in TODO.md section 17, "Found during 2b".

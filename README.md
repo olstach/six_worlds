@@ -98,7 +98,9 @@ stat or an area shape:
   `resources/data/auras.json`; spells reach them through the status they apply.
 - `scripts/effects/` — the shared effect language (stage 1 of the effect
   normalization): the approved vocabulary, value holds, and the resolver that
-  runs effects. Nothing in the game content uses it yet.
+  runs effects. Statuses, auras and zones are written in it
+  (`while_active`, `periodic`, `triggers`, `stacking`, `upkeep`; see spec
+  10.3 and 10.5); spells, items and the rest are still to move over.
 
 ---
 
